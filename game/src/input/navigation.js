@@ -25,14 +25,15 @@
  *                   there is no second code path to keep correct.
  *
  * Forwarding synthetic keys is the kind of thing that deserves suspicion, so:
- * the events are dispatched on `window`, which is where `hand.js` and
- * `combat.js` both listen, they carry `key` and `code`, and nothing anywhere
+ * the events bubble from the focused DOM element to `window`, where `hand.js`
+ * and `combat.js` listen; they carry `key` and `code`, and nothing anywhere
  * inspects `isTrusted`. The alternative — exporting a public method per
  * gesture from `hand.js` — means widening a module this agent does not own to
  * expose internals that are currently private for good reasons.
  */
 
 const FOCUSABLE = [
+  'summary',
   'button:not([disabled])',
   '[href]',
   'input:not([disabled]):not([type="hidden"])',
@@ -132,7 +133,7 @@ export class Navigator {
 
   /** The container navigation is confined to: the top modal, else the scene. */
   get root() {
-    const modal = [...document.querySelectorAll('.mm-modal')].filter(visible).pop();
+    const modal = [...document.querySelectorAll('.mm-modal, dialog[open]')].filter(visible).pop();
     if (modal) return modal;
     const chooser = document.querySelector('.cb-chooser:not([hidden])');
     if (chooser && visible(chooser)) return chooser;
@@ -157,7 +158,12 @@ export class Navigator {
       key: spec.key, code: spec.code,
       shiftKey: !!spec.shiftKey, bubbles: true, cancelable: true,
     });
-    window.dispatchEvent(ev);
+    // Use the normal DOM path so capture-phase coaching/modal handlers can
+    // claim an action before the combat listeners on window receive it.
+    Object.defineProperty(ev, 'mmController', { value: true });
+    const active = document.activeElement;
+    const target = active && this.root.contains(active) ? active : this.root;
+    target.dispatchEvent(ev);
     // `hand.js` listens on window and reads `document.activeElement` to decide
     // whether the keyboard is "inside" the hand. A pad player never tabbed in,
     // so put them in.
@@ -181,7 +187,10 @@ export class Navigator {
   _navigate(action) {
     if (action === 'confirm') return this._activate();
     if (action === 'cancel' || action === 'start') {
-      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true, cancelable: true }));
+      /* On `document`, not `window`: it bubbles on to window's listeners from there,
+         and an event sent to window never reaches document's. `Modal` listens on
+         document, so a controller could open Settings and never close it. */
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true, cancelable: true }));
       return;
     }
     if (action === 'prev' || action === 'next') return this._cycle(action === 'next' ? 1 : -1);

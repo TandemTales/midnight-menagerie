@@ -1,0 +1,41 @@
+{
+  "mode": "built-in image_gen precise-object-edit",
+  "promptFile": "prompt.txt",
+  "sourceRoles": [
+    {
+      "role": "edit target",
+      "path": "game/assets/ui/r54-peridot/worn-plaque-v1.webp",
+      "sha256": "367813500fe21a7ea5f713e746e96eb47f6e91915e3be1f006b2459c3ce991e0"
+    }
+  ],
+  "generatedOriginal": "game\\assets\\ui\\r55-iolite\\plaque-generated-original.png",
+  "generatedAlphaBBox": [
+    0,
+    17,
+    2142,
+    724
+  ],
+  "preparation": "Run python tools/prep_r55_iolite.py. Crop transparent margin, Lanczos resize to240x64 and WebP quality96 preserving alpha. No creative bitmap reconstruction. Pillow is native Pic procedural icon with localized folds/seams; rail-wood copied unchanged permitted Round54 MORGANITE.",
+  "files": [
+    {
+      "path": "game\\assets\\ui\\r55-iolite\\enamel-plaque.webp",
+      "sha256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443",
+      "bytes": 6722
+    },
+    {
+      "path": "game\\assets\\ui\\r55-iolite\\pillow-folds.webp",
+      "sha256": "3eb75878dc6e286a3721a434b79a6bf390995dbbff1029663f860fc47dbb9d9d",
+      "bytes": 1704
+    },
+    {
+      "path": "game\\assets\\ui\\r55-iolite\\plaque-generated-original.png",
+      "sha256": "ccdc87a28a9f60cc9b7572e061c282905611aefd2bfd281a0e1dfa9849751c34",
+      "bytes": 1987879
+    },
+    {
+      "path": "game\\assets\\ui\\r55-iolite\\rail-wood.webp",
+      "sha256": "11c56e5d71eadc469696232777c12095c775a8c9418d023f7a7995894b57fe30",
+      "bytes": 8758
+    }
+  ]
+}

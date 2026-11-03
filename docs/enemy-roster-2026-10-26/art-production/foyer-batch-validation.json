@@ -1,0 +1,151 @@
+{
+  "coverage": {
+    "existing": 31,
+    "new": 4,
+    "pending": 152,
+    "blocked": 0,
+    "total": 187
+  },
+  "region_coverage": [
+    {
+      "level": 1,
+      "region": "Forgotten Foyer",
+      "existing": 7,
+      "new": 4,
+      "pending": 0
+    },
+    {
+      "level": 2,
+      "region": "Forgotten Nursery",
+      "existing": 8,
+      "new": 0,
+      "pending": 3
+    },
+    {
+      "level": 3,
+      "region": "Sleeping Quarters",
+      "existing": 5,
+      "new": 0,
+      "pending": 6
+    },
+    {
+      "level": 4,
+      "region": "Kitchens and Cellars",
+      "existing": 7,
+      "new": 0,
+      "pending": 4
+    },
+    {
+      "level": 5,
+      "region": "Impossible Greenhouse",
+      "existing": 4,
+      "new": 0,
+      "pending": 7
+    },
+    {
+      "level": 6,
+      "region": "Mansion Graveyard",
+      "existing": 0,
+      "new": 0,
+      "pending": 11
+    },
+    {
+      "level": 7,
+      "region": "Grand Study and Library",
+      "existing": 0,
+      "new": 0,
+      "pending": 11
+    },
+    {
+      "level": 8,
+      "region": "Moonlit Attic and Observatory",
+      "existing": 0,
+      "new": 0,
+      "pending": 11
+    },
+    {
+      "level": 9,
+      "region": "Lampworks",
+      "existing": 0,
+      "new": 0,
+      "pending": 11
+    },
+    {
+      "level": 10,
+      "region": "Ballroom and Velvet Suites",
+      "existing": 0,
+      "new": 0,
+      "pending": 11
+    },
+    {
+      "level": 11,
+      "region": "Crypt and Ossuary",
+      "existing": 0,
+      "new": 0,
+      "pending": 11
+    },
+    {
+      "level": 12,
+      "region": "Withered Hedge Maze",
+      "existing": 0,
+      "new": 0,
+      "pending": 11
+    },
+    {
+      "level": 13,
+      "region": "Secret Passages",
+      "existing": 0,
+      "new": 0,
+      "pending": 11
+    },
+    {
+      "level": 14,
+      "region": "Bathhouse and Rain Wing",
+      "existing": 0,
+      "new": 0,
+      "pending": 11
+    },
+    {
+      "level": 15,
+      "region": "Kennels and Animal Ward",
+      "existing": 0,
+      "new": 0,
+      "pending": 11
+    },
+    {
+      "level": 16,
+      "region": "Moon Courtyard and Pumpkin Grounds",
+      "existing": 0,
+      "new": 0,
+      "pending": 11
+    },
+    {
+      "level": 17,
+      "region": "Heart of the House",
+      "existing": 0,
+      "new": 0,
+      "pending": 11
+    }
+  ],
+  "unique_ids": 187,
+  "animated_identities_preserved": 29,
+  "preexisting_files_sha256_verified": 369,
+  "changed_prior_files": [],
+  "batch_new_files": [
+    {
+      "id": "portrait-greeter",
+      "source": "animations\\sprites\\enemies\\portraitGreeter.png",
+      "output": "game\\assets\\sprites\\enemies\\portrait-greeter.webp"
+    },
+    {
+      "id": "grand-mirror",
+      "source": "animations\\sprites\\enemies\\grandMirror.png",
+      "output": "game\\assets\\sprites\\enemies\\grand-mirror.webp"
+    },
+    {
+      "id": "foyer-chandelier",
+      "source": "animations\\sprites\\enemies\\foyerChandelier.png",
+      "output": "game\\assets\\sprites\\enemies\\foyer-chandelier.webp"
+    }
+  ]
+}

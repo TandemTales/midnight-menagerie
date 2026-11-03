@@ -1,0 +1,5 @@
+{
+  "valid_causal_comparison": false,
+  "reason": "Override style preceded the lazy-loaded combat stylesheet; every labeled variant had the same effective production CSS. Screenshot work also occurred during measured animation. Prior4x attribution is retracted.",
+  "replacement": "../raster-controls-final/proof.json"
+}

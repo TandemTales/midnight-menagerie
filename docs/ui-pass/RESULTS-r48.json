@@ -1,0 +1,24 @@
+{
+  "round": 48,
+  "winner": "HELIODOR",
+  "selection": "two of three independent blind votes",
+  "votes": [
+    "HELIODOR",
+    "IOLITE",
+    "HELIODOR"
+  ],
+  "overall_means_descriptive_only": {
+    "ONYX": 5.45,
+    "AMETRINE": 6.15,
+    "HELIODOR": 6.83,
+    "IOLITE": 6.68
+  },
+  "base": "aac9affa29925a6ec1cfebaf2b01862aeab6881f",
+  "winner_commit": "09e1986f",
+  "applied": "eight game source files; working tree only; index preserved",
+  "browser_gates": "all seven passed; gameover-keeps assertion corrected to existing none carried wording",
+  "static_seams": "9097 sites, same four pre-existing local-Map false positives in all builds",
+  "all_fit_thresholds_met": false,
+  "next_brief": "BRIEF-r49.md",
+  "evidence_root": "D:\\UILOOP\\r48-20261029"
+}

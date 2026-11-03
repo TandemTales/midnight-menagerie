@@ -1,0 +1,61 @@
+{
+  "created_utc": "2026-10-26T23:46:41.077562+00:00",
+  "enemy": "garden-shears",
+  "states": [
+    "idle",
+    "attack",
+    "hurt",
+    "defeat"
+  ],
+  "method": "Authentic front blade/handle/rivet plate and back blade/handle/ribbon rotate independently around the painted flower rivet. Ribbon tips deform locally; no hidden joint geometry is invented. Source alpha noise <=2/255 removed in derivative only.",
+  "validation": "batch-03/garden-shears-v3-left/validation.json",
+  "quality_gate": "technical_pass_visual_review_pending",
+  "files": [
+    {
+      "path": "animations/sprites/enemies/animations/SS_gardenShears_idle.png",
+      "sha256": "71d2e57771382853c34bcf0fb4d1407132c31a0c59df642f74c9a243e183ea0e",
+      "bytes": 4008966
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/garden-shears/idle.webp",
+      "sha256": "5cbf26b9606fe89cfd557eeb644044161b50ad1a5e11998bf6eb89fd6fc460c7",
+      "bytes": 1875174
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_gardenShears_attack.png",
+      "sha256": "83ed717a831da2a457aa8686edbf265bbb737d0f982c6f2f828fb7a0602626eb",
+      "bytes": 3072282
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/garden-shears/attack.webp",
+      "sha256": "18ff4e54eeb0ffef8b0997069654a27ff382560eedb9b6792adf1f35976b8fc3",
+      "bytes": 1390552
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_gardenShears_hurt.png",
+      "sha256": "a8f1639f3b664527233f7c7585ba7e6eb26676e46ed2f9cb97ea3d2bc9af6590",
+      "bytes": 1720336
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/garden-shears/hurt.webp",
+      "sha256": "b247287a6307f5cc966aad324fd46c12d5f5d8376fd6a0e687ed26a75a20c466",
+      "bytes": 784404
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_gardenShears_defeat.png",
+      "sha256": "6c21f1d336fc3032b2a3a2122e8081be811c3a7c3ed9a664c44f1c59be63b8ad",
+      "bytes": 2919048
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/garden-shears/defeat.webp",
+      "sha256": "491f371dbe7fd94d8877d0fb0144f3336b974d32e9f9d379316d99f3877487ed",
+      "bytes": 1320444
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/garden-shears/index.json",
+      "sha256": "512ab6a0b2af3dd1f5a6bddcac261540203503429de675ae4fe77830517faa9b",
+      "bytes": 2679
+    }
+  ],
+  "complete": true
+}

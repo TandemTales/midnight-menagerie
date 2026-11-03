@@ -1,0 +1,18 @@
+{
+  "enemy": "sleepwalking-ghost",
+  "source": "docs\\enemy-roster-2026-10-26\\art-production\\sleepwalking-ghost-original.png",
+  "source_sha256": "45d4ac8a3cde891fbe6e45f82304ed23fe16ed7671f50362a6c1fc6e4121d514",
+  "method": "Continuous source-art mesh with separate trouser-leg displacement, sleeve reach, chest breathing, head nod and cap droop. Original snore wisp stretches locally. No unpainted anatomy or replacement face; unlettered sleeper reflected left.",
+  "actions": {
+    "idle": "Gentle chest breath, tiny head nod and lagged cap droop; feet stay still.",
+    "attack": "Cap droops, forward foot lifts into one careful leftward half-step, sleeves reach and a snore expands; feet and body recover.",
+    "hurt": "Rightward flinch, sleeve withdrawal and knees bracing, followed by recovery.",
+    "defeat": "Knees soften and head/cap droop into sleep as the translucent sleeper fades completely."
+  },
+  "orientation": {
+    "required": "screen-left",
+    "method": "Reflected nose, closed-eye profile, reaching hands, toes and connected snore face left. Half-step travels left and hurt recoils right. No letters or handed props reversed.",
+    "status": "prototype_review_pending"
+  },
+  "quality_gate": "Prototype; no delivered actions yet."
+}

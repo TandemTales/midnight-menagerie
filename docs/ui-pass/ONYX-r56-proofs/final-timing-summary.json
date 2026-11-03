@@ -1,0 +1,53 @@
+{
+  "cases": 16,
+  "delivered": 96,
+  "expired": 96,
+  "frames": 4098,
+  "ordinaryMaxDrainMs": 5166.4000000059605,
+  "repeatedDrainMs": [
+    9342.300000011921,
+    4837.199999988079
+  ],
+  "layoutMs": {
+    "p95": 1.7000000178813934,
+    "max": 3.5,
+    "samples": 249
+  },
+  "frameP95Range": [
+    16.799999982118607,
+    47.099999994039536
+  ],
+  "frameMax": 108.19999998807907,
+  "nativeSelectedCase": {
+    "width": 1600,
+    "kind": "crowd",
+    "mode": "all-long",
+    "frameTimes": {
+      "max": 54,
+      "p95": 41.89999997615814
+    }
+  },
+  "nativeFinal": {
+    "inherited": {
+      "p95Median": 34.349999994039536,
+      "p95Trials": [
+        41.599999994039536,
+        27.099999994039536
+      ],
+      "max": 57.099999994039536,
+      "drainMedian": 2399.949999988079,
+      "samples": 246
+    },
+    "current": {
+      "p95Median": 31.049999982118607,
+      "p95Trials": [
+        34.29999998211861,
+        27.799999982118607
+      ],
+      "max": 68.7000000178814,
+      "drainMedian": 2381.2999999821186,
+      "samples": 250
+    }
+  },
+  "note": "Full fixture includes screenshot pauses, style queries and geometry assertions. It is separate from final ABBA, which has zero capture pauses or computed-style queries in its measured CHECK but retains geometry assertions. Neither establishes ordinary-game cost or a universal speedup."
+}

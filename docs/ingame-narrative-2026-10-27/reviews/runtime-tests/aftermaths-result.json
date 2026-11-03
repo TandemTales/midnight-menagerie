@@ -1,0 +1,28 @@
+{
+  "checks": [
+    "foyer / AFTER-foyer-dish: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "nursery / AFTER-nursery-space: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "sleeping-quarters / AFTER-sleeping-quarters-watch: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "kitchens-cellars / AFTER-kitchens-cellars-spoon: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "greenhouse / AFTER-greenhouse-leaf: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "graveyard / AFTER-graveyard-watch: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "study-library / AFTER-study-library-tray: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "attic-observatory / AFTER-attic-observatory-place: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "lampworks / AFTER-lampworks-watch: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "ballroom / AFTER-ballroom-coat: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "crypt / AFTER-crypt-gap: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "hedge-maze / AFTER-hedge-maze-watch: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "secret-passages / AFTER-secret-passages-switch: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "bathhouse / AFTER-bathhouse-offer: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "kennels / AFTER-kennels-watch: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "pumpkin-grounds / AFTER-pumpkin-grounds-direction: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "heart / AFTER-heart-wait: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "attic-observatory / AFTER-attic-observatory-point: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "attic-observatory / AFTER-attic-observatory-watch: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "greenhouse / AFTER-greenhouse-path: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "greenhouse / AFTER-greenhouse-watch: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "kennels / AFTER-kennels-bowl: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged",
+    "kennels / AFTER-kennels-bed: three actions survive short mode; full/short show only selected outcome; exact selected recap committed; reward unchanged"
+  ],
+  "pageErrors": []
+}

@@ -36,6 +36,10 @@ export class SceneManager {
 
   async go(name, params = {}, opts = {}) {
     if (this.busy) { console.warn('[scenes] busy, queued drop:', name); return; }
+    if (this.ctx.narrativeRoute) {
+      const story = this.ctx.narrativeRoute(name, params);
+      if (story) { name = 'narrative'; params = story; }
+    }
     const factory = this.registry.get(name);
     if (!factory) throw new Error(`Unknown scene: ${name}`);
     this.busy = true;

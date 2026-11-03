@@ -1,0 +1,235 @@
+{
+  "dust-bunny": {
+    "status": "left_via_verified_runtime_reflection",
+    "evidence": "2026-10-27: Dust Bunny added to renderer reflection set. Original rightward muzzle/attack now reflected left about feet; 182 frames tested for single reflection, positive inner scale and preserved pivot. Offline contact sheet: docs/rollbacks/2026-10-27-new-enemy-art/dust-bunny-before-after.jpg; no live browser test.",
+    "limits": "Offline selected visual poses plus all-frame runtime transform check; no browser-rendered gameplay review. Original image pixels and 30fps unchanged.",
+    "runtime_mirrored": true
+  },
+  "coatrack-crawler": {
+    "status": "left_in_sampled_runtime_poses",
+    "evidence": "Leading coat/sleeve projects left in rest and attack; rack is not treated as directionless. Contacts: orientation-audit/legacy-runtime-1.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "lost-luggage": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal opening mouth. Tags and stamp-like marks require preservation; do not blanket-flip text. Contacts: orientation-audit/legacy-runtime-1.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "red-carpet-runner": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Roll opens upward/frontally; redirect curl and forward action left. Contacts: orientation-audit/legacy-runtime-1.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "door-greeter": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal carved face and rotating door; needs left-directed look/swing while retaining hinges and lock. Contacts: orientation-audit/legacy-runtime-1.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "butler": {
+    "status": "left_in_sampled_runtime_poses",
+    "evidence": "Profile, serving hand and cast point left in inspected runtime poses; no renderer flip. Contacts: orientation-audit/legacy-runtime-2.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "button-baby": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal doll and rightward reaching pose; requires pose work, not symmetry claim. Contacts: orientation-audit/legacy-runtime-2.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "patchwork-soldier": {
+    "status": "left_in_sampled_runtime_poses",
+    "evidence": "Three-quarter left ready stance and sword thrust left; no renderer flip; preserve sword/shield handedness. Contacts: orientation-audit/legacy-runtime-2.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "jack-in-the-box": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal face and rightward extended hand; preserve box crank position in directional pose work. Contacts: orientation-audit/legacy-runtime-2.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "blanket-blob": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal eyes and centered glow; require leftward gaze/effect. Contacts: orientation-audit/legacy-runtime-2.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "patchwork-giant": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal collection of faces and a rightward punch; require directional body/arm work. Contacts: orientation-audit/legacy-runtime-3.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "toy-chest": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal face/opening and centered burst; preserve contents while directing action left. Contacts: orientation-audit/legacy-runtime-3.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "governess": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Mixed direction: leftward attack gesture but rightward cast/scissors. Whole-clip mirroring would invert the other action; author each state coherently. Contacts: orientation-audit/legacy-runtime-3.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "wardrobe-guest": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal glowing eyes and right door/hand opening; needs leftward gaze/reach without reversing door construction. Contacts: orientation-audit/legacy-runtime-3.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "blanket-creeper": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal grasping hands/face; requires leftward pose design. Contacts: orientation-audit/legacy-runtime-3.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "slipper-skitter": {
+    "status": "left_in_sampled_runtime_poses",
+    "evidence": "Renderer already reflects every clip; toes/eyes and attack read left in the resulting contacts. Do not double-flip. Contacts: orientation-audit/legacy-runtime-4.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": true
+  },
+  "blanket-hydra": {
+    "status": "left_in_sampled_runtime_poses",
+    "evidence": "Renderer already reflects every clip; leading heads and breath effect read left. Do not double-flip. Contacts: orientation-audit/legacy-runtime-4.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": true
+  },
+  "the-wardrobe": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal cabinet with arms/effects on both sides; needs an explicit leftward action cue. Contacts: orientation-audit/legacy-runtime-4.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "dough-blob": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal faces and non-directional reaching; needs leftward gaze/gesture. Contacts: orientation-audit/legacy-runtime-4.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "candy-clump": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal face and forward-centered mouth light; needs leftward staging. Contacts: orientation-audit/legacy-runtime-4.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "jam-jar": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal eyes and rightward goo arm. Preserve tag marks; selective pose correction is needed. Contacts: orientation-audit/legacy-runtime-5.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "pantry-mimic": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal eyes/opening mouth; preserve label-like decoration and direct the action left. Contacts: orientation-audit/legacy-runtime-5.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "sugar-golem": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal face with bilateral fists/effects; needs leftward gaze and committed gesture. Contacts: orientation-audit/legacy-runtime-5.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "oven-maw": {
+    "status": "left_derivative_saved_integration_pending",
+    "evidence": "Framewise reflected alternate preserves all original frame counts, rates, loop/hold/ping/fade semantics; source and runtime originals untouched. Attack contact shows flame travels left. Receipt: orientation-audit/legacy-derivatives/oven-maw/saved-assets.json",
+    "limits": "Not selected by the live loader. Requires separately authorized asset-path integration; no game or full-speed test."
+  },
+  "confectioner": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Attack pastry effect travels right. Preserve unique held utensils and art identity; needs state-specific pose correction. Contacts: orientation-audit/legacy-runtime-5.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "creeping-ivy": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal face and center/right vine reach; needs leftward gaze and leading tendril. Contacts: orientation-audit/legacy-runtime-6.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "compost-colossus": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal face and bilateral glowing fists; needs leftward gaze and directional attack. Contacts: orientation-audit/legacy-runtime-6.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "ancient-topiary": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Body reads near-front/three-quarter; a leftward leading gaze and fist are not established in all sampled states. Detailed pose work/review required. Contacts: orientation-audit/legacy-runtime-6.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "carnivorous-conservatory": {
+    "status": "left_derivative_or_pose_correction_required",
+    "evidence": "Frontal central mouth and mixed side mouths; needs a consistent left-directed main mouth/action. Contacts: orientation-audit/legacy-runtime-6.jpg",
+    "limits": "Eight selected poses reviewed, not every temporal frame or full-speed runtime. No original asset or gameplay changed.",
+    "runtime_mirrored": false
+  },
+  "hall-mirror": {
+    "status": "left_in_inspected_keyposes",
+    "evidence": "Original pupils remain biased left. Attack withdraws right, then palm/head translate left with a left-travelling glint. Hurt recoils right; return uses the same left-looking face. Gold frame and source alpha remain unchanged. Review: representative-v7-left/orientation-review.json",
+    "limits": "Decoded chronological key poses and authored motion curves reviewed. Full-speed intended-size playback and every intervening pose are not independently visually approved; no browser or game runtime test."
+  },
+  "crib-curtains": {
+    "status": "left_in_inspected_keyposes",
+    "evidence": "Cloth rests with a left bias; rightward gathering precedes a shared leftward sweep of both panels. Hurt recoils right and defeat folds left. Moon stitching is not reflected. Review: batch-02/crib-curtains-v3-left/orientation-review.json",
+    "limits": "Decoded chronological key poses and authored motion curves reviewed. Full-speed intended-size playback and every intervening pose are not independently visually approved; no browser or game runtime test."
+  },
+  "foyer-chandelier": {
+    "status": "left_in_inspected_keyposes",
+    "evidence": "All flame tips lean left; the suspended body rests left of its mounting axis. Anticipation goes right and the main swing goes left; hurt recoils right. The extinguished endpoint retains the left-biased stance. Sub-1% empty-canvas alpha noise removed in derivative only. Review: batch-02/foyer-chandelier-v3-left/orientation-review.json",
+    "limits": "Decoded chronological key poses and authored motion curves reviewed. Full-speed intended-size playback and every intervening pose are not independently visually approved; no browser or game runtime test."
+  },
+  "hanging-pots": {
+    "status": "left_in_inspected_keyposes",
+    "evidence": "Whole unlettered fixture is reflected so all bowl openings face left. Each staggered strike moves left after a rightward anticipation. Hook/rack remain stable; original source and pot identity are preserved. Review: batch-03/hanging-pots-v4-left/orientation-review.json",
+    "limits": "Decoded chronological key poses and authored motion curves reviewed. Full-speed intended-size playback and every intervening pose are not independently visually approved; no browser or game runtime test."
+  },
+  "garden-shears": {
+    "status": "left_in_inspected_keyposes",
+    "evidence": "Ready blades point upper-left; closing action points directly left. Both halves remain connected at the original flower rivet. Recovery returns upper-left and defeat lies closed pointing left. Tool is rotated, not mirrored; handle/ribbon handedness is retained. Review: batch-03/garden-shears-v3-left/orientation-review.json",
+    "limits": "Decoded chronological key poses and authored motion curves reviewed. Full-speed intended-size playback and every intervening pose are not independently visually approved; no browser or game runtime test."
+  },
+  "bedsheet-apparition": {
+    "status": "left_in_inspected_keyposes",
+    "evidence": "Face-bearing fabric and authentic source eye/mouth holes turn left. Attack inflates the upper cloth, leans left and sends a small breath left; hurt compresses and recoils right; defeat sinks onto its hem. The original unlettered sheet is reflected. Review: batch-04/bedsheet-apparition-v2-left/orientation-review.json",
+    "limits": "Decoded chronological key poses inspected; full-speed intended-size temporal approval pending. No browser or game runtime test."
+  },
+  "topiary-hare": {
+    "status": "left_in_inspected_keyposes",
+    "evidence": "Nose and eyes face left throughout inspected poses. Separate ears trail a crouch and leftward hop, hurt recoils right, and defeat bows the head with both foliage ears wilting left. All decoded frames retain a connected opaque body. Unlettered shrub reflected; no held prop. Review: batch-04/topiary-hare-v1-left/orientation-review.json",
+    "limits": "Decoded chronological key poses inspected; full-speed intended-size temporal approval pending. No browser or game runtime test."
+  },
+  "servant-bell": {
+    "status": "left_in_inspected_keyposes",
+    "evidence": "Bell mouth points left. Rightward coil tension precedes two leftward strikes, then the painted shadow gives a delayed echo. Hurt recoils right. Defeat droops the metal and fades the shadow. Rope and plaque pixels remain fixed. Review: batch-05/servant-bell-v2-left/orientation-review.json",
+    "limits": "Chronological decoded key poses inspected; full-speed intended-size temporal approval pending. No browser or game test."
+  },
+  "masquerade-mask": {
+    "status": "left_in_inspected_keyposes",
+    "evidence": "Intact reflected mask faces left. It withdraws right and peeks left while separate trailing ribbons follow; hurt recoils right, recovery returns to its left profile. Defeat extinguishes eye light, tips downward and sinks. Foreground ribbon still covers the same hidden face region. Review: batch-05/masquerade-mask-v2-left/orientation-review.json",
+    "limits": "Chronological decoded key poses inspected; full-speed intended-size temporal approval pending. No browser or game test."
+  },
+  "imaginary-friend": {
+    "status": "left_in_inspected_keyposes",
+    "evidence": "Original crayon facial marks turn left within the head and the large hand gestures left. Distinct arc attack and house-outline cast appear to the left of that hand. Hurt recoils right; ready poses match exactly, and defeat progressively erases to a transparent endpoint. Review: batch-06/imaginary-friend-v3-left/orientation-review.json",
+    "limits": "Chronological key poses inspected; full-speed intended-size visual approval pending. No browser or game integration."
+  },
+  "rain-chain": {
+    "status": "left_in_inspected_keyposes",
+    "evidence": "All copper cup openings stay tilted upper-left, including the reduced rightward hurt recoil. Attack tips the bottom cup and sends a bead up-left; cast relays one bead upward through three distinct cup tips. The source bead gap is preserved. Top hook stays fixed; recovery returns exactly to ready. Review: batch-06/rain-chain-v5-left/orientation-review.json",
+    "limits": "Chronological key poses inspected; full-speed intended-size visual approval pending. No browser or game test."
+  },
+  "rocking-chair": {
+    "status": "left_in_inspected_keyposes",
+    "evidence": "Original seat front and leading runners project left. Attack rocks back right, scoots left, compresses the cushion and returns. Hurt recoils right; defeat tips left. Ground contact is computed before rasterization and verified throughout every clip. Review: batch-07/rocking-chair-v3-left/orientation-review.json",
+    "limits": "Chronological key poses inspected; full-speed intended-size visual approval pending. No browser or game test."
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "mode": "deterministic derivatives of existing painted assets",
+  "prep": "tools/prep_r54_peridot.py",
+  "sources": [
+    "game/assets/ui/r50-garnet/quiet-velvet-v1.webp",
+    "game/assets/ui/r50-garnet/walnut-lip-v1.webp",
+    "game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp"
+  ],
+  "bytes": 52354,
+  "outputs": {
+    "game\\assets\\ui\\r54-peridot\\lavender-paint-v1.webp": "4a79fc1e7bfb091809dc79878f8d69828650889a7fba3bf8ed28c444d7cff6c8",
+    "game\\assets\\ui\\r54-peridot\\wood-rail-v1.webp": "a5fcfc200e0266f9345fb16800fef98f6a39f9b788290e974d93748e7d9720e0",
+    "game\\assets\\ui\\r54-peridot\\worn-plaque-v1.webp": "367813500fe21a7ea5f713e746e96eb47f6e91915e3be1f006b2459c3ce991e0"
+  },
+  "inspected": true
+}

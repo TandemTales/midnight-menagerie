@@ -1,0 +1,83 @@
+{
+  "created_utc": "2026-10-27T00:22:32.764Z",
+  "result": {
+    "results": [
+      {
+        "operation": "create_library_file",
+        "status": "succeeded",
+        "path": "/first-three-enemies-left-30fps.mp4",
+        "file_id": "file_00000000ead481fd8b686056442b1f0b",
+        "library_file_id": "libfile_0f955f4c44008191abd0a54b1a7f7b6c",
+        "file_name": "first-three-enemies-left-30fps.mp4",
+        "current_version_number": 0,
+        "restored_from_version_number": null,
+        "xattrs": [
+          {
+            "name": "user.library-file-version",
+            "value": "0"
+          }
+        ],
+        "directory_id": "libdir_c4bbe26f407c81919787ed8a41453d2d",
+        "mime_type": "video/mp4",
+        "library_artifact_type": "other",
+        "file_size_bytes": 468089
+      },
+      {
+        "operation": "create_library_file",
+        "status": "succeeded",
+        "path": "/batch-03-left-30fps.mp4",
+        "file_id": "file_00000000e27482308a3098a873916c04",
+        "library_file_id": "libfile_bb1fbd5ab6788191882a6de7e3d796f8",
+        "file_name": "batch-03-left-30fps.mp4",
+        "current_version_number": 0,
+        "restored_from_version_number": null,
+        "xattrs": [
+          {
+            "name": "user.library-file-version",
+            "value": "0"
+          }
+        ],
+        "directory_id": "libdir_c4bbe26f407c81919787ed8a41453d2d",
+        "mime_type": "video/mp4",
+        "library_artifact_type": "other",
+        "file_size_bytes": 374381
+      }
+    ],
+    "warnings": [],
+    "external_connectors_accessed": false
+  },
+  "local_metadata_attempts": [
+    {
+      "index": 0,
+      "local_path": "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\enemy-roster-2026-10-26\\animation-production\\review-reels\\first-three-enemies-left-30fps.mp4",
+      "library_file_id": "libfile_0f955f4c44008191abd0a54b1a7f7b6c",
+      "file_id": "file_00000000ead481fd8b686056442b1f0b",
+      "file_name": "first-three-enemies-left-30fps.mp4",
+      "path": "/first-three-enemies-left-30fps.mp4",
+      "version": 0,
+      "metadata": {
+        "chunk_id": "f26a47",
+        "wall_time_seconds": 0,
+        "exit_code": 1,
+        "original_token_count": 305,
+        "output": "Traceback (most recent call last):\r\n  File \"C:\\Users\\Josh\\AppData\\Local\\Packages\\sandbox.{88832029-e647-4bfe-bef9-13ddc08e2c86}\\AC\\Temp\\mm-library-reels-e5u1kr62\\library_file_transfer.py\", line 419, in <module>\r\n    raise SystemExit(main(sys.argv[1:]))\r\n                     ~~~~^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\Josh\\AppData\\Local\\Packages\\sandbox.{88832029-e647-4bfe-bef9-13ddc08e2c86}\\AC\\Temp\\mm-library-reels-e5u1kr62\\library_file_transfer.py\", line 406, in main\r\n    materializer.apply_xattrs(\r\n    ~~~~~~~~~~~~~~~~~~~~~~~~~^\r\n        include_library_file_id_xattr(xattrs, library_file_id), args.path\r\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n    )\r\n    ^\r\n  File \"C:\\Users\\Josh\\AppData\\Local\\Packages\\sandbox.{88832029-e647-4bfe-bef9-13ddc08e2c86}\\AC\\Temp\\mm-library-reels-e5u1kr62\\library_file_transfer.py\", line 335, in apply_xattrs\r\n    xattr.apply(path)\r\n    ~~~~~~~~~~~^^^^^^\r\n  File \"C:\\Users\\Josh\\AppData\\Local\\Packages\\sandbox.{88832029-e647-4bfe-bef9-13ddc08e2c86}\\AC\\Temp\\mm-library-reels-e5u1kr62\\library_file_transfer.py\", line 152, in apply\r\n    os.setxattr(path, self.name, encoded_value)\r\n    ^^^^^^^^^^^\r\nAttributeError: module 'os' has no attribute 'setxattr'\r\n"
+      }
+    },
+    {
+      "index": 1,
+      "local_path": "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\enemy-roster-2026-10-26\\animation-production\\review-reels\\batch-03-left-30fps.mp4",
+      "library_file_id": "libfile_bb1fbd5ab6788191882a6de7e3d796f8",
+      "file_id": "file_00000000e27482308a3098a873916c04",
+      "file_name": "batch-03-left-30fps.mp4",
+      "path": "/batch-03-left-30fps.mp4",
+      "version": 0,
+      "metadata": {
+        "chunk_id": "cf7b89",
+        "wall_time_seconds": 0,
+        "exit_code": 1,
+        "original_token_count": 305,
+        "output": "Traceback (most recent call last):\r\n  File \"C:\\Users\\Josh\\AppData\\Local\\Packages\\sandbox.{88832029-e647-4bfe-bef9-13ddc08e2c86}\\AC\\Temp\\mm-library-reels-e5u1kr62\\library_file_transfer.py\", line 419, in <module>\r\n    raise SystemExit(main(sys.argv[1:]))\r\n                     ~~~~^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\Josh\\AppData\\Local\\Packages\\sandbox.{88832029-e647-4bfe-bef9-13ddc08e2c86}\\AC\\Temp\\mm-library-reels-e5u1kr62\\library_file_transfer.py\", line 406, in main\r\n    materializer.apply_xattrs(\r\n    ~~~~~~~~~~~~~~~~~~~~~~~~~^\r\n        include_library_file_id_xattr(xattrs, library_file_id), args.path\r\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n    )\r\n    ^\r\n  File \"C:\\Users\\Josh\\AppData\\Local\\Packages\\sandbox.{88832029-e647-4bfe-bef9-13ddc08e2c86}\\AC\\Temp\\mm-library-reels-e5u1kr62\\library_file_transfer.py\", line 335, in apply_xattrs\r\n    xattr.apply(path)\r\n    ~~~~~~~~~~~^^^^^^\r\n  File \"C:\\Users\\Josh\\AppData\\Local\\Packages\\sandbox.{88832029-e647-4bfe-bef9-13ddc08e2c86}\\AC\\Temp\\mm-library-reels-e5u1kr62\\library_file_transfer.py\", line 152, in apply\r\n    os.setxattr(path, self.name, encoded_value)\r\n    ^^^^^^^^^^^\r\nAttributeError: module 'os' has no attribute 'setxattr'\r\n"
+      }
+    }
+  ]
+}

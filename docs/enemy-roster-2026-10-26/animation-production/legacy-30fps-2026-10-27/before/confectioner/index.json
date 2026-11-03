@@ -1,0 +1,163 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 48,
+   "cols": 8,
+   "rows": 6,
+   "fw": 400,
+   "fh": 272,
+   "anchor": [
+    202.9,
+    252.82
+   ],
+   "source": "SS_confectioner_attack.png",
+   "sourceFrames": 81,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 18.2,
+   "dehalo": false,
+   "warm": 80.0,
+   "dewhite": false,
+   "dip": 0.551,
+   "untail": false,
+   "deblack": false,
+   "black": 0.02,
+   "endIoU": 0.978,
+   "scale": 0.6211,
+   "unit": 219.25,
+   "loop": false,
+   "fps": 35.56,
+   "hold": false,
+   "sha1": "02cfda7a8431d63e"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 33,
+   "cols": 9,
+   "rows": 4,
+   "fw": 400,
+   "fh": 331,
+   "anchor": [
+    202.67,
+    311.81
+   ],
+   "source": "SS_confectioner_defeat.png",
+   "sourceFrames": 81,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 23.3,
+   "dehalo": false,
+   "warm": 82.0,
+   "dewhite": false,
+   "dip": 0.689,
+   "untail": false,
+   "deblack": false,
+   "black": 0.017,
+   "defeatCut": 32,
+   "endIoU": 0.356,
+   "scale": 0.8529,
+   "unit": 301.07,
+   "loop": false,
+   "fps": 40.0,
+   "hold": true,
+   "sha1": "0bf2fffdb1567f36"
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 48,
+   "cols": 8,
+   "rows": 6,
+   "fw": 400,
+   "fh": 363,
+   "anchor": [
+    203.75,
+    355.9
+   ],
+   "source": "SS_confectioner_hurt.png",
+   "sourceFrames": 81,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 19.1,
+   "dehalo": false,
+   "warm": 82.0,
+   "dewhite": false,
+   "dip": 0.68,
+   "untail": false,
+   "deblack": false,
+   "black": 0.018,
+   "endIoU": 0.987,
+   "scale": 0.9346,
+   "unit": 329.91,
+   "loop": false,
+   "fps": 35.56,
+   "hold": false,
+   "sha1": "8e48ccf2f066515d"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 48,
+   "cols": 8,
+   "rows": 6,
+   "fw": 277,
+   "fh": 363,
+   "anchor": [
+    139.0,
+    357.77
+   ],
+   "source": "SS_confectioner_idle.png",
+   "sourceFrames": 81,
+   "matte": "PREMULT",
+   "bg": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": 19.0,
+   "dehalo": false,
+   "warm": 82.0,
+   "dewhite": false,
+   "dip": 0.799,
+   "untail": false,
+   "deblack": false,
+   "black": 0.027,
+   "endIoU": 0.984,
+   "scale": 1.0,
+   "unit": 353.0,
+   "loop": true,
+   "fps": 11.85,
+   "hold": false,
+   "sha1": "9394666943c31f42"
+  }
+ },
+ "scale": 1.0,
+ "unit": 353.0
+}

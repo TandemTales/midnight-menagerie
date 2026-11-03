@@ -51,13 +51,13 @@ const BACKPACK_SLOTS = SLOTS_BASE;
 
 
 /** Clues the board shows once the corresponding thing has happened. */
-const BOARD_CLUES = [
-  ['The Photograph', 'An old family photo with a completely ordinary cat in it. We recognise the cat. The photo is fifty years old.', true],
-  ['The Feeding Room', 'Dozens of bowls, arranged neatly. Some are decades old. Some have fresh food in them.', true],
-  ['The Collar', 'A collar in the middle of an empty room. The tag has a name none of us wrote down.', false],
-  ['Scratching Behind the Wall', 'Something moves inside the walls when the house thinks we have stopped listening.', false],
-  ['Doorway Paw Prints', 'Prints leading up to a doorway that is not there in the morning.', false],
-];
+function boardClues() {
+  const found=Object.values(Save.data.narrative.clues).slice(-5).map(c=>[
+    c.title, c.lines.map(l=>typeof l==='string'?l:l.text).join(' '), true,
+  ]);
+  while(found.length<5)found.push(['An empty space','Not found yet.',false]);
+  return found;
+}
 
 export class ClubhouseScene extends Scene {
   constructor(ctx) {
@@ -238,7 +238,7 @@ export class ClubhouseScene extends Scene {
        Title: how many of the Menagerie are out, and how many pets are home. */
     const tally = el('p', 'cl-count kit-enamel kit-enamel--dark');
     tally.innerHTML = `<b class="kit-enamel__value">${this.rescued.size}</b>`
-      + `<span class="kit-enamel__label">of ${COMPANIONS.length} freed</span>`
+      + `<span class="kit-enamel__label">freed</span>`
       + `<i class="cl-count__dot" aria-hidden="true"></i>`
       + `<b class="kit-enamel__value">${this.petsRescued.size}</b>`
       + `<span class="kit-enamel__label">of ${KIDS.length} home</span>`;
@@ -277,30 +277,21 @@ export class ClubhouseScene extends Scene {
       [2, 1], [17, 3], [32, 0], [47, 2.5],
       [2, 35], [17, 37], [32, 34], [47, 36.5],
     ];
+    const prints = el('div', 'cl-prints');
+    cork.appendChild(prints);
     KIDS.forEach((k, i) => {
       const info = KID_CODEX[k.slug] ?? {};
       const found = this.petsRescued.has(k.slug);
-      const card = el('div', 'polaroid kit-paper' + (found ? ' is-found' : ''));
-      card.style.cssText = `left:${pos[i][0]}%;top:${pos[i][1]}%;--rot:${rot[i]}deg`;
+      const card = el('div', 'polaroid' + (found ? ' is-found' : ''));
+      card.style.cssText = `--rot:${rot[i]}deg`;
       card.dataset.anchor = k.slug;
       card.innerHTML = `
         <span class="pin kit-pin" aria-hidden="true"></span>
         <span class="polaroid__photo"></span>
-        <span class="polaroid__who" aria-hidden="true"></span>
-        <span class="polaroid__cap">${k.pet}</span>
-        <span class="polaroid__sub">${k.name.split(' ')[0]}&rsquo;s</span>
         ${found ? '<span class="polaroid__stamp">Home</span>' : ''}`;
       card.querySelector('.polaroid__photo').appendChild(
-        petPortrait(k.slug, { alt: `${k.pet}, ${(info.species || k.petKind).toLowerCase()}` }));
-      /* Whose animal this is, as a face rather than only as the word under the
-         photograph. The board is eight small animals and one line of text each;
-         with the kids painted there is no reason the owner stays anonymous.
-         aria-hidden because `.polaroid__sub` already says the same thing to a
-         screen reader, and two of them is noise. */
-      card.querySelector('.polaroid__who').appendChild(
-        kidPortrait({ ...k, petKind: info.species || k.petKind },
-          { w: 192, h: 192, variant: 'thumb' }));
-      cork.appendChild(card);
+        petPortrait(k.slug, { alt: `${k.pet}, ${k.name.split(' ')[0]}’s ${(info.species || k.petKind).toLowerCase()}` }));
+      prints.appendChild(card);
     });
 
     /* The recovered blueprint, and it OPENS now.
@@ -336,9 +327,9 @@ export class ClubhouseScene extends Scene {
        empty in one row along the foot — so the corner opposite them is free for
        the House, the cutting and the verdict, and every card on the board is
        either something to read or an honest gap. */
-    const cluePos = [[60, 46], [79.5, 51], [57.5, 74.5], [71.5, 77], [85.5, 75]];
+    const cluePos = [[66, 46], [83, 51], [57.5, 76], [72, 77], [86, 76]];
     const clueNo  = ['i', 'ii', 'iii', 'iv', 'v'];
-    BOARD_CLUES.forEach((c, i) => {
+    boardClues().forEach((c, i) => {
       const [title, text, known] = c;
       /* `ch-note`, not `note`. The class was renamed in clubhouse.css to get out
          of another scene's way and the JS was not, so every clue on the board
@@ -351,8 +342,9 @@ export class ClubhouseScene extends Scene {
          way a kid numbers what they have found */
       const no = `<i class="ch-note__no" aria-hidden="true">${clueNo[i]}</i>`;
       note.innerHTML = known
-        ? `<span class="ch-tape kit-tape" aria-hidden="true"></span>${no}<b>${title}</b><p>${text}</p>`
+        ? `<span class="ch-tape kit-tape" aria-hidden="true"></span>${no}<b></b><p></p>`
         : `<span class="ch-tape kit-tape" aria-hidden="true"></span>${no}<b>?</b><p>Not found yet.</p>`;
+      if(known){note.querySelector('b').textContent=title;note.querySelector('p').textContent=text.length>110?text.slice(0,107)+'…':text;note.title='Read the full observation in Discoveries.';}
       cork.appendChild(note);
     });
 
@@ -469,8 +461,8 @@ export class ClubhouseScene extends Scene {
 
     p.appendChild(el('div', 'cl-panel__head', `
       <h2>The Menagerie</h2>
-      <p>Sixteen animals the house kept. Free every one and they will show us the way to the Heart.</p>
-      <div class="tally"><b>${this.rescued.size}</b> / ${COMPANIONS.length} freed<em>${
+      <p>Sixteen supernatural friends. Each has a different way of meeting the world. Marmalade starts beside you; others can join as you explore.</p>
+      <div class="tally"><b>${this.rescued.size}</b> freed<em>${
         this.available.size - this.rescued.size} already with us</em></div>`));
 
     const scrap = el('div', 'scrapgrid');
@@ -486,12 +478,13 @@ export class ClubhouseScene extends Scene {
       this._portraits.push(pf);
       cell.appendChild(pf.el);
       cell.appendChild(el('div', 'scrapcell__cap',
-        here ? `<b>${c.name}</b><span>${got ? c.title : 'never in the house'}</span>`
+        here ? `<b>${c.name}</b><span>${got ? c.title : 'with you from the start'}</span>`
              : `<b>&mdash;</b><span>still in ${REGION_NAMES[c.region] ?? c.region}</span>`));
       if (here) cell.appendChild(el('span', 'scrapcell__tape'));
       scrap.appendChild(cell);
     }
     p.appendChild(scrap);
+    this._paginate(scrap, 8);
     return p;
   }
 
@@ -503,7 +496,8 @@ export class ClubhouseScene extends Scene {
 
     p.appendChild(el('div', 'cl-panel__head', `
       <h2>Missing Pets</h2>
-      <p>Eight of us. Eight animals still inside. The longer they are in there, the less of them comes back.</p>
+      <p>Eight pets, eight searches. A changed shape does not erase a friend. Reunions stay safe between expeditions.</p>
+      ${Save.data.narrative.sanctuary && this.petsRescued.size < KIDS.length ? '<p>Open Discoveries to visit the House with another child.</p>' : ''}
       <div class="tally"><b>${this.petsRescued.size}</b> / ${KIDS.length} home</div>`));
 
     const grid = el('div', 'petgrid');
@@ -518,9 +512,8 @@ export class ClubhouseScene extends Scene {
           <p class="petcard__sp">${info.species ?? k.petKind}</p>
           <p class="petcard__lost">${info.lost ?? ''}</p>
           <p class="petcard__who">${k.name}</p>
-          <div class="stagebar" role="img" aria-label="Transformation stage 1 of 5">
-            ${[1, 2, 3, 4, 5].map((n) => `<i class="${n === 1 ? 'is-on' : ''}"></i>`).join('')}
-            <span>${home ? 'home' : 'stage 1 — still an ordinary animal'}</span>
+          <div class="stagebar">
+            <span>${home ? 'Home — visits welcome' : Save.data.narrative.pets[k.slug] === 'found' ? 'Found — safe in the quiet animal room' : 'Still searching'}</span>
           </div>
         </div>`;
       card.querySelector('.petcard__pet').appendChild(
@@ -528,6 +521,15 @@ export class ClubhouseScene extends Scene {
       card.querySelector('.petcard__kid').appendChild(
         kidPortrait({ ...k, petKind: info.species || k.petKind },
           { w: 192, h: 192, variant: 'thumb' }));
+      const details = card.querySelector('.petcard__body');
+      const infoButton = el('button', 'petcard__info');
+      infoButton.type = 'button';
+      infoButton.textContent = `${k.pet} · Info`;
+      infoButton.dataset.tipTitle = `${k.pet} · ${k.name}`;
+      infoButton.dataset.tip = details.innerText || details.textContent;
+      infoButton.setAttribute('aria-label', `About ${k.pet}, ${k.name}'s pet`);
+      details.replaceWith(infoButton);
+      card.querySelector('.petcard__kid').remove();
       grid.appendChild(card);
     }
     p.appendChild(grid);
@@ -605,6 +607,26 @@ export class ClubhouseScene extends Scene {
 
   _packUsed() { return loadoutSize(this.pack); }
 
+  _paginate(list, size) {
+    list.classList.add('cl-paged');
+    if (list.nextElementSibling?.classList.contains('cl-pages')) list.nextElementSibling.remove();
+    const items = [...list.children], total = Math.max(1, Math.ceil(items.length / size));
+    let page = Math.min(Number(list.dataset.page) || 0, total - 1);
+    const nav = el('nav', 'cl-pages');
+    nav.setAttribute('aria-label', 'Browse items');
+    nav.innerHTML = '<button type="button" data-prev>Previous</button><span aria-live="polite"></span><button type="button" data-next>Next</button>';
+    const paint = () => {
+      list.dataset.page = page;
+      items.forEach((item, i) => { item.hidden = Math.floor(i / size) !== page; });
+      nav.querySelector('span').textContent = `${page + 1} / ${total}`;
+      nav.querySelector('[data-prev]').disabled = page === 0;
+      nav.querySelector('[data-next]').disabled = page === total - 1;
+    };
+    nav.querySelector('[data-prev]').onclick = () => { page--; paint(); };
+    nav.querySelector('[data-next]').onclick = () => { page++; paint(); };
+    list.after(nav); paint();
+  }
+
   _renderPack() {
     const p = this._packPanel;
     if (!p) return;
@@ -630,6 +652,11 @@ export class ClubhouseScene extends Scene {
           ${pips(g.size)}<b>${esc(g.name)}</b><em>${esc(g.desc)}</em>
           <span class="sr-only">${fits ? `Add ${esc(g.name)} to the backpack` : `${esc(g.name)} does not fit`}</span></button></li>`;
       }).join('');
+    for (const gear of p.querySelectorAll('.gear')) {
+      gear.dataset.tipTitle = gear.querySelector('b').textContent;
+      gear.dataset.tip = gear.querySelector('em').textContent;
+    }
+    this._paginate(p.querySelector('.packshelf__list'), 5);
   }
 
   /* ── sidebar ────────────────────────────────────────────────────────────── */
@@ -646,11 +673,14 @@ export class ClubhouseScene extends Scene {
       <dl class="chalk__dl kit-ledger">
         <dt>Expeditions</dt><dd>${st.runs ?? 0}</dd>
         <dt>Made it out</dt><dd>${st.wins ?? 0}</dd>
-        <dt>Deepest room</dt><dd>${st.bestFloor ?? 0}</dd>
+        <dt>Wings mapped</dt><dd>${this.revealed.size}</dd>
         <dt>${TERMS.card}s played</dt><dd>${st.cardsPlayed ?? 0}</dd>
         <dt>Damage dealt</dt><dd>${st.damageDealt ?? 0}</dd>
       </dl>`;
-    side.appendChild(board);
+    const log = el('details', 'cl-log');
+    log.innerHTML = '<summary>Expedition log</summary>';
+    log.appendChild(board);
+    side.appendChild(log);
 
     const haunt = el('div', 'cl-haunt kit-panel kit-panel--damask');
     haunt.dataset.medal = 'shield';
@@ -717,7 +747,9 @@ export class ClubhouseScene extends Scene {
       + '<span class="cl-quote__k">The club rule</span>'
       + '<p class="cl-quote__t">&ldquo;Get every animal out that wants to leave.&rdquo;</p>';
     motto.appendChild(quote);
-    side.appendChild(motto);
+    const rule = el('p', 'cl-rule');
+    rule.textContent = '“Get every animal out that wants to leave.”';
+    side.appendChild(rule);
 
     const go = el('button', 'cl-go kit-btn');
     go.type = 'button';

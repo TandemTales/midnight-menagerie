@@ -1,0 +1,277 @@
+{
+  "images": [
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\event-initial-1280.png",
+      "sha256": "9a575f706d73fc48ea896bcad022232fa70d9ca53d367e0f180608c1a0c7fb97",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\event-initial-1600.png",
+      "sha256": "5b8a42cf60015341d02c0d78221f66978ba98458d9a70563984cf53bbf7c4b0d",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\event-interactions-1280.png",
+      "sha256": "d5186a1ac84a0eec3d3604722fe8c4d02bff116a9885fd05d9b370bc8e345c1f",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\event-interactions-1600.png",
+      "sha256": "d97bce8b44f0d7acebbd97f2acc15aa14d4c253539e8cc627550ae482c22d6f0",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\gameover-initial-1280.png",
+      "sha256": "6ae81c3b427bff4eaeffe154c157374901fcd8ed728d5e7c2897be5ce1555c2c",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\gameover-initial-1600.png",
+      "sha256": "83f03ff1a62795fba25d5cbb5841235f2ea467799c12fc40af49bc0418cf3276",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\gameover-interactions-1280.png",
+      "sha256": "c7ebe167d42a003c420bd5df71ebae69ab76972eab252fc7be5e270d586ec825",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\gameover-interactions-1600.png",
+      "sha256": "4d49cac632d1960797fb03be1712cb7a101e2f8e3d5ab267202c51ecf962a238",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\keepsakes-1280.png",
+      "sha256": "75021b6b383a28ff19c0051fca2f16d5f055e851b2e2a98a20cf3f4a3d700eb0",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\keepsakes-1600.png",
+      "sha256": "6c2ff014835234d76e292dd02ca602650b62b335ad618861c158661a47067e4b",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\memorial-geometry-1280.png",
+      "sha256": "5183b5923ca022b9078d3faf4cb6d086c891650d87c3da931999755240464e2e",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\memorial-geometry-1600.png",
+      "sha256": "4ca88aeba9b7fe7513bc182ad9a34301fa713ab5df65f9e0365c73ce334a6faa",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\rest-initial-1280.png",
+      "sha256": "3eba590dc24ac75f432e6aff5bb3c4d0354021874f305797465ecd1da7c6e15c",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\rest-initial-1600.png",
+      "sha256": "8c38319848f29b757c96418f1b04f0fb8c843eb806b1bacec5fe70e1050c307e",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\rest-interactions-1280.png",
+      "sha256": "eccde713389b2af5bff8562da491b6369a2da4697b5aeaaf7b6ded9e934da101",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\rest-interactions-1600.png",
+      "sha256": "552daa048a6a5a71b08c002d1b0f316f01036e6c6d38160d9316d410c7c42dbd",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\shop-initial-1280.png",
+      "sha256": "55d7e34a9e0b693afe79206a0bd531264ec8988820da9e302322615bbe473fe5",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\shop-initial-1600.png",
+      "sha256": "4fa6de266a3d895103aaa3fe223fa9af7986fca24418e62fe9ea9be9d69bb44f",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\shop-interactions-1280.png",
+      "sha256": "75e4830cb8a14ae83eed7e8e2655f46708ce314ac0f84f2b16216e832987efe4",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\shop-interactions-1600.png",
+      "sha256": "95cb0ad8b2c9048da2a68c62607f7f1a7e429b530f01d9db1b89586dff87d4b6",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\condition-pixels\\current-1280.png",
+      "sha256": "df6f237fed6a46120ebdbd6112c0e43e5cf6f163df66a3428f96acf7312da3be",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "stylesheet_variant": "current",
+      "stylesheet_sha256": "7f1091a134a2b39ef771b526357cc2171036204c5dcd8477b7a3ca6f259fd444",
+      "stylesheet_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\condition-pixels\\current-1600.png",
+      "sha256": "61063a17b9bff2c12de0e3f6a6de3f1fa102af0bb5167641f8010e92111112df",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "stylesheet_variant": "current",
+      "stylesheet_sha256": "7f1091a134a2b39ef771b526357cc2171036204c5dcd8477b7a3ca6f259fd444",
+      "stylesheet_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\condition-pixels\\inherited-1280.png",
+      "sha256": "cad2f968e71d95d62bb8b9750c5b747ebd499c38b9304c3e10ce8a57c81e2f6c",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "stylesheet_variant": "inherited",
+      "stylesheet_sha256": "5c7556108c436fe898de78633c58e439d7e7342b059cc3b37136c417de0b4e20",
+      "stylesheet_source_commit": "1bfcea516055b63b9f8e9274718f2212e8b9841b"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\condition-pixels\\inherited-1600.png",
+      "sha256": "2c9c4d6369d6eeeacf31f7a83088e13bf6f194b86c627a6f6d0812438aecd2b0",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "stylesheet_variant": "inherited",
+      "stylesheet_sha256": "5c7556108c436fe898de78633c58e439d7e7342b059cc3b37136c417de0b4e20",
+      "stylesheet_source_commit": "1bfcea516055b63b9f8e9274718f2212e8b9841b"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\event-boundary\\initial-1280.png",
+      "sha256": "835e90a4017ac102e3a3bae0fd8de025d7e075ecfdf7658ae951209b4e69a884",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\event-boundary\\initial-1600.png",
+      "sha256": "e063c17db818a61519969b4b9e12edf44fbec8cdd98ff1309722e707333fde03",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\lifecycle\\survivor.png",
+      "sha256": "a4cda6c96abcc126a30f341dd9e74bce6b6a24071a78149eac3efc176a08dc94",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\memorial\\bottom-1280.png",
+      "sha256": "e6a73d3a926533e9bb51d564c3f86efd328092dfa0c2cb109b14d6a6e98349b4",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\memorial\\bottom-1600.png",
+      "sha256": "b40d48b0afb4bc5994784ab7a4cc013a697b0d1df78f179342b8a32e1d918e9f",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\memorial\\initial-1280.png",
+      "sha256": "5c459150f6940c3a4eee88575bd2a2183f0d117ecbb833e39a317c9e4a3d4135",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\memorial\\initial-1600.png",
+      "sha256": "87e942ab9ff1618385ca9357216fb089f317dabaa10d2f0f2ed9c19ea9db0eef",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\memorial-long\\bottom-1280.png",
+      "sha256": "2d90404fa434247f205a68913c414cc5913cd84ed7b1758187b27c1a4c920039",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\memorial-long\\bottom-1600.png",
+      "sha256": "26db1828319b4092bd2a2fc3dad66364f1e219e3d90f4bdd36ced87741e8779c",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\memorial-long\\initial-1280.png",
+      "sha256": "ee92348fdd0eaaec45cf6fd187d8646e77828075051da6b8677c242afbb1efc4",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\memorial-long\\initial-1600.png",
+      "sha256": "98820db6f68e0c2d44aa2ae97651711058d2a304fb5f2fea2f5f7346ae905488",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\boss-0-1280.png",
+      "sha256": "9a30f14b77ab8f7551e48f79f6600e6b9fc4f4d2cb09d2086fa79979059dbe57",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\boss-0-1600.png",
+      "sha256": "2f55f7d4dfb791874aa070c30f706c43e8e19a95c004e0557cae063e3b96e6ed",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\crowd-0-1280.png",
+      "sha256": "1cfe714806df887724d1a7f84cf1569e69c13e2ef25669490fc1bf6950b090aa",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\crowd-0-1600.png",
+      "sha256": "907c6fabc57cb47e6c0e805d47d7d3d5ef208d301f0f9fef8250a92670f675b9",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\crowd-1-1280.png",
+      "sha256": "c4d904b7023987a0379f04b9b88c7a9bab4aa21f68e403c621dcd7ae9efcc9b9",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\crowd-1-1600.png",
+      "sha256": "051d5ab348238a1ef4718a2f58dcaadfe96a19c5e183044c5256fcb8b1d516e9",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\crowd-2-1280.png",
+      "sha256": "d1a55a0764932e25394f6ad0d4616e714d504b87f01254e2ca7db97fecaab385",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\crowd-2-1600.png",
+      "sha256": "627d8d782bc84e353f658498c67b27e4df25fe23eef47fdf5c41165b1f0811cc",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\crowd-3-1280.png",
+      "sha256": "02ff9183b9571a1c5a0ebb10466e07b8bccc6fb7a12749e5e1bc42855b2b7b2e",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\crowd-3-1600.png",
+      "sha256": "c906b5d437dd845dd883d39c6ab65554682bbe4ca53d4237c8fdc63df6f1d71b",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\crowd-all-1280.png",
+      "sha256": "5faeecce90261c6a7cd85f0d1d62d1d1a6a9468ac7be3e737a8ca0562fbf467d",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\crowd-all-1600.png",
+      "sha256": "d4f75f6bc0a53cc64c30c09586fb01e04867d83bff9b5f957cf051da4595476c",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\crowd-all-long-1280.png",
+      "sha256": "5a67ac2c4923b5805201599285176debaf0d842a6440d6f9720df49bdfe2241b",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\crowd-all-long-1600.png",
+      "sha256": "b8b25721ec7ea324f6af0b3355b6dffaff5007e4ad93a8e4b3687402ae2dca84",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\crowd-repeats-1280.png",
+      "sha256": "17f325b3dc4da5580346c078c59c92a55485b6fb848d38a924e0a94926f2ed21",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\crowd-repeats-1600.png",
+      "sha256": "cec111f3fe006ad3509e88ed791c51c38476488cc512ba79baec2c8ca4e162da",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    },
+    {
+      "path": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\queue\\idle-resize.png",
+      "sha256": "02b45bf7e4d5426b61010ff234c02dd6faffa9956db840f14291a92ee133c629",
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+    }
+  ],
+  "note": "All native early/functional images were taken from unchanged c59235be. Baseline-overridden phase images are explicitly marked with baseline stylesheet source and hash. Canonical10+title are separate in provenance.json. No failed run occurred and no evidence was overwritten."
+}

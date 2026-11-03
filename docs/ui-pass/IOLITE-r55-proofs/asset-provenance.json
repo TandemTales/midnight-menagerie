@@ -1,0 +1,25 @@
+{
+  "mode": "built-in image_gen precise-object-edit",
+  "exactPrompt": "Use case: precise-object-edit. Asset type: blank small gothic game condition plaque, to be displayed approximately 25 pixels tall. Input image 1 is the EDIT TARGET: the existing 240 by 64 blank plaque. Primary request: repaint only this blank object into a tangible shallow aubergine enamel plaque with uneven antique brass rim. Preserve the exact horizontal proportions, shaped silhouette, transparent surroundings, narrow inward curls, and empty central writing area. Make a visibly painted violet-aubergine recessed face, shallow dark lower side depth, local warm brass wear at upper-left curves and quieter dark worn brass at lower-right. The rim is slim and follows the curved ends, not a continuous luminous wire. Broad subtle enamel brush planes should remain apparent when downscaled to 25 pixels tall. Orthographic front view, centered, no perspective, no cast shadow outside the silhouette. No text, glyphs, symbols, characters, controls, background, glow or new decoration. Retain genuine alpha transparency. Keep all the image available as usable blank material; do not add a sample scene.",
+  "sourceRoles": [
+    {
+      "role": "edit target",
+      "path": "game/assets/ui/r54-peridot/worn-plaque-v1.webp",
+      "sha256": "367813500fe21a7ea5f713e746e96eb47f6e91915e3be1f006b2459c3ce991e0"
+    },
+    {
+      "role": "permitted unchanged Round54 rail graft",
+      "path": "D:/UILOOP/r54-20261029/a/game/assets/ui/r54-morganite/rail-wood.webp",
+      "sha256": "11c56e5d71eadc469696232777c12095c775a8c9418d023f7a7995894b57fe30"
+    },
+    {
+      "role": "native procedural pillow implementation",
+      "path": "tools/hw_objects.py pillow(Pic), plus tools/prep_ui_hardware.py",
+      "treatment": "Same native Pic primitives/profile, localized fold and seam strokes in tools/prep_r55_iolite.py. CSS replacement scoped to rest pillow only."
+    }
+  ],
+  "prep": "tools/prep_r55_iolite.py",
+  "assetManifest": "game/assets/ui/r55-iolite/provenance.json",
+  "bitmapBytes": 2005063,
+  "inspected": true
+}

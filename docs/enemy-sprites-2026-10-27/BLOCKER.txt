@@ -1,0 +1,18 @@
+Blocked action: create a NEW ChatGPT project conversation titled 'Enemy sprites — levels 1–10' in project g-p-6a7e3759a0188191a5c59054c2317590, with the prepared batch-1 image-generation request and saved Library reference bundle.
+
+Status: denied by automatic approval review. Not executed. No conversation ID or URL returned. No image generation submitted. Do not retry until materially new relevant authorization evidence arrives; then retry the denied operation at most once for that new evidence.
+
+Exact rejection:
+This action was rejected due to unacceptable risk.
+Reason: This would create a new ChatGPT project task and submit an image-generation request, an external commitment that is not authorized by the user's request for pet Polaroid files.
+Do not bypass this rejection through a workaround or indirect execution.
+
+The current delegated user request explicitly concerns this enemy-sprite workflow, but the reviewer cited the preceding Polaroid task. A concise confirmation request was presented to resolve that mismatch. Its answer is pending.
+
+Separate browser restriction: Nitro Chrome was inventoried as a native window, but no supported Chrome browser surface/tab with a verified URL was returned. The prior browser URL-policy enforcement denial was not retried or bypassed. Only harmless surface inventory was performed.
+
+Completed: current original Google Doc read; Regions 1–10 extracted (107 entries); 51 active original stills and all 29 animated identities visually inspected; 342 active image files measured and hashed; all 338 images covered by the earlier preservation baseline match unchanged; 13 recognizable current identities have sheets; 94 eligible designs arranged into 16 ordered prompt files; exact original descriptions preserved; menu and 3 accepted source sheets identified and packaged; archive excluded.
+
+Library upload succeeded: libfile_48dd4a412e3c819197d53d94ff3d3352, file_000000008d2481f5882e575f2a2ef32e, MM-enemy-sprite-batches-levels-01-10.zip (38,802,680 bytes). Receipt retained in library-upload-receipt.json. The optional local identity metadata helper failed because Windows Python does not implement os.setxattr. This does not undo the confirmed Library upload; local extended attributes were not persisted. No retry or duplicate upload performed.
+
+No generated sprite outputs, alpha QA or acceptance results exist. No game code, original assets, archived artwork or animation production changed. All source preparations live in docs/enemy-sprites-2026-10-27.

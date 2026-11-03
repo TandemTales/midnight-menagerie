@@ -51,11 +51,12 @@ import { Save } from '../core/save.js';
 import { KIDS, COMPANIONS } from '../data/schema.js';
 import { MAX_PARTY } from '../combat/engine.js';
 import { loadoutFor } from './select.js';
-import { canChooseEntry } from '../state/run.js';
+import { Run, canChooseEntry } from '../state/run.js';
 import { Lobby, seedFromRoom } from '../net/lobby.js';
 import { Session } from '../net/session.js';
-import { attachSession } from '../net/actions.js';
+import { ACT, attachSession } from '../net/actions.js';
 import { ChannelTransport, SteamTransport, canChannel, steamNet } from '../net/transport.js';
+import { installNetPlate } from '../ui/netplate.js';
 import {
   ensureCss, el, reduceMotion,
   availableCompanions, isStarter, warmFaces,
@@ -208,6 +209,9 @@ export class LobbyScene extends Scene {
     /** The Companion portraits on the roster, destroyed on every repaint. */
     this._portraits = [];
     this._dead = false;
+    /** The saved expedition this player is coming back to, or null. */
+    this._saved = null;
+    this._failTimer = null;
   }
 
   _dropPortraits() {
@@ -298,6 +302,7 @@ export class LobbyScene extends Scene {
     try { this.ctx.atmosphere?.setMood?.('terrace', { instant: true }); } catch { /* mood is decoration */ }
 
     this._room = tidyRoom(params.room) || '';
+    this._saved = params.rejoin || null;
     this._renderDoor();
     if (this._room) this._open(this._room);
   }
@@ -348,6 +353,14 @@ export class LobbyScene extends Scene {
       card.appendChild(el('p', 'lo__warn',
         'This browser has no BroadcastChannel, so nobody else can climb up. '
         + 'Two Kids on one screen still works from New Expedition.'));
+    }
+    /* In the desktop game with no Steam, the only wire left reaches this machine
+       and nobody else. Waiting up here for a friend would never end, so say so. */
+    const noSteam = window.__MM_HOST__?.name === 'electron' && !steamNet();
+    if (noSteam) {
+      card.appendChild(el('p', 'lo__warn',
+        'Steam is not connected, so friends cannot reach you. Start Steam and open '
+        + 'the game again. Two Kids on one screen still works from New Expedition.'));
     }
 
     /* The field is an engraved nameplate: the word PASSWORD cut into its top
@@ -459,10 +472,16 @@ export class LobbyScene extends Scene {
     /* Steam when the desktop shell has it (shell/steam.js turns the password
        into a Steam lobby), the two-tab wire otherwise. Nothing past this line
        knows which. */
+    const net = this._saved?.net || null;
     this._transport = steamNet()
-      ? new SteamTransport(room, { seats: MAX_PARTY })
-      : new ChannelTransport(room, `mm-${Math.random().toString(36).slice(2, 9)}`);
-    this._lobby = new Lobby({ transport: this._transport, room, seats: MAX_PARTY });
+      ? new SteamTransport(room, { seats: MAX_PARTY, lobby: net?.lobby || null })
+      /* A tab's id is its only claim on a seat, and a rejoin has to make the same
+         claim. On Steam the id is the player's own account. */
+      : new ChannelTransport(room, net?.id || `mm-${Math.random().toString(36).slice(2, 9)}`);
+    this._lobby = new Lobby({
+      transport: this._transport, room, seats: MAX_PARTY,
+      back: this._saved ? { seat: net?.seat | 0, run: this._saved.startedAt } : null,
+    });
 
     /* Seed the choice so the common case is "press ready". Nothing here is a
        commitment until they do. */
@@ -487,10 +506,147 @@ export class LobbyScene extends Scene {
       pack: loadoutFor((Save?.data?.kidsUnlocked || ['maya'])[0] || 'maya'),
     });
 
-    this._offs.push(this._lobby.on('change', () => this._paintRoom()));
+    this._offs.push(this._lobby.on('change', () => (this._saved ? this._settleWhoOpens() : this._paintRoom())));
     this._offs.push(this._lobby.on('start', (roster) => this._launch(roster)));
-    this._paintRoom();
+    this._offs.push(this._lobby.on('late', (roster) => this._onLate(roster)));
+    if (this._saved) this._paintBack();
+    else this._paintRoom();
   }
+
+  /* ── an expedition already under way ──────────────────────────────────── */
+
+  /** The board with one message on it, for every state that is not a room yet. */
+  _paintNotice(text, ...buttons) {
+    const wrap = this._board('lo__room');
+    this._put(wrap, this._head('lo__head kit-titleblock--compact'));
+    const body = el('main', 'lo-body lo-notice');
+    body.appendChild(el('p', 'lo-notice__words kit-panel', text));
+    this._put(wrap, body);
+    if (!buttons.length) return;
+    const foot = el('div', 'lo__foot lo-foot');
+    foot.append(...buttons);
+    this._put(wrap, foot);
+  }
+
+  _backDownButton() {
+    const back = el('button', 'lo__back kit-btn kit-btn--quiet',
+      `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${GLYPH.back}</i><span>Back down</span>`);
+    back.type = 'button';
+    back.addEventListener('click', () => this.ctx.scenes?.go?.('title', {}));
+    return back;
+  }
+
+  /** Coming back from a save: nobody has answered yet. */
+  _paintBack() {
+    /* Nobody home is not a dead end. Whoever opens the house back up plays on,
+       and anybody else can climb in behind them with the same password. */
+    const open = el('button', 'lo__open lo__go kit-btn',
+      `<span>Open the house back up</span><em>your friends can climb in later</em>`
+      + `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${GLYPH.onward}</i>`);
+    open.type = 'button';
+    open.addEventListener('click', () => this._openHouseBack());
+    this._paintNotice(
+      `Looking for your friends with the password “${this._room}”. If they are still in the house, you will climb straight back in.`,
+      this._backDownButton(), open);
+  }
+
+  /**
+   * Two players come back to a house nobody is in, and each holds a save. Lowest
+   * seat opens it, on every machine alike; the other then hears `lobby:started`
+   * from that session and climbs in the ordinary way.
+   */
+  _settleWhoOpens() {
+    if (this._launching || !this._lobby) return;
+    const me = this._lobby.me.back;
+    if (!me) return;
+    const others = this._lobby.players
+      .filter(p => p.id !== this._lobby.me.id && p.back && p.back.run === me.run);
+    if (others.length && others.every(p => (p.back.seat | 0) > (me.seat | 0))) this._openHouseBack();
+  }
+
+  /** Stand the saved expedition up from this machine, with the seats as they were. */
+  async _openHouseBack() {
+    const saved = this._saved;
+    const roster = saved?.net?.roster;
+    if (this._launching || !saved || !roster) return;
+    this._launching = true;
+    const seat = saved.net.seat | 0;
+    const run = Run.resume({ ...saved, localSeat: seat });
+    if (!run) { this._launching = false; return; }
+    run.attach(this.ctx);
+    bus.emit('run:ready', { run });
+    if (run.pendingCombat) await run.restoreInterruptedCombat();
+    const session = new Session({
+      transport: this._transport, seat, seats: roster.seats,
+      seed: roster.seed, host: seat === 0, roster, room: this._room,
+    });
+    attachSession(session, run);
+    installNetPlate(this.ctx, session, run);
+    this._transport = null;
+    this.ctx.scenes?.go?.(run.resumeScene(), { region: run.region, seed: run.seed });
+  }
+
+  /** The party has gone in. Either there is a seat with this player's name on it, or there is not. */
+  _onLate(roster) {
+    if (this._launching) return;
+    const seat = (roster?.ids || []).indexOf(this._transport?.id);
+    if (seat >= 0 && roster.seed != null) this._climbBack(roster, seat);
+    else this._paintTooLate();
+  }
+
+  _paintTooLate() {
+    this._paintNotice(
+      'They have already gone into the house without you, and an expedition cannot take a new '
+      + 'player once it has begun. Try a new password, or wait for them to come back out.',
+      this._backDownButton());
+  }
+
+  /**
+   * Ask the table for the expedition and stand it up here. Inputs that arrive in
+   * the meantime wait in the session, and it applies them after the answer.
+   */
+  _climbBack(roster, seat) {
+    this._launching = true;
+    this._paintNotice('Climbing back in…');
+
+    const session = new Session({
+      transport: this._transport, seat, seats: roster.seats, seed: roster.seed,
+      host: seat === 0, roster, room: this._room, rejoining: true,
+    });
+    const giveUp = (why) => {
+      console.error('[net] could not climb back in:', why);
+      clearTimeout(this._failTimer);
+      this._transport = null;
+      try { session.close(); } catch { /* already gone */ }
+      this._launching = false;
+      this.ctx.scenes?.go?.('title', {});
+    };
+    this._failTimer = setTimeout(() => giveUp('nobody answered with the expedition'), 20000);
+    const off = session.on('state', async (pack) => {
+      off();
+      clearTimeout(this._failTimer);
+      try {
+        const run = Run.resume({ ...pack.snapshot, localSeat: seat, net: null });
+        if (!run) { giveUp('the answer would not load'); return; }
+        run.adoptBallot(pack.pendingVote);
+        run.attach(this.ctx);
+        bus.emit('run:ready', { run });
+        attachSession(session, run);
+        if (run.pendingCombat && (await run.restoreInterruptedCombat()) === 'failed') {
+          giveUp('the fight would not replay to the same board');
+          return;
+        }
+        session.adopt(pack);
+        installNetPlate(this.ctx, session, run);
+        this._transport = null;
+        if (run.kids[seat]?.gone) session.input({ t: 'room', act: ACT.SEAT_BACK });
+        this.ctx.scenes?.go?.(run.resumeScene(), { region: run.region, seed: run.seed });
+      } catch (err) { giveUp(err); }
+    });
+    session.requestState();
+  }
+
+  /* ── the room, before anybody has gone in ─────────────────────────────── */
 
   _paintRoom() {
     if (!this._lobby || this._launching) return;
@@ -620,6 +776,14 @@ export class LobbyScene extends Scene {
     leave.addEventListener('click', () => this.ctx.scenes?.go?.('title', {}));
     foot.appendChild(leave);
 
+    /* The password only finds a room in nearby regions. An invite always arrives. */
+    if (steamNet()?.invite) {
+      const invite = el('button', 'lo__invite kit-btn kit-btn--quiet', '<span>Invite a friend</span>');
+      invite.type = 'button';
+      invite.addEventListener('click', () => steamNet()?.invite());
+      foot.appendChild(invite);
+    }
+
     /**
      * ONLY THE HOST HAS THIS BUTTON, and that is not the same as the host
      * having authority. `go()` broadcasts LOBBY.GO and every client runs the
@@ -682,6 +846,9 @@ export class LobbyScene extends Scene {
          put one player at a fork while another walked straight into the Foyer,
          which is two machines in different wings. */
       entryUnlocked: !!roster.entryUnlocked,
+      /* Named rather than read from each machine's storage, for the same reason as
+         the three above: a different style draws a different wing from one seed. */
+      mapStyle: 'plan',
       kids: roster.party.map(p => ({ companion: p.companion, kid: p.kid,
                                      backpack: p.backpack || undefined })),
     };
@@ -692,6 +859,7 @@ export class LobbyScene extends Scene {
       const session = new Session({
         transport: this._transport, seat: roster.seat,
         seats: roster.seats, seed: roster.seed, host: roster.host,
+        roster, room: this._room,
       });
       /* `attachSession`, NOT `session.attach(run)`. The latter only sets a
          back-pointer; it registers no `on('input')` handler, so the first
@@ -699,6 +867,7 @@ export class LobbyScene extends Scene {
          either player did was ever applied. Both tabs reached the map and the
          suite went green. See the note on `attachSession`. */
       attachSession(session, run);
+      installNetPlate(this.ctx, session, run);
       /* The transport now belongs to the Session. `exit()` must not close it,
          which is what `_launching` is for. */
       this._transport = null;
@@ -716,6 +885,7 @@ export class LobbyScene extends Scene {
 
   async exit() {
     this._dead = true;
+    clearTimeout(this._failTimer);
     this._dropPortraits();
     this._unpauseStage?.();
     this._unpauseStage = null;

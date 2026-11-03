@@ -1888,7 +1888,7 @@ export default {
     openEyes: { name: 'Open Eyes', kind: 'resource', desc: 'Eight eyes, 3 Open at the start of combat, persisting between turns. Opening and Closing costs no Nerve, but a Trick that Closes Eyes as a cost needs enough Open. Full Gaze at 8 has no automatic benefit — specific Tricks reward it.', min: 0, max: 8, hooks: ['eyesOpened', 'eyesClosed'] },
     web: { name: 'Web', kind: 'status', desc: 'A persistent resource attached to an individual enemy. Web does nothing by itself; Wink spends it to rearrange, postpone, delete, attack, defend and feed Sets. Stacking Web without spenders is wasted.', min: 0, max: 99, hooks: [] },
     reorder: { name: 'Intent reordering', kind: 'system', desc: 'Swap or postpone enemy Intents, usually needing the affected position Previewed first. Reordering changes when an action happens; it does not erase it. Anchored Intents can be Previewed and Read but never moved.', min: 0, max: 99, hooks: ['reorder'] },
-    sets: { name: 'Set Tricks', kind: 'system', desc: 'Placed face up outside the deck in one of 3 slots. A Set pays its cost when played, waits for its trigger, then resolves for free and goes to the discard pile. If its enemy dies first it returns without triggering.', min: 0, max: 5, hooks: ['setPlaced', 'setTriggered'] },
+    sets: { name: 'Set Tricks', kind: 'system', desc: 'Placed face up outside the deck in one of 3 slots. A Set pays its cost when played, waits for its trigger, then resolves for free and goes to the discard pile. If its enemy is defeated first it returns without triggering.', min: 0, max: 5, hooks: ['setPlaced', 'setTriggered'] },
   },
   startingDeck: [
     'wink/little-nibble', 'wink/little-nibble', 'wink/little-nibble', 'wink/little-nibble',

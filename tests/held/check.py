@@ -1,4 +1,4 @@
-"""Every wing holds ONE known Companion, and the fork says who.
+"""A wing holds its own Companion or nobody, and the fork says who.
 
     python tests/held/check.py
 
@@ -14,6 +14,9 @@ held until the moment somebody was freed:
   * The atlas named a wing's OWN Companion, and only for a surveyed wing — so
     at a way-on fork most doors said nothing, and the Foyer would have named
     Marmalade, who starts at home and is never the one freed there.
+
+Since 2026-10 only a wing's own boss frees anybody, and a wing holds only its own
+Companion, so a door may honestly hold nobody and has to say so.
 
 `Run#held` is now decided when a wing is offered, stamped on every fork option,
 and honoured by the Rescue room, the boss, the save and the atlas.
@@ -48,6 +51,11 @@ async () => {
   Save.data.companionsRescued = [];
   const run = new Run({ companion: 'boggle', kid: 'maya', seed: 42 });
   run.attach(window.MM.ctx);
+  // A wing only completes with its own boss down, so stand on that win.
+  const boss = run.map.nodes.find((n) => run.effectiveType(n) === 'boss');
+  run.currentNodeId = boss.id;
+  run.visitedIds.push(boss.id);
+  run.defeatedBoss = { region: run.region, nodeId: boss.id };
   run.completeRegion();               // opens the way-on fork and asks for the atlas
   const name = (s) => (COMPANIONS.find((c) => c.slug === s) || {}).name || null;
   return run.pendingWing.options.map((o) => ({ to: o.to, held: o.held, name: name(o.held) }));

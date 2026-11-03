@@ -34,9 +34,11 @@ exists, else the repo as before; port 8790 either way.
 
 ### What is left out of game/, and why each is unused
 
-The game comes from `git ls-files game`, so untracked files never ship (the
-60 MB `game/assets/Portrait Paintings/` source PNGs in the main checkout are
-not in git). Of the 2686 tracked files, 4 are dropped:
+The game comes from git's view of the working tree: everything tracked, plus
+anything untracked that `.gitignore` does not hide, minus `NEVER_SHIP_DIRS` (the
+60 MB `game/assets/Portrait Paintings/` source PNGs in the main checkout). The
+build fails if any shipped source imports a file that is not in the package, so
+uncommitted new modules can no longer be silently left out. Four files are dropped:
 
 | File | Proof it is unused |
 |---|---|
@@ -54,6 +56,25 @@ The packager fails the build if any notice is missing (`game/vendor/LICENSE`,
 steamworks.js's licences), or if anything from `art/ UI/ rooms/ animations/
 audio/ tests/ tools/ docs/ shots/`, a `.docx`, any other `.md`, or a
 `steam_appid.txt` is in the package.
+
+### The demo
+
+`python tools/package_release.py --demo --smoke` builds `MidnightMenagerieDemo-win64/`:
+the same game with `"demo": true` in `release.json`. An expedition is three wings, the
+Foyer and then two the party chooses from the wings with enemy art (`DEMO_WINGS` in
+`game/src/state/run.js`), and it ends on a screen that says it was the demo. A Steam demo
+is its own app, so its id comes from `shell/steam_appid_demo.txt`. `tests/demo/run.py`
+walks the offers on 200 seeds and checks the full game is unchanged without the flag.
+
+Kitchens and Greenhouse still have grey summons and parts (`docs/art/enemy-stills-checklist.md`
+lists 7 and 9): painting those, or taking those two wings out of `DEMO_WINGS`, is what is
+left to make a demo with no stand-ins at all.
+
+### The exe
+
+`brand_exe` sets the icon (`shell/icon.ico`, the wordmark's M) and the product name and
+version strings with rcedit, a dev dependency in `shell/`. A demo's exe says "Midnight
+Menagerie Demo".
 
 ### The App ID
 
@@ -129,12 +150,12 @@ OS Windows, 64-bit; set the build live by hand (`SetLive` is empty).
 
 ## Not done (known gaps, none blocks a first upload)
 
-* The exe still carries Electron's icon and version strings (Task Manager says
-  "Electron"); changing them needs `rcedit` at package time.
 * The shell supplies no `storage` to the game, so saves are `localStorage` in
   `%APPDATA%\Midnight Menagerie\` and there is no Steam Cloud yet
   (`docs/STEAM-DECK.md`). The repo shell's saves live under
   `midnight-menagerie-shell\`, a different folder.
-* The Steam overlay is not enabled (`steamworks.js`'s
-  `electronEnableSteamOverlay` is not called), and `restartAppIfNecessary` is
-  not called, so the exe launched outside Steam runs without Steam.
+* The Steam overlay is on in a package with an App ID, and it has never run under
+  real Steam: it needs one to test. It moves the GPU into the main process
+  (`in-process-gpu`), so `--no-steam-overlay`, or `"overlay": false` in
+  `release.json`, turns it off. `restartAppIfNecessary` is called in a package with
+  an App ID, so the exe double-clicked outside Steam relaunches through Steam.

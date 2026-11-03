@@ -1,0 +1,920 @@
+{
+  "ancient-topiary": {
+    "path": "game\\assets\\sprites\\enemies\\ancient-topiary.webp",
+    "format": "WEBP",
+    "size": [
+      471,
+      398
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 65177,
+    "partial_alpha_pixels": 122233,
+    "alpha_bbox": [
+      0,
+      0,
+      471,
+      398
+    ],
+    "sha256": "fc1e46af26224dd94e5c2dd5effb85e420a8d7b96fd363eee32516e1dcfd14fd"
+  },
+  "bedframe-beast": {
+    "path": "game\\assets\\sprites\\enemies\\bedframe-beast.webp",
+    "format": "WEBP",
+    "size": [
+      491,
+      346
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 75332,
+    "partial_alpha_pixels": 94433,
+    "alpha_bbox": [
+      0,
+      0,
+      491,
+      346
+    ],
+    "sha256": "757dd56ef515bc30ce2eee6450ca321d7f8dac4ae9b0a07bf4de144ee67627a0"
+  },
+  "blanket-blob": {
+    "path": "game\\assets\\sprites\\enemies\\blanket-blob.webp",
+    "format": "WEBP",
+    "size": [
+      241,
+      184
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 14653,
+    "partial_alpha_pixels": 29561,
+    "alpha_bbox": [
+      0,
+      0,
+      241,
+      184
+    ],
+    "sha256": "fcccaf1f821fe4961168cb897363ff06096faab812556c982c12551322d206ee"
+  },
+  "blanket-creeper": {
+    "path": "game\\assets\\sprites\\enemies\\blanket-creeper.webp",
+    "format": "WEBP",
+    "size": [
+      247,
+      156
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 12495,
+    "partial_alpha_pixels": 25878,
+    "alpha_bbox": [
+      0,
+      0,
+      247,
+      156
+    ],
+    "sha256": "d4555bdd72b91cadae8f1c493f9c6cc905700c17a6527d1fec366049cdab9187"
+  },
+  "blanket-hydra": {
+    "path": "game\\assets\\sprites\\enemies\\blanket-hydra.webp",
+    "format": "WEBP",
+    "size": [
+      491,
+      330
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 67797,
+    "partial_alpha_pixels": 94139,
+    "alpha_bbox": [
+      0,
+      0,
+      491,
+      330
+    ],
+    "sha256": "9a6def79515beb0220d3a37399036d08ab7489c1db7d39cb141ef4af454f8c05"
+  },
+  "butler": {
+    "path": "game\\assets\\sprites\\enemies\\butler.webp",
+    "format": "WEBP",
+    "size": [
+      764,
+      1018
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 484861,
+    "partial_alpha_pixels": 291598,
+    "alpha_bbox": [
+      0,
+      0,
+      764,
+      1018
+    ],
+    "sha256": "006defb59884951cd654789ae17af6e88c1e59644bcce834e2ebbec424d47cac"
+  },
+  "button-baby": {
+    "path": "game\\assets\\sprites\\enemies\\button-baby.webp",
+    "format": "WEBP",
+    "size": [
+      205,
+      214
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 13512,
+    "partial_alpha_pixels": 30272,
+    "alpha_bbox": [
+      0,
+      0,
+      205,
+      214
+    ],
+    "sha256": "7a27abd9cff39cbe369343d447180b5a4d7d5b6ea64223f2a47f28c1290fe026"
+  },
+  "calling-bell": {
+    "path": "game\\assets\\sprites\\enemies\\calling-bell.webp",
+    "format": "WEBP",
+    "size": [
+      234,
+      225
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 29974,
+    "partial_alpha_pixels": 22586,
+    "alpha_bbox": [
+      0,
+      0,
+      234,
+      225
+    ],
+    "sha256": "f4ca1d6f514ab5aba9bd7d497b1636f362a9d47114df8b477834b691c83538f2"
+  },
+  "candy-clump": {
+    "path": "game\\assets\\sprites\\enemies\\candy-clump.webp",
+    "format": "WEBP",
+    "size": [
+      233,
+      227
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 15674,
+    "partial_alpha_pixels": 37095,
+    "alpha_bbox": [
+      0,
+      0,
+      233,
+      227
+    ],
+    "sha256": "8df71bd6301dc67f19d782d55a1997a4d48980f594e0407ea8caa8f4056ce908"
+  },
+  "carnivorous-conservatory": {
+    "path": "game\\assets\\sprites\\enemies\\carnivorous-conservatory.webp",
+    "format": "WEBP",
+    "size": [
+      996,
+      781
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 247844,
+    "partial_alpha_pixels": 529714,
+    "alpha_bbox": [
+      0,
+      0,
+      996,
+      781
+    ],
+    "sha256": "5a0291f3fa8b382a7c661af9d5c370d7d3c2747b31d4255a9875bba07af05892"
+  },
+  "coatrack-crawler": {
+    "path": "game\\assets\\sprites\\enemies\\coatrack-crawler.webp",
+    "format": "WEBP",
+    "size": [
+      327,
+      506
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 76558,
+    "partial_alpha_pixels": 88790,
+    "alpha_bbox": [
+      0,
+      0,
+      327,
+      506
+    ],
+    "sha256": "a5645d4c4a217c9dc976606f4006ce91d1a7c53747bd71fec6b5adf0162a7bca"
+  },
+  "compost-colossus": {
+    "path": "game\\assets\\sprites\\enemies\\compost-colossus.webp",
+    "format": "WEBP",
+    "size": [
+      481,
+      379
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 52861,
+    "partial_alpha_pixels": 129401,
+    "alpha_bbox": [
+      0,
+      0,
+      481,
+      379
+    ],
+    "sha256": "dc9fa5e8a13c78b44df1173f34d5040ba5fbbfb367b3184f8d77275e3797da07"
+  },
+  "confectioner": {
+    "path": "game\\assets\\sprites\\enemies\\confectioner.webp",
+    "format": "WEBP",
+    "size": [
+      747,
+      995
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 291130,
+    "partial_alpha_pixels": 451956,
+    "alpha_bbox": [
+      0,
+      0,
+      747,
+      995
+    ],
+    "sha256": "1383a7c155ea581b96677ffd2341e2a9ef5971821eecf61e89aa3fcb9dcd15cd"
+  },
+  "creeping-ivy": {
+    "path": "game\\assets\\sprites\\enemies\\creeping-ivy.webp",
+    "format": "WEBP",
+    "size": [
+      232,
+      187
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 16625,
+    "partial_alpha_pixels": 26697,
+    "alpha_bbox": [
+      0,
+      0,
+      232,
+      187
+    ],
+    "sha256": "e6733b1fb35fc4baa8bb12d245e0198de70d8872c00fac5889301f4176125df2"
+  },
+  "door-greeter": {
+    "path": "game\\assets\\sprites\\enemies\\door-greeter.webp",
+    "format": "WEBP",
+    "size": [
+      281,
+      504
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 26739,
+    "partial_alpha_pixels": 114785,
+    "alpha_bbox": [
+      0,
+      0,
+      281,
+      504
+    ],
+    "sha256": "fbe696371914948b601a01f89c750e8c0c8499cbdf3c97f2db329b5bb678ec01"
+  },
+  "dough-blob": {
+    "path": "game\\assets\\sprites\\enemies\\dough-blob.webp",
+    "format": "WEBP",
+    "size": [
+      245,
+      189
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 18202,
+    "partial_alpha_pixels": 27985,
+    "alpha_bbox": [
+      0,
+      0,
+      245,
+      189
+    ],
+    "sha256": "b029bd6e511d4eb86dae2c245ffe58e14f1e23e928c41cea688192d1c12767e9"
+  },
+  "dust-bunny": {
+    "path": "game\\assets\\sprites\\enemies\\dust-bunny.webp",
+    "format": "WEBP",
+    "size": [
+      224,
+      216
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 16131,
+    "partial_alpha_pixels": 32247,
+    "alpha_bbox": [
+      0,
+      0,
+      224,
+      216
+    ],
+    "sha256": "70fb68c2bf269b7aff6a00e0480c06695be2df95626e49175ca7e944357e26ba"
+  },
+  "glassvine": {
+    "path": "game\\assets\\sprites\\enemies\\glassvine.webp",
+    "format": "WEBP",
+    "size": [
+      220,
+      251
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 28203,
+    "partial_alpha_pixels": 26995,
+    "alpha_bbox": [
+      0,
+      0,
+      220,
+      251
+    ],
+    "sha256": "6f774947c0efbf89cc792faa7ff5cdadd74c74e846d9425e94405ae2eaf80406"
+  },
+  "governess": {
+    "path": "game\\assets\\sprites\\enemies\\governess.webp",
+    "format": "WEBP",
+    "size": [
+      727,
+      987
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 294266,
+    "partial_alpha_pixels": 423209,
+    "alpha_bbox": [
+      0,
+      0,
+      727,
+      987
+    ],
+    "sha256": "d456419a7e714689b9f2c6d1750375c33533b7f96f56412a04c2c0bce869b01d"
+  },
+  "grand-coatcheck": {
+    "path": "game\\assets\\sprites\\enemies\\grand-coatcheck.webp",
+    "format": "WEBP",
+    "size": [
+      487,
+      416
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 74756,
+    "partial_alpha_pixels": 127697,
+    "alpha_bbox": [
+      0,
+      0,
+      487,
+      416
+    ],
+    "sha256": "d5dea4bc811fb4b865b79d4c74b3b9734216b4a09b7e53379c9aeb3e15325ea6"
+  },
+  "head-gardener": {
+    "path": "game\\assets\\sprites\\enemies\\head-gardener.webp",
+    "format": "WEBP",
+    "size": [
+      458,
+      402
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 97240,
+    "partial_alpha_pixels": 86822,
+    "alpha_bbox": [
+      0,
+      0,
+      458,
+      402
+    ],
+    "sha256": "3e18fc552ea09d573175792fdb58c0a9d341a7f500c52be40d663024fba3a91f"
+  },
+  "house-bell": {
+    "path": "game\\assets\\sprites\\enemies\\house-bell.webp",
+    "format": "WEBP",
+    "size": [
+      448,
+      369
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 89332,
+    "partial_alpha_pixels": 75882,
+    "alpha_bbox": [
+      0,
+      0,
+      448,
+      369
+    ],
+    "sha256": "0911931cbd4d254e1c17583f70f10fa736f7e81d61af26f7f1cf991e94edc773"
+  },
+  "jack-in-the-box": {
+    "path": "game\\assets\\sprites\\enemies\\jack-in-the-box.webp",
+    "format": "WEBP",
+    "size": [
+      181,
+      245
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 16565,
+    "partial_alpha_pixels": 27330,
+    "alpha_bbox": [
+      0,
+      0,
+      181,
+      245
+    ],
+    "sha256": "20d3a51e1cd82658f4d08cc788c3b940b3b6e8f0ebbd9867d3753efabd8ffb01"
+  },
+  "jam-jar": {
+    "path": "game\\assets\\sprites\\enemies\\jam-jar.webp",
+    "format": "WEBP",
+    "size": [
+      223,
+      236
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 17862,
+    "partial_alpha_pixels": 34607,
+    "alpha_bbox": [
+      0,
+      0,
+      223,
+      236
+    ],
+    "sha256": "17055ea2361b522461dbd270d72a7b9757c44696e87ec89ea7c6f8577d20475a"
+  },
+  "kitchen-imp": {
+    "path": "game\\assets\\sprites\\enemies\\kitchen-imp.webp",
+    "format": "WEBP",
+    "size": [
+      232,
+      224
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 23793,
+    "partial_alpha_pixels": 28063,
+    "alpha_bbox": [
+      0,
+      0,
+      232,
+      224
+    ],
+    "sha256": "282fa6abc604f72ae2292572c746fce1516248c4232e73137abc72e3255e030c"
+  },
+  "lost-luggage": {
+    "path": "game\\assets\\sprites\\enemies\\lost-luggage.webp",
+    "format": "WEBP",
+    "size": [
+      224,
+      216
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 19629,
+    "partial_alpha_pixels": 28369,
+    "alpha_bbox": [
+      0,
+      0,
+      224,
+      216
+    ],
+    "sha256": "c43581a5321a7423ca52f2a9ebc2da85cd699dc5bef357a7650a14be5c7ac89b"
+  },
+  "night-terror": {
+    "path": "game\\assets\\sprites\\enemies\\night-terror.webp",
+    "format": "WEBP",
+    "size": [
+      491,
+      343
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 84518,
+    "partial_alpha_pixels": 83842,
+    "alpha_bbox": [
+      0,
+      0,
+      491,
+      343
+    ],
+    "sha256": "9e6f006f0f96c24ad58127893e2b32e0e7f86a7efa2057554b5df095d9502dab"
+  },
+  "nightlight-snuffer": {
+    "path": "game\\assets\\sprites\\enemies\\nightlight-snuffer.webp",
+    "format": "WEBP",
+    "size": [
+      209,
+      239
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 22187,
+    "partial_alpha_pixels": 27733,
+    "alpha_bbox": [
+      0,
+      0,
+      209,
+      239
+    ],
+    "sha256": "f754be61a2fdd3fe619ff8b6c05d3ac2d83ca08a2a29d2d36c0799d2c17cefbe"
+  },
+  "oven-maw": {
+    "path": "game\\assets\\sprites\\enemies\\oven-maw.webp",
+    "format": "WEBP",
+    "size": [
+      460,
+      393
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 64595,
+    "partial_alpha_pixels": 116075,
+    "alpha_bbox": [
+      0,
+      0,
+      460,
+      393
+    ],
+    "sha256": "b3355761cd26f1af786fd49b467e4aece93b837eb42e87c42e28e9614fa6ad39"
+  },
+  "pantry-mimic": {
+    "path": "game\\assets\\sprites\\enemies\\pantry-mimic.webp",
+    "format": "WEBP",
+    "size": [
+      204,
+      238
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 18998,
+    "partial_alpha_pixels": 29350,
+    "alpha_bbox": [
+      0,
+      0,
+      204,
+      238
+    ],
+    "sha256": "85fdbb9e77b6b67efe216a2f909736645207c95ebb9ce76cd5fc313231ddd605"
+  },
+  "pantry-poltergeist": {
+    "path": "game\\assets\\sprites\\enemies\\pantry-poltergeist.webp",
+    "format": "WEBP",
+    "size": [
+      457,
+      383
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 63285,
+    "partial_alpha_pixels": 111647,
+    "alpha_bbox": [
+      0,
+      0,
+      457,
+      383
+    ],
+    "sha256": "eada9df98114cebe9c84e7fab0522e5b7fd5c9b6e3d8ac8ec78fd7d8f94c60d9"
+  },
+  "patchwork-giant": {
+    "path": "game\\assets\\sprites\\enemies\\patchwork-giant.webp",
+    "format": "WEBP",
+    "size": [
+      457,
+      446
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 67494,
+    "partial_alpha_pixels": 136276,
+    "alpha_bbox": [
+      0,
+      0,
+      457,
+      446
+    ],
+    "sha256": "49fb30c960058bb7c3941fae5c85fb4687712e4c1e9617f797695c7e27e09c2a"
+  },
+  "patchwork-soldier": {
+    "path": "game\\assets\\sprites\\enemies\\patchwork-soldier.webp",
+    "format": "WEBP",
+    "size": [
+      169,
+      246
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 16924,
+    "partial_alpha_pixels": 24367,
+    "alpha_bbox": [
+      0,
+      0,
+      169,
+      246
+    ],
+    "sha256": "3c45e17739047ef6649d4c7d601efe05c9fcf65ebb70ee34afe4f9e39a340c45"
+  },
+  "pillow-puff": {
+    "path": "game\\assets\\sprites\\enemies\\pillow-puff.webp",
+    "format": "WEBP",
+    "size": [
+      217,
+      217
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 17911,
+    "partial_alpha_pixels": 29126,
+    "alpha_bbox": [
+      0,
+      0,
+      217,
+      217
+    ],
+    "sha256": "3e981796eed3e120bda600cbc23a7dd817c081ba9000c8d3c11f58a99c3c7e21"
+  },
+  "porcelain-doll": {
+    "path": "game\\assets\\sprites\\enemies\\porcelain-doll.webp",
+    "format": "WEBP",
+    "size": [
+      189,
+      241
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 13437,
+    "partial_alpha_pixels": 32001,
+    "alpha_bbox": [
+      0,
+      0,
+      189,
+      241
+    ],
+    "sha256": "2018141c18e7141665abd84186f87553510c68b1eb0c22fdbfcfee931752330e"
+  },
+  "porcelain-twin-prim": {
+    "path": "game\\assets\\sprites\\enemies\\porcelain-twin-prim.webp",
+    "format": "WEBP",
+    "size": [
+      151,
+      249
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 13180,
+    "partial_alpha_pixels": 23749,
+    "alpha_bbox": [
+      0,
+      0,
+      151,
+      249
+    ],
+    "sha256": "c1e6e3eff77df75513ecdec624f161fdad893717a4ed088d3fc1817b2ab4b674"
+  },
+  "porcelain-twin-proper": {
+    "path": "game\\assets\\sprites\\enemies\\porcelain-twin-proper.webp",
+    "format": "WEBP",
+    "size": [
+      148,
+      250
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 13300,
+    "partial_alpha_pixels": 23032,
+    "alpha_bbox": [
+      0,
+      0,
+      148,
+      250
+    ],
+    "sha256": "aab63e0646f74d1ac5d629d5a1b876dedb49f72e87ec4541d33468473c1fa5e2"
+  },
+  "potling": {
+    "path": "game\\assets\\sprites\\enemies\\potling.webp",
+    "format": "WEBP",
+    "size": [
+      182,
+      224
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 21763,
+    "partial_alpha_pixels": 18900,
+    "alpha_bbox": [
+      0,
+      0,
+      182,
+      224
+    ],
+    "sha256": "9733c048e153fbcbd76ecc385974ee4f3809f52e5ffbe00c2e2e5864db9d58f1"
+  },
+  "red-carpet-runner": {
+    "path": "game\\assets\\sprites\\enemies\\red-carpet-runner.webp",
+    "format": "WEBP",
+    "size": [
+      228,
+      210
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 22415,
+    "partial_alpha_pixels": 25274,
+    "alpha_bbox": [
+      0,
+      0,
+      228,
+      210
+    ],
+    "sha256": "4db1a4401af9accddbc306f4c862828bdfe34d43985661dd1538dcfc2d36b6b5"
+  },
+  "rising-batter": {
+    "path": "game\\assets\\sprites\\enemies\\rising-batter.webp",
+    "format": "WEBP",
+    "size": [
+      242,
+      237
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 19374,
+    "partial_alpha_pixels": 37875,
+    "alpha_bbox": [
+      0,
+      0,
+      242,
+      237
+    ],
+    "sha256": "5df012a8a7daf80c8c31c9ff2fbed1f08ecdf26b2ab5c7e63006c2fb09138b68"
+  },
+  "rocking-horse": {
+    "path": "game\\assets\\sprites\\enemies\\rocking-horse.webp",
+    "format": "WEBP",
+    "size": [
+      236,
+      236
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 20679,
+    "partial_alpha_pixels": 34737,
+    "alpha_bbox": [
+      0,
+      0,
+      236,
+      236
+    ],
+    "sha256": "13771b99ce3cdcc043a4601102fdf07c3c6b4b5533f9413b8dc469468a624d23"
+  },
+  "slipper-skitter": {
+    "path": "game\\assets\\sprites\\enemies\\slipper-skitter.webp",
+    "format": "WEBP",
+    "size": [
+      235,
+      143
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 11715,
+    "partial_alpha_pixels": 21826,
+    "alpha_bbox": [
+      0,
+      0,
+      235,
+      143
+    ],
+    "sha256": "d2d8eb1ee462c54ef14d706c6c7a4df1f9cf7c7daabf196295a340848a1301e7"
+  },
+  "snapping-blossom": {
+    "path": "game\\assets\\sprites\\enemies\\snapping-blossom.webp",
+    "format": "WEBP",
+    "size": [
+      473,
+      498
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 91372,
+    "partial_alpha_pixels": 144099,
+    "alpha_bbox": [
+      0,
+      0,
+      473,
+      498
+    ],
+    "sha256": "85f3ea675413bf1f80570aa82a827fda7a71638dd4903748954e6ec6f9268df8"
+  },
+  "spore-puff": {
+    "path": "game\\assets\\sprites\\enemies\\spore-puff.webp",
+    "format": "WEBP",
+    "size": [
+      237,
+      243
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 20054,
+    "partial_alpha_pixels": 37467,
+    "alpha_bbox": [
+      0,
+      0,
+      237,
+      243
+    ],
+    "sha256": "fbf5056f4f88e84cc2562c6b73b0de3cee73fcd9fc3569458bbfdab40032c0bf"
+  },
+  "sugar-golem": {
+    "path": "game\\assets\\sprites\\enemies\\sugar-golem.webp",
+    "format": "WEBP",
+    "size": [
+      460,
+      386
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 60020,
+    "partial_alpha_pixels": 117449,
+    "alpha_bbox": [
+      0,
+      0,
+      460,
+      386
+    ],
+    "sha256": "ecd4dd883388715c06077abf9b2d664fa909c7824933e1999dd3986f4b7a7b02"
+  },
+  "the-wardrobe": {
+    "path": "game\\assets\\sprites\\enemies\\the-wardrobe.webp",
+    "format": "WEBP",
+    "size": [
+      492,
+      441
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 87170,
+    "partial_alpha_pixels": 129749,
+    "alpha_bbox": [
+      0,
+      0,
+      492,
+      441
+    ],
+    "sha256": "5789df797df2acaef0e18ac9707d7f089f76c3502af2130d4f7f0f596990584c"
+  },
+  "thing-beneath": {
+    "path": "game\\assets\\sprites\\enemies\\thing-beneath.webp",
+    "format": "WEBP",
+    "size": [
+      512,
+      408
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 70874,
+    "partial_alpha_pixels": 137270,
+    "alpha_bbox": [
+      0,
+      0,
+      512,
+      408
+    ],
+    "sha256": "47e7f41780a179b7cbcab8f66227767209af08819e3febe2e5bbc83834751618"
+  },
+  "topiary-beast": {
+    "path": "game\\assets\\sprites\\enemies\\topiary-beast.webp",
+    "format": "WEBP",
+    "size": [
+      488,
+      435
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 70002,
+    "partial_alpha_pixels": 142244,
+    "alpha_bbox": [
+      0,
+      0,
+      488,
+      435
+    ],
+    "sha256": "4c7d5ad930496b32db62dad64c46afe4ab6d078eeda7c718af6d8300b2adaa7e"
+  },
+  "toy-chest": {
+    "path": "game\\assets\\sprites\\enemies\\toy-chest.webp",
+    "format": "WEBP",
+    "size": [
+      467,
+      397
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 50719,
+    "partial_alpha_pixels": 134571,
+    "alpha_bbox": [
+      0,
+      0,
+      467,
+      397
+    ],
+    "sha256": "7dc2d4442559b0ec79a7b7e63080a5357c914aed7cbd6102749fd1e5b41a3024"
+  },
+  "unwelcome-guest": {
+    "path": "game\\assets\\sprites\\enemies\\unwelcome-guest.webp",
+    "format": "WEBP",
+    "size": [
+      426,
+      499
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 93487,
+    "partial_alpha_pixels": 119027,
+    "alpha_bbox": [
+      0,
+      0,
+      426,
+      499
+    ],
+    "sha256": "630d4039bf0c3a5167b31efa6d1863cc6ace82d1475ae6f7bd73165d2c87f38c"
+  },
+  "wardrobe-guest": {
+    "path": "game\\assets\\sprites\\enemies\\wardrobe-guest.webp",
+    "format": "WEBP",
+    "size": [
+      297,
+      481
+    ],
+    "mode": "RGBA",
+    "transparent_pixels": 32740,
+    "partial_alpha_pixels": 110061,
+    "alpha_bbox": [
+      0,
+      0,
+      297,
+      481
+    ],
+    "sha256": "a915e5dc277890bc2d1d610b54b09dbb1774bd63850aea4f9f5ff960f53b3d8d"
+  }
+}

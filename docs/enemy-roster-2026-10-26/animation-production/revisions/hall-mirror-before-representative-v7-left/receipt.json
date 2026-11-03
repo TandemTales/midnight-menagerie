@@ -1,0 +1,62 @@
+{
+  "created_utc": "2026-10-26T23:05:16.200410+00:00",
+  "enemy": "hall-mirror",
+  "states": [
+    "idle",
+    "attack",
+    "hurt",
+    "defeat"
+  ],
+  "method": "positive-alpha-character-layers-and-occluding-eyelids",
+  "validation": "representative-v6/validation.json",
+  "quality_gate": "technical_pass_visual_review_pending",
+  "supersedes": "revisions/hall-mirror-installed-v5/receipt.json",
+  "files": [
+    {
+      "path": "animations/sprites/enemies/animations/SS_hallMirror_idle.png",
+      "sha256": "acdfd458f1784d93779316f41a259c0fc618d69cbaaf766cfd2a7eb4efb6632e",
+      "bytes": 4555588
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/idle.webp",
+      "sha256": "cf64bccb3f19d014e22b95178633601c2e840d3e930b04ad92443f0c0265dc94",
+      "bytes": 609564
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hallMirror_attack.png",
+      "sha256": "5715cccd8be8cc8409d463631d08c6bd30c9add65070ad8359e8cc9a30bd540d",
+      "bytes": 4029583
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/attack.webp",
+      "sha256": "3a78f218a070d3421b1b710fc99c1036d9f0c64c1c2083fb2eef7c3ce96b76dc",
+      "bytes": 620876
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hallMirror_hurt.png",
+      "sha256": "24fce438a52ac83bfe6b7c07bcccf96c2a058549957d0b77d6db8948db1b3aed",
+      "bytes": 2113327
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/hurt.webp",
+      "sha256": "7f68a8e82c9ac7bfc51828bea550c7824cbaa8f97480496ed0273fbd7b9470e4",
+      "bytes": 361258
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hallMirror_defeat.png",
+      "sha256": "33bdcab96d70d8b41f0d1f92869f1f17679943b26fd12da52cf97308925da1e0",
+      "bytes": 3181870
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/defeat.webp",
+      "sha256": "4c85132622ed6acd2dd29c4fd3fca48758777730343dff5f0c41137f547ea70a",
+      "bytes": 487326
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/index.json",
+      "sha256": "f9a7d77d73aae84b3978b09c8cb0d48d32b2fc4ddeeef38b262c0468b83bf6c5",
+      "bytes": 2404
+    }
+  ],
+  "complete": true
+}

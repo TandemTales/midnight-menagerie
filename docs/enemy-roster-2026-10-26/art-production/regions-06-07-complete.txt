@@ -1,0 +1,82 @@
+REGIONS 06 AND 07 COMPLETE
+22 new validated sprites; 44 final files; 0 pending/blocked within assignment.
+Both regions have 7 regular, 3 elite and 1 boss.
+No global coverage manifest or shared checkpoint was edited by this agent. Merge region-06-results.json and region-07-results.json into global coverage.
+Contact sheets: region-06-contact.jpg, region-07-contact.jpg.
+Final sources and runtime WebPs retain exact manifest paths. Originals and prompts remain beside these reports, including Cemetery Gate original and accepted v2.
+All 367 initial preservation-baseline files unchanged; see regions-06-07-preservation-check.json.
+
+RESOLVED EXECUTION NOTES
+Headstone Walker and Gargoyle preflight prompt-writing commands failed before generation due to curly apostrophes in PowerShell quoted strings. Parser errors were reproduced/observed; quotes normalized and only unexecuted requests retried.
+Globe image generation succeeded; partial save then received: exec_command failed: CreateProcess Rejected("Failed to create unified exec process: exec-server transport disconnected"). Retained payload recovered by verifying existing640000-character base64 prefix head/tail and resuming unsaved chunks. No image regeneration used for save recovery.
+Cemetery Gate received one focused imagegen framing correction; original retained.
+Slow exec processes are polled through write_stdin until exit; undefined exit_code plus session_id is not treated as failure.
+No canceled or approval-denied action was retried in this assignment. Earlier Hall Mirror aborted-by-user record belongs to the initial checkpoint and remains unaltered.
+
+EXACT FINAL FILES
+The Widow of the Grounds
+animations\sprites\enemies\widowOfTheGrounds.png
+game\assets\sprites\enemies\widow-of-the-grounds.webp
+The Mourning Angel
+animations\sprites\enemies\mourningAngel.png
+game\assets\sprites\enemies\mourning-angel.webp
+The Mausoleum
+animations\sprites\enemies\mausoleum.png
+game\assets\sprites\enemies\mausoleum.webp
+The Cemetery Gate
+animations\sprites\enemies\cemeteryGate.png
+game\assets\sprites\enemies\cemetery-gate.webp
+Headstone Walker
+animations\sprites\enemies\headstoneWalker.png
+game\assets\sprites\enemies\headstone-walker.webp
+Epitaph Spirit
+animations\sprites\enemies\epitaphSpirit.png
+game\assets\sprites\enemies\epitaph-spirit.webp
+Mourning Candle
+animations\sprites\enemies\mourningCandle.png
+game\assets\sprites\enemies\mourning-candle.webp
+Funeral Veil
+animations\sprites\enemies\funeralVeil.png
+game\assets\sprites\enemies\funeral-veil.webp
+Gargoyle
+animations\sprites\enemies\gargoyle.png
+game\assets\sprites\enemies\gargoyle.webp
+Memorial Wreath
+animations\sprites\enemies\memorialWreath.png
+game\assets\sprites\enemies\memorial-wreath.webp
+Sandglass Sexton
+animations\sprites\enemies\sandglassSexton.png
+game\assets\sprites\enemies\sandglass-sexton.webp
+The Head Librarian
+animations\sprites\enemies\headLibrarian.png
+game\assets\sprites\enemies\head-librarian.webp
+The Living Index
+animations\sprites\enemies\livingIndex.png
+game\assets\sprites\enemies\living-index.webp
+The Atlas Room
+animations\sprites\enemies\atlasRoom.png
+game\assets\sprites\enemies\atlas-room.webp
+The Black Ink Manuscript
+animations\sprites\enemies\blackInkManuscript.png
+game\assets\sprites\enemies\black-ink-manuscript.webp
+Rolling Ladder
+animations\sprites\enemies\rollingLadder.png
+game\assets\sprites\enemies\rolling-ladder.webp
+Loose Pages
+animations\sprites\enemies\loosePages.png
+game\assets\sprites\enemies\loose-pages.webp
+Studying Ghost
+animations\sprites\enemies\studyingGhost.png
+game\assets\sprites\enemies\studying-ghost.webp
+Globe
+animations\sprites\enemies\globe.png
+game\assets\sprites\enemies\globe.webp
+Bookmark Ribbon
+animations\sprites\enemies\bookmarkRibbon.png
+game\assets\sprites\enemies\bookmark-ribbon.webp
+Writing Desk
+animations\sprites\enemies\writingDesk.png
+game\assets\sprites\enemies\writing-desk.webp
+Library Clock
+animations\sprites\enemies\libraryClock.png
+game\assets\sprites\enemies\library-clock.webp

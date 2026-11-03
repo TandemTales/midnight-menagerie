@@ -1,0 +1,70 @@
+{
+  "judge": 2,
+  "rubrics": [
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\RUBRIC.md",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\RUBRIC-r56.md"
+  ],
+  "references": [
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\title.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\mainMenu.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\selectCompanion.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\selectKid.png"
+  ],
+  "order": [
+    "AMBER",
+    "ONYX",
+    "TOPAZ",
+    "OBSIDIAN"
+  ],
+  "candidates": {
+    "AMBER": [
+      "D:\\UILOOP\\r56-20261029\\judging\\AMBER\\rest.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\AMBER\\rest-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\AMBER\\event.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\AMBER\\event-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\AMBER\\gameover.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\AMBER\\gameover-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\AMBER\\shop.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\AMBER\\shop-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\AMBER\\combat-floaters.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\AMBER\\combat-floaters-1280.png"
+    ],
+    "ONYX": [
+      "D:\\UILOOP\\r56-20261029\\judging\\ONYX\\rest.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\ONYX\\rest-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\ONYX\\event.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\ONYX\\event-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\ONYX\\gameover.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\ONYX\\gameover-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\ONYX\\shop.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\ONYX\\shop-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\ONYX\\combat-floaters.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\ONYX\\combat-floaters-1280.png"
+    ],
+    "TOPAZ": [
+      "D:\\UILOOP\\r56-20261029\\judging\\TOPAZ\\rest.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\TOPAZ\\rest-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\TOPAZ\\event.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\TOPAZ\\event-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\TOPAZ\\gameover.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\TOPAZ\\gameover-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\TOPAZ\\shop.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\TOPAZ\\shop-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\TOPAZ\\combat-floaters.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\TOPAZ\\combat-floaters-1280.png"
+    ],
+    "OBSIDIAN": [
+      "D:\\UILOOP\\r56-20261029\\judging\\OBSIDIAN\\rest.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\OBSIDIAN\\rest-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\OBSIDIAN\\event.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\OBSIDIAN\\event-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\OBSIDIAN\\gameover.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\OBSIDIAN\\gameover-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\OBSIDIAN\\shop.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\OBSIDIAN\\shop-1280.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\OBSIDIAN\\combat-floaters.png",
+      "D:\\UILOOP\\r56-20261029\\judging\\OBSIDIAN\\combat-floaters-1280.png"
+    ]
+  },
+  "output": "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\judges-r56\\judge2-final.json"
+}

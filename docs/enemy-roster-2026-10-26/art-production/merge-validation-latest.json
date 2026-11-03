@@ -1,0 +1,107 @@
+{
+  "counts": {
+    "existing": 31,
+    "new": 155,
+    "pending": 0,
+    "blocked": 1,
+    "total": 187
+  },
+  "newly_merged": [
+    "garden-statue",
+    "fountain-spirit",
+    "midnight-fountain",
+    "epitaph-press",
+    "mourning-standard",
+    "undertaker",
+    "portion-balance",
+    "kennelmaster"
+  ],
+  "issues": [],
+  "regions": [
+    {
+      "level": 1,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 2,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 3,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 4,
+      "covered": 10,
+      "total": 11
+    },
+    {
+      "level": 5,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 6,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 7,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 8,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 9,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 10,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 11,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 12,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 13,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 14,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 15,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 16,
+      "covered": 11,
+      "total": 11
+    },
+    {
+      "level": 17,
+      "covered": 11,
+      "total": 11
+    }
+  ]
+}

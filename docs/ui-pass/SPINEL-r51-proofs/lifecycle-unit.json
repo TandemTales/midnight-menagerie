@@ -1,0 +1,36 @@
+[
+  {
+    "name": "removed owner cancels pending visual once",
+    "initial": {
+      "queued": 0,
+      "live": 0
+    },
+    "settled": {
+      "queued": 0,
+      "live": 0
+    },
+    "error": null
+  },
+  {
+    "name": "live owner still receives one full label",
+    "initial": {
+      "queued": 0,
+      "live": 1
+    },
+    "settled": {
+      "queued": 0,
+      "live": 0
+    },
+    "error": null
+  },
+  {
+    "name": "retiring one owner preserves another pending label",
+    "initial": {
+      "queued": 0,
+      "owners": [
+        "survivor"
+      ]
+    },
+    "error": null
+  }
+]

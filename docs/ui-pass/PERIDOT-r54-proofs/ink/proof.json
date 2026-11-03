@@ -1,0 +1,205 @@
+{
+  "rows": [
+    {
+      "kind": "status",
+      "frames": 133,
+      "visible": 131,
+      "font": 20,
+      "styles": {
+        "font": "20px",
+        "color": "rgb(244, 239, 228)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.459, 0, 0, 1.459, 977.6, 113.8)",
+        "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "buff",
+      "frames": 130,
+      "visible": 128,
+      "font": 20.75,
+      "styles": {
+        "font": "20.75px",
+        "color": "rgb(168, 236, 247)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.459, 0, 0, 1.459, 982.1, 116.8)",
+        "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "debuff",
+      "frames": 125,
+      "visible": 123,
+      "font": 20.75,
+      "styles": {
+        "font": "20.75px",
+        "color": "rgb(255, 156, 138)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.457, 0, 0, 1.457, 982.1, 116.8)",
+        "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "counter",
+      "frames": 141,
+      "visible": 139,
+      "font": 20,
+      "styles": {
+        "font": "20px",
+        "color": "rgb(255, 215, 94)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.459, 0, 0, 1.459, 977.6, 113.8)",
+        "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "blocked",
+      "frames": 150,
+      "visible": 148,
+      "font": 23,
+      "styles": {
+        "font": "23px",
+        "color": "rgb(143, 183, 217)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.457, 0, 0, 1.457, 949.9, 114.7)",
+        "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "status",
+      "frames": 100,
+      "visible": 98,
+      "font": 20,
+      "styles": {
+        "font": "20px",
+        "color": "rgb(244, 239, 228)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.457, 0, 0, 1.457, 1184.6, 113.8)",
+        "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "buff",
+      "frames": 107,
+      "visible": 105,
+      "font": 20.75,
+      "styles": {
+        "font": "20.75px",
+        "color": "rgb(168, 236, 247)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.457, 0, 0, 1.457, 1189.1, 115.8)",
+        "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "debuff",
+      "frames": 103,
+      "visible": 101,
+      "font": 20.75,
+      "styles": {
+        "font": "20.75px",
+        "color": "rgb(255, 156, 138)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.455, 0, 0, 1.455, 1189.1, 115.8)",
+        "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "counter",
+      "frames": 93,
+      "visible": 91,
+      "font": 20,
+      "styles": {
+        "font": "20px",
+        "color": "rgb(255, 215, 94)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.459, 0, 0, 1.459, 1184.6, 113.8)",
+        "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "blocked",
+      "frames": 85,
+      "visible": 83,
+      "font": 23,
+      "styles": {
+        "font": "23px",
+        "color": "rgb(143, 183, 217)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.459, 0, 0, 1.459, 1156.9, 117.7)",
+        "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    }
+  ],
+  "errors": []
+}

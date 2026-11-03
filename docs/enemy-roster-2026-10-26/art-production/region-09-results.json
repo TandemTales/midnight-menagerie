@@ -1,0 +1,1068 @@
+{
+  "level": 9,
+  "entries": [
+    {
+      "level": 9,
+      "region": "Lampworks",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Wall Sconce",
+      "existing_animation": false,
+      "description": "Antique wall lamp that floats free from the wall while its flame bends toward targets. Swivels its pool of light to make the wrong thing look important.",
+      "animation": "2D animation Idle flame bend; tell bracket swivel; action warm spotlight sweep; resolve straighten.",
+      "signature": "Signature Bracket-mounted side silhouette; one local beam rather than roomwide switching.",
+      "production_id": "wall-sconce",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\wall-sconce.webp",
+      "source_path": "animations\\sprites\\enemies\\wallSconce.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            148,
+            191
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 16002,
+          "partial_alpha_pixels": 11687,
+          "alpha_bbox": [
+            0,
+            0,
+            148,
+            191
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            147,
+            191
+          ],
+          "sha256": "b443b8854e9e386be6171d91d0ae6888f6e429531ef286077aa55e930e15efeb"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 52267,
+          "partial_alpha_pixels": 12690,
+          "alpha_bbox": [
+            10,
+            30,
+            222,
+            249
+          ],
+          "visible_bbox_alpha64": [
+            58,
+            33,
+            205,
+            223
+          ],
+          "sha256": "a82d6ac49111a9d68be7720aa84a9c3bd4f2762f96c2f138db6b575a00540e8a"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1271571,
+          "partial_alpha_pixels": 300164,
+          "alpha_bbox": [
+            25,
+            27,
+            1240,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            284,
+            162,
+            1005,
+            1091
+          ],
+          "sha256": "a476957e7cf98aaf1f197b2dfb146b89245a47f61835f4ccbb4969389572fd0c"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\wall-sconce-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "wall-sconce.webp",
+          "w": 148,
+          "h": 191,
+          "source": "wallSconce.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 9,
+      "region": "Lampworks",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Gaslight Ghost",
+      "existing_animation": false,
+      "description": "Tall translucent figure visible only inside the glow of old gas lamps, fading whenever the light dims. Appears briefly to admire its reflection in the lamp glow, then forgets why it came.",
+      "animation": "2D animation Idle glow pulse; tell silhouette gathers; action dignified gesture; resolve fade.",
+      "signature": "Signature Soft figure made visible by a fixed nearby glow, not soot marks or empty clothing.",
+      "production_id": "gaslight-ghost",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\gaslight-ghost.webp",
+      "source_path": "animations\\sprites\\enemies\\gaslightGhost.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            134,
+            220
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 14303,
+          "partial_alpha_pixels": 14337,
+          "alpha_bbox": [
+            0,
+            0,
+            134,
+            220
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            134,
+            220
+          ],
+          "sha256": "398ac5b00b32bd0bbe6a03f440b6cfc5a4de9bb9c338eb5a136663b7d14e92c6"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 48614,
+          "partial_alpha_pixels": 16082,
+          "alpha_bbox": [
+            36,
+            16,
+            212,
+            253
+          ],
+          "visible_bbox_alpha64": [
+            60,
+            19,
+            194,
+            238
+          ],
+          "sha256": "95d6d56638570c46df8e0d6e61e99eaa8198cda35072ef124609aab6865b1bab"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1180042,
+          "partial_alpha_pixels": 392197,
+          "alpha_bbox": [
+            23,
+            21,
+            1230,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            295,
+            92,
+            950,
+            1165
+          ],
+          "sha256": "ba0fcb26ce4f627b6b208f477f22df3b52410aef11f07bdfeef78760279ec978"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\gaslight-ghost-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "gaslight-ghost.webp",
+          "w": 134,
+          "h": 220,
+          "source": "gaslightGhost.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 9,
+      "region": "Lampworks",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Lantern Bearer",
+      "existing_animation": false,
+      "description": "Empty old coat and gloved hands carrying a floating lantern, with no visible person inside the clothing. Offers a politely misleading route by lifting its lantern in the wrong direction.",
+      "animation": "2D animation Idle coat sway; tell lantern lift; action point; resolve apologetic shrug.",
+      "signature": "Signature Empty coat with solid gloves and a handheld lamp; body and light remain distinct.",
+      "production_id": "lantern-bearer",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\lantern-bearer.webp",
+      "source_path": "animations\\sprites\\enemies\\lanternBearer.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            192,
+            185
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 16128,
+          "partial_alpha_pixels": 18690,
+          "alpha_bbox": [
+            0,
+            0,
+            192,
+            185
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            192,
+            185
+          ],
+          "sha256": "afadc5c233e12716ff82c6d65a7bfb90ca08287a8b710e1f71593cb27bae05af"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 44877,
+          "partial_alpha_pixels": 19957,
+          "alpha_bbox": [
+            27,
+            3,
+            244,
+            256
+          ],
+          "visible_bbox_alpha64": [
+            49,
+            38,
+            241,
+            223
+          ],
+          "sha256": "1eb35af69a4a45a375432b4ccd0f5aa93979644e5fefc8c93e746d1f0c9596a2"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1090874,
+          "partial_alpha_pixels": 481111,
+          "alpha_bbox": [
+            0,
+            15,
+            1234,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            240,
+            189,
+            1181,
+            1092
+          ],
+          "sha256": "cdf2b0d3f4f131ba16af43b0770c9e6af7671bea2eda3969cac1c165d8947a25"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\lantern-bearer-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "lantern-bearer.webp",
+          "w": 192,
+          "h": 185,
+          "source": "lanternBearer.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 9,
+      "region": "Lampworks",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Fuse Box",
+      "existing_animation": false,
+      "description": "Old electrical cabinet whose switches flip, wires twitch, and sparks jump between open contacts. Flips its switches in a mischievous sequence, suggesting a short interruption.",
+      "animation": "2D animation Idle meter twitch; tell latch opens; action two switches flip; resolve indicator glow.",
+      "signature": "Signature Small rectangular electrical cabinet, not the elite\u2019s broad control console.",
+      "production_id": "fuse-box",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\fuse-box.webp",
+      "source_path": "animations\\sprites\\enemies\\fuseBox.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            137,
+            182
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 6696,
+          "partial_alpha_pixels": 17768,
+          "alpha_bbox": [
+            0,
+            0,
+            137,
+            182
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            137,
+            181
+          ],
+          "sha256": "59f3bb2c8b8c1cc475d7afbeb27968b834e1cca76d8e454644a53051c5f48655"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 46574,
+          "partial_alpha_pixels": 18492,
+          "alpha_bbox": [
+            23,
+            18,
+            208,
+            251
+          ],
+          "visible_bbox_alpha64": [
+            69,
+            29,
+            206,
+            210
+          ],
+          "sha256": "6c95a43ff2472fc8d79261f5513fc648e86abb04b14d3331591eda7aa934e5d8"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1129575,
+          "partial_alpha_pixels": 442268,
+          "alpha_bbox": [
+            31,
+            20,
+            1240,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            339,
+            144,
+            1006,
+            1029
+          ],
+          "sha256": "c1f9271e2832426beb09d127000d5fd4ef35801aca6063dbb56dadc22e6a002f"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\fuse-box-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "fuse-box.webp",
+          "w": 137,
+          "h": 182,
+          "source": "fuseBox.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 9,
+      "region": "Lampworks",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Gas Valve",
+      "existing_animation": false,
+      "description": "A brass pipe valve turns itself and releases one soft question-mark puff of ghostly vapor; no changing faces or hands. Puffs a tiny question-mark cloud and then whistles to itself.",
+      "animation": "2D animation Idle pointer wobble; tell wheel quarter-turn; action one question-mark steam sprite expands and fades; resolve rewind.",
+      "signature": "Signature Compact brass wheel and elbow pipe; no flame bursts toward the player.",
+      "production_id": "gas-valve",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\gas-valve.webp",
+      "source_path": "animations\\sprites\\enemies\\gasValve.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            161,
+            212
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 19229,
+          "partial_alpha_pixels": 14250,
+          "alpha_bbox": [
+            0,
+            0,
+            161,
+            212
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            161,
+            212
+          ],
+          "sha256": "9ee55e4864d5fb34bba515601442312495b6f281e0362f3fd9e9330cec115a4b"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 48683,
+          "partial_alpha_pixels": 16200,
+          "alpha_bbox": [
+            27,
+            17,
+            214,
+            246
+          ],
+          "visible_bbox_alpha64": [
+            49,
+            19,
+            210,
+            231
+          ],
+          "sha256": "d46d643706a1220c6fb225eabfb83ed0e928cb447b408b58962d06dbebeedf6f"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1175186,
+          "partial_alpha_pixels": 396755,
+          "alpha_bbox": [
+            0,
+            35,
+            1230,
+            1238
+          ],
+          "visible_bbox_alpha64": [
+            242,
+            95,
+            1027,
+            1128
+          ],
+          "sha256": "eca941b7c11bab24a61ee9274f938b1d4109d04bfab948a2ca730d701954391e"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\gas-valve-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "gas-valve.webp",
+          "w": 161,
+          "h": 212,
+          "source": "gasValve.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 9,
+      "region": "Lampworks",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Soot Shadow",
+      "existing_animation": false,
+      "description": "Humanlike silhouette made from smoke and soot, visible mainly where it stains nearby walls. Leaves an exaggerated charcoal silhouette where the visitor was standing.",
+      "animation": "2D animation Idle edge drift; tell hand sketch; action stain stencil appears; resolve dust puff.",
+      "signature": "Signature Flat matte wall mark, distinguished from translucent luminous ghosts.",
+      "production_id": "soot-shadow",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\soot-shadow.webp",
+      "source_path": "animations\\sprites\\enemies\\sootShadow.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            101,
+            219
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 10284,
+          "partial_alpha_pixels": 11419,
+          "alpha_bbox": [
+            0,
+            0,
+            101,
+            219
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            101,
+            219
+          ],
+          "sha256": "884b3f2f3c4e0d907eab3c50891fbfd4ee971f4d9971c1b6179f346846028bed"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 50713,
+          "partial_alpha_pixels": 14407,
+          "alpha_bbox": [
+            17,
+            13,
+            232,
+            241
+          ],
+          "visible_bbox_alpha64": [
+            80,
+            20,
+            181,
+            239
+          ],
+          "sha256": "3364a2d0e761c5e5b6b8f6c404afb4caab67a482ec6aa32eac2c7b0b44d4bef8"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1209657,
+          "partial_alpha_pixels": 362812,
+          "alpha_bbox": [
+            41,
+            29,
+            1244,
+            1228
+          ],
+          "visible_bbox_alpha64": [
+            394,
+            98,
+            885,
+            1170
+          ],
+          "sha256": "a22b0353f19bf3edb219444e47d80a43f6d69215e9e8c0fa401c9c8603737da3"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\soot-shadow-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "soot-shadow.webp",
+          "w": 101,
+          "h": 219,
+          "source": "sootShadow.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 9,
+      "region": "Lampworks",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Light Switch Shadow",
+      "existing_animation": false,
+      "description": "A shadowy hand repeatedly appearing beside wall switches before vanishing into the plaster. Sneaks in to flick one switch, then withdraws before being blamed.",
+      "animation": "2D animation Idle switch plate; tell shadow fingertip; action flick; resolve hand retract.",
+      "signature": "Signature Tiny wall plate and hand silhouette, not a free-moving humanoid.",
+      "production_id": "light-switch-shadow",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\light-switch-shadow.webp",
+      "source_path": "animations\\sprites\\enemies\\lightSwitchShadow.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            152,
+            166
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 14455,
+          "partial_alpha_pixels": 10262,
+          "alpha_bbox": [
+            0,
+            0,
+            152,
+            166
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            148,
+            165
+          ],
+          "sha256": "f8d4ff39692049c88f8d72825c727935ef53ff5201ac5bb7e7da97d692a0d803"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 53804,
+          "partial_alpha_pixels": 11217,
+          "alpha_bbox": [
+            23,
+            40,
+            222,
+            218
+          ],
+          "visible_bbox_alpha64": [
+            62,
+            42,
+            210,
+            207
+          ],
+          "sha256": "fefaa12707fbd02cc35327bd0f47055edd4db55159508a664d17e6c36bf090b2"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1302247,
+          "partial_alpha_pixels": 269611,
+          "alpha_bbox": [
+            25,
+            77,
+            1216,
+            1214
+          ],
+          "visible_bbox_alpha64": [
+            307,
+            206,
+            1028,
+            1016
+          ],
+          "sha256": "5b22cadf82bf2ed6e6ac4d4aef32fc94ee6d644356f3246610f0d2210e9698b9"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\light-switch-shadow-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "light-switch-shadow.webp",
+          "w": 152,
+          "h": 166,
+          "source": "lightSwitchShadow.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 9,
+      "region": "Lampworks",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Main Switchboard",
+      "existing_animation": false,
+      "description": "Broad wall console with three large levers, two meters and an ordered line of indicator bulbs. Conducts an overcomplicated lights-on inspection, briefly prioritizing one circuit over another.",
+      "animation": "2D animation Idle meter bob; tell selected bulb glows; action lever flips and three indicators chase; resolve click.",
+      "signature": "Signature Wide electrical control surface; differs from the small Fuse Box through ordered circuits, not merely scale.",
+      "production_id": "main-switchboard",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\main-switchboard.webp",
+      "source_path": "animations\\sprites\\enemies\\mainSwitchboard.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            480,
+            370
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 42783,
+          "partial_alpha_pixels": 133617,
+          "alpha_bbox": [
+            0,
+            0,
+            480,
+            370
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            480,
+            369
+          ],
+          "sha256": "53d560087f60b94e0bdf17b702e58788649c11277238f9cb79d151e4a0ae8c4a"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 124257,
+          "partial_alpha_pixels": 136687,
+          "alpha_bbox": [
+            0,
+            11,
+            501,
+            499
+          ],
+          "visible_bbox_alpha64": [
+            16,
+            72,
+            496,
+            440
+          ],
+          "sha256": "bd286ad53307f654fc5134552f6b93423ea04cfd30df0c9e136d6d9a1f9e7fc2"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 747040,
+          "partial_alpha_pixels": 824117,
+          "alpha_bbox": [
+            0,
+            0,
+            1238,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            40,
+            176,
+            1215,
+            1078
+          ],
+          "sha256": "6d4071b701212f9531c61921f4b89d1341f8563f276cfde55a9049386c2ecfb9"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\main-switchboard-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "main-switchboard.webp",
+          "w": 480,
+          "h": 370,
+          "source": "mainSwitchboard.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 9,
+      "region": "Lampworks",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Gas Manifold",
+      "existing_animation": false,
+      "description": "Low broad brass pipe manifold with three valves, glass reservoirs and one central gauge. Puffs a dignified steam fan while insisting every old lamp is perfectly serviced.",
+      "animation": "2D animation Idle gauge rock; tell valves turn; action three soft vapor puffs; resolve gauges settle.",
+      "signature": "Signature Horizontal pipework with timed pressure puffs, not electrical switching.",
+      "production_id": "gas-manifold",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\gas-manifold.webp",
+      "source_path": "animations\\sprites\\enemies\\gasManifold.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            471,
+            382
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 104467,
+          "partial_alpha_pixels": 73700,
+          "alpha_bbox": [
+            0,
+            0,
+            471,
+            382
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            2,
+            470,
+            381
+          ],
+          "sha256": "00f04ce0853d8de09d036026325c3ff72703fffb468ec6a09b004134d17e14a4"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 176861,
+          "partial_alpha_pixels": 83528,
+          "alpha_bbox": [
+            0,
+            15,
+            503,
+            505
+          ],
+          "visible_bbox_alpha64": [
+            21,
+            55,
+            491,
+            434
+          ],
+          "sha256": "018e2e2eaa817806cb1f1eadc81221a862ca7e9ef733323355b8ed44fdf2f534"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1055931,
+          "partial_alpha_pixels": 515662,
+          "alpha_bbox": [
+            0,
+            19,
+            1234,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            52,
+            135,
+            1203,
+            1063
+          ],
+          "sha256": "b319ab145bc8c2951efc89bf735ac7b5029903c2b820336f249b90a451d2f284"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\gas-manifold-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "gas-manifold.webp",
+          "w": 471,
+          "h": 382,
+          "source": "gasManifold.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 9,
+      "region": "Lampworks",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Glassworks Rack",
+      "existing_animation": false,
+      "description": "Tall tilted frame holding three large lamp-glass shapes: globe, chimney and fluted shade. Rearranges its glassware into a prismatic distraction, then carefully shelves it again.",
+      "animation": "2D animation Idle tiny glass sway; tell three pieces lift; action fan into fixed arc; resolve return.",
+      "signature": "Signature Triangular rack and clear hanging glass; use three props, not an expensive particle cloud.",
+      "production_id": "glassworks-rack",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\glassworks-rack.webp",
+      "source_path": "animations\\sprites\\enemies\\glassworksRack.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            331,
+            489
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 103154,
+          "partial_alpha_pixels": 56797,
+          "alpha_bbox": [
+            0,
+            0,
+            331,
+            489
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            331,
+            489
+          ],
+          "sha256": "116940206d706e618295cb1a0b1267b4e0e648facef0312f7b349b69f2fd0506"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 198315,
+          "partial_alpha_pixels": 61921,
+          "alpha_bbox": [
+            14,
+            7,
+            504,
+            502
+          ],
+          "visible_bbox_alpha64": [
+            97,
+            11,
+            428,
+            500
+          ],
+          "sha256": "4d71afb1917f9427f63f62d7ad1158f334c252104237e0f67ca12024b6bb1829"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1189036,
+          "partial_alpha_pixels": 382591,
+          "alpha_bbox": [
+            25,
+            17,
+            1240,
+            1238
+          ],
+          "visible_bbox_alpha64": [
+            238,
+            28,
+            1047,
+            1223
+          ],
+          "sha256": "60ac511e13a454ee5a09d2d99082b00351e42447a180fc5497885faafc76bc43"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\glassworks-rack-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "glassworks-rack.webp",
+          "w": 331,
+          "h": 489,
+          "source": "glassworksRack.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 9,
+      "region": "Lampworks",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Lamplighter",
+      "existing_animation": false,
+      "description": "A spectral maintenance worker in a long soft coat and cap, carrying an old lighting pole. Performs one last round of lighting every lamp, then notices one behind him has gone out. His pole is a service tool, never a spear.",
+      "animation": "2D animation Idle coat sway; tell pole rises; action three lamp halos ignite in sequence; resolve shadow catches up.",
+      "signature": "Signature Tall diagonal lighting pole and following shadow; patient maintenance ritual rather than hostile wielding.",
+      "production_id": "lamplighter",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\lamplighter.webp",
+      "source_path": "animations\\sprites\\enemies\\lamplighter.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            661,
+            968
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 388190,
+          "partial_alpha_pixels": 251178,
+          "alpha_bbox": [
+            0,
+            0,
+            661,
+            968
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            660,
+            967
+          ],
+          "sha256": "04ae1dc1b6385a84b358339bfcd748bedae269b942d95591fed8b789732d6e99"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 761284,
+          "partial_alpha_pixels": 286812,
+          "alpha_bbox": [
+            9,
+            14,
+            1013,
+            1005
+          ],
+          "visible_bbox_alpha64": [
+            245,
+            23,
+            905,
+            989
+          ],
+          "sha256": "0c4c5cd9248f344e865f5f3b81e3f01f4a01a31973c1936da98078a12c83010e"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1141404,
+          "partial_alpha_pixels": 430895,
+          "alpha_bbox": [
+            11,
+            17,
+            1240,
+            1230
+          ],
+          "visible_bbox_alpha64": [
+            300,
+            28,
+            1108,
+            1212
+          ],
+          "sha256": "3e8654c4577535ded3bca45864b19e962d91af02ba41cdc9009b477d51bfc8c2"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\lamplighter-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "lamplighter.webp",
+          "w": 661,
+          "h": 968,
+          "source": "lamplighter.png"
+        }
+      },
+      "blocker": null
+    }
+  ],
+  "counts": {
+    "existing": 0,
+    "new": 11,
+    "pending": 0,
+    "blocked": 0
+  },
+  "contact_review": "Reviewed region-09-contact.jpg: all 11 silhouettes distinct and readable, complete and consistent in style. Soot Shadow intentionally flat/dark; Light Switch Shadow is hand/plate only. All three elite layouts and Lamplighter service pole clear. Lampworks region complete."
+}

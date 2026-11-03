@@ -194,6 +194,9 @@ async def main():
 
         await page.goto("http://localhost:8777/game/index.html#scene=select", wait_until="load", timeout=45000)
         await page.wait_for_timeout(2500)
+        # The story screens (ui/story.js) are their own suite's job, tests/narrative.
+        # A walk through the rooms has to get past them to reach anything.
+        await page.evaluate("() => { window.MM.ctx.narrativeRoute = () => null; }")
         # The party-size control replaced the two-state checkbox on 2026-08-28;
         # these screens are still driven as a pair.
         await page.click('.sel-pair__size[data-n="2"]'); await page.wait_for_timeout(200)
@@ -411,9 +414,9 @@ async def main():
         await page.wait_for_timeout(1500)
         lbl = await page.evaluate(
             "() => ((document.querySelector('.rm-go span') || {}).textContent || '').trim()")
-        check("mended" in lbl.lower(), "the way out asks for the mend first", lbl)
+        check("sharpen" in lbl.lower(), "the way out asks for the sharpening first", lbl)
 
-        await press(page, "choose what gets mended")
+        await press(page, "choose a trick to sharpen")
         await page.wait_for_timeout(1200)
         uv = await page.evaluate(WHO)
         check(not uv["veil"], "and the Kid's turn is NOT over while the picker is open")
@@ -426,7 +429,7 @@ async def main():
         check(picked == u0["decks"][0], "the picker offers THEIR deck, all of it",
               f"{picked} of {u0['decks']}")
         await page.wait_for_timeout(600)
-        await press(page, "mend it")
+        await press(page, "sharpen it")
         await settle(page)
         uw = await page.evaluate(WHO)
         check(uw["upgraded"][0] == before[0] + 1, "the Trick really came back mended",
@@ -440,30 +443,8 @@ async def main():
         check(u1["scene"] == "event", "the same room opens for them", u1["scene"])
         check(u1["seat"] == 1, "as seat 1", str(u1["seat"]))
 
-        # ── a Rescue is NOT per Kid ─────────────────────────────────────────
-        # One pet comes home. Handing the screen on would show the second Kid a
-        # Companion already rescued and nothing to do about it.
-        print("")
-        print("A Rescue")
-        await page.evaluate("""() => {
-          const r = window.MM.ctx.run;
-          const n = r.map.nodes.find(x => (x.kind || x.type) === 'rescue');
-          r.currentNodeId = n.id;
-          for (const k of r.kids) k.roomDone = null;
-          r.pendingEvent = null;
-          r._prepareEvent(n, 'rescue');
-          r.setLocalSeat(0);
-          r._goto('event', { node: n.id, region: r.region });
-        }""")
-        await settle(page)
-        rs = await page.evaluate(WHO)
-        check(rs["scene"] == "event", "the Rescue is up", rs["scene"])
-        await press(page, "go on", "leave", "back to the blueprint", "move on")
-        await settle(page)
-        rv = await page.evaluate(WHO)
-        check(not rv["veil"], "leaving does NOT hand it over", f"veil {rv['veil']}")
-        check(rv["scene"] == "map", "it just closes", rv["scene"])
-
+        # (A Rescue room used to be checked here. Side rooms no longer free anybody:
+        # a zone's pet comes home from its boss. tests/rescue-rewards holds that.)
 
         # ── the blueprint is a room too, now ────────────────────────────────
         # STS2-REFERENCE 8.5: one shared path, VOTED. Every other check in this

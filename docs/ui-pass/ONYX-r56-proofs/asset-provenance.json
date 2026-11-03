@@ -1,0 +1,229 @@
+{
+  "mode": "built-in image_gen precise-object-edit",
+  "prompts": {
+    "rest-prompt.txt": "Use case: precise-object-edit. Asset type: small painted transparent game UI object family. Input image 1 is the edit target pillow; input 2 is the edit target whetstone with blade; input 3 is the edit target lit candle and brass saucer. Repaint these three objects as a cohesive richly hand-painted gothic storybook asset sheet on true transparent background: three separate horizontal cells in one wide image, pillow at left, whetstone/blade at middle, candle at right, with generous transparent separation. Preserve the identity and approximate silhouette of each target. Pillow: pale dusty lavender stuffed cloth, one small central tuft, warm reflected light, visibly irregular deep folds spreading from pinched corners and central tuft, seams and quiet woven texture; no metallic cushion. Whetstone: diagonal dark grey worn sharpening stone in its old brown wooden/leather support and a slim worn steel blade with brown handle hovering above as in target, metal edge planes and small chips and scratches with warm reflected brass light. Candle: creamy irregular wax cylinder with thick drips, small amber flame, worn brass saucer. Strong physical volume and subtle painted brushwork matching an antique purple blanket fort, clear at 60px display. Soft top-left moon light plus warm lower-right candle reflection. No lettering, numbers, frames, medallions, extra props, scene, checkerboard, opaque background, cast shadow outside object or glow halo. Keep all three separated so each may be cropped independently without altering artwork. True alpha outside objects.",
+    "plaque-prompt.txt": "Use case: precise-object-edit. Input image is the edit target blank horizontal aubergine enamel and brass plaque. Preserve the exact wide 240:64 silhouette and paired curled endcaps, true transparent outside alpha, completely blank center, no text. Repaint as a materially thick antique inset enamel object for a gothic storybook game at only 25px display height. Increase tangible depth INSIDE the existing silhouette: broad raised worn brass lip along top and lower edges with 3 distinct irregular light planes; dark brown side return immediately below lower lip; top-left catches of pale warm brass, rubbed uneven edges and small nicks; quieter right-side metal. Center is recessed rich plum enamel with cloudy hand-painted patches and low-contrast directional brushwork, brighter than near-black but dark enough for cyan lettering. The thickness must remain legible after reduction: center uses about middle half of total height, rims use outer quarters; ends do not grow inwards. Exact same outline, no outer shadow, no extra ornaments, no text, no numerals, no background, no baked checkerboard. Paint physical volumes, not thin wire outlines, and do not put a bright continuous highlight around the entire perimeter."
+  },
+  "manifest": {
+    "mode": "built-in image_gen precise-object-edit",
+    "transparent_background": true,
+    "sources": [
+      {
+        "role": "inspected edit target",
+        "path": "game/assets/ui/r55-iolite/pillow-folds.webp",
+        "sha256": "3eb75878dc6e286a3721a434b79a6bf390995dbbff1029663f860fc47dbb9d9d"
+      },
+      {
+        "role": "inspected edit target",
+        "path": "game/assets/ui/objects/whetstone.webp",
+        "sha256": "a4b7fa30ee6d03249a19d726e99ab094cbcf20b84bf309b8cea659315dad4670"
+      },
+      {
+        "role": "inspected edit target",
+        "path": "game/assets/ui/objects/forge-candle.webp",
+        "sha256": "33cfad2ec551086fdadace5a10f2b513ccd3a64ad28ce12f4c2de46a9240da28"
+      },
+      {
+        "role": "inspected edit target",
+        "path": "game/assets/ui/r55-iolite/enamel-plaque.webp",
+        "sha256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443"
+      }
+    ],
+    "exports": [
+      {
+        "name": "pillow",
+        "cell": [
+          0,
+          0,
+          840,
+          724
+        ],
+        "rawAlphaBBoxInCell": [
+          0,
+          23,
+          833,
+          724
+        ],
+        "alpha8BBox": [
+          40,
+          199,
+          813,
+          585
+        ],
+        "cropWith2pxEdge": [
+          38,
+          197,
+          815,
+          587
+        ],
+        "fitPixels": [
+          88,
+          52
+        ],
+        "exportPixels": [
+          288,
+          288
+        ],
+        "offset": [
+          12,
+          77
+        ],
+        "resizedObject": [
+          264,
+          133
+        ]
+      },
+      {
+        "name": "whetstone",
+        "cell": [
+          840,
+          0,
+          1660,
+          724
+        ],
+        "rawAlphaBBoxInCell": [
+          14,
+          19,
+          811,
+          702
+        ],
+        "alpha8BBox": [
+          73,
+          156,
+          779,
+          651
+        ],
+        "cropWith2pxEdge": [
+          71,
+          154,
+          781,
+          653
+        ],
+        "fitPixels": [
+          88,
+          61
+        ],
+        "exportPixels": [
+          288,
+          288
+        ],
+        "offset": [
+          14,
+          52
+        ],
+        "resizedObject": [
+          260,
+          183
+        ]
+      },
+      {
+        "name": "candle",
+        "cell": [
+          1660,
+          0,
+          2172,
+          724
+        ],
+        "rawAlphaBBoxInCell": [
+          6,
+          21,
+          484,
+          700
+        ],
+        "alpha8BBox": [
+          34,
+          60,
+          463,
+          656
+        ],
+        "cropWith2pxEdge": [
+          32,
+          58,
+          465,
+          658
+        ],
+        "fitPixels": [
+          52,
+          86
+        ],
+        "exportPixels": [
+          288,
+          288
+        ],
+        "offset": [
+          66,
+          36
+        ],
+        "resizedObject": [
+          156,
+          216
+        ]
+      },
+      {
+        "name": "enamel-plaque",
+        "rawAlphaBBox": [
+          0,
+          0,
+          2158,
+          724
+        ],
+        "alpha8BBox": [
+          30,
+          113,
+          2142,
+          600
+        ],
+        "cropWith2pxEdge": [
+          28,
+          111,
+          2144,
+          602
+        ],
+        "exportPixels": [
+          240,
+          64
+        ],
+        "nineSlice": "18 34 18 34 fill / 6px 8px for conditions; existing dimensions unchanged"
+      }
+    ],
+    "preparation": "Crop separated cells and alpha1-7 fringe outside alpha8 support plus2px edge; all retained alpha unmodified; Lanczos fit, transparent padding and WebP quality97. No creative pixel reconstruction.",
+    "files": [
+      {
+        "path": "game\\assets\\ui\\r56-onyx\\candle.webp",
+        "sha256": "54a5b404ec98cc3b07773bcb9ec0ca849da18d04f266815cd33a076f55b21966",
+        "bytes": 17042
+      },
+      {
+        "path": "game\\assets\\ui\\r56-onyx\\enamel-plaque.webp",
+        "sha256": "9f501bdc91d328bf47b82e026d6d0cb10b39fbb81fd3fdabf19041722b7139e7",
+        "bytes": 9568
+      },
+      {
+        "path": "game\\assets\\ui\\r56-onyx\\pillow.webp",
+        "sha256": "ad0c1dd5bb0da742dc8a3668c7237de54e12fa83a44c0ca61c03962e861416ab",
+        "bytes": 25222
+      },
+      {
+        "path": "game\\assets\\ui\\r56-onyx\\plaque-original.png",
+        "sha256": "e106b3e0b2808c6b627c1f2efcef8d5a591465ad357eb6a6705a076ee18f0fe4",
+        "bytes": 1594484
+      },
+      {
+        "path": "game\\assets\\ui\\r56-onyx\\rest-original.png",
+        "sha256": "4f5dc7dc823e92bc9c147309c75e2e1e1913cda0332721657b35d5641ea6cd8f",
+        "bytes": 1451499
+      },
+      {
+        "path": "game\\assets\\ui\\r56-onyx\\whetstone.webp",
+        "sha256": "ecb591f4f1c6c38e917900e4d1557538676a53c95344be7bdec88db23506b95d",
+        "bytes": 27900
+      }
+    ],
+    "bitmapBytes": 3125715
+  },
+  "prep": "tools/prep_r56_onyx.py",
+  "inspectedTargetsBeforeGeneration": true,
+  "nativeExportsInspected": true,
+  "nativeGamePixelsInspectedAtBothSizes": true,
+  "firstExportRepair": "Alpha1 fringe gave oversized initial crop bounds. Before first source commit/native preview, deterministic alpha8 support plus2px crop fixed framing; originals and raw/threshold/repaired bounds remain in manifest. No generated pixels repainted."
+}

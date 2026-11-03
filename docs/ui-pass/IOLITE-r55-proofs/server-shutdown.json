@@ -1,0 +1,9 @@
+{
+  "pid": 28692,
+  "processAbsent": true,
+  "command": "\"C:\\Users\\Josh\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" tools/devserver.py 9552",
+  "portClear": true,
+  "verifiedBefore": true,
+  "port": 9552,
+  "stopped": true
+}

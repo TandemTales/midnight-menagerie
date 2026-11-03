@@ -1,0 +1,4105 @@
+{
+  "documentId": "1R_7b_Xr7tU_rHszjWKAhKwXUbfSdeTFqjDSCgtVPODw",
+  "title": "MM Enemies",
+  "revisionId": "AHj4eMRVEn4-D2BNovsD_cozYRrr9oXnvKPN8RtTe6K2L9E-fTW793Gi44JCfUDpVK3q4gUqMTzYNQuU41SPMrei2c0xlesbjsdxnD-0pQ",
+  "tabId": null,
+  "paragraphs": [
+    {
+      "text": "Region 1: Forgotten Foyer",
+      "startIndex": 1,
+      "endIndex": 26,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "The Foyer should feel like the mansion itself has noticed that someone entered. Most enemies are manifestations of the room, its furnishings, or the spectral remnants of its old hospitality staff. Very few should read as independent fantasy creatures.",
+      "startIndex": 27,
+      "endIndex": 278,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Regular Enemies",
+      "startIndex": 279,
+      "endIndex": 294,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "Enemy",
+      "startIndex": 298,
+      "endIndex": 303,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Visual concept",
+      "startIndex": 305,
+      "endIndex": 319,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Lost Luggage",
+      "startIndex": 322,
+      "endIndex": 334,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Battered suitcase with little feet, snapping clasps, stickers, and a handle like a tail.",
+      "startIndex": 336,
+      "endIndex": 424,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Coatrack Crawler",
+      "startIndex": 427,
+      "endIndex": 443,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Tall wooden coat rack walking on bent legs. Covered in old coats and hats.",
+      "startIndex": 445,
+      "endIndex": 519,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Door Greeter",
+      "startIndex": 522,
+      "endIndex": 534,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A heavy brass umbrella stand that glides by itself while its umbrellas open, spin, hook things, and jab outward under invisible control.",
+      "startIndex": 536,
+      "endIndex": 672,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Red Carpet Runner",
+      "startIndex": 675,
+      "endIndex": 692,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A long foyer carpet that ripples, rolls itself up, snaps flat, curls around feet, and surges across the floor like a wave. No face needed.",
+      "startIndex": 694,
+      "endIndex": 832,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Hall Mirror",
+      "startIndex": 835,
+      "endIndex": 846,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A freestanding antique mirror whose reflection moves independently, gestures before the real character does, and occasionally reaches toward the glass from inside.",
+      "startIndex": 848,
+      "endIndex": 1011,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Portrait Greeter",
+      "startIndex": 1014,
+      "endIndex": 1030,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A formal foyer portrait whose painted host changes posture, points, rings for service, or briefly leans partly outside the frame as a translucent painted apparition.",
+      "startIndex": 1032,
+      "endIndex": 1197,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Luggage Trolley",
+      "startIndex": 1200,
+      "endIndex": 1215,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A brass hotel style luggage cart that rolls itself around while stacked trunks and cases levitate, rearrange, and occasionally launch themselves from it.",
+      "startIndex": 1217,
+      "endIndex": 1370,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Elite Enemies",
+      "startIndex": 1372,
+      "endIndex": 1385,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "1. Unwelcome Guest",
+      "startIndex": 1386,
+      "endIndex": 1404,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_3",
+      "isListItem": false
+    },
+    {
+      "text": "A tall, impeccably dressed shadow person standing silently in the foyer as though they arrived decades ago and never left. Their face is never visible beneath their hat, and their body occasionally stretches unnaturally with the surrounding shadows.",
+      "startIndex": 1405,
+      "endIndex": 1654,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "This can be eerie without being frightening enough to break the younger audience tone.",
+      "startIndex": 1655,
+      "endIndex": 1741,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "2. The Grand Mirror",
+      "startIndex": 1742,
+      "endIndex": 1761,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_3",
+      "isListItem": false
+    },
+    {
+      "text": "A huge gilded floor mirror containing several different reflections of the room at once. One reflection may be seconds ahead, another behind, and another may contain spectral figures that are not actually present.",
+      "startIndex": 1762,
+      "endIndex": 1975,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The mirror itself barely needs to move. Most of the animation happens inside the glass.",
+      "startIndex": 1976,
+      "endIndex": 2063,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "3. The Foyer Chandelier",
+      "startIndex": 2064,
+      "endIndex": 2087,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_3",
+      "isListItem": false
+    },
+    {
+      "text": "A huge antique chandelier possessed by a violent poltergeist. It swings low, rotates, raises and lowers itself on its chain, extinguishes and relights candles, and sends crystal ornaments orbiting around it.",
+      "startIndex": 2088,
+      "endIndex": 2295,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "No eyes, mouth, limbs, or monster anatomy are necessary.",
+      "startIndex": 2296,
+      "endIndex": 2352,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Boss: The Butler",
+      "startIndex": 2353,
+      "endIndex": 2369,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A tall spectral butler in immaculate black formalwear, with portions of his body dissolving into smoke and foyer shadows.",
+      "startIndex": 2370,
+      "endIndex": 2491,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "He should look less like an ordinary man and more like the mansion's idea of the perfect servant.",
+      "startIndex": 2492,
+      "endIndex": 2589,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Possible visual traits:",
+      "startIndex": 2590,
+      "endIndex": 2613,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Very long formal coat tails.",
+      "startIndex": 2614,
+      "endIndex": 2642,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "White gloves floating slightly apart from his sleeves.",
+      "startIndex": 2643,
+      "endIndex": 2697,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Face mostly indistinct except for faint eyes.",
+      "startIndex": 2698,
+      "endIndex": 2743,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Body stretches unnaturally tall when angry.",
+      "startIndex": 2744,
+      "endIndex": 2787,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Doors open automatically around him.",
+      "startIndex": 2788,
+      "endIndex": 2824,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Coats, luggage, keys, bells, and furniture move when he gestures.",
+      "startIndex": 2825,
+      "endIndex": 2890,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "He does not need a weapon.",
+      "startIndex": 2891,
+      "endIndex": 2917,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "He commands the Foyer rather than physically fighting like a swordsman.",
+      "startIndex": 2918,
+      "endIndex": 2989,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Region 2 Redesign: Forgotten Nursery",
+      "startIndex": 2994,
+      "endIndex": 3030,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "The Nursery should feel like a place where the toys kept playing after the children were gone.",
+      "startIndex": 3031,
+      "endIndex": 3125,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The strongest visual language here is not “toy monsters.” It is ordinary nursery objects behaving with impossible intention.",
+      "startIndex": 3126,
+      "endIndex": 3250,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Regular Enemies",
+      "startIndex": 3251,
+      "endIndex": 3266,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "Enemy",
+      "startIndex": 3270,
+      "endIndex": 3275,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Visual concept",
+      "startIndex": 3277,
+      "endIndex": 3291,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Patchwork Soldier",
+      "startIndex": 3294,
+      "endIndex": 3311,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "An antique tin soldier marching stiffly on its own, saluting, pivoting, and firing harmless spectral sparks from a tiny toy rifle.",
+      "startIndex": 3313,
+      "endIndex": 3443,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Button Baby",
+      "startIndex": 3446,
+      "endIndex": 3457,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A wooden rocking horse that rocks harder and harder until it slides across the floor without ever leaving its curved runners.",
+      "startIndex": 3459,
+      "endIndex": 3584,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Blanket Blob",
+      "startIndex": 3587,
+      "endIndex": 3599,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A tiny porcelain ballerina that rises from a music box and continues dancing through the air while the box plays by itself.",
+      "startIndex": 3601,
+      "endIndex": 3724,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Jack in the Box",
+      "startIndex": 3727,
+      "endIndex": 3742,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "An old painted toy box whose spring mounted figure repeatedly appears from unexpected angles, sometimes emerging from a different box than the one it entered.",
+      "startIndex": 3744,
+      "endIndex": 3902,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Crib Curtains",
+      "startIndex": 3905,
+      "endIndex": 3918,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Long nursery curtains animated by an unseen presence, billowing, wrapping, parting, and forming temporary ghostly shapes.",
+      "startIndex": 3920,
+      "endIndex": 4041,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Porcelain Doll",
+      "startIndex": 4044,
+      "endIndex": 4058,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "An old doll that moves only when no one is looking directly at it, changing poses between animations rather than becoming physically monstrous.",
+      "startIndex": 4060,
+      "endIndex": 4203,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Imaginary Friend",
+      "startIndex": 4206,
+      "endIndex": 4222,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A translucent childlike outline drawn in shifting crayon colors, with incomplete features and exaggerated gestures.",
+      "startIndex": 4224,
+      "endIndex": 4339,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Elite Enemies",
+      "startIndex": 4341,
+      "endIndex": 4354,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "1. The Dollhouse",
+      "startIndex": 4355,
+      "endIndex": 4371,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A large elaborate dollhouse that acts like a miniature haunted mansion.",
+      "startIndex": 4372,
+      "endIndex": 4443,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Lights switch on inside.",
+      "startIndex": 4444,
+      "endIndex": 4468,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Tiny doors open.",
+      "startIndex": 4469,
+      "endIndex": 4485,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Furniture moves.",
+      "startIndex": 4486,
+      "endIndex": 4502,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Small silhouettes cross windows.",
+      "startIndex": 4503,
+      "endIndex": 4535,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Rooms rotate and rearrange themselves.",
+      "startIndex": 4536,
+      "endIndex": 4574,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The dollhouse itself can remain mostly stationary while the action happens inside and around it.",
+      "startIndex": 4575,
+      "endIndex": 4671,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "2. The Toy Chest",
+      "startIndex": 4672,
+      "endIndex": 4688,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A huge old toy chest possessed by a powerful poltergeist.",
+      "startIndex": 4689,
+      "endIndex": 4746,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Rather than giving the chest a mouth, toys continuously fly out of it:",
+      "startIndex": 4747,
+      "endIndex": 4817,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Blocks.",
+      "startIndex": 4818,
+      "endIndex": 4825,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Balls.",
+      "startIndex": 4826,
+      "endIndex": 4832,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Dolls.",
+      "startIndex": 4833,
+      "endIndex": 4839,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Wooden animals.",
+      "startIndex": 4840,
+      "endIndex": 4855,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Jump ropes.",
+      "startIndex": 4856,
+      "endIndex": 4867,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Stuffed toys.",
+      "startIndex": 4868,
+      "endIndex": 4881,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Toy instruments.",
+      "startIndex": 4882,
+      "endIndex": 4898,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The chest slams open and shut while the entire swarm behaves as one enemy.",
+      "startIndex": 4899,
+      "endIndex": 4973,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "3. The Grand Music Box",
+      "startIndex": 4974,
+      "endIndex": 4996,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A large ornate music box whose lid opens into an impossible miniature stage.",
+      "startIndex": 4997,
+      "endIndex": 5073,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Tiny spectral performers dance inside.",
+      "startIndex": 5074,
+      "endIndex": 5112,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The ballerina figure occasionally grows to full size as a translucent apparition before folding back into the box.",
+      "startIndex": 5113,
+      "endIndex": 5227,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Boss: The Governess",
+      "startIndex": 5228,
+      "endIndex": 5247,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A tall spectral nursery caretaker in severe old fashioned clothing.",
+      "startIndex": 5248,
+      "endIndex": 5315,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "She should look more like a memory of a caretaker than a conventional ghost woman.",
+      "startIndex": 5316,
+      "endIndex": 5398,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Possible visual traits:",
+      "startIndex": 5399,
+      "endIndex": 5422,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Long dark dress that fades into fog near the floor.",
+      "startIndex": 5423,
+      "endIndex": 5474,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "White collar and cuffs that remain unnaturally crisp.",
+      "startIndex": 5475,
+      "endIndex": 5528,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Face partly obscured by shadow or translucent veil.",
+      "startIndex": 5529,
+      "endIndex": 5580,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Floating ring of nursery keys.",
+      "startIndex": 5581,
+      "endIndex": 5611,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Toys straighten themselves when she looks at them.",
+      "startIndex": 5612,
+      "endIndex": 5662,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Dolls sit up when she gestures.",
+      "startIndex": 5663,
+      "endIndex": 5694,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Curtains close automatically behind her.",
+      "startIndex": 5695,
+      "endIndex": 5735,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "She never needs to physically strike the player.",
+      "startIndex": 5736,
+      "endIndex": 5784,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Her combat animations can be almost entirely about commanding the Nursery to behave properly.",
+      "startIndex": 5785,
+      "endIndex": 5878,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Best if you want a character driven boss that embodies enforced order and “proper behavior.”",
+      "startIndex": 5879,
+      "endIndex": 5971,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Region 3: Sleeping Quarters",
+      "startIndex": 5973,
+      "endIndex": 6000,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "The Sleeping Quarters should feel like the mansion becomes most active when everyone is supposed to be asleep.",
+      "startIndex": 6001,
+      "endIndex": 6111,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The visual language should center on beds, wardrobes, mirrors, curtains, lamps, slippers, blankets, dream imagery, silhouettes, nighttime routines, and things glimpsed only at the edge of vision.",
+      "startIndex": 6112,
+      "endIndex": 6307,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The area should feel more intimate than the Nursery. Less playful. More like the house is quietly rearranging the bedroom around you.",
+      "startIndex": 6308,
+      "endIndex": 6441,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Regular Enemies",
+      "startIndex": 6442,
+      "endIndex": 6457,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "Enemy",
+      "startIndex": 6461,
+      "endIndex": 6466,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Simple visual concept",
+      "startIndex": 6468,
+      "endIndex": 6489,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Wardrobe Guest",
+      "startIndex": 6492,
+      "endIndex": 6506,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A translucent figure partly hidden inside an open wardrobe, with hanging clothes passing through its body.",
+      "startIndex": 6508,
+      "endIndex": 6614,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Rocking Chair",
+      "startIndex": 6617,
+      "endIndex": 6630,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "An empty wooden rocking chair that moves itself across the room while continuing to rock.",
+      "startIndex": 6632,
+      "endIndex": 6721,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Nightstand Poltergeist",
+      "startIndex": 6724,
+      "endIndex": 6746,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A small bedside table surrounded by floating books, glasses, clocks, and drawers opening on their own.",
+      "startIndex": 6748,
+      "endIndex": 6850,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Blanket Creeper",
+      "startIndex": 6853,
+      "endIndex": 6868,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A pile of blankets moving around the room, propelled by clawed hands seen sticking out from underneath it.",
+      "startIndex": 6870,
+      "endIndex": 6976,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Slipper Skitter",
+      "startIndex": 6979,
+      "endIndex": 6994,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A pair of bug-like slippers moving around by themselves.",
+      "startIndex": 6996,
+      "endIndex": 7052,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Bedsheet Apparition",
+      "startIndex": 7059,
+      "endIndex": 7078,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Plain white bedsheet floating upright over an invisible form, simple and classic.",
+      "startIndex": 7086,
+      "endIndex": 7167,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Sleepwalking Ghost",
+      "startIndex": 7172,
+      "endIndex": 7190,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A pale translucent figure in old sleepwear slowly wandering with eyes closed.",
+      "startIndex": 7192,
+      "endIndex": 7269,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Elite Enemies",
+      "startIndex": 7271,
+      "endIndex": 7284,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "1. Blanket Hydra",
+      "startIndex": 7285,
+      "endIndex": 7301,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "Large blanket mound with several stuffed or fabric heads emerging from different folds.",
+      "startIndex": 7302,
+      "endIndex": 7389,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "2. The Grand Wardrobe",
+      "startIndex": 7390,
+      "endIndex": 7411,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "An enormous carved wardrobe filled with old clothing.",
+      "startIndex": 7412,
+      "endIndex": 7465,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Its doors open into a space far deeper than the furniture itself.",
+      "startIndex": 7466,
+      "endIndex": 7531,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Coats drift outward.",
+      "startIndex": 7532,
+      "endIndex": 7552,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Hangers swing.",
+      "startIndex": 7553,
+      "endIndex": 7567,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Shadowy figures move far inside.",
+      "startIndex": 7568,
+      "endIndex": 7600,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The wardrobe can glide without legs, with its doors repeatedly opening and closing like stage curtains.",
+      "startIndex": 7601,
+      "endIndex": 7704,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "3. The Bedside Vigil",
+      "startIndex": 7705,
+      "endIndex": 7725,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "Three or four spectral figures stand silently around an empty bed.",
+      "startIndex": 7726,
+      "endIndex": 7792,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "One holds a candle.",
+      "startIndex": 7793,
+      "endIndex": 7812,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "One smooths the sheets.",
+      "startIndex": 7813,
+      "endIndex": 7836,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "One watches the door.",
+      "startIndex": 7837,
+      "endIndex": 7858,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "One stands at the footboard.",
+      "startIndex": 7859,
+      "endIndex": 7887,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "They behave like a single coordinated apparition.",
+      "startIndex": 7888,
+      "endIndex": 7937,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Boss: The Canopy Bed",
+      "startIndex": 7938,
+      "endIndex": 7958,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A huge antique four poster bed possessed as a complete environment.",
+      "startIndex": 7959,
+      "endIndex": 8026,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Curtains whip outward.",
+      "startIndex": 8027,
+      "endIndex": 8049,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Posts twist.",
+      "startIndex": 8050,
+      "endIndex": 8062,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The mattress rises.",
+      "startIndex": 8063,
+      "endIndex": 8082,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The canopy stretches across the ceiling.",
+      "startIndex": 8083,
+      "endIndex": 8123,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Rather than becoming a literal beast, the entire bed behaves like a haunted stage.",
+      "startIndex": 8124,
+      "endIndex": 8206,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Region 4: Kitchens and Cellars",
+      "startIndex": 8209,
+      "endIndex": 8239,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "The Kitchens and Cellars should feel like the household staff left decades ago, but dinner service never stopped.",
+      "startIndex": 8240,
+      "endIndex": 8353,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Rather than turning food and appliances into monsters, the strongest imagery comes from poltergeist activity, spectral cooks, autonomous kitchen routines, moving utensils, boiling pots, dumbwaiters, hanging cookware, wine racks, pantry shadows, cellar storage, and meals being prepared for guests who never arrive.",
+      "startIndex": 8354,
+      "endIndex": 8668,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The Kitchens can be busy, kinetic, and comedic. The Cellars can become quieter, colder, and stranger.",
+      "startIndex": 8669,
+      "endIndex": 8770,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Regular Enemies",
+      "startIndex": 8771,
+      "endIndex": 8786,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "Enemy",
+      "startIndex": 8790,
+      "endIndex": 8795,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Simple visual concept",
+      "startIndex": 8797,
+      "endIndex": 8818,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Kitchen Poltergeist",
+      "startIndex": 8821,
+      "endIndex": 8840,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Invisible presence revealed by floating knives, spoons, pans, towels, and ingredients orbiting an empty workspace.",
+      "startIndex": 8842,
+      "endIndex": 8956,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Spectral Scullion",
+      "startIndex": 8959,
+      "endIndex": 8976,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Small translucent kitchen servant carrying stacks of dishes that float alongside them.",
+      "startIndex": 8978,
+      "endIndex": 9064,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Hanging Pots",
+      "startIndex": 9067,
+      "endIndex": 9079,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Cluster of copper pots and pans swinging down from a ceiling rack under invisible control.",
+      "startIndex": 9081,
+      "endIndex": 9171,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Boiling Pot",
+      "startIndex": 9174,
+      "endIndex": 9185,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Huge stockpot sliding across the stove or floor while steam forms temporary faces and hands above it.",
+      "startIndex": 9187,
+      "endIndex": 9288,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Elite Enemies",
+      "startIndex": 9290,
+      "endIndex": 9303,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "1. The Hungry Dumbwaiter",
+      "startIndex": 9304,
+      "endIndex": 9328,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A large antique service lift that seems to connect to impossible locations.",
+      "startIndex": 9329,
+      "endIndex": 9404,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Each time its doors open, something different appears inside:",
+      "startIndex": 9405,
+      "endIndex": 9466,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A completed dinner.",
+      "startIndex": 9467,
+      "endIndex": 9486,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A pile of dishes.",
+      "startIndex": 9487,
+      "endIndex": 9504,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A spectral waiter.",
+      "startIndex": 9505,
+      "endIndex": 9523,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A dark empty shaft.",
+      "startIndex": 9524,
+      "endIndex": 9543,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "An entirely different kitchen.",
+      "startIndex": 9544,
+      "endIndex": 9574,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A moonlit hallway.",
+      "startIndex": 9575,
+      "endIndex": 9593,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The threat comes from what arrives rather than from giving the dumbwaiter monster anatomy.",
+      "startIndex": 9594,
+      "endIndex": 9684,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "2. The Cellar Steward",
+      "startIndex": 9685,
+      "endIndex": 9706,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A tall translucent household servant in rolled sleeves, waistcoat, and apron carrying a lantern and inventory ledger.",
+      "startIndex": 9707,
+      "endIndex": 9824,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Wine bottles and barrels move around them without being touched.",
+      "startIndex": 9825,
+      "endIndex": 9889,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "They should appear meticulous rather than threatening.",
+      "startIndex": 9890,
+      "endIndex": 9944,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Boss: The Confectioner",
+      "startIndex": 9945,
+      "endIndex": 9967,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "Keep the existing role, but redesign the character away from a conventional evil chef.",
+      "startIndex": 9968,
+      "endIndex": 10054,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The Confectioner is a spectral pastry chef whose body is partly formed from flour, steam, sugar dust, and translucent kitchen light.",
+      "startIndex": 10055,
+      "endIndex": 10187,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Possible visual traits:",
+      "startIndex": 10188,
+      "endIndex": 10211,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Tall old fashioned chef's coat.",
+      "startIndex": 10212,
+      "endIndex": 10243,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Large toque fading into steam at the top.",
+      "startIndex": 10244,
+      "endIndex": 10285,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Hands sometimes disappear entirely while utensils continue moving.",
+      "startIndex": 10286,
+      "endIndex": 10352,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Pastries and ingredients orbit nearby preparation tables.",
+      "startIndex": 10353,
+      "endIndex": 10410,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Sugar sculptures animate briefly when commanded.",
+      "startIndex": 10411,
+      "endIndex": 10459,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Flour outlines portions of the body that otherwise disappear.",
+      "startIndex": 10460,
+      "endIndex": 10521,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Reflections in polished cookware show a different expression than the actual ghost.",
+      "startIndex": 10522,
+      "endIndex": 10605,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "The Confectioner should conduct the kitchen like an orchestra.",
+      "startIndex": 10606,
+      "endIndex": 10668,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "This is the strongest choice if you want to preserve the current boss identity.",
+      "startIndex": 10669,
+      "endIndex": 10748,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Region 5: Impossible Greenhouse",
+      "startIndex": 10750,
+      "endIndex": 10781,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "The Impossible Greenhouse should feel like the plants are not monsters so much as the greenhouse itself has stopped obeying natural rules.",
+      "startIndex": 10782,
+      "endIndex": 10920,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The best visual language here is possessed gardening tools, animated topiary, vines moving with intention, greenhouse architecture bending around itself, spectral gardeners, fountains, planters, glass, trellises, roots, shadows through foliage, and plants behaving in elegant impossible ways.",
+      "startIndex": 10921,
+      "endIndex": 11213,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The region should feel lush, beautiful, strange, and only gradually threatening.",
+      "startIndex": 11214,
+      "endIndex": 11294,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Regular Enemies:",
+      "startIndex": 11295,
+      "endIndex": 11311,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "Enemy",
+      "startIndex": 11315,
+      "endIndex": 11320,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Simple visual concept",
+      "startIndex": 11322,
+      "endIndex": 11343,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Walking Planter",
+      "startIndex": 11346,
+      "endIndex": 11361,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Large ceramic planter gliding across the floor while its roots drag behind it and rearrange nearby plants.",
+      "startIndex": 11363,
+      "endIndex": 11469,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Garden Shears",
+      "startIndex": 11472,
+      "endIndex": 11485,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Oversized pruning shears floating under invisible control, opening and closing as they move through the air.",
+      "startIndex": 11487,
+      "endIndex": 11595,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Topiary Hound",
+      "startIndex": 11598,
+      "endIndex": 11611,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Carefully trimmed hedge shaped like a dog, moving stiffly while leaves shake loose from its body.",
+      "startIndex": 11613,
+      "endIndex": 11710,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Topiary Hare",
+      "startIndex": 11713,
+      "endIndex": 11725,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Small elegant rabbit shaped shrub that darts between planters and freezes perfectly still when watched.",
+      "startIndex": 11727,
+      "endIndex": 11830,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Garden Statue",
+      "startIndex": 11833,
+      "endIndex": 11846,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Small stone garden figure that changes pose whenever nobody is looking directly at it.",
+      "startIndex": 11848,
+      "endIndex": 11934,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Vine Curtain",
+      "startIndex": 11937,
+      "endIndex": 11949,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Dense hanging vines parting, wrapping, and sweeping sideways as though controlled by unseen hands.",
+      "startIndex": 11951,
+      "endIndex": 12049,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Fountain Spirit",
+      "startIndex": 12052,
+      "endIndex": 12067,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Translucent figure formed entirely from water rising briefly from a decorative fountain before collapsing back into it.",
+      "startIndex": 12069,
+      "endIndex": 12188,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Elite Enemies",
+      "startIndex": 12190,
+      "endIndex": 12203,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "1. The Grand Topiary",
+      "startIndex": 12204,
+      "endIndex": 12224,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "An enormous formal hedge sculpture that continually changes shape.",
+      "startIndex": 12225,
+      "endIndex": 12291,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "It might begin as:",
+      "startIndex": 12292,
+      "endIndex": 12310,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A stag.",
+      "startIndex": 12311,
+      "endIndex": 12318,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Then become a peacock.",
+      "startIndex": 12319,
+      "endIndex": 12341,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Then a bear.",
+      "startIndex": 12342,
+      "endIndex": 12354,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Then a horse.",
+      "startIndex": 12355,
+      "endIndex": 12368,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The transformation should look like branches and leaves smoothly rearranging rather than a creature mutating.",
+      "startIndex": 12369,
+      "endIndex": 12478,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "This gives the greenhouse a strong magical garden identity without introducing another literal monster.",
+      "startIndex": 12479,
+      "endIndex": 12582,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "2. The Midnight Fountain",
+      "startIndex": 12583,
+      "endIndex": 12607,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A large garden fountain surrounded by statues and climbing plants.",
+      "startIndex": 12608,
+      "endIndex": 12674,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Water flows upward.",
+      "startIndex": 12675,
+      "endIndex": 12694,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Reflections move independently.",
+      "startIndex": 12695,
+      "endIndex": 12726,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Spectral figures appear briefly within the falling water.",
+      "startIndex": 12727,
+      "endIndex": 12784,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Stone figures around the basin subtly change posture as the fountain acts.",
+      "startIndex": 12785,
+      "endIndex": 12859,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Boss: The Living Conservatory",
+      "startIndex": 12860,
+      "endIndex": 12889,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A living glass shed",
+      "startIndex": 12890,
+      "endIndex": 12909,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Region 6: Mansion Graveyard",
+      "startIndex": 12912,
+      "endIndex": 12939,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "The Mansion Graveyard should feel like the grounds remember everyone who was ever buried, mourned, named, forgotten, or never properly laid to rest.",
+      "startIndex": 12940,
+      "endIndex": 13088,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The strongest visual language here is gravestones, mausoleums, statuary, wrought iron, lanterns, funeral objects, spectral mourners, cemetery tools, names carved into stone, shadows between monuments, and ghostly processions.",
+      "startIndex": 13089,
+      "endIndex": 13314,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "I would avoid filling it with cemetery animals or generic undead creatures. The graveyard itself should provide almost everything needed.",
+      "startIndex": 13315,
+      "endIndex": 13452,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Regular Enemies:",
+      "startIndex": 13453,
+      "endIndex": 13469,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "Enemy",
+      "startIndex": 13473,
+      "endIndex": 13478,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Simple visual concept",
+      "startIndex": 13480,
+      "endIndex": 13501,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Headstone Walker",
+      "startIndex": 13504,
+      "endIndex": 13520,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A weathered gravestone sliding or hopping slowly across the ground while dirt shifts beneath it.",
+      "startIndex": 13522,
+      "endIndex": 13618,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Epitaph Spirit",
+      "startIndex": 13621,
+      "endIndex": 13635,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Pale ghost emerging directly from engraved writing on a tombstone, with letters still floating through its body.",
+      "startIndex": 13637,
+      "endIndex": 13749,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Mourning Candle",
+      "startIndex": 13752,
+      "endIndex": 13767,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Tall black funeral candle drifting above the ground with wax flowing upward and a blue spectral flame.",
+      "startIndex": 13769,
+      "endIndex": 13871,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Funeral Veil",
+      "startIndex": 13874,
+      "endIndex": 13886,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Long black mourning veil floating as if worn by an invisible figure, occasionally forming the outline of a head and shoulders.",
+      "startIndex": 13888,
+      "endIndex": 14014,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "gargoyle",
+      "startIndex": 14017,
+      "endIndex": 14025,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Small cemetery statue that changes posture whenever nobody is watching it directly.",
+      "startIndex": 14027,
+      "endIndex": 14110,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Elite Enemies:",
+      "startIndex": 14112,
+      "endIndex": 14126,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "1. The Mourning Angel",
+      "startIndex": 14127,
+      "endIndex": 14148,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A large weathered cemetery angel statue.",
+      "startIndex": 14149,
+      "endIndex": 14189,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "It should not become a gargoyle monster.",
+      "startIndex": 14190,
+      "endIndex": 14230,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Instead:",
+      "startIndex": 14231,
+      "endIndex": 14239,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Its head changes direction.",
+      "startIndex": 14240,
+      "endIndex": 14267,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Hands shift position.",
+      "startIndex": 14268,
+      "endIndex": 14289,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Stone wings slowly open.",
+      "startIndex": 14290,
+      "endIndex": 14314,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Its expression changes subtly.",
+      "startIndex": 14315,
+      "endIndex": 14345,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "It may appear in a different place after the screen darkens or another animation plays.",
+      "startIndex": 14346,
+      "endIndex": 14433,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The power comes from the statue becoming just slightly too alive.",
+      "startIndex": 14434,
+      "endIndex": 14499,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "2. The Mausoleum",
+      "startIndex": 14500,
+      "endIndex": 14516,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A small ornate mausoleum whose interior is impossibly deep.",
+      "startIndex": 14517,
+      "endIndex": 14576,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Rather than giving it a mouth, the open doorway becomes a shifting void.",
+      "startIndex": 14577,
+      "endIndex": 14649,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Inside, the player might see:",
+      "startIndex": 14650,
+      "endIndex": 14679,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Candles.",
+      "startIndex": 14680,
+      "endIndex": 14688,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A staircase descending forever.",
+      "startIndex": 14689,
+      "endIndex": 14720,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A spectral procession.",
+      "startIndex": 14721,
+      "endIndex": 14743,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Rows of empty coffins.",
+      "startIndex": 14744,
+      "endIndex": 14766,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "An entirely different cemetery.",
+      "startIndex": 14767,
+      "endIndex": 14798,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The structure itself barely needs to move.",
+      "startIndex": 14799,
+      "endIndex": 14841,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "3. The Cemetery Gate",
+      "startIndex": 14842,
+      "endIndex": 14862,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "The main wrought iron graveyard gate becomes possessed.",
+      "startIndex": 14863,
+      "endIndex": 14918,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Chains rise.",
+      "startIndex": 14919,
+      "endIndex": 14931,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Locks move.",
+      "startIndex": 14932,
+      "endIndex": 14943,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Gate sections bend inward.",
+      "startIndex": 14944,
+      "endIndex": 14970,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Names appear across the ironwork.",
+      "startIndex": 14971,
+      "endIndex": 15004,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Ghostly hands occasionally grip the bars from the wrong side.",
+      "startIndex": 15005,
+      "endIndex": 15066,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "This is essentially a piece of graveyard architecture acting as the enemy.",
+      "startIndex": 15067,
+      "endIndex": 15141,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Boss: The Widow of the Grounds",
+      "startIndex": 15142,
+      "endIndex": 15172,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "A tall spectral mourner in old black formal dress and a long veil.",
+      "startIndex": 15173,
+      "endIndex": 15239,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "She carries no weapon.",
+      "startIndex": 15240,
+      "endIndex": 15262,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Wherever she walks:",
+      "startIndex": 15263,
+      "endIndex": 15282,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Candles light.",
+      "startIndex": 15283,
+      "endIndex": 15297,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Flowers bend.",
+      "startIndex": 15298,
+      "endIndex": 15311,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Statues turn.",
+      "startIndex": 15312,
+      "endIndex": 15325,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Rain falls in small localized patches.",
+      "startIndex": 15326,
+      "endIndex": 15364,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Ghosts gather silently behind her.",
+      "startIndex": 15365,
+      "endIndex": 15399,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Her veil occasionally stretches through the entire cemetery like moving darkness.",
+      "startIndex": 15400,
+      "endIndex": 15481,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "She could embody grief becoming so possessive that it refuses to let anything pass on or leave.",
+      "startIndex": 15482,
+      "endIndex": 15577,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Region 7: Grand Study and Library",
+      "startIndex": 15582,
+      "endIndex": 15615,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "The Grand Study and Library should feel like the mansion’s accumulated knowledge has become restless.",
+      "startIndex": 15616,
+      "endIndex": 15717,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The strongest visual language here is books, shelves, ladders, desks, globes, index cabinets, maps, writing implements, reading lamps, portraits, paper, ink, spectral librarians, and impossible architecture inside books.",
+      "startIndex": 15718,
+      "endIndex": 15938,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "I would avoid book monsters with teeth, paper creatures, imps, or generic magical animals. The library should feel like a place still trying to catalogue, correct, and reshelve everything that enters it.",
+      "startIndex": 15939,
+      "endIndex": 16142,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Regular Enemies:",
+      "startIndex": 16143,
+      "endIndex": 16159,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "Enemy",
+      "startIndex": 16163,
+      "endIndex": 16168,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Simple visual concept",
+      "startIndex": 16170,
+      "endIndex": 16191,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Rolling Ladder",
+      "startIndex": 16194,
+      "endIndex": 16208,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Large wooden library ladder racing along brass rails under invisible control, stopping and changing direction abruptly.",
+      "startIndex": 16210,
+      "endIndex": 16329,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Loose Pages",
+      "startIndex": 16332,
+      "endIndex": 16343,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Dozens of old pages swirling around an unseen center, repeatedly arranging themselves into temporary words and silhouettes.",
+      "startIndex": 16345,
+      "endIndex": 16468,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Studying Ghost",
+      "startIndex": 16471,
+      "endIndex": 16485,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Deep leather reading chair that glides through the room while a ghost reader sitting on it turns pages.",
+      "startIndex": 16487,
+      "endIndex": 16590,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Globe",
+      "startIndex": 16593,
+      "endIndex": 16598,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Antique globe spinning by itself while continents shift position and tiny lights move across its surface.",
+      "startIndex": 16600,
+      "endIndex": 16705,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Bookmark Ribbon",
+      "startIndex": 16708,
+      "endIndex": 16723,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Several long silk bookmarks floating through the air like streamers, wrapping around books and objects under invisible control.",
+      "startIndex": 16725,
+      "endIndex": 16852,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Writing Desk",
+      "startIndex": 16855,
+      "endIndex": 16867,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Large desk whose drawers, blotter, papers, ink bottles, and correspondence all move under a single unseen presence.",
+      "startIndex": 16869,
+      "endIndex": 16984,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Library Clock",
+      "startIndex": 16987,
+      "endIndex": 17000,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Tall clock whose hands reverse, accelerate, and stop while its chimes cause nearby books to react.",
+      "startIndex": 17002,
+      "endIndex": 17100,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Whispering Books",
+      "startIndex": 17103,
+      "endIndex": 17119,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Small cluster of closed books floating together while voices murmur from between their pages without ever opening fully.",
+      "startIndex": 17121,
+      "endIndex": 17241,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Elite Enemies:",
+      "startIndex": 17243,
+      "endIndex": 17257,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "1. The Living Index",
+      "startIndex": 17258,
+      "endIndex": 17277,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A huge wall of catalogue cabinets operating as one possessed system.",
+      "startIndex": 17278,
+      "endIndex": 17346,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Drawers open in waves.",
+      "startIndex": 17347,
+      "endIndex": 17369,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Cards fly between them.",
+      "startIndex": 17370,
+      "endIndex": 17393,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Labels rewrite themselves.",
+      "startIndex": 17394,
+      "endIndex": 17420,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Entire sections slide sideways.",
+      "startIndex": 17421,
+      "endIndex": 17452,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "There is no face or body.",
+      "startIndex": 17453,
+      "endIndex": 17478,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The cataloguing system itself is the enemy.",
+      "startIndex": 17479,
+      "endIndex": 17522,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "2. The Restricted Cabinet",
+      "startIndex": 17523,
+      "endIndex": 17548,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A tall locked bookcase with iron mesh doors.",
+      "startIndex": 17549,
+      "endIndex": 17593,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Something luminous moves behind the books.",
+      "startIndex": 17594,
+      "endIndex": 17636,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Chains loosen.",
+      "startIndex": 17637,
+      "endIndex": 17651,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Locks turn themselves.",
+      "startIndex": 17652,
+      "endIndex": 17674,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Individual books float out briefly before being violently pulled back inside.",
+      "startIndex": 17675,
+      "endIndex": 17752,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The cabinet never needs monster anatomy.",
+      "startIndex": 17753,
+      "endIndex": 17793,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "3. The Atlas Room",
+      "startIndex": 17794,
+      "endIndex": 17811,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A huge standing atlas opens into impossible geography.",
+      "startIndex": 17812,
+      "endIndex": 17866,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Pages become windows onto forests, cities, oceans, deserts, and mansion rooms.",
+      "startIndex": 17867,
+      "endIndex": 17945,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Objects or shadows briefly cross from those spaces into the library before being pulled back into the page.",
+      "startIndex": 17946,
+      "endIndex": 18053,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "This works well as a highly visual elite.",
+      "startIndex": 18054,
+      "endIndex": 18095,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "4. The Librarian’s Desk",
+      "startIndex": 18096,
+      "endIndex": 18119,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A large formal desk surrounded by a powerful invisible presence.",
+      "startIndex": 18120,
+      "endIndex": 18184,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Pens write.",
+      "startIndex": 18185,
+      "endIndex": 18196,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Stamps fall.",
+      "startIndex": 18197,
+      "endIndex": 18209,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Cards sort themselves.",
+      "startIndex": 18210,
+      "endIndex": 18232,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Books slam shut.",
+      "startIndex": 18233,
+      "endIndex": 18249,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A chair rolls backward as though someone just stood up.",
+      "startIndex": 18250,
+      "endIndex": 18305,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "You never need to show the librarian.",
+      "startIndex": 18306,
+      "endIndex": 18343,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "5. The Black Ink Manuscript",
+      "startIndex": 18344,
+      "endIndex": 18371,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A huge open handwritten book sits on a lectern.",
+      "startIndex": 18372,
+      "endIndex": 18419,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Ink continuously writes new lines by itself.",
+      "startIndex": 18420,
+      "endIndex": 18464,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Words spill off the page as liquid black shapes.",
+      "startIndex": 18465,
+      "endIndex": 18513,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Whole paragraphs occasionally rise as translucent calligraphy in the air.",
+      "startIndex": 18514,
+      "endIndex": 18587,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The book remains stationary while the writing becomes the supernatural threat.",
+      "startIndex": 18588,
+      "endIndex": 18666,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Boss: The Head Librarian",
+      "startIndex": 18667,
+      "endIndex": 18691,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "A quieter and more traditional spectral librarian.",
+      "startIndex": 18692,
+      "endIndex": 18742,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "They carry:",
+      "startIndex": 18743,
+      "endIndex": 18754,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A ledger.",
+      "startIndex": 18755,
+      "endIndex": 18764,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Reading glasses.",
+      "startIndex": 18765,
+      "endIndex": 18781,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A ring of archive keys.",
+      "startIndex": 18782,
+      "endIndex": 18805,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A small lamp.",
+      "startIndex": 18806,
+      "endIndex": 18819,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Their most distinctive visual feature is that the books obey them.",
+      "startIndex": 18820,
+      "endIndex": 18886,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Shelves slide.",
+      "startIndex": 18887,
+      "endIndex": 18901,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Ladders move.",
+      "startIndex": 18902,
+      "endIndex": 18915,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Reading lamps turn.",
+      "startIndex": 18916,
+      "endIndex": 18935,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Books return themselves to shelves.",
+      "startIndex": 18936,
+      "endIndex": 18971,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The Head Librarian barely needs to move.",
+      "startIndex": 18972,
+      "endIndex": 19012,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A raised finger is enough to make the entire library react.",
+      "startIndex": 19013,
+      "endIndex": 19072,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "This version makes the boss feel authoritative without becoming visually busy.",
+      "startIndex": 19073,
+      "endIndex": 19151,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Region 8: Moonlit Attic and Observatory",
+      "startIndex": 19156,
+      "endIndex": 19195,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "The Moonlit Attic and Observatory should feel like the mansion has been watching the sky for so long that the instruments began watching back.",
+      "startIndex": 19196,
+      "endIndex": 19338,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The strongest visual language is telescopes, star charts, lenses, clocks, trunks, rafters, moonlight, brass instruments, observatory furniture, spectral astronomers, moving constellations, shadows, and impossible views through windows and glass.",
+      "startIndex": 19339,
+      "endIndex": 19584,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "I would avoid spider creatures, moths, imps, or generic attic monsters here. The unease should come from observation, prediction, and things seeing too much.",
+      "startIndex": 19585,
+      "endIndex": 19742,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Regular Enemies:",
+      "startIndex": 19743,
+      "endIndex": 19759,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "Enemy",
+      "startIndex": 19763,
+      "endIndex": 19768,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Simple visual concept",
+      "startIndex": 19770,
+      "endIndex": 19791,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Telescope Eye",
+      "startIndex": 19794,
+      "endIndex": 19807,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Antique brass telescope that turns and tracks the player by itself, with a faint blinking reflection deep inside the lens.",
+      "startIndex": 19809,
+      "endIndex": 19931,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Astrolabe",
+      "startIndex": 19934,
+      "endIndex": 19943,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Brass astronomical instrument spinning under invisible control while its rings align into impossible patterns.",
+      "startIndex": 19945,
+      "endIndex": 20055,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Tripod Camera",
+      "startIndex": 20058,
+      "endIndex": 20071,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Old box camera on wooden legs that repositions itself and flashes without anyone operating it.",
+      "startIndex": 20073,
+      "endIndex": 20167,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Attic Trunk",
+      "startIndex": 20170,
+      "endIndex": 20181,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Large travel trunk sliding across the floor while its lid opens to reveal changing contents or impossible darkness.",
+      "startIndex": 20183,
+      "endIndex": 20298,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Spectral Assistant",
+      "startIndex": 20301,
+      "endIndex": 20319,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Faint translucent observatory attendant carrying charts, lenses, and notebooks while mostly ignoring the player.",
+      "startIndex": 20321,
+      "endIndex": 20433,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Moonbeam Figure",
+      "startIndex": 20436,
+      "endIndex": 20451,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Human silhouette visible only inside a column of moonlight, disappearing whenever it leaves the beam.",
+      "startIndex": 20453,
+      "endIndex": 20554,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Elite Enemies:",
+      "startIndex": 20556,
+      "endIndex": 20570,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "1. The Moon Lens",
+      "startIndex": 20571,
+      "endIndex": 20587,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A gigantic suspended lens hanging in a brass frame.",
+      "startIndex": 20588,
+      "endIndex": 20639,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "It concentrates moonlight into intense beams.",
+      "startIndex": 20640,
+      "endIndex": 20685,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Reflections move independently inside the glass.",
+      "startIndex": 20686,
+      "endIndex": 20734,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Occasionally a huge ghostly eye seems to exist far beyond the lens rather than inside it.",
+      "startIndex": 20735,
+      "endIndex": 20824,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "2. The Celestial Clock",
+      "startIndex": 20825,
+      "endIndex": 20847,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A huge astronomical clock mounted into the wall.",
+      "startIndex": 20848,
+      "endIndex": 20896,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Instead of ordinary numbers, it shows:",
+      "startIndex": 20897,
+      "endIndex": 20935,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Moon phases.",
+      "startIndex": 20936,
+      "endIndex": 20948,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Star positions.",
+      "startIndex": 20949,
+      "endIndex": 20964,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Planetary symbols.",
+      "startIndex": 20965,
+      "endIndex": 20983,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Its hands move backward, skip ahead, and stop at moments that visibly change the room around it.",
+      "startIndex": 20984,
+      "endIndex": 21080,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Boss: The Watcher in the Rafters",
+      "startIndex": 21081,
+      "endIndex": 21113,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "The Watcher should be an enormous shadowy spider-like presence distributed across the attic structure.",
+      "startIndex": 21114,
+      "endIndex": 21216,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Possible visual traits:",
+      "startIndex": 21217,
+      "endIndex": 21240,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A pair of large eyes briefly visible between rafters.",
+      "startIndex": 21241,
+      "endIndex": 21294,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Long shadow limbs crossing ceiling beams.",
+      "startIndex": 21295,
+      "endIndex": 21336,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Several silhouettes appearing at different distances.",
+      "startIndex": 21337,
+      "endIndex": 21390,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Telescopes turning whenever the Watcher shifts.",
+      "startIndex": 21391,
+      "endIndex": 21438,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Moonlight outlining pieces of a body that never fully resolves.",
+      "startIndex": 21439,
+      "endIndex": 21502,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "The shadow stretching from ceiling to wall to floor without obeying perspective.",
+      "startIndex": 21503,
+      "endIndex": 21583,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "At times it may resemble a very tall person crouched across several beams.",
+      "startIndex": 21584,
+      "endIndex": 21658,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "At others, it is nothing more than a collection of watching shadows.",
+      "startIndex": 21659,
+      "endIndex": 21727,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "This is the strongest option if preserving the established boss name.",
+      "startIndex": 21728,
+      "endIndex": 21797,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Region 9: Lampworks",
+      "startIndex": 21800,
+      "endIndex": 21819,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "The Lampworks should feel like the mansion’s lighting system became haunted long before electricity was ever added.",
+      "startIndex": 21820,
+      "endIndex": 21935,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The strongest visual language is lamps, gas pipes, chandeliers, switches, wall sconces, maintenance lifts, fuse boxes, lanterns, shadows, electrical arcs, blue flame, soot, spectral maintenance workers, and rooms that change completely depending on which lights are on.",
+      "startIndex": 21936,
+      "endIndex": 22205,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "I would avoid flame creatures, moths, blobs, or tiny fantasy monsters here. The enemies should mostly be possessed lighting equipment, supernatural infrastructure, or ghosts associated with maintaining the house’s light.",
+      "startIndex": 22206,
+      "endIndex": 22426,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Regular Enemies:",
+      "startIndex": 22427,
+      "endIndex": 22443,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "Enemy",
+      "startIndex": 22447,
+      "endIndex": 22452,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Simple visual concept",
+      "startIndex": 22454,
+      "endIndex": 22475,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Wall Sconce",
+      "startIndex": 22478,
+      "endIndex": 22489,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Antique wall lamp that floats free from the wall while its flame bends toward targets.",
+      "startIndex": 22491,
+      "endIndex": 22577,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Gaslight Ghost",
+      "startIndex": 22580,
+      "endIndex": 22594,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Tall translucent figure visible only inside the glow of old gas lamps, fading whenever the light dims.",
+      "startIndex": 22596,
+      "endIndex": 22698,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Lantern Bearer",
+      "startIndex": 22701,
+      "endIndex": 22715,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Empty old coat and gloved hands carrying a floating lantern, with no visible person inside the clothing.",
+      "startIndex": 22717,
+      "endIndex": 22821,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Fuse Box",
+      "startIndex": 22824,
+      "endIndex": 22832,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Old electrical cabinet whose switches flip, wires twitch, and sparks jump between open contacts.",
+      "startIndex": 22834,
+      "endIndex": 22930,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Gas Valve",
+      "startIndex": 22933,
+      "endIndex": 22942,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Brass pipe valve turning itself while ghostly vapor escapes and forms temporary faces or hands.",
+      "startIndex": 22944,
+      "endIndex": 23039,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Soot Shadow",
+      "startIndex": 23042,
+      "endIndex": 23053,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Humanlike silhouette made from smoke and soot, visible mainly where it stains nearby walls.",
+      "startIndex": 23055,
+      "endIndex": 23146,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Blue Flame",
+      "startIndex": 23149,
+      "endIndex": 23159,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A small supernatural flame hovering without a candle or lamp, shaped only by wind and light rather than as a creature.",
+      "startIndex": 23161,
+      "endIndex": 23279,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Light Switch Shadow",
+      "startIndex": 23282,
+      "endIndex": 23301,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A shadowy hand repeatedly appearing beside wall switches before vanishing into the plaster.",
+      "startIndex": 23303,
+      "endIndex": 23394,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Electric Arc",
+      "startIndex": 23397,
+      "endIndex": 23409,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Living line of supernatural electricity jumping between fixtures, pipes, wires, and metal objects without forming a body.",
+      "startIndex": 23411,
+      "endIndex": 23532,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Elite Enemies:",
+      "startIndex": 23534,
+      "endIndex": 23548,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "1. The Main Switchboard",
+      "startIndex": 23549,
+      "endIndex": 23572,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A large room sized control panel covering an entire wall.",
+      "startIndex": 23573,
+      "endIndex": 23630,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Brass switches.",
+      "startIndex": 23631,
+      "endIndex": 23646,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Knife switches.",
+      "startIndex": 23647,
+      "endIndex": 23662,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Needles.",
+      "startIndex": 23663,
+      "endIndex": 23671,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Meters.",
+      "startIndex": 23672,
+      "endIndex": 23679,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Labels.",
+      "startIndex": 23680,
+      "endIndex": 23687,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Indicator bulbs.",
+      "startIndex": 23688,
+      "endIndex": 23704,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Everything operates itself.",
+      "startIndex": 23705,
+      "endIndex": 23732,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "When the Switchboard acts, entire sections of the room move from bright light to darkness.",
+      "startIndex": 23733,
+      "endIndex": 23823,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "This would be one of the best elites for emphasizing the Lampworks as infrastructure.",
+      "startIndex": 23824,
+      "endIndex": 23909,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "2. The Gas Manifold",
+      "startIndex": 23910,
+      "endIndex": 23929,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A huge network of old brass pipes, pressure gauges, valves, and glass tubes.",
+      "startIndex": 23930,
+      "endIndex": 24006,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Valves turn on their own.",
+      "startIndex": 24007,
+      "endIndex": 24032,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Blue flames ignite along open jets.",
+      "startIndex": 24033,
+      "endIndex": 24068,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Pressure gauges spin wildly.",
+      "startIndex": 24069,
+      "endIndex": 24097,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Ghostly silhouettes appear briefly inside escaping vapor.",
+      "startIndex": 24098,
+      "endIndex": 24155,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The pipe network itself is the enemy.",
+      "startIndex": 24156,
+      "endIndex": 24193,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "3. The Glassworks Rack",
+      "startIndex": 24194,
+      "endIndex": 24216,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A tall storage frame packed with lamp glass, lenses, bulbs, reflectors, and chimneys.",
+      "startIndex": 24217,
+      "endIndex": 24302,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "All the glass lifts into the air and rotates around an invisible central presence.",
+      "startIndex": 24303,
+      "endIndex": 24385,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Light refracts through everything at once.",
+      "startIndex": 24386,
+      "endIndex": 24428,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "This can produce dramatic visual effects without becoming a literal creature.",
+      "startIndex": 24429,
+      "endIndex": 24506,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Boss: The Lamplighter",
+      "startIndex": 24507,
+      "endIndex": 24528,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "The Lamplighter is a tall supernatural maintenance worker in a long black coat.",
+      "startIndex": 24529,
+      "endIndex": 24608,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Possible visual traits:",
+      "startIndex": 24609,
+      "endIndex": 24632,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Face obscured by darkness beneath a cap or hood.",
+      "startIndex": 24633,
+      "endIndex": 24681,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Long lighting pole used as a tool, not a spear.",
+      "startIndex": 24682,
+      "endIndex": 24729,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Coat tails fading into smoke or blue flame.",
+      "startIndex": 24730,
+      "endIndex": 24773,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Small lamps ignite as he passes.",
+      "startIndex": 24774,
+      "endIndex": 24806,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Wall sconces turn toward him.",
+      "startIndex": 24807,
+      "endIndex": 24836,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Gas valves open automatically.",
+      "startIndex": 24837,
+      "endIndex": 24867,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "Electrical lights flicker despite him belonging to an older era.",
+      "startIndex": 24868,
+      "endIndex": 24932,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "His silhouette occasionally remains behind after his body moves.",
+      "startIndex": 24933,
+      "endIndex": 24997,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "He should feel like the personification of the mansion’s need to keep every light on.",
+      "startIndex": 24998,
+      "endIndex": 25083,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "This remains the strongest character boss option.",
+      "startIndex": 25084,
+      "endIndex": 25133,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Region 10: Ballroom and Velvet Suites",
+      "startIndex": 25137,
+      "endIndex": 25174,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "For a side view CCG, this section should favor enemies with a clean profile silhouette, clear gesture language, and readable looping motions.",
+      "startIndex": 25175,
+      "endIndex": 25316,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The Ballroom and Velvet Suites should feel like the mansion is still hosting a formal gathering that never ended.",
+      "startIndex": 25317,
+      "endIndex": 25430,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The best visual language is ghostly dancers, masks, curtains, chandeliers, serving carts, instruments, candelabras, mirrors, portraiture, velvet furnishings, and spectral hosts.",
+      "startIndex": 25431,
+      "endIndex": 25608,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "I would avoid making the room itself too abstract here, because this area should give you strong character readable sprites that animate well in side view.",
+      "startIndex": 25609,
+      "endIndex": 25764,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Regular Enemy Options",
+      "startIndex": 25765,
+      "endIndex": 25786,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "Enemy",
+      "startIndex": 25790,
+      "endIndex": 25795,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Simple side view visual concept",
+      "startIndex": 25797,
+      "endIndex": 25828,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Masquerade Mask",
+      "startIndex": 25831,
+      "endIndex": 25846,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Floating ornate ballroom mask with trailing ribbons and a crisp side profile.",
+      "startIndex": 25848,
+      "endIndex": 25925,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Waltzing Shoes",
+      "startIndex": 25928,
+      "endIndex": 25942,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A pair of elegant formal shoes dancing by themselves in synchronized side stepping motions.",
+      "startIndex": 25944,
+      "endIndex": 26035,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Candelabra",
+      "startIndex": 26038,
+      "endIndex": 26048,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Tall brass candelabra gliding across the floor with blue flames bending and flaring as it moves.",
+      "startIndex": 26050,
+      "endIndex": 26146,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Serving Tray",
+      "startIndex": 26149,
+      "endIndex": 26161,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Floating silver tray carrying glasses and covered dishes, tilted by unseen hands.",
+      "startIndex": 26163,
+      "endIndex": 26244,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Ghost Guest",
+      "startIndex": 26247,
+      "endIndex": 26258,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Refined translucent party guest in old formalwear, drifting with a drink in hand.",
+      "startIndex": 26260,
+      "endIndex": 26341,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Violin Poltergeist",
+      "startIndex": 26344,
+      "endIndex": 26362,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Violin and bow moving together under invisible control in quick musical gestures.",
+      "startIndex": 26364,
+      "endIndex": 26445,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Top Hat Shade",
+      "startIndex": 26448,
+      "endIndex": 26461,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A neat shadow figure defined mostly by a top hat, shoulders, and gloved hands.",
+      "startIndex": 26463,
+      "endIndex": 26541,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Elite Enemies:",
+      "startIndex": 26543,
+      "endIndex": 26557,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "1. The Grand Masque",
+      "startIndex": 26558,
+      "endIndex": 26577,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A large floating formal mask with layered ribbons, plumes, and jewel details.",
+      "startIndex": 26578,
+      "endIndex": 26655,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "It should read clearly in profile and shift expressions by changing angle, eye cutouts, and ribbon posture rather than needing a moving mouth.",
+      "startIndex": 26656,
+      "endIndex": 26798,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Very strong side view silhouette.",
+      "startIndex": 26799,
+      "endIndex": 26832,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "2. The Eternal Dance",
+      "startIndex": 26833,
+      "endIndex": 26853,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A pair of spectral ballroom dancers locked in a perfect waltz.",
+      "startIndex": 26854,
+      "endIndex": 26916,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "They should function as one unit and always be posed elegantly in side view.",
+      "startIndex": 26917,
+      "endIndex": 26993,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "One can lead and one can follow, with flowing coats and skirts making the animation readable.",
+      "startIndex": 26994,
+      "endIndex": 27087,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "This is one of the strongest elite concepts for the region.",
+      "startIndex": 27088,
+      "endIndex": 27147,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "3. The Velvet Host",
+      "startIndex": 27148,
+      "endIndex": 27166,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A tall, faceless figure in a rich velvet tailcoat carrying a serving tray or goblet.",
+      "startIndex": 27167,
+      "endIndex": 27251,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "The body can be mostly smoke and cloth with very clean silhouette language.",
+      "startIndex": 27252,
+      "endIndex": 27327,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "This reads well as a side view mini boss and feels strongly ballroom themed.",
+      "startIndex": 27328,
+      "endIndex": 27404,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "4. The Ballroom Chandelier",
+      "startIndex": 27405,
+      "endIndex": 27431,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_2",
+      "isListItem": false
+    },
+    {
+      "text": "A lowered chandelier suspended on chains, drifting and rotating while crystal drops and candles swing.",
+      "startIndex": 27432,
+      "endIndex": 27534,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "This one is slightly harder than humanoid elites, but still very usable in side view because its silhouette is iconic.",
+      "startIndex": 27535,
+      "endIndex": 27653,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "Boss: The Master of Revels",
+      "startIndex": 27654,
+      "endIndex": 27680,
+      "tabId": "t.0",
+      "namedStyleType": "HEADING_1",
+      "isListItem": false
+    },
+    {
+      "text": "This is still the strongest character boss if you want to preserve canon.",
+      "startIndex": 27681,
+      "endIndex": 27754,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "A tall supernatural host in ornate crimson or burgundy formalwear with a conductor’s baton, cane, or goblet.",
+      "startIndex": 27755,
+      "endIndex": 27863,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "For side view animation, the key is to make the silhouette very readable:",
+      "startIndex": 27864,
+      "endIndex": 27937,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "high collar",
+      "startIndex": 27938,
+      "endIndex": 27949,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "long coat tails",
+      "startIndex": 27950,
+      "endIndex": 27965,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "one arm often gesturing outward",
+      "startIndex": 27966,
+      "endIndex": 27997,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "masked or porcelain like face in profile",
+      "startIndex": 27998,
+      "endIndex": 28038,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "ribbons or sash trailing behind",
+      "startIndex": 28039,
+      "endIndex": 28070,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": true
+    },
+    {
+      "text": "He should feel like the spirit of a party host who cannot allow the evening to end.",
+      "startIndex": 28071,
+      "endIndex": 28154,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    },
+    {
+      "text": "This is the easiest of the four boss options to turn into a great side view battle sprite.",
+      "startIndex": 28155,
+      "endIndex": 28245,
+      "tabId": "t.0",
+      "namedStyleType": "NORMAL_TEXT",
+      "isListItem": false
+    }
+  ],
+  "document_url": "https://docs.google.com/document/d/1R_7b_Xr7tU_rHszjWKAhKwXUbfSdeTFqjDSCgtVPODw"
+}

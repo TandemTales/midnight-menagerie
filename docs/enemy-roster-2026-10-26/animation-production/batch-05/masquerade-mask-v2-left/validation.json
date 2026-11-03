@@ -1,0 +1,136 @@
+{
+  "enemy": "masquerade-mask",
+  "technical_passed": true,
+  "errors": [],
+  "clips": {
+    "idle": {
+      "frames": 60,
+      "fps": 30,
+      "duration_seconds": 2.0,
+      "unique_visible_frames": 60,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 0.3080278650088507,
+      "max_adjacent_premultiplied_MAE": 0.5021585169441041,
+      "preview_frames": 60,
+      "preview_duration_ms": 2000,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "loop_boundary": true
+      },
+      "passed": true
+    },
+    "attack": {
+      "frames": 48,
+      "fps": 30,
+      "duration_seconds": 1.6,
+      "unique_visible_frames": 47,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 0.0,
+      "max_adjacent_premultiplied_MAE": 8.050936364400362,
+      "preview_frames": 48,
+      "preview_duration_ms": 1600,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "returns_exactly_to_first_pose": true
+      },
+      "passed": true
+    },
+    "hurt": {
+      "frames": 24,
+      "fps": 30,
+      "duration_seconds": 0.8,
+      "unique_visible_frames": 23,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 0.0,
+      "max_adjacent_premultiplied_MAE": 10.655355475930604,
+      "preview_frames": 24,
+      "preview_duration_ms": 800,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "returns_exactly_to_first_pose": true
+      },
+      "passed": true
+    },
+    "defeat": {
+      "frames": 45,
+      "fps": 30,
+      "duration_seconds": 1.5,
+      "unique_visible_frames": 45,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 19.86433013716554,
+      "max_adjacent_premultiplied_MAE": 3.486307633676301,
+      "preview_frames": 45,
+      "preview_duration_ms": 1500,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "nonlooping_final_hold": true,
+        "inactive_mask_sinks": true
+      },
+      "passed": true
+    }
+  },
+  "shared_ready_pose": {
+    "attack": true,
+    "hurt": true,
+    "defeat": true
+  },
+  "method": "Intact source mask tilts as a rigid face; trailing ribbon regions bend with delayed curves. Broad foreground ribbon remains over the unpainted hidden face. Reflected unlettered mask points left. No invented hidden anatomy.",
+  "visual_gate": "Chronological contacts inspected separately; full-speed intended-size visual review pending. Browser URL-policy denial respected; no browser attempt or alternate surface used.",
+  "integration": "No game registry or gameplay test performed.",
+  "orientation_review": {
+    "enemy": "masquerade-mask",
+    "created_utc": "2026-10-27T00:18:04.560939+00:00",
+    "status": "left_in_inspected_keyposes",
+    "required": "screen-left",
+    "evidence": "Intact reflected mask faces left. It withdraws right and peeks left while separate trailing ribbons follow; hurt recoils right, recovery returns to its left profile. Defeat extinguishes eye light, tips downward and sinks. Foreground ribbon still covers the same hidden face region.",
+    "contacts": [
+      "idle-contact.jpg",
+      "attack-contact.jpg",
+      "hurt-contact.jpg",
+      "defeat-contact.jpg"
+    ],
+    "limits": "Chronological decoded key poses inspected; full-speed intended-size temporal approval pending. No browser or game test.",
+    "text_handedness": "Bell source orientation retained. Only unlettered, unarmed mask is reflected."
+  },
+  "orientation_full_speed_passed": false
+}

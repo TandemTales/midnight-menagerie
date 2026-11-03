@@ -1,0 +1,138 @@
+{
+  "enemy": "hall-mirror",
+  "method": "Source-art 2D layered rig; static authentic gold frame, explicit alpha-composited reflection head/body/palm, physically occluding eyelids, local reflection effects. No signed background residuals. Not newly painted temporal frames or AI video.",
+  "source": "docs\\enemy-roster-2026-10-26\\art-production\\hall-mirror-original.png",
+  "source_sha256": "d56791f77c8e785096328406335886e80dbc6a1863bef74280cfd9f0982e8bb9",
+  "source_frame_size": [
+    512,
+    768
+  ],
+  "runtime_frame_size": [
+    256,
+    384
+  ],
+  "anchor": [
+    128,
+    372
+  ],
+  "unit": 360,
+  "clips": {
+    "idle": {
+      "file": "idle.webp",
+      "frames": 60,
+      "cols": 9,
+      "rows": 7,
+      "fw": 256,
+      "fh": 384,
+      "anchor": [
+        128,
+        372
+      ],
+      "source": "SS_hallMirror_idle.png",
+      "sourceFrames": 60,
+      "grid": [
+        9,
+        7
+      ],
+      "scale": 0.5,
+      "unit": 360,
+      "loop": true,
+      "fps": 30,
+      "hold": false,
+      "sha1": "6041b295a571bf56",
+      "duration": 2.0,
+      "authoring": "source-art-layered-rig",
+      "matte": "CLEAN"
+    },
+    "attack": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 9,
+      "rows": 6,
+      "fw": 256,
+      "fh": 384,
+      "anchor": [
+        128,
+        372
+      ],
+      "source": "SS_hallMirror_attack.png",
+      "sourceFrames": 48,
+      "grid": [
+        9,
+        6
+      ],
+      "scale": 0.5,
+      "unit": 360,
+      "loop": false,
+      "fps": 30,
+      "hold": false,
+      "sha1": "6b574028d66f1752",
+      "duration": 1.6,
+      "authoring": "source-art-layered-rig",
+      "matte": "CLEAN"
+    },
+    "hurt": {
+      "file": "hurt.webp",
+      "frames": 24,
+      "cols": 9,
+      "rows": 3,
+      "fw": 256,
+      "fh": 384,
+      "anchor": [
+        128,
+        372
+      ],
+      "source": "SS_hallMirror_hurt.png",
+      "sourceFrames": 24,
+      "grid": [
+        9,
+        3
+      ],
+      "scale": 0.5,
+      "unit": 360,
+      "loop": false,
+      "fps": 30,
+      "hold": false,
+      "sha1": "9191f0ee0655f3fa",
+      "duration": 0.8,
+      "authoring": "source-art-layered-rig",
+      "matte": "CLEAN"
+    },
+    "defeat": {
+      "file": "defeat.webp",
+      "frames": 45,
+      "cols": 9,
+      "rows": 5,
+      "fw": 256,
+      "fh": 384,
+      "anchor": [
+        128,
+        372
+      ],
+      "source": "SS_hallMirror_defeat.png",
+      "sourceFrames": 45,
+      "grid": [
+        9,
+        5
+      ],
+      "scale": 0.5,
+      "unit": 360,
+      "loop": false,
+      "fps": 30,
+      "hold": true,
+      "sha1": "e87d618f50a848a0",
+      "duration": 1.5,
+      "authoring": "source-art-layered-rig",
+      "matte": "CLEAN"
+    }
+  },
+  "orientation": {
+    "required": "screen-left",
+    "method": "Retain original left-biased pupils; anticipate right, extend palm/head left, direct contact glint left, recoil right and recover to the same left-looking face. No whole-image flip or prop-handedness change.",
+    "attack_palm_translation_source_pixels": -39,
+    "status": "left_in_inspected_keyposes"
+  },
+  "quality_gate": "technical_pass_visual_review_pending",
+  "delivery_receipt": "representative-v7-left/installed-assets.json",
+  "review_limits": "All decoded packing/timing checks passed and chronological poses inspected. Full-speed intended-size visual approval and game integration remain unverified."
+}

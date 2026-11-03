@@ -1,0 +1,27 @@
+{
+  "removedOwner": "e3",
+  "before": {
+    "queued": 1,
+    "live": 0,
+    "ownerPresent": true
+  },
+  "after": {
+    "orphanFrames": 0,
+    "frames": 174,
+    "queued": 0,
+    "ownerPresent": false,
+    "visibleOwners": [
+      "e0",
+      "e1",
+      "e2"
+    ]
+  },
+  "survivor": {
+    "owner": "player",
+    "text": "+2 Dexterity",
+    "duration": 1.0326795296952551
+  },
+  "drained": true,
+  "errors": [],
+  "fxOverride": "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\tmp\\r50_combatfx-lifecycle.mjs"
+}

@@ -1,0 +1,61 @@
+/* The story uses the same painted furniture as the original tutorial. */
+.scene--narrative {
+  --hud-h:0px;
+  /* The box has to be the window's size or overflow:auto has nothing to scroll:
+     .scene has no rule of its own, so a story taller than the window just ran off
+     the foot of a hidden body, Continue with it. */
+  position:absolute; inset:0;
+  overflow:auto; color:var(--kit-text); display:grid; align-items:center;
+  background:radial-gradient(ellipse at center, transparent, var(--scrim)), var(--scrim-soft);
+}
+.story-dress { position:fixed; pointer-events:none; --kit-edge:12px; --kit-vine-w:clamp(32px,4vw,60px); }
+.story-stage {
+  box-sizing:border-box; position:relative; z-index:1; display:grid;
+  grid-template-columns:minmax(0,24rem) minmax(0,44rem); align-items:center;
+  gap:clamp(40px,5vw,80px); width:min(100%,82rem); margin:auto;
+  padding:clamp(72px,10vh,110px) clamp(48px,6vw,100px) clamp(100px,14vh,150px);
+}
+.story-stage--solo { grid-template-columns:minmax(0,48rem); justify-content:center; }
+.story-page.kit-panel {
+  --pk:.9; --medal-img:url('../../assets/ui/kit/medal-moon-clean.webp');
+  box-sizing:border-box; min-width:0; margin:0;
+  padding:var(--s-8) var(--s-7) var(--s-6);
+  font:var(--fs-lg)/1.45 var(--font-body);
+}
+.story-page h1 { color:var(--kit-lav); margin:var(--s-3) 0; line-height:1.15; }
+.story-page h1:focus { outline:none; }
+.story-portrait { position:relative; margin:0; min-width:0; }
+.story-frame { --fk:.82; }
+.story-frame img { display:block; width:100%; aspect-ratio:3/4; object-fit:cover; object-position:42% 50%; }
+.story-plate { --plate-h:clamp(62px,7.6vh,76px); position:absolute; z-index:4; left:50%; bottom:0; translate:-50% 42%; width:max-content; max-width:110%; box-sizing:border-box; }
+.story-candle { z-index:5; right:-20px; bottom:-12px; width:clamp(48px,4vw,64px); }
+.story-mantel { position:absolute; z-index:-1; left:var(--s-6); right:var(--s-6); bottom:var(--s-7); height:72px; }
+.story-page .story-progress { color:var(--kit-text-mid); font-variant-numeric:tabular-nums; }
+.story-page .story-status:empty { display:none; }
+.story-page button.kit-btn { background:none; box-shadow:none; border-radius:0; white-space:normal; font-size:var(--fs-md); }
+@media (max-width:760px) {
+  .story-stage { grid-template-columns:minmax(0,1fr); gap:var(--s-8); padding:var(--s-8) var(--s-6) 120px; }
+  .story-portrait { width:min(52vw,15rem); justify-self:center; margin-bottom:var(--s-6); }
+  .story-page.kit-panel { padding:var(--s-7) var(--s-5) var(--s-5); }
+  .story-dress .kit-dress__vine { display:none; }
+}
+.story-page h1 { font-family:var(--font-display); font-size:var(--fs-xl); }
+.story-dialog h2 { font-family:var(--font-display); font-size:var(--fs-2xl); }
+.story-body p { margin:var(--s-4) 0; }
+.story-progress,.story-status { color:var(--text-mid); font-size:var(--fs-md); }
+.story-controls { display:flex; gap:var(--s-3); flex-wrap:wrap; margin-top:var(--s-5); }
+.story-choices { display:grid; gap:var(--s-3); margin-top:var(--s-5); }
+.story-dialog button,.story-tools button { font:inherit; color:var(--text-hi); background:var(--surface-2); border:1px solid var(--surface-line-hi); border-radius:var(--radius-md); padding:var(--s-2) var(--s-4); cursor:pointer; min-height:2.75rem; }
+.story-page button:focus-visible,.story-dialog button:focus-visible,.story-tools button:focus-visible { outline:3px solid var(--focus-ring); outline-offset:3px; }
+.story-dialog { box-sizing:border-box; width:min(48rem,94vw); max-height:90vh; overflow:auto; color:var(--text-hi); background:var(--surface-1); border:1px solid var(--surface-line-hi); border-radius:var(--radius-lg); padding:var(--s-6); font:var(--fs-lg)/1.45 var(--font-body); }
+.story-dialog::backdrop { background:var(--scrim); }
+.story-dialog section { border-top:1px solid var(--surface-line); padding-block:var(--s-4); }
+.story-dialog details { margin-block:var(--s-3); }
+.story-dialog summary { cursor:pointer; padding:var(--s-2); }
+.story-tools { position:fixed; top:var(--s-2); right:var(--s-3); z-index:85; display:flex; gap:var(--s-2); font:var(--fs-md)/1.2 var(--font-body); }
+.story-context { max-width:18rem; padding:var(--s-2); color:var(--text-hi); background:var(--surface-1); border-radius:var(--radius-md); }
+.story-case fieldset { display:flex; gap:var(--s-2); flex-wrap:wrap; padding:var(--s-3); border:1px solid var(--surface-line); }
+.story-case button[aria-pressed=true] { border:3px solid var(--focus-ring); text-decoration:underline; }
+
+/* Larger reading sizes need room, including on a 1280px panel. */
+.story-tools { top: calc(var(--hud-h) + var(--s-2)); }

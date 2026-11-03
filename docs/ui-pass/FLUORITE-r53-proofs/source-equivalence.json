@@ -1,0 +1,22 @@
+{
+  "tested_auto_source": "27b3b5d6e5347c2e43ce241c2f787e46b1a99473",
+  "scope": [
+    "game/src",
+    "game/assets"
+  ],
+  "working_tree_byte_equal": true,
+  "selected_condition_proofs": "auto-raster-initial/{queue,ink,lifecycle} and idle.log",
+  "selected_board_proofs": "runtime-results.json plus memorial-geometry.json and long-quantities-{1280,1600}.json",
+  "final_control": "raster-controls-final/proof.json",
+  "final_visual_source": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2",
+  "tree_objects": {
+    "game/src": {
+      "tested": "805f5929c6d47661340243d596262331bb45f495",
+      "final": "805f5929c6d47661340243d596262331bb45f495"
+    },
+    "game/assets": {
+      "tested": "8e34b302574d20eae053d57942a40ead0b847fe6",
+      "final": "8e34b302574d20eae053d57942a40ead0b847fe6"
+    }
+  }
+}

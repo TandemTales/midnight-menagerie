@@ -131,7 +131,7 @@
   z-index: 3;
 }
 /* the candle catches the metal once as it lands */
-.mm-ach__card.is-in .mm-ach__award { animation: mm-ach-glint 1.5s var(--ease-out) .25s 1 both; }
+.mm-ach__card.is-in .mm-ach__award { animation: mm-ach-glint calc(1.5s * var(--anim-scale)) var(--ease-out) calc(.25s * var(--anim-scale)) 1 both; }
 @keyframes mm-ach-glint {
   0%   { filter: drop-shadow(2px 6px 7px rgba(0, 0, 0, .8)) brightness(1); }
   34%  { filter: drop-shadow(2px 6px 7px rgba(0, 0, 0, .8)) brightness(1.32); }
@@ -180,8 +180,8 @@
      of caps measures about .735em each, so --ach-len (achievement-toast.js)
      divides the room between them. The same trick the veil letters a Kid's
      name with (--hoff-len, ui/handoff.css). */
-  font-size: max(12px, min(max(14px, calc(var(--rib-h) * .47)),
-                           calc(var(--ach-room, 272px) / var(--ach-len, 18))));
+  --reading-size: max(12px, min(max(14px, calc(var(--rib-h) * .47)),
+                           calc(var(--ach-room, 272px) / var(--ach-len, 18)))); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .05em;
 }
 .mm-ach__name {
@@ -224,8 +224,8 @@
   }
   .mm-ach__award { left: 10px; }
   .mm-ach__banner { --rib-h: 27px; --ach-room: 236px; letter-spacing: .03em; }
-  .mm-ach__desc { font-size: 11.5px; margin-top: 4px; }
-  .mm-ach__kind { font-size: 10px; letter-spacing: .2em; margin-bottom: 2px; }
+  .mm-ach__desc { --reading-size: 11.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); margin-top: 4px; }
+  .mm-ach__kind { --reading-size: 10px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .2em; margin-bottom: 2px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

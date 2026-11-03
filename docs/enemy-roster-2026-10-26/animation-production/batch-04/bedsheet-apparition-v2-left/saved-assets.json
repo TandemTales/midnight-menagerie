@@ -1,0 +1,61 @@
+{
+  "created_utc": "2026-10-27T00:12:00.560284+00:00",
+  "enemy": "bedsheet-apparition",
+  "states": [
+    "idle",
+    "attack",
+    "hurt",
+    "defeat"
+  ],
+  "method": "Source-painted cloth mesh with separate head lean, body inflation, hem ripple and hem-anchored collapse. A small translucent breath puff travels left. Original holes and cloth folds are retained. Disconnected alpha speckles removed in derivative only.",
+  "validation": "batch-04/bedsheet-apparition-v2-left/validation.json",
+  "quality_gate": "technical_pass_visual_review_pending",
+  "files": [
+    {
+      "path": "animations/sprites/enemies/animations/SS_bedsheetApparition_idle.png",
+      "sha256": "206878ea3163499cde20cb868e15ed201e0836f926592a5ba6fea049912b05e7",
+      "bytes": 5187728
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/bedsheet-apparition/idle.webp",
+      "sha256": "fb25e92ed375db857b4b77f21e3e53dab40629d28a4b4c5a06eedec27cd6e4f3",
+      "bytes": 2477606
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_bedsheetApparition_attack.png",
+      "sha256": "b51be3c06d46c27366e5d713a671c08129199703749cca0966c14e88bbc526c9",
+      "bytes": 4572972
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/bedsheet-apparition/attack.webp",
+      "sha256": "a3c741152fda844e1d4ac278278f1137d2bc3b386f2052487aefa97a15d25aa5",
+      "bytes": 2077724
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_bedsheetApparition_hurt.png",
+      "sha256": "7258f4a1bf00a50b6453d826e57eb5f4dec066c82d9a8ba2b44f49c4a1f956e0",
+      "bytes": 2105645
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/bedsheet-apparition/hurt.webp",
+      "sha256": "40abbb1d031fea670472f31dd2e5105c5158cbada16fac0f9a0945b1eaca41ba",
+      "bytes": 968092
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_bedsheetApparition_defeat.png",
+      "sha256": "61de9fdf05716ca0c2dca9d5f21861fd5cc4605e6acd21121dae1d6529e9e82f",
+      "bytes": 2727229
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/bedsheet-apparition/defeat.webp",
+      "sha256": "6953f8c2dd32a40737da405df1c75c8e8c915e0f7a049f490369bb596beec01f",
+      "bytes": 1226760
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/bedsheet-apparition/index.json",
+      "sha256": "df9e99077de4a39fb25877ca8b418c9f0eb08e097f5b8bb24f972073368ad15c",
+      "bytes": 2664
+    }
+  ],
+  "complete": true
+}

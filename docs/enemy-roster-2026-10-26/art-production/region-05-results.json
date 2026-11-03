@@ -1,0 +1,826 @@
+{
+  "level": 5,
+  "entries": [
+    {
+      "level": 5,
+      "region": "Impossible Greenhouse",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Creeping Ivy",
+      "existing_animation": true,
+      "description": "Compact leaf-and-vine tangle with curling tendrils and warm eyes. Curling stems try to neaten the surrounding pots, then coil shyly back.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: creeping-ivy.",
+      "signature": "Signature Low compact eyed foliage tangle, not a hanging curtain or animal topiary.",
+      "asset_id": "creeping-ivy",
+      "production_id": "creeping-ivy",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\creeping-ivy.webp",
+      "source_path": "animations\\sprites\\enemies\\creepingIvy.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          232,
+          187
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 16625,
+        "partial_alpha_pixels": 26697,
+        "alpha_bbox": [
+          0,
+          0,
+          232,
+          187
+        ],
+        "sha256": "e6733b1fb35fc4baa8bb12d245e0198de70d8872c00fac5889301f4176125df2"
+      },
+      "blocker": null
+    },
+    {
+      "level": 5,
+      "region": "Impossible Greenhouse",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Walking Planter",
+      "existing_animation": false,
+      "description": "A broad round ceramic planter glides on a skirt of exposed decorative roots. Repositions itself to steal the best patch of light.",
+      "animation": "2D animation Idle leaves nod; tell roots lift; action short scoot; resolve satisfied settle.",
+      "signature": "Signature Large smooth ceramic belly and short root skirt, distinct from loose leafy Ivy.",
+      "production_id": "walking-planter",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\walking-planter.webp",
+      "source_path": "animations\\sprites\\enemies\\walkingPlanter.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            156,
+            183
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 7722,
+          "partial_alpha_pixels": 19935,
+          "alpha_bbox": [
+            0,
+            0,
+            156,
+            183
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            156,
+            182
+          ],
+          "sha256": "342ec3dc7e1e2feb8458eb0bd1829e9d67ced92758a460e8b33594987bd6cbcf"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 43440,
+          "partial_alpha_pixels": 21205,
+          "alpha_bbox": [
+            51,
+            2,
+            224,
+            249
+          ],
+          "visible_bbox_alpha64": [
+            53,
+            37,
+            209,
+            219
+          ],
+          "sha256": "466035149082e5298d0f23e7852bf6205f4811883d0077fb343dfcdc328aceec"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1048791,
+          "partial_alpha_pixels": 523032,
+          "alpha_bbox": [
+            0,
+            8,
+            1242,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            261,
+            184,
+            1021,
+            1073
+          ],
+          "sha256": "59d0f6ce00034f453fb06b3f24e5eacc5e839578550992e9dbe9c434bec357d1"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\walking-planter-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "walking-planter.webp",
+          "w": 156,
+          "h": 183,
+          "source": "walkingPlanter.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 5,
+      "region": "Impossible Greenhouse",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Garden Shears",
+      "existing_animation": false,
+      "description": "Oversized brass-handled pruning shears hover with a loop of ribbon caught at one handle. Trims a stray ribbon with exaggerated precision, never aims its blades at a character.",
+      "animation": "2D animation Idle suspended bob; tell handles spread; action one snip away from visitor; resolve close.",
+      "signature": "Signature Open crossed-tool silhouette and one clear pivot; no lunging blades.",
+      "production_id": "garden-shears",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\garden-shears.webp",
+      "source_path": "animations\\sprites\\enemies\\gardenShears.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            203,
+            207
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 31440,
+          "partial_alpha_pixels": 9621,
+          "alpha_bbox": [
+            0,
+            0,
+            203,
+            207
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            203,
+            207
+          ],
+          "sha256": "74b81fb15415e246c6fbd4158f31fbc24abbc7cb7239ef39f11f3467e4eda50b"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 53130,
+          "partial_alpha_pixels": 11446,
+          "alpha_bbox": [
+            7,
+            24,
+            244,
+            235
+          ],
+          "visible_bbox_alpha64": [
+            28,
+            26,
+            231,
+            233
+          ],
+          "sha256": "e7703f82d1f0388b0cdcfc1e25cd3f5ce8c0eb2b17aa32c740b106029507dfb0"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1299177,
+          "partial_alpha_pixels": 272276,
+          "alpha_bbox": [
+            0,
+            0,
+            1238,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            138,
+            130,
+            1130,
+            1139
+          ],
+          "sha256": "ed6200810e7f02623e1916f527479c1009b08bdcdc6f89b421c380663f4495c7"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\garden-shears-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "garden-shears.webp",
+          "w": 203,
+          "h": 207,
+          "source": "gardenShears.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 5,
+      "region": "Impossible Greenhouse",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Topiary Hound",
+      "existing_animation": false,
+      "description": "A carefully clipped green hedge shaped like a short-legged dog, with a squared muzzle and leafy tail. Stands a formal garden guard, then politely offers a clipped-leaf paw.",
+      "animation": "2D animation Idle tail shake; tell head tilt; action paw lift; resolve stiff sit.",
+      "signature": "Signature Low blocky canine outline and trained paw gesture; no hunting or biting.",
+      "production_id": "topiary-hound",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\topiary-hound.webp",
+      "source_path": "animations\\sprites\\enemies\\topiaryHound.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            191,
+            180
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 13399,
+          "partial_alpha_pixels": 20469,
+          "alpha_bbox": [
+            0,
+            0,
+            191,
+            180
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            191,
+            180
+          ],
+          "sha256": "fc0509e53f18037108004cc8191b45d2743896e6dcfece3b261c093a8449c0e5"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 43490,
+          "partial_alpha_pixels": 21534,
+          "alpha_bbox": [
+            10,
+            22,
+            228,
+            256
+          ],
+          "visible_bbox_alpha64": [
+            34,
+            40,
+            224,
+            220
+          ],
+          "sha256": "eabfee77827182d769cab70fc3b4b8b1eda28061d8095fdae16c6da53796f9e9"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1053425,
+          "partial_alpha_pixels": 518759,
+          "alpha_bbox": [
+            0,
+            19,
+            1232,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            165,
+            196,
+            1095,
+            1077
+          ],
+          "sha256": "d40dbb2ab75582d96425a89e3782e00d7baa2e961f381e53d135aa798fc6357e"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\topiary-hound-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "topiary-hound.webp",
+          "w": 191,
+          "h": 180,
+          "source": "topiaryHound.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 5,
+      "region": "Impossible Greenhouse",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Topiary Hare",
+      "existing_animation": false,
+      "description": "An elegant narrow rabbit-shaped shrub with two exceptionally tall ears. Darts one hop, then freezes as a flawless garden ornament.",
+      "animation": "2D animation Idle ear twitch; tell crouch; action single small hop; resolve freeze.",
+      "signature": "Signature Tall ears and compact springing body, distinct from horizontal hound.",
+      "production_id": "topiary-hare",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\topiary-hare.webp",
+      "source_path": "animations\\sprites\\enemies\\topiaryHare.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            89,
+            241
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 10031,
+          "partial_alpha_pixels": 10996,
+          "alpha_bbox": [
+            0,
+            0,
+            89,
+            241
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            89,
+            240
+          ],
+          "sha256": "08c42be0ddd910e2c4f980324531fc4ddc4f3e17189f3cd7eee012a32180b02f"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 53155,
+          "partial_alpha_pixels": 11959,
+          "alpha_bbox": [
+            60,
+            4,
+            176,
+            249
+          ],
+          "visible_bbox_alpha64": [
+            86,
+            6,
+            174,
+            246
+          ],
+          "sha256": "a5cd08a67a671b85db80579ab22cdb54e9de2bf40f7957affcc2b4332bcd5075"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1281239,
+          "partial_alpha_pixels": 291134,
+          "alpha_bbox": [
+            0,
+            0,
+            1216,
+            1230
+          ],
+          "visible_bbox_alpha64": [
+            420,
+            31,
+            850,
+            1206
+          ],
+          "sha256": "86e503b15c77467578b15aa54eba06c1944f4218e4112dad4f6334520d9da897"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\topiary-hare-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "topiary-hare.webp",
+          "w": 89,
+          "h": 241,
+          "source": "topiaryHare.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 5,
+      "region": "Impossible Greenhouse",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Garden Statue",
+      "existing_animation": false,
+      "description": "A small rounded stone gardener holding a watering can, with a broad hat and cheerful face. Changes its watering pose when attention shifts, as if practicing for a portrait.",
+      "animation": "2D animation Idle still; tell hat tilts; action two fixed pose swap; resolve innocent look.",
+      "signature": "Signature Upright worker statue with watering can; not the graveyard’s crouched gargoyle.",
+      "production_id": "garden-statue",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\garden-statue.webp",
+      "source_path": "animations\\sprites\\enemies\\gardenStatue.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            129,
+            205
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 9949,
+          "partial_alpha_pixels": 16037,
+          "alpha_bbox": [
+            0,
+            0,
+            129,
+            205
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            128,
+            205
+          ],
+          "sha256": "3c21d6da2145c4416c0556203c65cfffcad414de81099b7c8d0193be35708c53"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 48321,
+          "partial_alpha_pixels": 16756,
+          "alpha_bbox": [
+            62,
+            26,
+            195,
+            235
+          ],
+          "visible_bbox_alpha64": [
+            64,
+            28,
+            192,
+            233
+          ],
+          "sha256": "d2f27e4c7649546f4768cc7f6ad058335e0821c845e375443a9b65c71be292cb"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1167303,
+          "partial_alpha_pixels": 404631,
+          "alpha_bbox": [
+            0,
+            15,
+            1218,
+            1250
+          ],
+          "visible_bbox_alpha64": [
+            314,
+            139,
+            941,
+            1140
+          ],
+          "sha256": "10dcfd9c2450e6247bf33d053d8aa01337fbafa865d888c8041df1ff705af41a"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\garden-statue-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "garden-statue.webp",
+          "w": 129,
+          "h": 205,
+          "source": "gardenStatue.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 5,
+      "region": "Impossible Greenhouse",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Fountain Spirit",
+      "existing_animation": false,
+      "description": "A small translucent water figure rising above a low scalloped basin, with a rounded head and flowing sleeve. Pours an impossible cup of water and lets it flow upward instead.",
+      "animation": "2D animation Idle rippling base; tell silhouette gathers; action one curved ribbon rises; resolve collapse to basin.",
+      "signature": "Signature Single fluid figure with one water ribbon; elite fountain uses architectural tiers instead.",
+      "production_id": "fountain-spirit",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\fountain-spirit.webp",
+      "source_path": "animations\\sprites\\enemies\\fountainSpirit.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            147,
+            200
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 16104,
+          "partial_alpha_pixels": 12549,
+          "alpha_bbox": [
+            0,
+            0,
+            147,
+            200
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            147,
+            200
+          ],
+          "sha256": "e4f020da5113db0342b1cf54d7ba649400192ae90ac998da64e408de4b38b65e"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 50306,
+          "partial_alpha_pixels": 14483,
+          "alpha_bbox": [
+            21,
+            7,
+            236,
+            251
+          ],
+          "visible_bbox_alpha64": [
+            60,
+            26,
+            206,
+            226
+          ],
+          "sha256": "02096c377149236937b47e30d087ea6d0e9ffc6b0b9b5e2e548e250bfb362978"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1197609,
+          "partial_alpha_pixels": 374725,
+          "alpha_bbox": [
+            33,
+            8,
+            1234,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            294,
+            128,
+            1006,
+            1105
+          ],
+          "sha256": "c59b8416bcb6298abfc073233f3aa9f0e0b06fe6b7019d14c34456c36144b2fe"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\fountain-spirit-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "fountain-spirit.webp",
+          "w": 147,
+          "h": 200,
+          "source": "fountainSpirit.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 5,
+      "region": "Impossible Greenhouse",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Compost Colossus",
+      "existing_animation": true,
+      "description": "Bulky mulch humanoid with a root beard, mushrooms, pots and garden tools. Shakes loose a harmless shower of leaves while proudly tending its own sprouting shoulders.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: compost-colossus.",
+      "signature": "Signature Heavy earthy block silhouette with root beard and pottery; no decay gore.",
+      "asset_id": "compost-colossus",
+      "production_id": "compost-colossus",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\compost-colossus.webp",
+      "source_path": "animations\\sprites\\enemies\\compostColossus.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          481,
+          379
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 52861,
+        "partial_alpha_pixels": 129401,
+        "alpha_bbox": [
+          0,
+          0,
+          481,
+          379
+        ],
+        "sha256": "dc9fa5e8a13c78b44df1173f34d5040ba5fbbfb367b3184f8d77275e3797da07"
+      },
+      "blocker": null
+    },
+    {
+      "level": 5,
+      "region": "Impossible Greenhouse",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Ancient Topiary",
+      "existing_animation": true,
+      "description": "An ornate sculpted foliage beast with curls, branches, flowers and glowing eyes. Holds a grand ceremonial pose, then rustles its elaborate curls to show off.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: ancient-topiary.",
+      "signature": "Signature Broad ornate fixed foliage beast; preserve actual form, no costly stag-to-bear-to-horse morphing.",
+      "asset_id": "ancient-topiary",
+      "production_id": "ancient-topiary",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\ancient-topiary.webp",
+      "source_path": "animations\\sprites\\enemies\\ancientTopiary.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          471,
+          398
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 65177,
+        "partial_alpha_pixels": 122233,
+        "alpha_bbox": [
+          0,
+          0,
+          471,
+          398
+        ],
+        "sha256": "fc1e46af26224dd94e5c2dd5effb85e420a8d7b96fd363eee32516e1dcfd14fd"
+      },
+      "blocker": null
+    },
+    {
+      "level": 5,
+      "region": "Impossible Greenhouse",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Midnight Fountain",
+      "existing_animation": false,
+      "description": "A three-tier decorative fountain with climbing leaves and a small stone bird on its rim. Reverses its flow and politely rearranges the reflected moon into the wrong basin.",
+      "animation": "2D animation Idle tier glimmer; tell top bowl lights; action three short upward-water ribbon loops; resolve tiny ripple.",
+      "signature": "Signature Tiered architectural column with repeating upward ribbons; no extra spirit humanoids or moving statue crowd.",
+      "production_id": "midnight-fountain",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\midnight-fountain.webp",
+      "source_path": "animations\\sprites\\enemies\\midnightFountain.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            261,
+            432
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 65988,
+          "partial_alpha_pixels": 45614,
+          "alpha_bbox": [
+            0,
+            0,
+            261,
+            432
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            261,
+            432
+          ],
+          "sha256": "4fb6cb70b6924b0fe7d28f04cf0cd51459361756d65a67c95b889d38efc65832"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 211177,
+          "partial_alpha_pixels": 49817,
+          "alpha_bbox": [
+            10,
+            37,
+            477,
+            482
+          ],
+          "visible_bbox_alpha64": [
+            133,
+            49,
+            394,
+            480
+          ],
+          "sha256": "dcd09aff0545e6784db6751e4688d892ec522dbd8b9c3f8c473e0def80db46f4"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1265450,
+          "partial_alpha_pixels": 306532,
+          "alpha_bbox": [
+            0,
+            23,
+            1222,
+            1227
+          ],
+          "visible_bbox_alpha64": [
+            327,
+            119,
+            965,
+            1175
+          ],
+          "sha256": "3767acd448fa6c147893d32e74d1f5890acf9a4c55102b2bf09673396647c034"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\midnight-fountain-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "midnight-fountain.webp",
+          "w": 261,
+          "h": 432,
+          "source": "midnightFountain.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 5,
+      "region": "Impossible Greenhouse",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Carnivorous Conservatory",
+      "existing_animation": true,
+      "description": "A walking glass greenhouse with root feet, a central toothy mouth and flytrap blooms. Huffs humid air, rattles its panes and fusses over its plants. Despite the retained name and teeth, it never eats, hunts or encloses visitors.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: carnivorous-conservatory.",
+      "signature": "Signature Wide glasshouse silhouette with root feet and flower mouths; existing art and clips remain mandatory.",
+      "asset_id": "carnivorous-conservatory",
+      "production_id": "carnivorous-conservatory",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\carnivorous-conservatory.webp",
+      "source_path": "animations\\sprites\\enemies\\carnivorousConservatory.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          996,
+          781
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 247844,
+        "partial_alpha_pixels": 529714,
+        "alpha_bbox": [
+          0,
+          0,
+          996,
+          781
+        ],
+        "sha256": "5a0291f3fa8b382a7c661af9d5c370d7d3c2747b31d4255a9875bba07af05892"
+      },
+      "blocker": null
+    }
+  ],
+  "counts": {
+    "existing": 4,
+    "new": 7,
+    "pending": 0,
+    "blocked": 0
+  }
+}

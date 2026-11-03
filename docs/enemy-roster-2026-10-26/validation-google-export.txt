@@ -1,0 +1,109 @@
+VERIFIED GOOGLE DOC EXPORT
+Source: https://docs.google.com/document/d/1dHCyqIsSqedGWML15S0n-xkVq9k8PnTLx0ADvUpi37Y
+
+DOCX byte length: 60216
+ZIP CRC check: passed
+All XML and relationship parts parse: passed
+python-docx Document opens: passed
+DOCX and complete native readback nonempty paragraph text match exactly: passed
+Native paragraphs: 1096
+Roster entries: 187
+Globally unique enemy names: 187
+Regions: 17
+Every region: 7 regular, 3 elite, 1 boss
+Totals: 119 regular, 51 elite, 17 boss
+Existing-animation entries: 29
+Existing-animation ID set equals current project enemyClips manifest: passed
+Appendix preservation register has same 29 IDs: passed
+README Google Doc URL exact: passed
+
+No full page-layout rendering was performed in this transfer task; the DOCX was exported without content edits.
+
+Per-region counts:
+{
+  "1": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "2": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "3": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "4": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "5": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "6": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "7": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "8": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "9": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "10": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "11": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "12": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "13": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "14": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "15": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "16": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  },
+  "17": {
+    "regular": 7,
+    "elite": 3,
+    "boss": 1
+  }
+}

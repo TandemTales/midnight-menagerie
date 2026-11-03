@@ -1,0 +1,297 @@
+{
+  "round": 56,
+  "method": "Independent verification of complete raw functional evidence; source reuse and visual quality require separate review.",
+  "candidates": [
+    {
+      "code": "TOPAZ",
+      "head": "51c26b3621d2b739e5d2a63a97c532d0f943b9db",
+      "raw_functional_invariants_pass": true,
+      "visual_sources": [
+        "b80a575f4c26a16f3125af2e9fd90ae234256f16"
+      ],
+      "labels": 96,
+      "frames": 2161,
+      "ink_cases": 10,
+      "runtime_checks": [
+        {
+          "name": "interactions",
+          "exit": 0,
+          "seconds": 151.579,
+          "visual_source_commit": "fd74a889571ed186e3e73b8cc67c8e5d11c81d8e",
+          "reused": true
+        },
+        {
+          "name": "queue",
+          "exit": 0,
+          "seconds": 244.754,
+          "visual_source_commit": "21be0adbd3698067e4f6f6453d3521afb423ad20",
+          "reused": false
+        },
+        {
+          "name": "ink",
+          "exit": 0,
+          "seconds": 103.754,
+          "visual_source_commit": "21be0adbd3698067e4f6f6453d3521afb423ad20",
+          "reused": false
+        },
+        {
+          "name": "idle",
+          "exit": 0,
+          "seconds": 50.562,
+          "visual_source_commit": "21be0adbd3698067e4f6f6453d3521afb423ad20",
+          "reused": false
+        },
+        {
+          "name": "lifecycle",
+          "exit": 0,
+          "seconds": 55.478,
+          "visual_source_commit": "21be0adbd3698067e4f6f6453d3521afb423ad20",
+          "reused": false
+        },
+        {
+          "name": "memorial",
+          "exit": 0,
+          "seconds": 38.717,
+          "visual_source_commit": "53f461ea0327d9972f7c7c60bd8ecd2e8e182329",
+          "reused": false
+        },
+        {
+          "name": "memorial-long",
+          "exit": 0,
+          "seconds": 63.393,
+          "visual_source_commit": "53f461ea0327d9972f7c7c60bd8ecd2e8e182329",
+          "reused": false
+        },
+        {
+          "name": "keepsakes",
+          "exit": 0,
+          "seconds": 38.817,
+          "visual_source_commit": "53f461ea0327d9972f7c7c60bd8ecd2e8e182329",
+          "reused": false
+        },
+        {
+          "name": "event-boundary",
+          "exit": 0,
+          "seconds": 61.951,
+          "visual_source_commit": "53f461ea0327d9972f7c7c60bd8ecd2e8e182329",
+          "reused": false
+        },
+        {
+          "name": "shop-rules",
+          "exit": 0,
+          "seconds": 54.038,
+          "visual_source_commit": "53f461ea0327d9972f7c7c60bd8ecd2e8e182329",
+          "reused": false
+        }
+      ],
+      "quantities": [
+        {
+          "width": 1280,
+          "definitions": 109,
+          "copies_each": 12
+        },
+        {
+          "width": 1600,
+          "definitions": 109,
+          "copies_each": 12
+        }
+      ],
+      "full_initial_memorial_geometry": "pass",
+      "native_abba": {
+        "raw": "D:\\UILOOP\\r56-20261029\\a\\docs\\ui-pass\\TOPAZ-r56-proofs\\native-material-timing\\proof.json",
+        "selected_case": {
+          "width": 1600,
+          "kind": "crowd",
+          "mode": "all-long",
+          "frameTimes": {
+            "max": 241.80000001192093,
+            "p95": 155
+          }
+        },
+        "trials": [
+          {
+            "variant": "inherited",
+            "p95_ms": 112.30000001192093,
+            "max_ms": 141,
+            "drain_ms": 2453.800000011921,
+            "lives": 6
+          },
+          {
+            "variant": "current",
+            "p95_ms": 65.5,
+            "max_ms": 111.5,
+            "drain_ms": 2382,
+            "lives": 6
+          },
+          {
+            "variant": "current",
+            "p95_ms": 82.59999999403954,
+            "max_ms": 147.59999999403954,
+            "drain_ms": 2481.7000000178814,
+            "lives": 6
+          },
+          {
+            "variant": "inherited",
+            "p95_ms": 98.40000000596046,
+            "max_ms": 169.19999998807907,
+            "drain_ms": 2609.7000000178814,
+            "lives": 6
+          }
+        ],
+        "effective_styles_before_after_equal": true,
+        "retained_semantics_match_baseline": true,
+        "native_asset_http_decode_bytes_local_hash_checks": 8,
+        "paused_ms": 0,
+        "query_free_measured_check_verified": true,
+        "limitation": "Bounded native-stylesheet geometry harness; no general causal performance claim."
+      },
+      "server_shutdown": {
+        "port": 9561,
+        "command": "\"C:\\Users\\Josh\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" tools/devserver.py 9561",
+        "pid": 42524,
+        "visualSource": "b80a575f4c26a16f3125af2e9fd90ae234256f16",
+        "browserJobs": "All tool-run browser jobs exited",
+        "listenersAfter": 0,
+        "pidAbsent": true,
+        "portClear": true,
+        "evidence_path": "D:\\UILOOP\\r56-20261029\\a\\docs\\ui-pass\\TOPAZ-r56-proofs\\server-stop.json"
+      }
+    },
+    {
+      "code": "ONYX",
+      "head": "602e7b359b97e812e5b95f3eb28859996a1759b8",
+      "raw_functional_invariants_pass": true,
+      "visual_sources": [
+        "7269f14a63ac58f8e3556ec208c24048c5839d70"
+      ],
+      "labels": 96,
+      "frames": 4098,
+      "ink_cases": 10,
+      "runtime_checks": [
+        {
+          "name": "interactions",
+          "exit": 0,
+          "seconds": 90.711
+        },
+        {
+          "name": "queue",
+          "exit": 0,
+          "seconds": 154.776
+        },
+        {
+          "name": "ink",
+          "exit": 0,
+          "seconds": 57.924
+        },
+        {
+          "name": "idle",
+          "exit": 0,
+          "seconds": 25.907
+        },
+        {
+          "name": "lifecycle",
+          "exit": 0,
+          "seconds": 26.108
+        },
+        {
+          "name": "memorial",
+          "exit": 0,
+          "seconds": 27.193
+        },
+        {
+          "name": "memorial-long",
+          "exit": 0,
+          "seconds": 43.883
+        },
+        {
+          "name": "keepsakes",
+          "exit": 0,
+          "seconds": 24.419
+        },
+        {
+          "name": "event-boundary",
+          "exit": 0,
+          "seconds": 37.573
+        },
+        {
+          "name": "shop-rules",
+          "exit": 0,
+          "seconds": 27.851
+        }
+      ],
+      "quantities": [
+        {
+          "width": 1280,
+          "definitions": 109,
+          "copies_each": 12
+        },
+        {
+          "width": 1600,
+          "definitions": 109,
+          "copies_each": 12
+        }
+      ],
+      "full_initial_memorial_geometry": "pass",
+      "native_abba": {
+        "raw": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\native-material-timing-final\\proof.json",
+        "selected_case": {
+          "width": 1600,
+          "kind": "crowd",
+          "mode": "all-long",
+          "frameTimes": {
+            "max": 54,
+            "p95": 41.89999997615814
+          }
+        },
+        "trials": [
+          {
+            "variant": "inherited",
+            "p95_ms": 41.599999994039536,
+            "max_ms": 57.099999994039536,
+            "drain_ms": 2420.7999999821186,
+            "lives": 6
+          },
+          {
+            "variant": "current",
+            "p95_ms": 34.29999998211861,
+            "max_ms": 59,
+            "drain_ms": 2384.2999999821186,
+            "lives": 6
+          },
+          {
+            "variant": "current",
+            "p95_ms": 27.799999982118607,
+            "max_ms": 68.7000000178814,
+            "drain_ms": 2378.2999999821186,
+            "lives": 6
+          },
+          {
+            "variant": "inherited",
+            "p95_ms": 27.099999994039536,
+            "max_ms": 51.20000001788139,
+            "drain_ms": 2379.0999999940395,
+            "lives": 6
+          }
+        ],
+        "effective_styles_before_after_equal": true,
+        "retained_semantics_match_baseline": true,
+        "native_asset_http_decode_bytes_local_hash_checks": 8,
+        "paused_ms": 0,
+        "query_free_measured_check_verified": true,
+        "limitation": "Bounded native-stylesheet geometry harness; no general causal performance claim."
+      },
+      "server_shutdown": {
+        "portClear": true,
+        "port": 9562,
+        "source": "7269f14a63ac58f8e3556ec208c24048c5839d70",
+        "command": "\"C:\\Users\\Josh\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" tools/devserver.py 9562",
+        "browserJobs": "All Playwright jobs exited before stop",
+        "verifiedUtc": "2026-10-30T03:10:09.1049806Z",
+        "pidAbsent": true,
+        "pid": 41444,
+        "evidence_path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\server-shutdown.json"
+      }
+    }
+  ],
+  "complete": false
+}

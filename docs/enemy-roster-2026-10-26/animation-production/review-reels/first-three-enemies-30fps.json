@@ -1,0 +1,148 @@
+{
+  "created_utc": "2026-10-26T23:17:27.556988+00:00",
+  "path": "docs/enemy-roster-2026-10-26/animation-production/review-reels/first-three-enemies-30fps.mp4",
+  "sha256": "00ee93ec42c9a18410b2ddd414ff8dc9e97708f284fbd7007cc7c8a8e18f2a54",
+  "bytes": 467912,
+  "fps": 30,
+  "decoded_frames": 267,
+  "duration_seconds": 8.9,
+  "stream": {
+    "ffmpeg_version": "7.1-essentials_build-www.gyan.dev built with gcc 14.2.0 (Rev1, Built by MSYS2 project)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 30.0,
+    "source_size": [
+      960,
+      540
+    ],
+    "size": [
+      960,
+      540
+    ],
+    "rotate": 0,
+    "duration": 8.9
+  },
+  "inputs": [
+    {
+      "enemy": "hall-mirror",
+      "state": "idle",
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/idle.webp",
+      "sha256": "cf64bccb3f19d014e22b95178633601c2e840d3e930b04ad92443f0c0265dc94",
+      "frames": 60,
+      "fps": 30
+    },
+    {
+      "enemy": "hall-mirror",
+      "state": "attack",
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/attack.webp",
+      "sha256": "3a78f218a070d3421b1b710fc99c1036d9f0c64c1c2083fb2eef7c3ce96b76dc",
+      "frames": 48,
+      "fps": 30
+    },
+    {
+      "enemy": "hall-mirror",
+      "state": "hurt",
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/hurt.webp",
+      "sha256": "7f68a8e82c9ac7bfc51828bea550c7824cbaa8f97480496ed0273fbd7b9470e4",
+      "frames": 24,
+      "fps": 30
+    },
+    {
+      "enemy": "hall-mirror",
+      "state": "defeat",
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/defeat.webp",
+      "sha256": "4c85132622ed6acd2dd29c4fd3fca48758777730343dff5f0c41137f547ea70a",
+      "frames": 45,
+      "fps": 30
+    },
+    {
+      "enemy": "crib-curtains",
+      "state": "idle",
+      "path": "game/assets/sprites/enemy-clips/crib-curtains/idle.webp",
+      "sha256": "fefb01a55d10e884cbff8c6df5eb404d5d971af4b78f65c61f105ff96b76be4f",
+      "frames": 60,
+      "fps": 30
+    },
+    {
+      "enemy": "crib-curtains",
+      "state": "attack",
+      "path": "game/assets/sprites/enemy-clips/crib-curtains/attack.webp",
+      "sha256": "85cb3236cf6f21270ccc132c194177e733ddc0c451038b272e7c168b653bfde8",
+      "frames": 48,
+      "fps": 30
+    },
+    {
+      "enemy": "crib-curtains",
+      "state": "hurt",
+      "path": "game/assets/sprites/enemy-clips/crib-curtains/hurt.webp",
+      "sha256": "a10b7c16b5661b456c8d19338dffa3daab4057cebaa0b2758bb4052a89139ddd",
+      "frames": 24,
+      "fps": 30
+    },
+    {
+      "enemy": "crib-curtains",
+      "state": "defeat",
+      "path": "game/assets/sprites/enemy-clips/crib-curtains/defeat.webp",
+      "sha256": "3d210549db5bac07f5f9bb3e8a20ddb98d610b036599e8202dfe3057cd31770a",
+      "frames": 45,
+      "fps": 30
+    },
+    {
+      "enemy": "foyer-chandelier",
+      "state": "idle",
+      "path": "game/assets/sprites/enemy-clips/foyer-chandelier/idle.webp",
+      "sha256": "c9b7612ac37b2d7a1f2c8cd018d440148aba1b9f26acea4cc832420355db10ac",
+      "frames": 60,
+      "fps": 30
+    },
+    {
+      "enemy": "foyer-chandelier",
+      "state": "attack",
+      "path": "game/assets/sprites/enemy-clips/foyer-chandelier/attack.webp",
+      "sha256": "c85a7f3f9137e2b12696e4b8524c26327dbe4c4a26ada6879a7f84f4e628ae5f",
+      "frames": 48,
+      "fps": 30
+    },
+    {
+      "enemy": "foyer-chandelier",
+      "state": "hurt",
+      "path": "game/assets/sprites/enemy-clips/foyer-chandelier/hurt.webp",
+      "sha256": "42e308485749494502bc615b6850e8acc91ce7bc5bcae506b27d47b6d12f4556",
+      "frames": 24,
+      "fps": 30
+    },
+    {
+      "enemy": "foyer-chandelier",
+      "state": "defeat",
+      "path": "game/assets/sprites/enemy-clips/foyer-chandelier/defeat.webp",
+      "sha256": "a36bc45b2336465fc43c5a00e2a0523b3db7475ef35f469a1858403862e06a89",
+      "frames": 45,
+      "fps": 30
+    }
+  ],
+  "timeline": [
+    {
+      "state": "idle",
+      "frames": 120,
+      "authored_frames": 60,
+      "repetitions": 2
+    },
+    {
+      "state": "attack",
+      "frames": 48
+    },
+    {
+      "state": "hurt",
+      "frames": 24
+    },
+    {
+      "state": "defeat",
+      "frames": 45
+    },
+    {
+      "state": "defeat endpoint review hold",
+      "frames": 30
+    }
+  ],
+  "verification": "Every encoded frame decoded; exact source sequence, count, 30 fps and nominal 200/unit scale verified. Selected chronological frames inspected. Full-speed human visual review pending; no browser navigation or game runtime test."
+}

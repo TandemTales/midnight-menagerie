@@ -10,5 +10,8 @@
   "dependencies": {
     "electron": "44.5.1",
     "steamworks.js": "0.4.0"
+  },
+  "devDependencies": {
+    "rcedit": "^4.0.1"
   }
 }

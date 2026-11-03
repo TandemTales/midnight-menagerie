@@ -1,0 +1,24 @@
+boss 0 1280 frames 151 peak 6 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [11, 48]} fail 0 delivered 6 expired 6 drain 2400
+crowd 0 1280 frames 118 peak 2 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [42, 50]} fail 0 delivered 6 expired 6 drain 6825
+crowd 1 1280 frames 912 peak 1 fit {'fit': True, 'groups': 1, 'visited': 1, 'candidates': [42]} fail 0 delivered 3 expired 3 drain 11996
+crowd 2 1280 frames 381 peak 2 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [42, 42]} fail 0 delivered 6 expired 6 drain 5104
+crowd 3 1280 frames 506 peak 1 fit {'fit': True, 'groups': 1, 'visited': 1, 'candidates': [42]} fail 0 delivered 3 expired 3 drain 11996
+crowd all 1280 frames 858 peak 2 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [21, 36]} fail 0 delivered 4 expired 4 drain 11975
+crowd repeats 1280 frames 680 peak 0 fit None fail 0 delivered 0 expired 0 drain 11878
+crowd all-long 1280 frames 648 peak 2 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [21, 36]} fail 0 delivered 4 expired 4 drain 12000
+boss 0 1600 frames 116 peak 6 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [27, 32]} fail 0 delivered 6 expired 6 drain 2402
+crowd 0 1600 frames 123 peak 5 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [12, 16]} fail 0 delivered 6 expired 6 drain 3105
+crowd 1 1600 frames 123 peak 5 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [16, 38]} fail 0 delivered 6 expired 6 drain 3117
+crowd 2 1600 frames 134 peak 5 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [16, 18]} fail 0 delivered 6 expired 6 drain 3076
+crowd 3 1600 frames 120 peak 5 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [16, 17]} fail 0 delivered 6 expired 6 drain 3119
+crowd all 1600 frames 96 peak 6 fit {'fit': True, 'groups': 5, 'visited': 5, 'candidates': [32, 36, 51, 64, 68]} fail 0 delivered 6 expired 6 drain 2427
+crowd repeats 1600 frames 206 peak 2 fit {'fit': True, 'groups': 1, 'visited': 1, 'candidates': [40]} fail 0 delivered 6 expired 6 drain 4907
+crowd all-long 1600 frames 105 peak 6 fit {'fit': True, 'groups': 5, 'visited': 5, 'candidates': [32, 36, 39, 64, 68]} fail 0 delivered 6 expired 6 drain 2488
+Traceback (most recent call last):
+  File "D:\UILOOP\r54-20261029\b\tests\ui-r54-peridot\inherited.py", line 7, in <module>
+    exec(compile(text,str(source),'exec'),{'__name__':'__main__','__file__':str(source.resolve())})
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "tests\ui-r51-spinel\probe-queue.py", line 93, in <module>
+    assert all(r['all'] and not r['failures'] and len(r['delivered'])==6 and len(r['expired'])==6 and r['queued']==0 for r in results),'Collision/delivery failures; inspect proof.json'
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Collision/delivery failures; inspect proof.json

@@ -1,0 +1,70 @@
+{
+  "judge": 2,
+  "rubrics": [
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\RUBRIC.md",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\RUBRIC-r52.md"
+  ],
+  "references": [
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\title.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\mainMenu.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\selectCompanion.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\selectKid.png"
+  ],
+  "order": [
+    "TOURMALINE",
+    "IOLITE",
+    "ALEXANDRITE",
+    "ONYX"
+  ],
+  "candidates": {
+    "TOURMALINE": [
+      "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\rest.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\rest-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\event.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\event-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\gameover.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\gameover-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\shop.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\shop-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\combat-floaters.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\combat-floaters-1280.png"
+    ],
+    "IOLITE": [
+      "D:\\UILOOP\\r52-20261029\\judging\\IOLITE\\rest.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\IOLITE\\rest-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\IOLITE\\event.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\IOLITE\\event-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\IOLITE\\gameover.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\IOLITE\\gameover-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\IOLITE\\shop.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\IOLITE\\shop-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\IOLITE\\combat-floaters.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\IOLITE\\combat-floaters-1280.png"
+    ],
+    "ALEXANDRITE": [
+      "D:\\UILOOP\\r52-20261029\\judging\\ALEXANDRITE\\rest.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ALEXANDRITE\\rest-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ALEXANDRITE\\event.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ALEXANDRITE\\event-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ALEXANDRITE\\gameover.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ALEXANDRITE\\gameover-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ALEXANDRITE\\shop.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ALEXANDRITE\\shop-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ALEXANDRITE\\combat-floaters.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ALEXANDRITE\\combat-floaters-1280.png"
+    ],
+    "ONYX": [
+      "D:\\UILOOP\\r52-20261029\\judging\\ONYX\\rest.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ONYX\\rest-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ONYX\\event.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ONYX\\event-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ONYX\\gameover.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ONYX\\gameover-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ONYX\\shop.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ONYX\\shop-1280.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ONYX\\combat-floaters.png",
+      "D:\\UILOOP\\r52-20261029\\judging\\ONYX\\combat-floaters-1280.png"
+    ]
+  },
+  "output": "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\judges-r52\\judge2-final.json"
+}

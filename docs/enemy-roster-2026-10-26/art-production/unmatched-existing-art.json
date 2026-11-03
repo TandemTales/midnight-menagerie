@@ -1,0 +1,102 @@
+[
+  {
+    "id": "bedframe-beast",
+    "path": "game\\assets\\sprites\\enemies\\bedframe-beast.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "calling-bell",
+    "path": "game\\assets\\sprites\\enemies\\calling-bell.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "glassvine",
+    "path": "game\\assets\\sprites\\enemies\\glassvine.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "grand-coatcheck",
+    "path": "game\\assets\\sprites\\enemies\\grand-coatcheck.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "head-gardener",
+    "path": "game\\assets\\sprites\\enemies\\head-gardener.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "house-bell",
+    "path": "game\\assets\\sprites\\enemies\\house-bell.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "kitchen-imp",
+    "path": "game\\assets\\sprites\\enemies\\kitchen-imp.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "night-terror",
+    "path": "game\\assets\\sprites\\enemies\\night-terror.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "nightlight-snuffer",
+    "path": "game\\assets\\sprites\\enemies\\nightlight-snuffer.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "pantry-poltergeist",
+    "path": "game\\assets\\sprites\\enemies\\pantry-poltergeist.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "pillow-puff",
+    "path": "game\\assets\\sprites\\enemies\\pillow-puff.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "porcelain-twin-prim",
+    "path": "game\\assets\\sprites\\enemies\\porcelain-twin-prim.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "porcelain-twin-proper",
+    "path": "game\\assets\\sprites\\enemies\\porcelain-twin-proper.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "potling",
+    "path": "game\\assets\\sprites\\enemies\\potling.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "rising-batter",
+    "path": "game\\assets\\sprites\\enemies\\rising-batter.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "rocking-horse",
+    "path": "game\\assets\\sprites\\enemies\\rocking-horse.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "snapping-blossom",
+    "path": "game\\assets\\sprites\\enemies\\snapping-blossom.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "spore-puff",
+    "path": "game\\assets\\sprites\\enemies\\spore-puff.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "thing-beneath",
+    "path": "game\\assets\\sprites\\enemies\\thing-beneath.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  },
+  {
+    "id": "topiary-beast",
+    "path": "game\\assets\\sprites\\enemies\\topiary-beast.webp",
+    "reason": "No matching approved roster identity; preserve unchanged. Similar object names do not establish design equivalence."
+  }
+]

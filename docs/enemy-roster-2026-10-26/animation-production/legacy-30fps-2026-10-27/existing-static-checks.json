@@ -1,0 +1,4159 @@
+{
+  "results": [
+    {
+      "passed": true,
+      "check": "the manifest carries enemy clips",
+      "detail": "29 enemies"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary publishes its unit",
+      "detail": "285.0"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/attack's atlas is its grid",
+      "detail": "3200x2292 on disk, grid 3200x2292"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/attack's feet are inside its frame",
+      "detail": "anchor [214.58, 378.19] in 400x382"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/attack's frame is inside the cap",
+      "detail": "400x382 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/defeat's atlas is its grid",
+      "detail": "3200x1312 on disk, grid 3200x1312"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/defeat has its frames",
+      "detail": "31 frames in 8x4"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/defeat's feet are inside its frame",
+      "detail": "anchor [214.93, 324.2] in 400x328"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/defeat's frame is inside the cap",
+      "detail": "400x328 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/hurt's atlas is its grid",
+      "detail": "3200x1974 on disk, grid 3200x1974"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/hurt's feet are inside its frame",
+      "detail": "anchor [223.19, 324.17] in 400x329"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/hurt's frame is inside the cap",
+      "detail": "400x329 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/idle's atlas is its grid",
+      "detail": "2752x1740 on disk, grid 2752x1740"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/idle's feet are inside its frame",
+      "detail": "anchor [172.0, 287.0] in 344x290"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary/idle's frame is inside the cap",
+      "detail": "344x290 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['285.0', '285.0', '285.0', '285.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary's defeat is cut before the creature gets back up",
+      "detail": "held at 30 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: ancient-topiary's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob publishes its unit",
+      "detail": "256.0"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/attack's atlas is its grid",
+      "detail": "2848x1824 on disk, grid 2848x1824"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/attack's feet are inside its frame",
+      "detail": "anchor [177.64, 286.32] in 356x304"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/attack's frame is inside the cap",
+      "detail": "356x304 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/defeat's atlas is its grid",
+      "detail": "2736x783 on disk, grid 2736x783"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/defeat has its frames",
+      "detail": "23 frames in 8x3"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/defeat's feet are inside its frame",
+      "detail": "anchor [170.83, 257.95] in 342x261"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/defeat's frame is inside the cap",
+      "detail": "342x261 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/hurt's atlas is its grid",
+      "detail": "2776x1986 on disk, grid 2776x1986"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/hurt's feet are inside its frame",
+      "detail": "anchor [172.78, 327.96] in 347x331"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/hurt's frame is inside the cap",
+      "detail": "347x331 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/idle's atlas is its grid",
+      "detail": "2744x1566 on disk, grid 2744x1566"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/idle's feet are inside its frame",
+      "detail": "anchor [171.8, 258.92] in 343x261"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob/idle's frame is inside the cap",
+      "detail": "343x261 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['263.0', '263.0', '263.0', '263.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob's defeat is cut before the creature gets back up",
+      "detail": "held at 22 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-blob's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper publishes its unit",
+      "detail": "226.0"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/attack's atlas is its grid",
+      "detail": "3024x1482 on disk, grid 3024x1482"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/attack's feet are inside its frame",
+      "detail": "anchor [192.71, 238.74] in 378x247"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/attack's frame is inside the cap",
+      "detail": "378x247 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/defeat's atlas is its grid",
+      "detail": "2944x920 on disk, grid 2944x920"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/defeat has its frames",
+      "detail": "29 frames in 8x4"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/defeat's feet are inside its frame",
+      "detail": "anchor [184.0, 227.08] in 368x230"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/defeat's frame is inside the cap",
+      "detail": "368x230 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/hurt's atlas is its grid",
+      "detail": "2872x1398 on disk, grid 2872x1398"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/hurt's feet are inside its frame",
+      "detail": "anchor [180.0, 229.96] in 359x233"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/hurt's frame is inside the cap",
+      "detail": "359x233 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/idle's atlas is its grid",
+      "detail": "2888x1422 on disk, grid 2888x1422"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/idle's feet are inside its frame",
+      "detail": "anchor [181.5, 233.66] in 361x237"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper/idle's frame is inside the cap",
+      "detail": "361x237 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['226.0', '226.0', '226.0', '226.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper's defeat is cut before the creature gets back up",
+      "detail": "held at 28 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-creeper's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra publishes its unit",
+      "detail": "234.0"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/attack's atlas is its grid",
+      "detail": "3200x1386 on disk, grid 3200x1386"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/attack's feet are inside its frame",
+      "detail": "anchor [158.63, 223.66] in 400x231"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/attack's frame is inside the cap",
+      "detail": "400x231 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/defeat's atlas is its grid",
+      "detail": "3231x732 on disk, grid 3231x732"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/defeat has its frames",
+      "detail": "25 frames in 9x3"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/defeat's feet are inside its frame",
+      "detail": "anchor [180.0, 240.22] in 359x244"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/defeat's frame is inside the cap",
+      "detail": "359x244 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/hurt's atlas is its grid",
+      "detail": "2904x1608 on disk, grid 2904x1608"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/hurt's feet are inside its frame",
+      "detail": "anchor [182.0, 261.08] in 363x268"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/hurt's frame is inside the cap",
+      "detail": "363x268 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/idle's atlas is its grid",
+      "detail": "2872x1452 on disk, grid 2872x1452"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/idle's feet are inside its frame",
+      "detail": "anchor [179.5, 239.0] in 359x242"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra/idle's frame is inside the cap",
+      "detail": "359x242 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['234.0', '234.0', '234.0', '234.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra's defeat is cut before the creature gets back up",
+      "detail": "held at 24 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: blanket-hydra's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: butler's index lists what the manifest says",
+      "detail": "index ['attack', 'cast', 'defeat', 'hurt', 'idle'], manifest ['attack', 'cast', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: butler has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: butler publishes its unit",
+      "detail": "379.0"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/attack's atlas is its grid",
+      "detail": "3200x2100 on disk, grid 3200x2100"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/attack's feet are inside its frame",
+      "detail": "anchor [215.69, 344.92] in 400x350"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: butler/attack's frame is inside the cap",
+      "detail": "400x350 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/cast's atlas is its grid",
+      "detail": "3200x1992 on disk, grid 3200x1992"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/cast has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/cast's feet are inside its frame",
+      "detail": "anchor [236.21, 328.33] in 400x332"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/cast never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: butler/cast's frame is inside the cap",
+      "detail": "400x332 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/defeat's atlas is its grid",
+      "detail": "2752x1600 on disk, grid 2752x1600"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/defeat has its frames",
+      "detail": "30 frames in 8x4"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/defeat's feet are inside its frame",
+      "detail": "anchor [182.51, 349.99] in 344x400"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: butler/defeat's frame is inside the cap",
+      "detail": "344x400 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/hurt's atlas is its grid",
+      "detail": "3200x2172 on disk, grid 3200x2172"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/hurt's feet are inside its frame",
+      "detail": "anchor [227.25, 352.36] in 400x362"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: butler/hurt's frame is inside the cap",
+      "detail": "400x362 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/idle's atlas is its grid",
+      "detail": "2312x2400 on disk, grid 2312x2400"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/idle's feet are inside its frame",
+      "detail": "anchor [144.28, 396.1] in 289x400"
+    },
+    {
+      "passed": true,
+      "check": "built: butler/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: butler/idle's frame is inside the cap",
+      "detail": "289x400 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: butler's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['379.0', '379.0', '379.0', '379.0', '379.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: butler's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: butler's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: butler's defeat is cut before the creature gets back up",
+      "detail": "held at 29 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: butler's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby publishes its unit",
+      "detail": "256.0"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/attack's atlas is its grid",
+      "detail": "2704x1740 on disk, grid 2704x1740"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/attack's feet are inside its frame",
+      "detail": "anchor [154.26, 286.08] in 338x290"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/attack's frame is inside the cap",
+      "detail": "338x290 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/defeat's atlas is its grid",
+      "detail": "3006x1096 on disk, grid 3006x1096"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/defeat has its frames",
+      "detail": "35 frames in 9x4"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/defeat's feet are inside its frame",
+      "detail": "anchor [177.18, 270.82] in 334x274"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/defeat's frame is inside the cap",
+      "detail": "334x274 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/hurt's atlas is its grid",
+      "detail": "2664x1602 on disk, grid 2664x1602"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/hurt's feet are inside its frame",
+      "detail": "anchor [186.41, 262.21] in 333x267"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/hurt's frame is inside the cap",
+      "detail": "333x267 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/idle's atlas is its grid",
+      "detail": "2016x1572 on disk, grid 2016x1572"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/idle's feet are inside its frame",
+      "detail": "anchor [126.72, 259.34] in 252x262"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby/idle's frame is inside the cap",
+      "detail": "252x262 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['307.0', '307.0', '307.0', '307.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby's defeat is cut before the creature gets back up",
+      "detail": "held at 34 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: button-baby's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump publishes its unit",
+      "detail": "256.0"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/attack's atlas is its grid",
+      "detail": "2728x1632 on disk, grid 2728x1632"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/attack's feet are inside its frame",
+      "detail": "anchor [167.09, 269.22] in 341x272"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/attack's frame is inside the cap",
+      "detail": "341x272 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/defeat's atlas is its grid",
+      "detail": "2752x804 on disk, grid 2752x804"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/defeat has its frames",
+      "detail": "22 frames in 8x3"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/defeat's feet are inside its frame",
+      "detail": "anchor [177.19, 257.84] in 344x268"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/defeat's frame is inside the cap",
+      "detail": "344x268 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/hurt's atlas is its grid",
+      "detail": "3200x1380 on disk, grid 3200x1380"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/hurt's feet are inside its frame",
+      "detail": "anchor [185.54, 227.88] in 400x230"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/hurt's frame is inside the cap",
+      "detail": "400x230 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/idle's atlas is its grid",
+      "detail": "2144x1566 on disk, grid 2144x1566"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/idle's feet are inside its frame",
+      "detail": "anchor [133.9, 259.13] in 268x261"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump/idle's frame is inside the cap",
+      "detail": "268x261 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['327.0', '327.0', '327.0', '327.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump's defeat is cut before the creature gets back up",
+      "detail": "held at 21 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: candy-clump's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory publishes its unit",
+      "detail": "280.0"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/attack's atlas is its grid",
+      "detail": "3200x1638 on disk, grid 3200x1638"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/attack's feet are inside its frame",
+      "detail": "anchor [196.06, 270.37] in 400x273"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/attack's frame is inside the cap",
+      "detail": "400x273 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/defeat's atlas is its grid",
+      "detail": "3200x858 on disk, grid 3200x858"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/defeat has its frames",
+      "detail": "23 frames in 8x3"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/defeat's feet are inside its frame",
+      "detail": "anchor [200.92, 282.51] in 400x286"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/defeat's frame is inside the cap",
+      "detail": "400x286 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/hurt's atlas is its grid",
+      "detail": "3008x1932 on disk, grid 3008x1932"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/hurt's feet are inside its frame",
+      "detail": "anchor [185.46, 316.96] in 376x322"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/hurt's frame is inside the cap",
+      "detail": "376x322 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/idle's atlas is its grid",
+      "detail": "2936x1734 on disk, grid 2936x1734"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/idle's feet are inside its frame",
+      "detail": "anchor [180.5, 286.0] in 367x289"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory/idle's frame is inside the cap",
+      "detail": "367x289 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['280.0', '280.0', '280.0', '280.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory's defeat is cut before the creature gets back up",
+      "detail": "held at 22 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: carnivorous-conservatory's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler publishes its unit",
+      "detail": "364.0"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/attack's atlas is its grid",
+      "detail": "3176x2382 on disk, grid 3176x2382"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/attack's feet are inside its frame",
+      "detail": "anchor [191.51, 383.77] in 397x397"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/attack's frame is inside the cap",
+      "detail": "397x397 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/defeat's atlas is its grid",
+      "detail": "3465x1600 on disk, grid 3465x1600"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/defeat has its frames",
+      "detail": "34 frames in 9x4"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/defeat's feet are inside its frame",
+      "detail": "anchor [201.39, 359.61] in 385x400"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/defeat's frame is inside the cap",
+      "detail": "385x400 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/hurt's atlas is its grid",
+      "detail": "2456x2400 on disk, grid 2456x2400"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/hurt's feet are inside its frame",
+      "detail": "anchor [147.51, 366.36] in 307x400"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/hurt's frame is inside the cap",
+      "detail": "307x400 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/idle's atlas is its grid",
+      "detail": "1952x2220 on disk, grid 1952x2220"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/idle's feet are inside its frame",
+      "detail": "anchor [122.33, 367.0] in 244x370"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler/idle's frame is inside the cap",
+      "detail": "244x370 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['364.0', '364.0', '364.0', '364.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler's defeat is cut before the creature gets back up",
+      "detail": "held at 33 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: coatrack-crawler's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus publishes its unit",
+      "detail": "284.0"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/attack's atlas is its grid",
+      "detail": "3200x1302 on disk, grid 3200x1302"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/attack's feet are inside its frame",
+      "detail": "anchor [212.68, 214.6] in 400x217"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/attack's frame is inside the cap",
+      "detail": "400x217 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/defeat's atlas is its grid",
+      "detail": "3600x801 on disk, grid 3600x801"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/defeat has its frames",
+      "detail": "27 frames in 9x3"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/defeat's feet are inside its frame",
+      "detail": "anchor [202.19, 261.57] in 400x267"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/defeat's frame is inside the cap",
+      "detail": "400x267 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/hurt's atlas is its grid",
+      "detail": "3200x1524 on disk, grid 3200x1524"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/hurt's feet are inside its frame",
+      "detail": "anchor [200.18, 251.26] in 400x254"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/hurt's frame is inside the cap",
+      "detail": "400x254 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/idle's atlas is its grid",
+      "detail": "3200x1710 on disk, grid 3200x1710"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/idle's feet are inside its frame",
+      "detail": "anchor [193.85, 280.96] in 400x285"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus/idle's frame is inside the cap",
+      "detail": "400x285 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['284.0', '284.0', '284.0', '284.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus's defeat is cut before the creature gets back up",
+      "detail": "held at 26 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: compost-colossus's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner publishes its unit",
+      "detail": "353.0"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/attack's atlas is its grid",
+      "detail": "3200x1632 on disk, grid 3200x1632"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/attack's feet are inside its frame",
+      "detail": "anchor [202.9, 252.82] in 400x272"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/attack's frame is inside the cap",
+      "detail": "400x272 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/defeat's atlas is its grid",
+      "detail": "3600x1324 on disk, grid 3600x1324"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/defeat has its frames",
+      "detail": "33 frames in 9x4"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/defeat's feet are inside its frame",
+      "detail": "anchor [202.67, 311.81] in 400x331"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/defeat's frame is inside the cap",
+      "detail": "400x331 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/hurt's atlas is its grid",
+      "detail": "3200x2178 on disk, grid 3200x2178"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/hurt's feet are inside its frame",
+      "detail": "anchor [203.75, 355.9] in 400x363"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/hurt's frame is inside the cap",
+      "detail": "400x363 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/idle's atlas is its grid",
+      "detail": "2216x2178 on disk, grid 2216x2178"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/idle's feet are inside its frame",
+      "detail": "anchor [139.0, 357.77] in 277x363"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner/idle's frame is inside the cap",
+      "detail": "277x363 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['353.0', '353.0', '353.0', '353.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner's defeat is cut before the creature gets back up",
+      "detail": "held at 32 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: confectioner's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy publishes its unit",
+      "detail": "256.0"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/attack's atlas is its grid",
+      "detail": "3200x2010 on disk, grid 3200x2010"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/attack's feet are inside its frame",
+      "detail": "anchor [197.95, 299.76] in 400x335"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/attack's frame is inside the cap",
+      "detail": "400x335 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/defeat's atlas is its grid",
+      "detail": "2672x2130 on disk, grid 2672x2130"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/defeat has its frames",
+      "detail": "47 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/defeat's feet are inside its frame",
+      "detail": "anchor [168.15, 341.64] in 334x355"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/defeat's frame is inside the cap",
+      "detail": "334x355 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/hurt's atlas is its grid",
+      "detail": "2640x1884 on disk, grid 2640x1884"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/hurt's feet are inside its frame",
+      "detail": "anchor [165.09, 309.6] in 330x314"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/hurt's frame is inside the cap",
+      "detail": "330x314 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/idle's atlas is its grid",
+      "detail": "2616x1572 on disk, grid 2616x1572"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/idle's feet are inside its frame",
+      "detail": "anchor [163.48, 258.95] in 327x262"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy/idle's frame is inside the cap",
+      "detail": "327x262 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['267.0', '267.0', '267.0', '267.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy's defeat is cut before the creature gets back up",
+      "detail": "held at 46 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: creeping-ivy's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter publishes its unit",
+      "detail": "370.0"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/attack's atlas is its grid",
+      "detail": "1640x2400 on disk, grid 1640x2400"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/attack's feet are inside its frame",
+      "detail": "anchor [95.55, 344.65] in 205x400"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/attack's frame is inside the cap",
+      "detail": "205x400 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/defeat's atlas is its grid",
+      "detail": "2936x1188 on disk, grid 2936x1188"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/defeat has its frames",
+      "detail": "22 frames in 8x3"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/defeat's feet are inside its frame",
+      "detail": "anchor [241.06, 366.11] in 367x396"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/defeat's frame is inside the cap",
+      "detail": "367x396 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/hurt's atlas is its grid",
+      "detail": "2208x2400 on disk, grid 2208x2400"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/hurt's feet are inside its frame",
+      "detail": "anchor [146.92, 380.04] in 276x400"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/hurt's frame is inside the cap",
+      "detail": "276x400 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/idle's atlas is its grid",
+      "detail": "1824x2400 on disk, grid 1824x2400"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/idle's feet are inside its frame",
+      "detail": "anchor [103.44, 379.69] in 228x400"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter/idle's frame is inside the cap",
+      "detail": "228x400 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['370.0', '370.0', '370.0', '370.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter's defeat is cut before the creature gets back up",
+      "detail": "held at 21 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: door-greeter's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob publishes its unit",
+      "detail": "256.0"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/attack's atlas is its grid",
+      "detail": "3200x1800 on disk, grid 3200x1800"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/attack's feet are inside its frame",
+      "detail": "anchor [213.4, 287.04] in 400x300"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/attack's frame is inside the cap",
+      "detail": "400x300 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/defeat's atlas is its grid",
+      "detail": "2728x1890 on disk, grid 2728x1890"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/defeat has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/defeat's feet are inside its frame",
+      "detail": "anchor [173.28, 312.47] in 341x315"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/defeat's frame is inside the cap",
+      "detail": "341x315 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/hurt's atlas is its grid",
+      "detail": "3048x1740 on disk, grid 3048x1740"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/hurt's feet are inside its frame",
+      "detail": "anchor [187.29, 286.12] in 381x290"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/hurt's frame is inside the cap",
+      "detail": "381x290 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/idle's atlas is its grid",
+      "detail": "2768x1572 on disk, grid 2768x1572"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/idle's feet are inside its frame",
+      "detail": "anchor [171.66, 258.82] in 346x262"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob/idle's frame is inside the cap",
+      "detail": "346x262 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['272.0', '272.0', '272.0', '272.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob's defeat is cut before the creature gets back up",
+      "detail": "held at 47 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: dough-blob's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny publishes its unit",
+      "detail": "256.0"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/attack's atlas is its grid",
+      "detail": "2600x2148 on disk, grid 2600x2148"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/attack's feet are inside its frame",
+      "detail": "anchor [170.51, 347.92] in 325x358"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/attack's frame is inside the cap",
+      "detail": "325x358 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/defeat's atlas is its grid",
+      "detail": "2464x1710 on disk, grid 2464x1710"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/defeat has its frames",
+      "detail": "38 frames in 8x5"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/defeat's feet are inside its frame",
+      "detail": "anchor [157.02, 306.08] in 308x342"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/defeat's frame is inside the cap",
+      "detail": "308x342 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/hurt's atlas is its grid",
+      "detail": "3200x2052 on disk, grid 3200x2052"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/hurt's feet are inside its frame",
+      "detail": "anchor [235.42, 307.99] in 400x342"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/hurt's frame is inside the cap",
+      "detail": "400x342 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/idle's atlas is its grid",
+      "detail": "2192x1566 on disk, grid 2192x1566"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/idle's feet are inside its frame",
+      "detail": "anchor [137.23, 258.52] in 274x261"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny/idle's frame is inside the cap",
+      "detail": "274x261 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['305.0', '305.0', '305.0', '305.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny's defeat is cut before the creature gets back up",
+      "detail": "held at 37 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: dust-bunny's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: governess's index lists what the manifest says",
+      "detail": "index ['attack', 'cast', 'defeat', 'hurt', 'idle'], manifest ['attack', 'cast', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: governess has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: governess publishes its unit",
+      "detail": "358.0"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/attack's atlas is its grid",
+      "detail": "2744x2376 on disk, grid 2744x2376"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/attack's feet are inside its frame",
+      "detail": "anchor [180.3, 372.06] in 343x396"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: governess/attack's frame is inside the cap",
+      "detail": "343x396 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/cast's atlas is its grid",
+      "detail": "2616x2400 on disk, grid 2616x2400"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/cast has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/cast's feet are inside its frame",
+      "detail": "anchor [153.89, 375.97] in 327x400"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/cast never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: governess/cast's frame is inside the cap",
+      "detail": "327x400 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/defeat's atlas is its grid",
+      "detail": "3200x1448 on disk, grid 3200x1448"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/defeat has its frames",
+      "detail": "32 frames in 8x4"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/defeat's feet are inside its frame",
+      "detail": "anchor [200.46, 340.01] in 400x362"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: governess/defeat's frame is inside the cap",
+      "detail": "400x362 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/hurt's atlas is its grid",
+      "detail": "2632x2292 on disk, grid 2632x2292"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/hurt's feet are inside its frame",
+      "detail": "anchor [159.34, 375.79] in 329x382"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: governess/hurt's frame is inside the cap",
+      "detail": "329x382 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/idle's atlas is its grid",
+      "detail": "2248x2280 on disk, grid 2248x2280"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/idle's feet are inside its frame",
+      "detail": "anchor [138.68, 365.39] in 281x380"
+    },
+    {
+      "passed": true,
+      "check": "built: governess/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: governess/idle's frame is inside the cap",
+      "detail": "281x380 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: governess's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['358.0', '358.0', '358.0', '358.0', '358.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: governess's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: governess's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: governess's defeat is cut before the creature gets back up",
+      "detail": "held at 31 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: governess's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box publishes its unit",
+      "detail": "256.0"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/attack's atlas is its grid",
+      "detail": "2544x1824 on disk, grid 2544x1824"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/attack's feet are inside its frame",
+      "detail": "anchor [145.86, 288.35] in 318x304"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/attack's frame is inside the cap",
+      "detail": "318x304 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/defeat's atlas is its grid",
+      "detail": "1218x530 on disk, grid 1218x530"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/defeat has its frames",
+      "detail": "11 frames in 6x2"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/defeat's feet are inside its frame",
+      "detail": "anchor [106.54, 258.19] in 203x265"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/defeat's frame is inside the cap",
+      "detail": "203x265 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/hurt's atlas is its grid",
+      "detail": "2464x1584 on disk, grid 2464x1584"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/hurt's feet are inside its frame",
+      "detail": "anchor [140.4, 258.68] in 308x264"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/hurt's frame is inside the cap",
+      "detail": "308x264 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/idle's atlas is its grid",
+      "detail": "1560x1566 on disk, grid 1560x1566"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/idle's feet are inside its frame",
+      "detail": "anchor [97.51, 258.41] in 195x261"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box/idle's frame is inside the cap",
+      "detail": "195x261 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['351.0', '351.0', '351.0', '351.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box's defeat is cut before the creature gets back up",
+      "detail": "held at 10 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: jack-in-the-box's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar publishes its unit",
+      "detail": "256.0"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/attack's atlas is its grid",
+      "detail": "2456x1590 on disk, grid 2456x1590"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/attack's feet are inside its frame",
+      "detail": "anchor [149.16, 260.08] in 307x265"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/attack's frame is inside the cap",
+      "detail": "307x265 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/defeat's atlas is its grid",
+      "detail": "2080x538 on disk, grid 2080x538"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/defeat has its frames",
+      "detail": "15 frames in 8x2"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/defeat's feet are inside its frame",
+      "detail": "anchor [134.7, 255.78] in 260x269"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/defeat's frame is inside the cap",
+      "detail": "260x269 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/hurt's atlas is its grid",
+      "detail": "2152x1572 on disk, grid 2152x1572"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/hurt's feet are inside its frame",
+      "detail": "anchor [134.96, 259.73] in 269x262"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/hurt's frame is inside the cap",
+      "detail": "269x262 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/idle's atlas is its grid",
+      "detail": "2184x1602 on disk, grid 2184x1602"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/idle's feet are inside its frame",
+      "detail": "anchor [132.39, 263.46] in 273x267"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar/idle's frame is inside the cap",
+      "detail": "273x267 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['343.0', '343.0', '343.0', '343.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar's defeat is cut before the creature gets back up",
+      "detail": "held at 14 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: jam-jar's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage publishes its unit",
+      "detail": "256.0"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/attack's atlas is its grid",
+      "detail": "2664x1806 on disk, grid 2664x1806"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/attack's feet are inside its frame",
+      "detail": "anchor [168.28, 286.38] in 333x301"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/attack's frame is inside the cap",
+      "detail": "333x301 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/defeat's atlas is its grid",
+      "detail": "2584x900 on disk, grid 2584x900"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/defeat has its frames",
+      "detail": "23 frames in 8x3"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/defeat's feet are inside its frame",
+      "detail": "anchor [162.42, 292.34] in 323x300"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/defeat's frame is inside the cap",
+      "detail": "323x300 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/hurt's atlas is its grid",
+      "detail": "2768x1674 on disk, grid 2768x1674"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/hurt's feet are inside its frame",
+      "detail": "anchor [152.79, 269.52] in 346x279"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/hurt's frame is inside the cap",
+      "detail": "346x279 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/idle's atlas is its grid",
+      "detail": "2464x1656 on disk, grid 2464x1656"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/idle's feet are inside its frame",
+      "detail": "anchor [152.51, 264.6] in 308x276"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage/idle's frame is inside the cap",
+      "detail": "308x276 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['302.0', '302.0', '302.0', '302.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage's defeat is cut before the creature gets back up",
+      "detail": "held at 22 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: lost-luggage's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw publishes its unit",
+      "detail": "286.0"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/attack's atlas is its grid",
+      "detail": "2880x1752 on disk, grid 2880x1752"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/attack's feet are inside its frame",
+      "detail": "anchor [170.0, 287.0] in 360x292"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/attack's frame is inside the cap",
+      "detail": "360x292 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/defeat's atlas is its grid",
+      "detail": "3240x1416 on disk, grid 3240x1416"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/defeat has its frames",
+      "detail": "34 frames in 9x4"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/defeat's feet are inside its frame",
+      "detail": "anchor [171.98, 347.69] in 360x354"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/defeat's frame is inside the cap",
+      "detail": "360x354 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/hurt's atlas is its grid",
+      "detail": "3040x1992 on disk, grid 3040x1992"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/hurt's feet are inside its frame",
+      "detail": "anchor [169.0, 322.86] in 380x332"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/hurt's frame is inside the cap",
+      "detail": "380x332 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/idle's atlas is its grid",
+      "detail": "2704x1878 on disk, grid 2704x1878"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/idle's feet are inside its frame",
+      "detail": "anchor [169.0, 308.11] in 338x313"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw/idle's frame is inside the cap",
+      "detail": "338x313 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['286.0', '286.0', '286.0', '286.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw's defeat is cut before the creature gets back up",
+      "detail": "held at 33 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: oven-maw's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic publishes its unit",
+      "detail": "256.0"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/attack's atlas is its grid",
+      "detail": "1800x1572 on disk, grid 1800x1572"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/attack's feet are inside its frame",
+      "detail": "anchor [112.48, 258.13] in 225x262"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/attack's frame is inside the cap",
+      "detail": "225x262 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/defeat's atlas is its grid",
+      "detail": "2320x888 on disk, grid 2320x888"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/defeat has its frames",
+      "detail": "22 frames in 8x3"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/defeat's feet are inside its frame",
+      "detail": "anchor [147.88, 276.64] in 290x296"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/defeat's frame is inside the cap",
+      "detail": "290x296 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/hurt's atlas is its grid",
+      "detail": "2160x1572 on disk, grid 2160x1572"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/hurt's feet are inside its frame",
+      "detail": "anchor [139.88, 258.99] in 270x262"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/hurt's frame is inside the cap",
+      "detail": "270x262 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/idle's atlas is its grid",
+      "detail": "1824x1560 on disk, grid 1824x1560"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/idle's feet are inside its frame",
+      "detail": "anchor [114.76, 258.25] in 228x260"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic/idle's frame is inside the cap",
+      "detail": "228x260 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['342.0', '342.0', '342.0', '342.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic's defeat is cut before the creature gets back up",
+      "detail": "held at 21 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: pantry-mimic's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant publishes its unit",
+      "detail": "325.0"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/attack's atlas is its grid",
+      "detail": "3200x1782 on disk, grid 3200x1782"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/attack's feet are inside its frame",
+      "detail": "anchor [198.4, 292.97] in 400x297"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/attack's frame is inside the cap",
+      "detail": "400x297 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/defeat's atlas is its grid",
+      "detail": "2709x1032 on disk, grid 2709x1032"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/defeat has its frames",
+      "detail": "19 frames in 7x3"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/defeat's feet are inside its frame",
+      "detail": "anchor [195.7, 328.28] in 387x344"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/defeat's frame is inside the cap",
+      "detail": "387x344 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/hurt's atlas is its grid",
+      "detail": "3200x1908 on disk, grid 3200x1908"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/hurt's feet are inside its frame",
+      "detail": "anchor [210.44, 312.24] in 400x318"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/hurt's frame is inside the cap",
+      "detail": "400x318 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/idle's atlas is its grid",
+      "detail": "2744x2028 on disk, grid 2744x2028"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/idle's feet are inside its frame",
+      "detail": "anchor [173.78, 333.46] in 343x338"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant/idle's frame is inside the cap",
+      "detail": "343x338 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['325.0', '325.0', '325.0', '325.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant's defeat is cut before the creature gets back up",
+      "detail": "held at 18 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-giant's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier publishes its unit",
+      "detail": "256.0"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/attack's atlas is its grid",
+      "detail": "1960x1578 on disk, grid 1960x1578"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/attack's feet are inside its frame",
+      "detail": "anchor [137.58, 259.55] in 245x263"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/attack's frame is inside the cap",
+      "detail": "245x263 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/defeat's atlas is its grid",
+      "detail": "1864x801 on disk, grid 1864x801"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/defeat has its frames",
+      "detail": "24 frames in 8x3"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/defeat's feet are inside its frame",
+      "detail": "anchor [131.09, 261.92] in 233x267"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/defeat's frame is inside the cap",
+      "detail": "233x267 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/hurt's atlas is its grid",
+      "detail": "2048x1602 on disk, grid 2048x1602"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/hurt's feet are inside its frame",
+      "detail": "anchor [126.5, 261.93] in 256x267"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/hurt's frame is inside the cap",
+      "detail": "256x267 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/idle's atlas is its grid",
+      "detail": "1440x1554 on disk, grid 1440x1554"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/idle's feet are inside its frame",
+      "detail": "anchor [89.82, 257.45] in 180x259"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier/idle's frame is inside the cap",
+      "detail": "180x259 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['352.0', '352.0', '352.0', '352.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier's defeat is cut before the creature gets back up",
+      "detail": "held at 23 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: patchwork-soldier's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner publishes its unit",
+      "detail": "256.0"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/attack's atlas is its grid",
+      "detail": "2440x2052 on disk, grid 2440x2052"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/attack's feet are inside its frame",
+      "detail": "anchor [146.86, 298.26] in 305x342"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/attack's frame is inside the cap",
+      "detail": "305x342 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/defeat's atlas is its grid",
+      "detail": "2016x777 on disk, grid 2016x777"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/defeat has its frames",
+      "detail": "21 frames in 7x3"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/defeat's feet are inside its frame",
+      "detail": "anchor [150.24, 244.27] in 288x259"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/defeat's frame is inside the cap",
+      "detail": "288x259 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/hurt's atlas is its grid",
+      "detail": "3056x1554 on disk, grid 3056x1554"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/hurt's feet are inside its frame",
+      "detail": "anchor [152.92, 255.26] in 382x259"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/hurt's frame is inside the cap",
+      "detail": "382x259 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/idle's atlas is its grid",
+      "detail": "2504x1782 on disk, grid 2504x1782"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/idle's feet are inside its frame",
+      "detail": "anchor [157.34, 269.75] in 313x297"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner/idle's frame is inside the cap",
+      "detail": "313x297 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['318.0', '318.0', '318.0', '318.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner's defeat is cut before the creature gets back up",
+      "detail": "held at 20 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: red-carpet-runner's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter publishes its unit",
+      "detail": "201.0"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/attack's atlas is its grid",
+      "detail": "2944x1644 on disk, grid 2944x1644"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/attack's feet are inside its frame",
+      "detail": "anchor [176.65, 268.5] in 368x274"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/attack's frame is inside the cap",
+      "detail": "368x274 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/defeat's atlas is its grid",
+      "detail": "2450x520 on disk, grid 2450x520"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/defeat has its frames",
+      "detail": "13 frames in 7x2"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/defeat's feet are inside its frame",
+      "detail": "anchor [174.33, 255.88] in 350x260"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/defeat's frame is inside the cap",
+      "detail": "350x260 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/hurt's atlas is its grid",
+      "detail": "3024x1884 on disk, grid 3024x1884"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/hurt's feet are inside its frame",
+      "detail": "anchor [173.5, 308.0] in 378x314"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/hurt's frame is inside the cap",
+      "detail": "378x314 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/idle's atlas is its grid",
+      "detail": "2792x1278 on disk, grid 2792x1278"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/idle's feet are inside its frame",
+      "detail": "anchor [172.64, 202.82] in 349x213"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter/idle's frame is inside the cap",
+      "detail": "349x213 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['201.0', '201.0', '201.0', '201.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter's defeat is cut before the creature gets back up",
+      "detail": "held at 12 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: slipper-skitter's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem publishes its unit",
+      "detail": "283.0"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/attack's atlas is its grid",
+      "detail": "3200x1590 on disk, grid 3200x1590"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/attack's feet are inside its frame",
+      "detail": "anchor [191.84, 246.94] in 400x265"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/attack's frame is inside the cap",
+      "detail": "400x265 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/defeat's atlas is its grid",
+      "detail": "3200x1124 on disk, grid 3200x1124"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/defeat has its frames",
+      "detail": "29 frames in 8x4"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/defeat's feet are inside its frame",
+      "detail": "anchor [200.22, 260.34] in 400x281"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/defeat's frame is inside the cap",
+      "detail": "400x281 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/hurt's atlas is its grid",
+      "detail": "3200x1716 on disk, grid 3200x1716"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/hurt's feet are inside its frame",
+      "detail": "anchor [175.48, 279.57] in 400x286"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/hurt's frame is inside the cap",
+      "detail": "400x286 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/idle's atlas is its grid",
+      "detail": "3040x1968 on disk, grid 3040x1968"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/idle's feet are inside its frame",
+      "detail": "anchor [190.71, 313.3] in 380x328"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem/idle's frame is inside the cap",
+      "detail": "380x328 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['283.0', '283.0', '283.0', '283.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem's defeat is cut before the creature gets back up",
+      "detail": "held at 28 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: sugar-golem's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe publishes its unit",
+      "detail": "317.0"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/attack's atlas is its grid",
+      "detail": "3200x1884 on disk, grid 3200x1884"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/attack's feet are inside its frame",
+      "detail": "anchor [199.68, 268.53] in 400x314"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/attack's frame is inside the cap",
+      "detail": "400x314 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/defeat's atlas is its grid",
+      "detail": "3600x738 on disk, grid 3600x738"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/defeat has its frames",
+      "detail": "25 frames in 9x3"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/defeat's feet are inside its frame",
+      "detail": "anchor [201.53, 237.99] in 400x246"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/defeat's frame is inside the cap",
+      "detail": "400x246 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/hurt's atlas is its grid",
+      "detail": "3200x1728 on disk, grid 3200x1728"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/hurt's feet are inside its frame",
+      "detail": "anchor [189.3, 284.4] in 400x288"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/hurt's frame is inside the cap",
+      "detail": "400x288 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/idle's atlas is its grid",
+      "detail": "3200x1752 on disk, grid 3200x1752"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/idle's feet are inside its frame",
+      "detail": "anchor [196.51, 290.0] in 400x292"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe/idle's frame is inside the cap",
+      "detail": "400x292 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['317.0', '317.0', '317.0', '317.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe's defeat is cut before the creature gets back up",
+      "detail": "held at 24 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: the-wardrobe's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest publishes its unit",
+      "detail": "285.0"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/attack's atlas is its grid",
+      "detail": "2736x2208 on disk, grid 2736x2208"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/attack's feet are inside its frame",
+      "detail": "anchor [171.0, 358.0] in 342x368"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/attack's frame is inside the cap",
+      "detail": "342x368 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/defeat's atlas is its grid",
+      "detail": "3384x2000 on disk, grid 3384x2000"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/defeat has its frames",
+      "detail": "41 frames in 9x5"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/defeat's feet are inside its frame",
+      "detail": "anchor [184.75, 353.41] in 376x400"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/defeat's frame is inside the cap",
+      "detail": "376x400 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/hurt's atlas is its grid",
+      "detail": "2776x2094 on disk, grid 2776x2094"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/hurt's feet are inside its frame",
+      "detail": "anchor [175.54, 345.15] in 347x349"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/hurt's frame is inside the cap",
+      "detail": "347x349 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/idle's atlas is its grid",
+      "detail": "2824x1860 on disk, grid 2824x1860"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/idle's feet are inside its frame",
+      "detail": "anchor [178.08, 306.08] in 353x310"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest/idle's frame is inside the cap",
+      "detail": "353x310 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['285.0', '285.0', '285.0', '285.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest's defeat is cut before the creature gets back up",
+      "detail": "held at 40 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: toy-chest's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest's index lists what the manifest says",
+      "detail": "index ['attack', 'defeat', 'hurt', 'idle'], manifest ['attack', 'defeat', 'hurt', 'idle']"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest has idle, attack, hurt and defeat",
+      "detail": "missing "
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest publishes its unit",
+      "detail": "346.0"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/attack's atlas is its grid",
+      "detail": "2040x2124 on disk, grid 2040x2124"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/attack has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/attack's feet are inside its frame",
+      "detail": "anchor [111.55, 351.0] in 255x354"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/attack never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/attack's frame is inside the cap",
+      "detail": "255x354 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/defeat's atlas is its grid",
+      "detail": "2604x1098 on disk, grid 2604x1098"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/defeat has its frames",
+      "detail": "19 frames in 7x3"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/defeat's feet are inside its frame",
+      "detail": "anchor [196.0, 351.0] in 372x366"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/defeat never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/defeat's frame is inside the cap",
+      "detail": "372x366 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/hurt's atlas is its grid",
+      "detail": "1760x2118 on disk, grid 1760x2118"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/hurt has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/hurt's feet are inside its frame",
+      "detail": "anchor [109.5, 351.0] in 220x353"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/hurt never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/hurt's frame is inside the cap",
+      "detail": "220x353 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/idle's atlas is its grid",
+      "detail": "1744x2112 on disk, grid 1744x2112"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/idle has its frames",
+      "detail": "48 frames in 8x6"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/idle's feet are inside its frame",
+      "detail": "anchor [109.0, 349.0] in 218x352"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/idle never fades (a lunge's blur is not a dissolve)",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest/idle's frame is inside the cap",
+      "detail": "218x352 over 400"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest's clips agree on the figure's size",
+      "detail": "unit/scale per clip ['346.0', '346.0', '346.0', '346.0']"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest's idle loops",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest's defeat holds its last frame",
+      "detail": ""
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest's defeat is cut before the creature gets back up",
+      "detail": "held at 18 of 81 source frames"
+    },
+    {
+      "passed": true,
+      "check": "built: wardrobe-guest's folder holds only its clips",
+      "detail": ""
+    },
+    {
+      "passed": false,
+      "check": "no built enemy the manifest does not name",
+      "detail": "bedsheet-apparition, crib-curtains, foyer-chandelier, garden-shears, hall-mirror, hanging-pots, imaginary-friend, masquerade-mask, rain-chain, rocking-chair, servant-bell, topiary-hare"
+    },
+    {
+      "passed": true,
+      "check": "no two sheet names resolve to one enemy",
+      "detail": ""
+    },
+    {
+      "passed": false,
+      "check": "every delivered sheet is built",
+      "detail": "run `python tools/prep_sprites.py --enemy-clips`: bedsheet-apparition/attack, bedsheet-apparition/defeat, bedsheet-apparition/hurt, bedsheet-apparition/idle, crib-curtains/attack, crib-curtains/defeat, crib-curtains/hurt, crib-curtains/idle, foyer-chandelier/attack, foyer-chandelier/defeat, foyer-chandelier/hurt, foyer-chandelier/idle, garden-shears/attack, garden-shears/defeat, garden-shears/hurt, garden-shears/idle, hall-mirror/attack, hall-mirror/defeat, hall-mirror/hurt, hall-mirror/idle, hanging-pots/attack, hanging-pots/defeat, hanging-pots/hurt, hanging-pots/idle, imaginary-friend/attack, imaginary-friend/cast, imaginary-friend/defeat, imaginary-friend/hurt, imaginary-friend/idle, masquerade-mask/attack, masquerade-mask/defeat, masquerade-mask/hurt, masquerade-mask/idle, rain-chain/attack, rain-chain/cast, rain-chain/defeat, rain-chain/hurt, rain-chain/idle, rocking-chair/attack, rocking-chair/defeat, rocking-chair/hurt, rocking-chair/idle, servant-bell/attack, servant-bell/defeat, servant-bell/hurt, servant-bell/idle, topiary-hare/attack, topiary-hare/defeat, topiary-hare/hurt, topiary-hare/idle"
+    },
+    {
+      "passed": true,
+      "check": "every built clip has its delivered sheet",
+      "detail": "built from files not delivered: "
+    },
+    {
+      "passed": true,
+      "check": "every built clip was built from the sheet delivered today",
+      "detail": "rebuild with `python tools/prep_sprites.py --enemy-clips --only <id>`: "
+    }
+  ],
+  "passed_checks": 826,
+  "failures": [
+    {
+      "passed": false,
+      "check": "no built enemy the manifest does not name",
+      "detail": "bedsheet-apparition, crib-curtains, foyer-chandelier, garden-shears, hall-mirror, hanging-pots, imaginary-friend, masquerade-mask, rain-chain, rocking-chair, servant-bell, topiary-hare"
+    },
+    {
+      "passed": false,
+      "check": "every delivered sheet is built",
+      "detail": "run `python tools/prep_sprites.py --enemy-clips`: bedsheet-apparition/attack, bedsheet-apparition/defeat, bedsheet-apparition/hurt, bedsheet-apparition/idle, crib-curtains/attack, crib-curtains/defeat, crib-curtains/hurt, crib-curtains/idle, foyer-chandelier/attack, foyer-chandelier/defeat, foyer-chandelier/hurt, foyer-chandelier/idle, garden-shears/attack, garden-shears/defeat, garden-shears/hurt, garden-shears/idle, hall-mirror/attack, hall-mirror/defeat, hall-mirror/hurt, hall-mirror/idle, hanging-pots/attack, hanging-pots/defeat, hanging-pots/hurt, hanging-pots/idle, imaginary-friend/attack, imaginary-friend/cast, imaginary-friend/defeat, imaginary-friend/hurt, imaginary-friend/idle, masquerade-mask/attack, masquerade-mask/defeat, masquerade-mask/hurt, masquerade-mask/idle, rain-chain/attack, rain-chain/cast, rain-chain/defeat, rain-chain/hurt, rain-chain/idle, rocking-chair/attack, rocking-chair/defeat, rocking-chair/hurt, rocking-chair/idle, servant-bell/attack, servant-bell/defeat, servant-bell/hurt, servant-bell/idle, topiary-hare/attack, topiary-hare/defeat, topiary-hare/hurt, topiary-hare/idle"
+    }
+  ],
+  "timing_scope_passed": true,
+  "scope_note": "Original static checker run unchanged. Unintegrated new provisional sheets/folders are intentionally paused, preexisting out-of-scope findings; no browser test run."
+}

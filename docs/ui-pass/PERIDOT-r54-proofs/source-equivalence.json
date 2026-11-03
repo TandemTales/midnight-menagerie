@@ -1,0 +1,8 @@
+{
+  "gameTrees": {
+    "dd246d80028fb4fed39497cf63edb9cb2d68e215": "d2540b703e55996a8df4fa85e3403f8a890946cd",
+    "fa332a64430d0b750cb9dfa5afd2baf236ef59cb": "d2540b703e55996a8df4fa85e3403f8a890946cd",
+    "3a49caa56e8a326d63436605e98a0ef1f207b9eb": "d2540b703e55996a8df4fa85e3403f8a890946cd"
+  },
+  "note": "Test-only encoding/font-preflight commits did not alter any served game bytes. Repaired condition suite began atdd246d80; canonical visual source is3a49caa5."
+}

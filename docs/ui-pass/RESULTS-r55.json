@@ -1,0 +1,235 @@
+{
+  "round": 55,
+  "status": "complete; selected build validated and applied as working changes",
+  "winner": "IOLITE",
+  "votes": [
+    "IOLITE",
+    "ALMANDINE",
+    "IOLITE"
+  ],
+  "selection": "independent blind image-only votes",
+  "system_scores_descriptive_only": {
+    "judge1": {
+      "ALMANDINE": 7.9,
+      "JADE": 8,
+      "IOLITE": 8.2,
+      "ZIRCON": 8.1
+    },
+    "judge2": {
+      "ZIRCON": 7.9,
+      "IOLITE": 8,
+      "JADE": 7.9,
+      "ALMANDINE": 8.1
+    },
+    "judge3": {
+      "JADE": 8.05,
+      "ZIRCON": 7.98,
+      "ALMANDINE": 8.17,
+      "IOLITE": 8.24
+    }
+  },
+  "base": "1bfcea516055b63b9f8e9274718f2212e8b9841b",
+  "comparison_captures": "CAPTURES-r55.json",
+  "all_fit_thresholds_met": false,
+  "applied_to_main": true,
+  "main_committed_or_pushed": false,
+  "evidence_root": "D:\\UILOOP\\r55-20261029",
+  "selected_commit": "5a4c985298d63b392712544a0c113cde08bfabaf",
+  "comparison_source": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+  "selected_post_review_repair_required": false,
+  "scope_review": "Six presentation CSS files; no production JavaScript changes. Four bitmap assets including generated original; all other changes are owned tests, evidence and preparation.",
+  "derivative_asset_bytes": 2005063,
+  "static_checks": {
+    "scene_css_conflicts": 0,
+    "undefined_css_tokens": 0,
+    "seam_sites": 9110,
+    "unchanged_local_Map_false_positives": 4,
+    "syntax": "pass",
+    "endings": "read-only54text-path numstat matches ignore-cr-at-eol",
+    "whitespace": "pass"
+  },
+  "combat_proofs": {
+    "labels": 96,
+    "frames": 2535,
+    "ink_cases": 10,
+    "actual_long_quantity_rows": 109,
+    "copies_each": 12,
+    "full_initial_memorial_geometry": "pass"
+  },
+  "runtime_provenance": [
+    {
+      "name": "interactions",
+      "exit": 0,
+      "seconds": 83.656,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/interactions.log",
+      "reused": true
+    },
+    {
+      "name": "queue",
+      "exit": 0,
+      "seconds": 167.905,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/queue.log",
+      "reused": false
+    },
+    {
+      "name": "ink",
+      "exit": 0,
+      "seconds": 57.809,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/ink.log",
+      "reused": false
+    },
+    {
+      "name": "idle",
+      "exit": 0,
+      "seconds": 27.268,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/idle.log",
+      "reused": false
+    },
+    {
+      "name": "lifecycle",
+      "exit": 0,
+      "seconds": 27.376,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/lifecycle.log",
+      "reused": false
+    },
+    {
+      "name": "memorial",
+      "exit": 0,
+      "seconds": 27.85,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/memorial.log",
+      "reused": false
+    },
+    {
+      "name": "memorial-long",
+      "exit": 0,
+      "seconds": 44.058,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/memorial-long.log",
+      "reused": false
+    },
+    {
+      "name": "keepsakes",
+      "exit": 0,
+      "seconds": 25.223,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/keepsakes.log",
+      "reused": false
+    },
+    {
+      "name": "event-boundary",
+      "exit": 0,
+      "seconds": 39.471,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/event-boundary.log",
+      "reused": false
+    },
+    {
+      "name": "shop-rules",
+      "exit": 0,
+      "seconds": 28.218,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/shop-rules.log",
+      "reused": false
+    }
+  ],
+  "controlled_rendering_validation": {
+    "selected_case": {
+      "width": 1280,
+      "kind": "crowd",
+      "mode": "all-long",
+      "frameTimes": {
+        "max": 151.39999997615814,
+        "p95": 134.30000001192093
+      }
+    },
+    "trials": [
+      {
+        "variant": "inherited",
+        "p95_ms": 28.399999976158142,
+        "max_ms": 73.30000001192093,
+        "drain_ms": 3768.5999999940395,
+        "lives": 6
+      },
+      {
+        "variant": "current",
+        "p95_ms": 25.299999982118607,
+        "max_ms": 55.5,
+        "drain_ms": 3777,
+        "lives": 6
+      },
+      {
+        "variant": "current",
+        "p95_ms": 24.599999994039536,
+        "max_ms": 68.30000001192093,
+        "drain_ms": 3776.5999999940395,
+        "lives": 6
+      },
+      {
+        "variant": "inherited",
+        "p95_ms": 30.30000001192093,
+        "max_ms": 59.80000001192093,
+        "drain_ms": 3771.199999988079,
+        "lives": 6
+      }
+    ],
+    "effective_styles_before_after_equal": true,
+    "retained_semantics_match_baseline": true,
+    "native_asset_http_decode_bytes_local_hash_checks": 8,
+    "paused_ms": 0,
+    "limitation": "Bounded native-stylesheet geometry harness; no general causal performance claim.",
+    "query_free_protocol_satisfied": false,
+    "per_frame_computed_style_queries_present": true
+  },
+  "evidence_limitations": [
+    "Full fixture includes geometry checks/screenshots and a static seam-audit overlap; not isolated game cost.",
+    "Native ABBA is four bounded trials on the worse of two crowded all-long sizes, not a general performance claim.",
+    "Early interactions reuse the exact same visual source; frozen images remain unchanged.",
+    "Timing protocol erratum: inherited measured CHECK included two getComputedStyle call sites per caption/frame. Prior no-style-query descriptions are withdrawn; raw data remains an instrumented geometry-harness comparison. See TIMING-ERRATUM-r56.md."
+  ],
+  "parent_server_shutdown": "winner-battery/server-shutdown.json",
+  "scope_audit": "SCOPE-AUDIT-r55.json",
+  "assertion_audit": "ASSERTION-AUDIT-r55.json",
+  "independent_raw_proof_audit": "PROOF-AUDIT-r55.json",
+  "applied_files_byte_verified": 75,
+  "main_index_preserved": true,
+  "main_index_sha256": "6f75cb9060c5ed58cb981e6b487beb233e9a17128a9974379c659d651d389129",
+  "browser_gates": [
+    {
+      "gate": "chrome/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "steam-deck/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "gamepad/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "events/check.py",
+      "exit": 0
+    },
+    {
+      "gate": "gameover-keeps/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "seams/proof.py",
+      "exit": 0
+    },
+    {
+      "gate": "combat-scene/seam.py",
+      "exit": 0
+    }
+  ],
+  "validated_captures": "VALIDATED-CAPTURES-r55.json",
+  "next_brief": "BRIEF-r56.md",
+  "timing_protocol_erratum": "TIMING-ERRATUM-r56.md"
+}

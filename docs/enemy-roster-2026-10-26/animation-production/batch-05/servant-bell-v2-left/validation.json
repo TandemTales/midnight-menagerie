@@ -1,0 +1,140 @@
+{
+  "enemy": "servant-bell",
+  "technical_passed": true,
+  "errors": [],
+  "clips": {
+    "idle": {
+      "frames": 60,
+      "fps": 30,
+      "duration_seconds": 2.0,
+      "unique_visible_frames": 60,
+      "fixed_attachment_max_difference": 0,
+      "loop_or_endpoint_premultiplied_MAE": 0.1687733702150565,
+      "max_adjacent_premultiplied_MAE": 0.1783175532854201,
+      "preview_frames": 60,
+      "preview_duration_ms": 2000,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "fixed_attachment_pixels": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "loop_boundary": true
+      },
+      "passed": true
+    },
+    "attack": {
+      "frames": 48,
+      "fps": 30,
+      "duration_seconds": 1.6,
+      "unique_visible_frames": 47,
+      "fixed_attachment_max_difference": 0,
+      "loop_or_endpoint_premultiplied_MAE": 0.0,
+      "max_adjacent_premultiplied_MAE": 3.2144149481081494,
+      "preview_frames": 48,
+      "preview_duration_ms": 1600,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "fixed_attachment_pixels": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "returns_exactly_to_first_pose": true
+      },
+      "passed": true
+    },
+    "hurt": {
+      "frames": 24,
+      "fps": 30,
+      "duration_seconds": 0.8,
+      "unique_visible_frames": 23,
+      "fixed_attachment_max_difference": 0,
+      "loop_or_endpoint_premultiplied_MAE": 0.0,
+      "max_adjacent_premultiplied_MAE": 3.674221210022639,
+      "preview_frames": 24,
+      "preview_duration_ms": 800,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "fixed_attachment_pixels": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "returns_exactly_to_first_pose": true
+      },
+      "passed": true
+    },
+    "defeat": {
+      "frames": 45,
+      "fps": 30,
+      "duration_seconds": 1.5,
+      "unique_visible_frames": 45,
+      "fixed_attachment_max_difference": 0,
+      "loop_or_endpoint_premultiplied_MAE": 9.02876911371102,
+      "max_adjacent_premultiplied_MAE": 0.8212530198440052,
+      "preview_frames": 45,
+      "preview_duration_ms": 1500,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "fixed_attachment_pixels": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "nonlooping_final_hold": true,
+        "substantial_light_extinction": true
+      },
+      "passed": true
+    }
+  },
+  "shared_ready_pose": {
+    "attack": true,
+    "hurt": true,
+    "defeat": true
+  },
+  "method": "Continuous source-art deformation about the bell crown, tapered through the spring into a fixed wooden plaque. Original rope and plaque retained. The separate painted shadow has a delayed motion field; no unpainted hidden metal is invented.",
+  "visual_gate": "Chronological contacts inspected separately; full-speed intended-size visual review pending. Browser URL-policy denial respected; no browser attempt or alternate surface used.",
+  "integration": "No game registry or gameplay test performed.",
+  "orientation_review": {
+    "enemy": "servant-bell",
+    "created_utc": "2026-10-27T00:18:04.553011+00:00",
+    "status": "left_in_inspected_keyposes",
+    "required": "screen-left",
+    "evidence": "Bell mouth points left. Rightward coil tension precedes two leftward strikes, then the painted shadow gives a delayed echo. Hurt recoils right. Defeat droops the metal and fades the shadow. Rope and plaque pixels remain fixed.",
+    "contacts": [
+      "idle-contact.jpg",
+      "attack-contact.jpg",
+      "hurt-contact.jpg",
+      "defeat-contact.jpg"
+    ],
+    "limits": "Chronological decoded key poses inspected; full-speed intended-size temporal approval pending. No browser or game test.",
+    "text_handedness": "Bell source orientation retained. Only unlettered, unarmed mask is reflected."
+  },
+  "orientation_full_speed_passed": false
+}

@@ -1,0 +1,28 @@
+ChatGPT access diagnostics (read-only), 2026-10-27
+
+1. ChatGPT project integration: PASS for reads. list_projects returned Midnight Menagerie with projectKind=chatgpt and projectId=g-p-6a7e3759a0188191a5c59054c2317590. list_threads returned an existing ChatGPT conversation in that project, Redraw Pet Images (6ae0896f-9c60-83e8-8127-d43efc0738c9). read_thread successfully returned a bounded latest turn from that conversation. No Connect/Reconnect prompt appeared. These establish listing and reading, not successful creation.
+
+2. Creation approval: unresolved denial, not executed. The previously recorded create_thread call was denied because the reviewer cited the unrelated pet-Polaroid request, despite enemy-sprite authorization being present in this agent's context. The exact private/compact transcript supplied to the reviewer is not exposed, so the cause of that mismatch is not established. No review-context read, correction, denial-approval or elicitation-resolution tool is exposed in the current tool list. No elicitation ID was returned. No create_thread retry was made during this diagnostic turn.
+
+Official auto-review documentation says the reviewer sees a compact transcript plus the exact approval request. It documents /approve in the open-source TUI as an exact-action, one-retry denial picker; this is NOT verified as available in this desktop/delegated environment. Do not weaken approval policy or create another task as a workaround. If no exact-action UI is available here, the supported feedback flow can report the mismatched rationale with this chat ID: 01a17da5-a3fe-7759-834e-a4e56dc540eb. No feedback was submitted.
+
+3. Browser connection: current cua.listBrowsers returns only ChatGPT in-app browser (type iab, id 2) and Codex MCP Apps (type mcpapps, id 1); cua.listTabs returns []. No Chrome extension/CDP provider is exposed. Earlier native inventory showed a Chrome window, but that is not a URL-bearing connected browser tab. The prior URL-enforcement denial remains unresolved. No native Chrome targeting, navigation, input, browser reset, extension installation, permission change or workaround was attempted.
+
+Smallest supported user diagnostic: inspect Settings > Computer Use > Chrome; report Manage versus Install, whether its toggle is on, and whether the active Chrome profile has the extension. Open the installed ChatGPT extension from the Chrome toolbar to check whether its side chat loads. This is a connection-state check, not permission to install or widen access. If it already exists but is disconnected, official guidance includes restarting the browser/app and checking the correct profile. These actions were not performed because the current task cannot inspect the relevant settings UI with its allowed tools. Do not use full CDP access as a fix for this issue.
+
+4. Library: prepare_materialize is PRESENT and succeeded in this agent session for libfile_48dd4a412e3c819197d53d94ff3d3352 / file_000000008d2481f5882e575f2a2ef32e. It returned one authorized GET transfer, no unavailable_items, no warnings, workspace_path=null, and the expected 38,802,680-byte ZIP. Signed credentials are deliberately not stored in this report. No download was performed; the diagnostic established preparation/authorization, not completed local materialization. The reason another caller reported the tool unavailable is unknown without that caller's tool/error evidence.
+
+The separate earlier Windows helper failure is confirmed: sys.platform=win32; hasattr(os, setxattr)=False; hasattr(os, getxattr)=False. The supplied Library helper called os.setxattr and raised AttributeError. This is a helper/platform incompatibility after the successful upload, not evidence of lost ChatGPT authentication. Do not strip the required metadata step or use raw downloads to bypass it. Existing local originals and the successfully saved Library bundle remain available.
+
+Permission diagnostics: canonical app identifier connector_openai_library resolves to Library, status found, default Allow low-risk actions, app override Use my default. Display-name lookup OpenAI Library and lookup codex-app-tools returned not_installed from the plugin-management catalog; those lookups do not establish disconnection because the canonical Library query and actual tools succeed. No permission changes made.
+
+Sources read:
+https://learn.chatgpt.com/docs/sandboxing/auto-review
+https://learn.chatgpt.com/docs/chrome-extension
+https://learn.chatgpt.com/docs/browser
+https://learn.chatgpt.com/docs/reference/troubleshooting
+Current Computer Use tool API and bundled guidance; current Library materialization guidance; current Plugin Management guidance.
+
+Outcome: no verified access repair applied. Project reads and Library preparation already work; approval-context mismatch and missing Chrome connection remain distinct unresolved blockers. All sprite preparations, original image baselines and archived art preserved.
+
+Additional read-only diagnostic: Get-AppxPackage -Name OpenAI.Codex returned Access is denied. App version could not be established this way; no elevation attempted. This was an OS read error, not a new automatic approval rejection. Test-Path for the temporary materialization destination returned False, consistent with preparation returning a signed transfer rather than creating a local directory. No download was performed.

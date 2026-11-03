@@ -1,0 +1,568 @@
+{
+  "checked_utc": "2026-10-27T00:41:10.389052+00:00",
+  "checked": 112,
+  "passed": true,
+  "files": [
+    {
+      "path": "animations/sprites/enemies/animations/SS_hallMirror_idle.png",
+      "sha256": "7746527410ceb6e32ba5fd2f4710ef7f482bb2ec2cb9862a44658a9fbf53b6f7",
+      "bytes": 4558068
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/idle.webp",
+      "sha256": "86a0a53990b89fc0e06c3d309f1baed1114e0112e48abe0f187a118007cc2174",
+      "bytes": 604728
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hallMirror_attack.png",
+      "sha256": "177f6caf2da084fa9830f4d6acb533cda0298e34354bda4f2d5c9394398a5ce4",
+      "bytes": 4048720
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/attack.webp",
+      "sha256": "4e822035866c665f22b72023add3ae75288c81e4135fa4268e72b4e61b4497a1",
+      "bytes": 620414
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hallMirror_hurt.png",
+      "sha256": "67c738f806eaec2da17239bf9c08021c3edd1511c15eae16d82e8a7d2237ab99",
+      "bytes": 2103257
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/hurt.webp",
+      "sha256": "5da0f879eaafd028f66c27eb29707d1739bbd663df524abfd4fa08561645ca18",
+      "bytes": 364658
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hallMirror_defeat.png",
+      "sha256": "5f82085793ccdc650b0bb3375ab4b9e1e4c4ffc4381b8c3ba41d7a6985a3957f",
+      "bytes": 3181847
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/defeat.webp",
+      "sha256": "424d9a39972b3331dfbee7f034c489a06c4e3caade20e32017381e2ab70ca817",
+      "bytes": 486646
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/index.json",
+      "sha256": "c8531f4091b6a60634c674a10d0d491612b599510d1a0bdab672e00e957db62d",
+      "bytes": 2577
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_cribCurtains_idle.png",
+      "sha256": "a92089ac3efa7f83559601a52a527e0c9c98195df86b806c1cb39f3ceb9026f6",
+      "bytes": 11458482
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/crib-curtains/idle.webp",
+      "sha256": "9996e2b0b0b8612121a41358453cd2632e45d46b23f981406746d8d6350db29a",
+      "bytes": 5349078
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_cribCurtains_attack.png",
+      "sha256": "86429f9957425c5436a34c8f52420338ac19b2a869e799e44ec3ddc292b09b12",
+      "bytes": 10004148
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/crib-curtains/attack.webp",
+      "sha256": "a98e5e40cd7d0d080cb5a59d14ca280fe22056ad5bcb5d79afdb4c6b01b42f57",
+      "bytes": 4598860
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_cribCurtains_hurt.png",
+      "sha256": "fa3bff2d9c2abd70aedc34bf5242d03327ca32506a91c900a8b01ed971c04259",
+      "bytes": 5034350
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/crib-curtains/hurt.webp",
+      "sha256": "0f36ede2c11d47533decb76bb224bb84f4fb4586a84962ba574abe405dfd7bd9",
+      "bytes": 2272054
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_cribCurtains_defeat.png",
+      "sha256": "d280e4790cf187ddb93f743673bddb8164740f9838c4865ba55e20da39dbf722",
+      "bytes": 7855059
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/crib-curtains/defeat.webp",
+      "sha256": "9b9b09c4d6fb2c60efc7e8dceea113baa1bf5a1c9a360b46041f9fba9d30256b",
+      "bytes": 3954826
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/crib-curtains/index.json",
+      "sha256": "14988befae67f27f289db76d5fac2d31c08592dca9df10933c7623468242518b",
+      "bytes": 2609
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_foyerChandelier_idle.png",
+      "sha256": "19078d7edbd94a4fce65feeed63e6edf5f8c7bf7c25e4f264bc2270f158af44d",
+      "bytes": 9167604
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/foyer-chandelier/idle.webp",
+      "sha256": "def4ccace9a3ba8115736c121bbba6c68dc0fe8fba3392b5f8cefec94cfca540",
+      "bytes": 4779762
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_foyerChandelier_attack.png",
+      "sha256": "7e67b45bb30a8fba9708f9c4e09f4085e276ebeaa0163207633509f0f4ac6761",
+      "bytes": 7713112
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/foyer-chandelier/attack.webp",
+      "sha256": "6c0ff31d797e47139ca38c4e3467ae7029ff8d9f04c9367ac7962a54b592c257",
+      "bytes": 3942900
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_foyerChandelier_hurt.png",
+      "sha256": "a4cd8bfecb5533ce4ae3349c15fb59c4cf65ace1ad780113a5b489bab53ec0b7",
+      "bytes": 3824586
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/foyer-chandelier/hurt.webp",
+      "sha256": "c5e91d5e13c10cfe47b3f0564948c062a1855f830e77d2d998007db80a842a27",
+      "bytes": 1957310
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_foyerChandelier_defeat.png",
+      "sha256": "a55183361192d1d1bdc4e0d2facc7d41e12d07c829c29d4d0e3ee8472eb71549",
+      "bytes": 6761188
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/foyer-chandelier/defeat.webp",
+      "sha256": "c3f3c5d8a4e71ad4ef2908b845cfd88e691a9c2189b501e58f5ea068bf6e117c",
+      "bytes": 3426394
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/foyer-chandelier/index.json",
+      "sha256": "1745afc1fcad79e607b9b6552b748d4847beac4d7f40fc1d2fe1dcb0a5c2f144",
+      "bytes": 2660
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hangingPots_idle.png",
+      "sha256": "1e26835af3ed16183a4c5085cef709c7560a643c1e7aa8c31d5504728806e350",
+      "bytes": 7195912
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hanging-pots/idle.webp",
+      "sha256": "1abbaae1b12bc2db80c06825aaa8b2c9f6e622ca4483f9d094f0463ada31c075",
+      "bytes": 3530582
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hangingPots_attack.png",
+      "sha256": "df3f79c6965022eac067c26be9fd16e7264e1394891065226533da3658e234c7",
+      "bytes": 6125244
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hanging-pots/attack.webp",
+      "sha256": "15cead31d41667e64e0d27f8a8e404323b8dc29da4804382a4b6c574eee722f5",
+      "bytes": 2900032
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hangingPots_hurt.png",
+      "sha256": "a9b7021923e442ff73571ea822a9cda0b72c1adfa7ee72a90a40ee3caaddb02a",
+      "bytes": 2966664
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hanging-pots/hurt.webp",
+      "sha256": "8b33c77bdf96d594416a39ec474ace57d8d5df2bcab19bbd4c8be4055114a32f",
+      "bytes": 1417320
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hangingPots_defeat.png",
+      "sha256": "0ff9c6a3e5036178f429ed7b3e5cab353d0e13347d5fdb0267e97fdc0b6ce004",
+      "bytes": 5295799
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hanging-pots/defeat.webp",
+      "sha256": "cdd53bfa2e72948d7a3946c72eb79bdff56804d8d856b01becc83f1748c5d3bb",
+      "bytes": 2248656
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hanging-pots/index.json",
+      "sha256": "90fdfa00c56bf60fac2377e7dc7d87d225a1e750343fbebd75299d9651e0097e",
+      "bytes": 2616
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_gardenShears_idle.png",
+      "sha256": "71d2e57771382853c34bcf0fb4d1407132c31a0c59df642f74c9a243e183ea0e",
+      "bytes": 4008966
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/garden-shears/idle.webp",
+      "sha256": "5cbf26b9606fe89cfd557eeb644044161b50ad1a5e11998bf6eb89fd6fc460c7",
+      "bytes": 1875174
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_gardenShears_attack.png",
+      "sha256": "83ed717a831da2a457aa8686edbf265bbb737d0f982c6f2f828fb7a0602626eb",
+      "bytes": 3072282
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/garden-shears/attack.webp",
+      "sha256": "18ff4e54eeb0ffef8b0997069654a27ff382560eedb9b6792adf1f35976b8fc3",
+      "bytes": 1390552
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_gardenShears_hurt.png",
+      "sha256": "a8f1639f3b664527233f7c7585ba7e6eb26676e46ed2f9cb97ea3d2bc9af6590",
+      "bytes": 1720336
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/garden-shears/hurt.webp",
+      "sha256": "b247287a6307f5cc966aad324fd46c12d5f5d8376fd6a0e687ed26a75a20c466",
+      "bytes": 784404
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_gardenShears_defeat.png",
+      "sha256": "6c21f1d336fc3032b2a3a2122e8081be811c3a7c3ed9a664c44f1c59be63b8ad",
+      "bytes": 2919048
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/garden-shears/defeat.webp",
+      "sha256": "491f371dbe7fd94d8877d0fb0144f3336b974d32e9f9d379316d99f3877487ed",
+      "bytes": 1320444
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/garden-shears/index.json",
+      "sha256": "512ab6a0b2af3dd1f5a6bddcac261540203503429de675ae4fe77830517faa9b",
+      "bytes": 2679
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_bedsheetApparition_idle.png",
+      "sha256": "206878ea3163499cde20cb868e15ed201e0836f926592a5ba6fea049912b05e7",
+      "bytes": 5187728
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/bedsheet-apparition/idle.webp",
+      "sha256": "fb25e92ed375db857b4b77f21e3e53dab40629d28a4b4c5a06eedec27cd6e4f3",
+      "bytes": 2477606
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_bedsheetApparition_attack.png",
+      "sha256": "b51be3c06d46c27366e5d713a671c08129199703749cca0966c14e88bbc526c9",
+      "bytes": 4572972
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/bedsheet-apparition/attack.webp",
+      "sha256": "a3c741152fda844e1d4ac278278f1137d2bc3b386f2052487aefa97a15d25aa5",
+      "bytes": 2077724
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_bedsheetApparition_hurt.png",
+      "sha256": "7258f4a1bf00a50b6453d826e57eb5f4dec066c82d9a8ba2b44f49c4a1f956e0",
+      "bytes": 2105645
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/bedsheet-apparition/hurt.webp",
+      "sha256": "40abbb1d031fea670472f31dd2e5105c5158cbada16fac0f9a0945b1eaca41ba",
+      "bytes": 968092
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_bedsheetApparition_defeat.png",
+      "sha256": "61de9fdf05716ca0c2dca9d5f21861fd5cc4605e6acd21121dae1d6529e9e82f",
+      "bytes": 2727229
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/bedsheet-apparition/defeat.webp",
+      "sha256": "6953f8c2dd32a40737da405df1c75c8e8c915e0f7a049f490369bb596beec01f",
+      "bytes": 1226760
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/bedsheet-apparition/index.json",
+      "sha256": "df9e99077de4a39fb25877ca8b418c9f0eb08e097f5b8bb24f972073368ad15c",
+      "bytes": 2664
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_topiaryHare_idle.png",
+      "sha256": "f3737a9f2fe023b2970cab6d5a383ba21835455dfc3dd14c06caa27585241921",
+      "bytes": 3386495
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/topiary-hare/idle.webp",
+      "sha256": "11c360f062325ddd3024872f5e3942581c8798c5145fb3f28243aca5e8ec15da",
+      "bytes": 1540442
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_topiaryHare_attack.png",
+      "sha256": "91850b77182acef75e63d66b519362c93c3dcadaffe45f18beaed7782a431a22",
+      "bytes": 4667346
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/topiary-hare/attack.webp",
+      "sha256": "6cc316d54a2268703e29d2ac5838bf88961a25dfc02f0e4ef18acf69c202788c",
+      "bytes": 2008968
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_topiaryHare_hurt.png",
+      "sha256": "8d2f3b179be5cd61a0a2fa9d010294c8777c54a9629ff9d2d259cc570992527b",
+      "bytes": 2394462
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/topiary-hare/hurt.webp",
+      "sha256": "edcdc378a98c3d1d523b03df10bdb39c9f7551a786dad07c75f15748f4a7549e",
+      "bytes": 1036088
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_topiaryHare_defeat.png",
+      "sha256": "8d6a703ba782082a89417f12f745f29dfa9713b102bb26f28fd3cd6cd4ddf2a1",
+      "bytes": 4248146
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/topiary-hare/defeat.webp",
+      "sha256": "f0acd4b31e178f6d58c44966715c693f87ecf760039c47337a47eb1aa51f25b8",
+      "bytes": 1842764
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/topiary-hare/index.json",
+      "sha256": "a761e941c280b932c8b0e60a8dd9afea58061398abc653bb51225e40879003a1",
+      "bytes": 2643
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_servantBell_idle.png",
+      "sha256": "5bda1890f9bcde3db0ec40abb141aa3a2a0f73ffa053df029acb25db8e3cca09",
+      "bytes": 5616324
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/servant-bell/idle.webp",
+      "sha256": "5e190e0fc4f1899505d30d9dac6f33eaeea380e428f49e239aaddc51a3ef9574",
+      "bytes": 2862114
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_servantBell_attack.png",
+      "sha256": "d99189926d03878ed02c12ffad2c2ca9ddab1d914ceb08e00f821f645ff1603c",
+      "bytes": 3859032
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/servant-bell/attack.webp",
+      "sha256": "06a0c5414469966f8276523122be05ef2ce77ff3a5980cdddea7968bcedb4e6d",
+      "bytes": 1952932
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_servantBell_hurt.png",
+      "sha256": "d9648a0a268a92fb1669f251eae3d028af6bfb0aaf5b0bc63f93ea40f6674117",
+      "bytes": 2407123
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/servant-bell/hurt.webp",
+      "sha256": "5c7cf952893fe2d1333dffbf5677d87836d32c4ac07506de468b193065f8972e",
+      "bytes": 1212086
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_servantBell_defeat.png",
+      "sha256": "c90cfd8ebdb19f0194a469df7631fd9311bded1b7eb8ff682df9d1b8b0536975",
+      "bytes": 4035103
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/servant-bell/defeat.webp",
+      "sha256": "9ada38c7eef1beef7fd257563145997d0c55ab209bfd493f66757bd2344bdfc1",
+      "bytes": 1972776
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/servant-bell/index.json",
+      "sha256": "2de4060c29ca5e8e4daa4cea6a211309670556d418760f6ea7b4afcefe89f4f3",
+      "bytes": 2632
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_masqueradeMask_idle.png",
+      "sha256": "3040e17bf942d1563e05fe3411a923c44b770e23bd9d38d2909981783bcf8de9",
+      "bytes": 7766831
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/masquerade-mask/idle.webp",
+      "sha256": "c5794301af383049bdb79bd442ef1af1adee20b39922adcbef2bec09126f0a27",
+      "bytes": 3950874
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_masqueradeMask_attack.png",
+      "sha256": "e04cb76eeb4f1bc5e52e90fe0084d22ef64f1ef6594191b7a76c4e3c4ce59a98",
+      "bytes": 6497150
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/masquerade-mask/attack.webp",
+      "sha256": "b6bc51395d0db21f2ff99f442ad83c119e5fe715b181ae0439b6beb883798303",
+      "bytes": 3267222
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_masqueradeMask_hurt.png",
+      "sha256": "d847650e3b113d829a528f6471bd91d1a84741053e09cb3856bdcc0cd11291ae",
+      "bytes": 3241009
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/masquerade-mask/hurt.webp",
+      "sha256": "7bce3184993487d43607c00057604f017920d4d3e92108faf5962aee41c406f3",
+      "bytes": 1628926
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_masqueradeMask_defeat.png",
+      "sha256": "9427f62d04f1083174241a2de11b9a4544f3bb725e91ebba8935fd55524f4638",
+      "bytes": 6039230
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/masquerade-mask/defeat.webp",
+      "sha256": "75344fe3ad1fec8b7a0185038f13fd5df754a9870a97725724a2220fca8ad362",
+      "bytes": 3046822
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/masquerade-mask/index.json",
+      "sha256": "f8a3e18f97bc9e8add204fa5830187c403efa4470452e5143f9c071c22602c93",
+      "bytes": 2692
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_imaginaryFriend_idle.png",
+      "sha256": "407082ede4f7ed64ea6dda8ed74f57316ef87a0e875e77860a9fc5a156c29ee7",
+      "bytes": 9016716
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/imaginary-friend/idle.webp",
+      "sha256": "369a9eef25c29fcdc774c15c461a32b1c355b99bb1d9418688f30a05f5b50013",
+      "bytes": 5175084
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_imaginaryFriend_attack.png",
+      "sha256": "9ee624e9b6cafe7271d548fb7b5ce27800d4bcb70fbe12846249b84039f33d97",
+      "bytes": 6535575
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/imaginary-friend/attack.webp",
+      "sha256": "cde8736890aa86ee1c6e925fc29d461b12de3cc7a9f436219b4f5405f035f426",
+      "bytes": 3566464
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_imaginaryFriend_hurt.png",
+      "sha256": "9f2e75e9b536afcbb5e99f4274a717449fdd00b86dbb52d5209f853b3840f053",
+      "bytes": 4117062
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/imaginary-friend/hurt.webp",
+      "sha256": "99e8ed8b200fdcfeaf69e033f1f194f863f17c7b3a18fac297754aa1a523b5e7",
+      "bytes": 2216662
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_imaginaryFriend_defeat.png",
+      "sha256": "ea49b116f7d05587faa3563481e10908dce662d261881027a5f71e6d473c4761",
+      "bytes": 4232189
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/imaginary-friend/defeat.webp",
+      "sha256": "f47ae4140b28d0e6a7ac12ae5908bc618e25daf726988005c5fa781070a372e4",
+      "bytes": 2211448
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_imaginaryFriend_cast.png",
+      "sha256": "b565d1f7044d1b0bf6b825a64bd9f24a1496beb84e1d3955b01d0309baa87703",
+      "bytes": 7895535
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/imaginary-friend/cast.webp",
+      "sha256": "5061173f7cba535a371482f04cd06e16cc0fd3deb8206b97bd270b3afeb39752",
+      "bytes": 4324566
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/imaginary-friend/index.json",
+      "sha256": "c5e3741d9327c56e33b9da91fc4d83af48fa8b4803daff5147f8d438c5063af4",
+      "bytes": 3306
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rainChain_idle.png",
+      "sha256": "819f5753eaec80919c59d6e910c0ac79754785e587ce6a1f89d6b3b34b5049f4",
+      "bytes": 3663015
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rain-chain/idle.webp",
+      "sha256": "272d95eea7cf80eb4430fb7f924eafe3b2f723059f0753b3956a53aec998913f",
+      "bytes": 1820362
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rainChain_attack.png",
+      "sha256": "b00545d687aa6483aa6ff183559b26cdff8d45562e90773b15f18a08d2927edf",
+      "bytes": 2921807
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rain-chain/attack.webp",
+      "sha256": "5086014301b9d07ef3066f8a4eb808071f6d07c896670e9497a9d312263259e8",
+      "bytes": 1460180
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rainChain_hurt.png",
+      "sha256": "4546334f0308d0fbab31609aea3f7e27d66b7c038e3f1340a8d45647ffcd47b8",
+      "bytes": 1486905
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rain-chain/hurt.webp",
+      "sha256": "25986088fa2c7009e60e68a68130eb2f4960fb4fd9f053c7bfe3cefdcb8ff904",
+      "bytes": 742092
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rainChain_defeat.png",
+      "sha256": "7ed10be2ce915f996ecec4ccd18ac20cb0a737725e2bd97195ce66c6920987c1",
+      "bytes": 2816989
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rain-chain/defeat.webp",
+      "sha256": "c9308d13902752ab56b40610bf081713e4033575ef6b99f0835f6b2d486d3192",
+      "bytes": 1385254
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rainChain_cast.png",
+      "sha256": "e5c0de260ef30b3d844b3e31845dd0a68cc55047c3ba7b27b630b80eb434b716",
+      "bytes": 3558697
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rain-chain/cast.webp",
+      "sha256": "2cbc2df3828f54f8009a1deae00bf9e36ee5d626dbb1c5c3dd50331a57354adf",
+      "bytes": 1797166
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rain-chain/index.json",
+      "sha256": "50c44ed6977726ac22a490ed053ccf0f0a2fc78d01c04dfdee83cb3f9afddd67",
+      "bytes": 3245
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rockingChair_idle.png",
+      "sha256": "8ae26ef022cde5f2dfb257925a11b7f01cb0413b42468f2bd97d346793cbbf47",
+      "bytes": 6925743
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rocking-chair/idle.webp",
+      "sha256": "041c7d1109d4b31a1b0291d44f9e7367197b5022dacadf58c3352627d71d8aa7",
+      "bytes": 3389756
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rockingChair_attack.png",
+      "sha256": "80808e57ca50b1bdef92c8ba4e2296f975fffe73406ae4e03151eb91dd984616",
+      "bytes": 5785957
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rocking-chair/attack.webp",
+      "sha256": "72471cb0d88879518b02ce15875c7299a65ed87135d1274720165ca7f72fd311",
+      "bytes": 2797212
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rockingChair_hurt.png",
+      "sha256": "1bde886da2fa7d1f899dee3033e623215c95f3967a16ecc8385be89c45668d72",
+      "bytes": 2906698
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rocking-chair/hurt.webp",
+      "sha256": "50c5c3ec108a892900d384601b63c32c7e80abebc0d084c285d66713be3b31e3",
+      "bytes": 1399188
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rockingChair_defeat.png",
+      "sha256": "bc7785d7c9435190d70079636f73ad0d7c62516141d3e542de77b02beefcfb76",
+      "bytes": 5752440
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rocking-chair/defeat.webp",
+      "sha256": "595755aa1976b79625dbb6e128694289344b624119f8aabc1bb27d57d2905384",
+      "bytes": 2749888
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rocking-chair/index.json",
+      "sha256": "7c887e262c493adf9689a5e5fab69413b4e34707dd93efead6acbfd624db9e46",
+      "bytes": 2652
+    }
+  ],
+  "legacy_derivative_files_checked": 9
+}

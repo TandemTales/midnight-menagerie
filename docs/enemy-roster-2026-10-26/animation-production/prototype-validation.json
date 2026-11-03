@@ -1,0 +1,30 @@
+{
+  "frames": 40,
+  "fps": 30,
+  "duration_seconds": 1.3333333333333333,
+  "loop": true,
+  "hold": false,
+  "grid": [
+    9,
+    5
+  ],
+  "frame_size": [
+    160,
+    272
+  ],
+  "anchor": [
+    80,
+    264
+  ],
+  "unique_pixel_frames": 40,
+  "source_body_height_range": [
+    246,
+    248
+  ],
+  "silhouette_adjacent_IoU_min": 0.9611179292647551,
+  "silhouette_adjacent_IoU_mean": 0.9764127752540254,
+  "silhouette_loop_seam_IoU": 0.9807897545357525,
+  "fixed_gold_region_rgb_MAE_mean": 20.288303900015517,
+  "fixed_gold_region_rgb_MAE_max": 29.256340294539477,
+  "note": "Diagnostic only. Components sorted row-major; translation aligns silhouette bottom-center. No invented in-betweens, duplication, deformation, background removal or final-art promotion."
+}

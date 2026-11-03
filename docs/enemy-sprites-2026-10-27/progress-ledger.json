@@ -1,0 +1,393 @@
+{
+  "date": "2026-10-27",
+  "sourceDocumentId": "1R_7b_Xr7tU_rHszjWKAhKwXUbfSdeTFqjDSCgtVPODw",
+  "sourceRevision": "AHj4eMRVEn4-D2BNovsD_cozYRrr9oXnvKPN8RtTe6K2L9E-fTW793Gi44JCfUDpVK3q4gUqMTzYNQuU41SPMrei2c0xlesbjsdxnD-0pQ",
+  "conversationUrl": null,
+  "batches": [
+    {
+      "batch": 1,
+      "orders": [
+        3,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "names": [
+        "Door Greeter",
+        "Hall Mirror",
+        "Portrait Greeter",
+        "Luggage Trolley",
+        "Unwelcome Guest",
+        "The Grand Mirror"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null,
+      "dispatch_status": "thread-creation-denied-before-submission"
+    },
+    {
+      "batch": 2,
+      "orders": [
+        10,
+        12,
+        13,
+        14,
+        16,
+        17
+      ],
+      "names": [
+        "The Foyer Chandelier",
+        "Patchwork Soldier",
+        "Button Baby",
+        "Blanket Blob",
+        "Crib Curtains",
+        "Porcelain Doll"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    },
+    {
+      "batch": 3,
+      "orders": [
+        18,
+        19,
+        20,
+        21,
+        24,
+        25
+      ],
+      "names": [
+        "Imaginary Friend",
+        "The Dollhouse",
+        "The Toy Chest",
+        "The Grand Music Box",
+        "Rocking Chair",
+        "Nightstand Poltergeist"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    },
+    {
+      "batch": 4,
+      "orders": [
+        28,
+        29,
+        32,
+        33,
+        34,
+        35
+      ],
+      "names": [
+        "Bedsheet Apparition",
+        "Sleepwalking Ghost",
+        "The Bedside Vigil",
+        "The Canopy Bed",
+        "Kitchen Poltergeist",
+        "Spectral Scullion"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    },
+    {
+      "batch": 5,
+      "orders": [
+        36,
+        37,
+        38,
+        39,
+        40,
+        41
+      ],
+      "names": [
+        "Hanging Pots",
+        "Boiling Pot",
+        "The Hungry Dumbwaiter",
+        "The Cellar Steward",
+        "The Confectioner",
+        "Walking Planter"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    },
+    {
+      "batch": 6,
+      "orders": [
+        42,
+        43,
+        44,
+        45,
+        46,
+        47
+      ],
+      "names": [
+        "Garden Shears",
+        "Topiary Hound",
+        "Topiary Hare",
+        "Garden Statue",
+        "Vine Curtain",
+        "Fountain Spirit"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    },
+    {
+      "batch": 7,
+      "orders": [
+        49,
+        51,
+        52,
+        53,
+        54,
+        55
+      ],
+      "names": [
+        "The Midnight Fountain",
+        "Headstone Walker",
+        "Epitaph Spirit",
+        "Mourning Candle",
+        "Funeral Veil",
+        "gargoyle"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    },
+    {
+      "batch": 8,
+      "orders": [
+        56,
+        57,
+        58,
+        59,
+        60,
+        61
+      ],
+      "names": [
+        "The Mourning Angel",
+        "The Mausoleum",
+        "The Cemetery Gate",
+        "The Widow of the Grounds",
+        "Rolling Ladder",
+        "Loose Pages"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    },
+    {
+      "batch": 9,
+      "orders": [
+        62,
+        63,
+        64,
+        65,
+        66,
+        67
+      ],
+      "names": [
+        "Studying Ghost",
+        "Globe",
+        "Bookmark Ribbon",
+        "Writing Desk",
+        "Library Clock",
+        "Whispering Books"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    },
+    {
+      "batch": 10,
+      "orders": [
+        68,
+        69,
+        70,
+        71,
+        72,
+        73
+      ],
+      "names": [
+        "The Living Index",
+        "The Restricted Cabinet",
+        "The Atlas Room",
+        "The Librarian\u2019s Desk",
+        "The Black Ink Manuscript",
+        "The Head Librarian"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    },
+    {
+      "batch": 11,
+      "orders": [
+        74,
+        75,
+        76,
+        77,
+        78,
+        79
+      ],
+      "names": [
+        "Telescope Eye",
+        "Astrolabe",
+        "Tripod Camera",
+        "Attic Trunk",
+        "Spectral Assistant",
+        "Moonbeam Figure"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    },
+    {
+      "batch": 12,
+      "orders": [
+        80,
+        81,
+        82,
+        83,
+        84,
+        85
+      ],
+      "names": [
+        "The Moon Lens",
+        "The Celestial Clock",
+        "The Watcher in the Rafters",
+        "Wall Sconce",
+        "Gaslight Ghost",
+        "Lantern Bearer"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    },
+    {
+      "batch": 13,
+      "orders": [
+        86,
+        87,
+        88,
+        89,
+        90,
+        91
+      ],
+      "names": [
+        "Fuse Box",
+        "Gas Valve",
+        "Soot Shadow",
+        "Blue Flame",
+        "Light Switch Shadow",
+        "Electric Arc"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    },
+    {
+      "batch": 14,
+      "orders": [
+        92,
+        93,
+        94,
+        95,
+        96,
+        97
+      ],
+      "names": [
+        "The Main Switchboard",
+        "The Gas Manifold",
+        "The Glassworks Rack",
+        "The Lamplighter",
+        "Masquerade Mask",
+        "Waltzing Shoes"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    },
+    {
+      "batch": 15,
+      "orders": [
+        98,
+        99,
+        100,
+        101,
+        102,
+        103
+      ],
+      "names": [
+        "Candelabra",
+        "Serving Tray",
+        "Ghost Guest",
+        "Violin Poltergeist",
+        "Top Hat Shade",
+        "The Grand Masque"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    },
+    {
+      "batch": 16,
+      "orders": [
+        104,
+        105,
+        106,
+        107
+      ],
+      "names": [
+        "The Eternal Dance",
+        "The Velvet Host",
+        "The Ballroom Chandelier",
+        "The Master of Revels"
+      ],
+      "status": "prepared-not-submitted",
+      "attempts": 0,
+      "output": null,
+      "alphaQA": null,
+      "visualQA": null
+    }
+  ],
+  "thread_creation_status": "denied-by-automatic-approval-review",
+  "blocker": "Reviewer cites prior pet Polaroid request; new confirmation pending. See BLOCKER.txt.",
+  "library_file_id": "libfile_48dd4a412e3c819197d53d94ff3d3352",
+  "library_file_id_local_xattrs": "not-persisted-Windows-helper-unsupported"
+}

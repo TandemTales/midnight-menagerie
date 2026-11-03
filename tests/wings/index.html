@@ -400,6 +400,13 @@ async function main() {
     const mendable = run.local.deck.find(c => !c.upgraded);
     if (mendable) run.upgradeCard(mendable.uid);
     check(played.includes('card:upgrade'), 'a mended Trick sounds mended');
+    /* Only a wing's own boss frees anybody, so stand on that win. */
+    run.region = 'pumpkin-grounds';
+    run._buildMap();
+    const bossNode = run.map.nodes.find(n => run.effectiveType(n) === 'boss');
+    run.currentNodeId = bossNode.id;
+    run.visitedIds.push(bossNode.id);
+    run.defeatedBoss = { region: run.region, nodeId: bossNode.id };
     run.rescueCompanion('pipkin');
     check(played.includes('sting/sting:rescue'),
       'and a Companion coming home gets its sting — the whole point of the game, '

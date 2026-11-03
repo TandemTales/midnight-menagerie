@@ -1,0 +1,40 @@
+# Recorded-playthrough editorial review — in progress
+
+28 October 2026. No score assigned; the six-wing run is incomplete. Independent read of `session.jsonl` through Greenhouse row 7 / Brambleboo rescue, with relevant current-source checks. No browser opened and no game source edited by this reviewer. This review uses displayed `text`, not hidden narrative fields, as evidence of what was read. The recording spans two attempts and live repairs; it is not one immutable build.
+
+## Mandatory findings
+
+1. **P2, confirmed displayed — Confectioner answers an absent child.** The Kitchens pre-boss `entered-room` record shows “Nothing is finished while I can add something,” the falling cherry, then “An excellent question. Needs icing.” Priya's question is removed because the player is solo Maya. `narrative-regions.js` retained the reply after filtering its setup. Reported to the main agent. Current source now says “Stay there. You haven’t had your icing,” addressing the cherry. This fixes the dependency in source; a subsequent display capture should verify it. Do not claim the bad line remains in the patched build.
+
+2. **P2, source-confirmed alternative-cast seam — Foyer tray checks a question nobody asked.** In `foyer.arrival`, the final tray-retreat caption depended on Maya's question. The recorded Maya route was coherent, but any solo Kid without Maya lost that setup. Current source now has the tray unfold a tiny towel marked UNFORESEEN NEEDS, which works with or without Maya. Foyer's pre-boss “An untested arrangement” also lost Samir's shorter-welcome request; current source replaces it with a self-contained instruction to hold questions until after the longer welcome. These were source-derived findings, not defects observed in this route.
+
+3. **P2, source-confirmed towel continuity — Bathhouse.** The pre-boss narrator had already placed “another towel” before the Matron proposed “a second towel.” Current source now lays “the towel,” preserving the count and allowing the second offer. This wing had not been recorded when checked. The Bedframe Beast's “The feet are a separate matter” also loses Mateo's question in some casts, but the visible feet and blocking movement still supply a referent; this is weaker comic timing, not a mandatory coherence failure.
+
+4. **P2, displayed progress mismatch reported by the main player — title rescue count after reload.** Main agent reported the title displaying 1/16 freed while the saved current expedition had freed four additional Companions. Source inspection confirmed `title.js` used `freedCompanions()` without the pending run's rescued set; `Run.snapshot()` preserves `rescued` and `companionsFreed`, while banking into meta progression occurs at run end. The helper already accepts additional freed slugs and deduplicates valid identities. A title-only union with `Save.loadRun().rescued` is the appropriate narrow repair: it avoids implying that successful rescues were lost without changing banking or unlock rules. Main agent reports that repair has landed. Await the fresh title capture before describing it as visually verified.
+
+No additional mandatory narrative failure confirmed through the review cutoff. These are independent findings and evidence limits, not a declaration that the unfinished finale is cleared.
+
+## Humor and voice observations
+
+- Marmalade's interrupted paw wash occurs in the initial meeting, the post-practice scene, and the first safe-room relationship scene. The first two form a setup/payoff; the third is a recognizable callback but adds little. This is a **P3 editorial opportunity**, not a broken scene. A different physical habit at rest would broaden her personality.
+- The Painted Dog, Umbrella Gallery, Feeding Room, and Photograph recur across the two attempts. These are real repeated introductions, but they are **not same-run once-flag violations**. The second attempt makes different choices in some encounters. Short repeat framing could reduce reading effort on future attempts; the existing text remains coherent.
+- The current aftercare choices add visible participation: Butler dish/hatch/space, Watcher telescope/stand/space, and Confectioner spoon/question/watch. The mouse-chef branch is a particularly good new surprise. Repeated “point / help / wait” layouts may become formulaic by the finale, but three sampled scenes are insufficient to demand another system. The wait option also appropriately permits nonintrusive participation.
+- Most observed regional arrivals are understandable without their absent child's punchline: Attic's boastful chart, Kitchens' sprinkle spoon, and Greenhouse's turning pot work as physical comedy. This solo Maya run cannot establish that all eight Kids have interchangeable delivered voices. Maya's towel question and private window drawing are consistent with her practical dry humor. Assess other cast behavior from explicitly labeled source evidence or later runs.
+
+## Clues and explanations
+
+- Foyer's tests distinguish a working bell from a blocked request. Lampworks' reversible shade test supplies an observable cause. Attic's two cards and gentle pressure test distinguish a prediction from an inevitable outcome. Actual recorded tests permit no guess, changed guesses, and repeat reading; the dialogue acknowledges the tested result where applicable.
+- Comparison paragraphs repeat parts of the just-read evidence. This is functional consolidation for younger readers, not automatically overexplanation. Lampworks' two conclusion sentences could be shortened if testing shows fatigue, but no mandatory rewrite follows from this log alone.
+- The current Foyer card preserves both FOUND ALONE and HAS A HOME rather than immediately narrating the complete verdict. In the recording the player did not open that card's detail, so state fields or current authored recaps must not be presented as proof that the child saw them.
+- The current run has many generic Clue rewards and a separate named Discoveries journal. That can obscure what evidence advances the pet search, but the observed captions do not falsely claim that a generic Clue itself rescued Orbit. Final judgment awaits the Heart and reunion.
+
+## Recording artifacts and historical issues excluded from outstanding findings
+
+- Multiple snapshots of Taffy's scene with labels such as `attic-arrival` are the same pending scene captured before advancement, not three in-game replays of that vignette. Actual `state.scene`/`region` and text take priority over the recorder's requested label.
+- Consecutive “Short version” / “Read full scene” captures are deliberate player toggles. The aftercare choice remains available in the short view, and the selected result is retained when reopened in full.
+- `E\nE\nLEVEN`, similar doubled initial letters, and `Achair` are not enough to establish displayed typos. `event.js::_proseMarkup` uses a decorative initial, a screen-reader copy, and separate spans. Text extraction may expose both or join spans differently. Inspect rendered pixels or accessibility output before requiring a prose fix.
+- Generic Clue result numbers can exceed the option's base amount because room/Kid effects contribute. The +2 result for a base one-Clue encounter is not itself false narrative.
+- Early defeat wording emphasized lost possessions and the original fort promised “until morning”/two hours. Current source has already changed those lines to run resets and a quiet stop/nap, and describes the fort's Companion action plainly. These earlier captures should not be reported as unresolved in the latest source.
+- The original Bones rescue caption acted before the player selected Open and assumed the animal's long emotional history. The newer Brambleboo capture describes the outside chair and a possible opening, then records sliding the chair only after selection. That specific premature-action problem is repaired in the newer recorded scene.
+
+Review remains open for the Conservatory aftermath, Kennels, Heart, pet safety/reunion, ending, and post-ending replay. No overall grade should be attached to this partial record.

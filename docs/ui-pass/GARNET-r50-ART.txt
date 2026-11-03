@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: painted backdrop for gothic storybook game travelling theatre shop, landscape 1536 by 1024.
+Primary request: a richly painted aubergine purple velvet theatre curtain surround, hand-painted in fine children's gothic storybook style with antique brass trim. Two gathered side curtains frame a very wide quiet dark aubergine centre occupying the middle 70 percent of the image. Weighted scalloped top valance in the top 15 percent, uneven irregular folds, subtle woven nap, frayed gold edging, a few embroidered tiny stars. The side panels have deep shadowed folds and local warm candle light with lavender reflected moonlight. Bottom has a low carved dark walnut theatre stage apron, strongly grounded, with a thin worn brass lip.
+Composition: front view, symmetrical broad theatrical opening but organic asymmetric folds. Central area mostly dark subdued brushed purple velvet, very quiet. Keep folds near edges. No objects, merchant, cards, people, letters, words, logos or controls. Paint tangible material, not vector illustration, no smooth gradients, no shiny 3D render. Palette near-black aubergine, dusty lavender, antique brass. Edges full bleed.
+
+Mode: built-in image_gen, generation, opaque. Source inspected at 1536x1024. Prepared using tools/prep_r50_garnet.py; source retained.

@@ -1,0 +1,18 @@
+{
+  "enemy": "servant-bell",
+  "source": "docs\\enemy-roster-2026-10-26\\art-production\\servant-bell-original.png",
+  "source_sha256": "758a3e1439824c0dad360362b3fc9ee84e17d18d738c0086917ba1303d152601",
+  "method": "Continuous source-art deformation about the bell crown, tapered through the spring into a fixed wooden plaque. Original rope and plaque retained. The separate painted shadow has a delayed motion field; no unpainted hidden metal is invented.",
+  "actions": {
+    "idle": "Small wire/coil flex and a slower shadow sway.",
+    "attack": "Coil tensions right, then the bell swings left twice; the shadow rings a third late echo before all recover.",
+    "hurt": "Brief rightward recoil, small counter-swing and damped return.",
+    "defeat": "Metal droops on a slack coil while the ghostly shadow fades; fixed plaque and rope remain."
+  },
+  "orientation": {
+    "required": "screen-left",
+    "method": "Authentic bell opening points left; main strikes swing left following rightward anticipation. Recovery and drooped endpoint retain leftward mouth. No reflection or text change.",
+    "status": "prototype_review_pending"
+  },
+  "quality_gate": "Prototype; no delivered actions yet."
+}

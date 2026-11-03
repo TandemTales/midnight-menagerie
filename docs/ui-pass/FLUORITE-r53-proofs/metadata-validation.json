@@ -1,0 +1,71 @@
+{
+  "all11Inspected": true,
+  "rows": [
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\combat-floaters-1280.state.json",
+      "errors": [],
+      "void": false,
+      "url": "http://localhost:9533/game/index.html#scene=combat&seed=7&companion=bones&kid=maya&encounter=foyer-boss"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\combat-floaters.state.json",
+      "errors": [],
+      "void": false,
+      "url": "http://localhost:9533/game/index.html#scene=combat&seed=7&companion=bones&kid=maya&encounter=foyer-boss"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\event-1280.state.json",
+      "errors": [],
+      "void": false,
+      "url": "http://localhost:9533/game/index.html#scene=event&seed=7&companion=bones&kid=maya&pics=1"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\event.state.json",
+      "errors": [],
+      "void": false,
+      "url": "http://localhost:9533/game/index.html#scene=event&seed=7&companion=bones&kid=maya&pics=1"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\gameover-1280.state.json",
+      "errors": [],
+      "void": false,
+      "url": "http://localhost:9533/game/index.html#scene=gameover&seed=7&companion=bones&kid=maya&pics=1"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\gameover.state.json",
+      "errors": [],
+      "void": false,
+      "url": "http://localhost:9533/game/index.html#scene=gameover&seed=7&companion=bones&kid=maya&pics=1"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\rest-1280.state.json",
+      "errors": [],
+      "void": false,
+      "url": "http://localhost:9533/game/index.html#scene=rest&seed=7&companion=bones&kid=maya&pics=1"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\rest.state.json",
+      "errors": [],
+      "void": false,
+      "url": "http://localhost:9533/game/index.html#scene=rest&seed=7&companion=bones&kid=maya&pics=1"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\shop-1280.state.json",
+      "errors": [],
+      "void": false,
+      "url": "http://localhost:9533/game/index.html#scene=shop&seed=7&companion=bones&kid=maya"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\shop.state.json",
+      "errors": [],
+      "void": false,
+      "url": "http://localhost:9533/game/index.html#scene=shop&seed=7&companion=bones&kid=maya"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\shots\\FLUORITE-title.state.json",
+      "errors": [],
+      "void": false,
+      "url": "http://localhost:9533/game/index.html#scene=title&seed=7&companion=bones&kid=maya"
+    }
+  ]
+}

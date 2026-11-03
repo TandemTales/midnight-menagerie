@@ -41,7 +41,13 @@ Then, on the title screen, **Play Together**:
 
 Password search only finds lobbies in nearby regions. If the friend is far
 away and the password does not find you, use *Join Game* or an invite. Those
-always work.
+always work. In the packaged game, the room's **Invite a friend** button opens
+Steam's friends picker.
+
+If somebody drops, the others see who and can wait, or play on without them.
+Either way, pressing **Continue** on the title screen puts that player back in
+the same seat, on the same board. If nobody else is left in the house, **Open the
+house back up** resumes from their own save and friends can climb in after them.
 
 ## How it works
 

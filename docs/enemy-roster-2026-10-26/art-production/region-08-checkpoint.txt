@@ -1,0 +1,1 @@
+OBSERVATORY COMPLETE: 11 new validated PNG/WebP pairs. Exact paths and hashes in region-08-results.json; full-region preview in region-08-contact.jpg. Originals and prompts retained. No existing files overwritten, no game code/data/registry/animation changes. Lampworks in progress. No blockers.

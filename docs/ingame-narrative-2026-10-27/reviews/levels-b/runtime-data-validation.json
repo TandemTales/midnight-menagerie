@@ -1,0 +1,13 @@
+{
+  "regions": 17,
+  "mainUnits": 153,
+  "inspectionActions": 4,
+  "clues": 51,
+  "restrictionGuards": 6,
+  "uniqueIds": 157,
+  "maxWordsPerLine": 21,
+  "curiosities": 17,
+  "curiosityOutcomes": 79,
+  "curiosityMechanicalDataIdentical": true,
+  "companionCaptions": 16
+}

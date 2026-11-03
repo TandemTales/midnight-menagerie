@@ -1,0 +1,84 @@
+{
+  "round": 56,
+  "status": "complete; selected build validated and applied as working changes",
+  "winner": "ONYX",
+  "votes": [
+    "ONYX",
+    "ONYX"
+  ],
+  "selection": "independent blind image-only votes",
+  "system_scores_descriptive_only": {
+    "judge1": {
+      "OBSIDIAN": 6.5,
+      "TOPAZ": 6.6,
+      "ONYX": 7.0,
+      "AMBER": 6.8
+    },
+    "judge2": {
+      "AMBER": 6.7,
+      "ONYX": 7.0,
+      "TOPAZ": 6.8,
+      "OBSIDIAN": 6.5
+    }
+  },
+  "base": "035efe6f43bfe09f4eb267e0cc931b009179b283",
+  "comparison_captures": "CAPTURES-r56.json",
+  "all_fit_thresholds_met": false,
+  "applied_to_main": true,
+  "main_committed_or_pushed": false,
+  "evidence_root": "D:\\UILOOP\\r56-20261029",
+  "selected_commit": "602e7b359b97e812e5b95f3eb28859996a1759b8",
+  "comparison_source": "7269f14a63ac58f8e3556ec208c24048c5839d70",
+  "selected_post_review_repair_required": false,
+  "scope_review": "Six presentation CSS files, no production JavaScript. Two generated bitmap families; other changes are owned tests, evidence and preparation.",
+  "derivative_asset_bytes": 3125715,
+  "merge_exception": {
+    "file": "game/src/scenes/gameover.css",
+    "why": "main appended pet-film rules on 2026-11-01 after the snapshot",
+    "method": "git merge-file --union",
+    "retested_on_merged_tree": true
+  },
+  "evidence_limitations": [
+    "The unmodified full proof audit did not run for AMBER; see completion text.",
+    "ONYX's frozen comparison images predate the merge. They show ONYX's tree without the pet-film rules, which do not touch those rows."
+  ],
+  "parent_server_shutdown": "winner-battery/server-shutdown.json",
+  "scope_audit": "SCOPE-AUDIT-r56.json",
+  "assertion_audit": "ASSERTION-AUDIT-r56.json",
+  "independent_raw_proof_audit": "PROOF-AUDIT-r56-partial-ONYX-TOPAZ.json; out-of-tree AMBER copy at D:/UILOOP/r56-20261029/PROOF-AUDIT-r56-out-of-tree-amber-split-results.json",
+  "applied_files_byte_verified": 106,
+  "main_index_preserved": true,
+  "main_index_sha256": "6f75cb9060c5ed58cb981e6b487beb233e9a17128a9974379c659d651d389129",
+  "browser_gates": [
+    {
+      "gate": "chrome/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "steam-deck/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "gamepad/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "events/check.py",
+      "exit": 0
+    },
+    {
+      "gate": "gameover-keeps/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "seams/proof.py",
+      "exit": 0
+    },
+    {
+      "gate": "combat-scene/seam.py",
+      "exit": 0
+    }
+  ],
+  "validated_captures": "VALIDATED-CAPTURES-r56.json",
+  "next_brief": "BRIEF-r57.md"
+}

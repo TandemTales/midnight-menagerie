@@ -1,0 +1,47 @@
+[
+  {
+    "name": "queue",
+    "exit": 1,
+    "seconds": 193.505
+  },
+  {
+    "name": "ink",
+    "exit": 1,
+    "seconds": 58.843
+  },
+  {
+    "name": "idle",
+    "exit": 1,
+    "seconds": 33.697
+  },
+  {
+    "name": "lifecycle",
+    "exit": 0,
+    "seconds": 26.229
+  },
+  {
+    "name": "memorial",
+    "exit": 0,
+    "seconds": 26.981
+  },
+  {
+    "name": "memorial-long",
+    "exit": 0,
+    "seconds": 42.869
+  },
+  {
+    "name": "keepsakes",
+    "exit": 0,
+    "seconds": 23.584
+  },
+  {
+    "name": "event-boundary",
+    "exit": 0,
+    "seconds": 38.377
+  },
+  {
+    "name": "shop-rules",
+    "exit": 0,
+    "seconds": 28.563
+  }
+]

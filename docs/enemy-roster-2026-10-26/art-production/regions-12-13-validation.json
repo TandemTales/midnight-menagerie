@@ -1,0 +1,20 @@
+{
+  "regions": [
+    {
+      "level": 12,
+      "new": 11,
+      "blocked": 0,
+      "files_verified": 22
+    },
+    {
+      "level": 13,
+      "new": 11,
+      "blocked": 0,
+      "files_verified": 22
+    }
+  ],
+  "total_new": 22,
+  "total_final_files": 44,
+  "existing_files_overwritten": 0,
+  "notes": "All final paths guarded before creation. Initial Vent Grille rejected for four louvers; v2 has five and is final. Built-in imagegen only. Global manifest not edited by this agent."
+}

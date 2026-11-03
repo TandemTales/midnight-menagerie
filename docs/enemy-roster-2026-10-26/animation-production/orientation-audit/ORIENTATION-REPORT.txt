@@ -1,0 +1,134 @@
+SCREEN-LEFT ORIENTATION AUDIT — CURRENT
+2026-10-27T00:41:10.389052+00:00
+
+All 29 legacy identities inspected in sampled runtime poses; no original was overwritten.
+Runtime reflection already applies to Slipper Skitter and Blanket Hydra.
+Five legacy identities / 21 actions are left in sampled poses; 23 / 93 require directional pose corrections.
+Oven Maw / 4 actions has a saved alternate that is not integrated.
+All 12 new rigs have left-staged decoded key poses; full-speed visual approval remains pending.
+
+dust-bunny — left_derivative_or_pose_correction_required
+Frontal gaze and mouth burst; needs leftward gaze/action staging. Contacts: orientation-audit/legacy-runtime-1.jpg
+
+coatrack-crawler — left_in_sampled_runtime_poses
+Leading coat/sleeve projects left in rest and attack; rack is not treated as directionless. Contacts: orientation-audit/legacy-runtime-1.jpg
+
+lost-luggage — left_derivative_or_pose_correction_required
+Frontal opening mouth. Tags and stamp-like marks require preservation; do not blanket-flip text. Contacts: orientation-audit/legacy-runtime-1.jpg
+
+red-carpet-runner — left_derivative_or_pose_correction_required
+Roll opens upward/frontally; redirect curl and forward action left. Contacts: orientation-audit/legacy-runtime-1.jpg
+
+door-greeter — left_derivative_or_pose_correction_required
+Frontal carved face and rotating door; needs left-directed look/swing while retaining hinges and lock. Contacts: orientation-audit/legacy-runtime-1.jpg
+
+butler — left_in_sampled_runtime_poses
+Profile, serving hand and cast point left in inspected runtime poses; no renderer flip. Contacts: orientation-audit/legacy-runtime-2.jpg
+
+button-baby — left_derivative_or_pose_correction_required
+Frontal doll and rightward reaching pose; requires pose work, not symmetry claim. Contacts: orientation-audit/legacy-runtime-2.jpg
+
+patchwork-soldier — left_in_sampled_runtime_poses
+Three-quarter left ready stance and sword thrust left; no renderer flip; preserve sword/shield handedness. Contacts: orientation-audit/legacy-runtime-2.jpg
+
+jack-in-the-box — left_derivative_or_pose_correction_required
+Frontal face and rightward extended hand; preserve box crank position in directional pose work. Contacts: orientation-audit/legacy-runtime-2.jpg
+
+blanket-blob — left_derivative_or_pose_correction_required
+Frontal eyes and centered glow; require leftward gaze/effect. Contacts: orientation-audit/legacy-runtime-2.jpg
+
+patchwork-giant — left_derivative_or_pose_correction_required
+Frontal collection of faces and a rightward punch; require directional body/arm work. Contacts: orientation-audit/legacy-runtime-3.jpg
+
+toy-chest — left_derivative_or_pose_correction_required
+Frontal face/opening and centered burst; preserve contents while directing action left. Contacts: orientation-audit/legacy-runtime-3.jpg
+
+governess — left_derivative_or_pose_correction_required
+Mixed direction: leftward attack gesture but rightward cast/scissors. Whole-clip mirroring would invert the other action; author each state coherently. Contacts: orientation-audit/legacy-runtime-3.jpg
+
+wardrobe-guest — left_derivative_or_pose_correction_required
+Frontal glowing eyes and right door/hand opening; needs leftward gaze/reach without reversing door construction. Contacts: orientation-audit/legacy-runtime-3.jpg
+
+blanket-creeper — left_derivative_or_pose_correction_required
+Frontal grasping hands/face; requires leftward pose design. Contacts: orientation-audit/legacy-runtime-3.jpg
+
+slipper-skitter — left_in_sampled_runtime_poses
+Renderer already reflects every clip; toes/eyes and attack read left in the resulting contacts. Do not double-flip. Contacts: orientation-audit/legacy-runtime-4.jpg
+
+blanket-hydra — left_in_sampled_runtime_poses
+Renderer already reflects every clip; leading heads and breath effect read left. Do not double-flip. Contacts: orientation-audit/legacy-runtime-4.jpg
+
+the-wardrobe — left_derivative_or_pose_correction_required
+Frontal cabinet with arms/effects on both sides; needs an explicit leftward action cue. Contacts: orientation-audit/legacy-runtime-4.jpg
+
+dough-blob — left_derivative_or_pose_correction_required
+Frontal faces and non-directional reaching; needs leftward gaze/gesture. Contacts: orientation-audit/legacy-runtime-4.jpg
+
+candy-clump — left_derivative_or_pose_correction_required
+Frontal face and forward-centered mouth light; needs leftward staging. Contacts: orientation-audit/legacy-runtime-4.jpg
+
+jam-jar — left_derivative_or_pose_correction_required
+Frontal eyes and rightward goo arm. Preserve tag marks; selective pose correction is needed. Contacts: orientation-audit/legacy-runtime-5.jpg
+
+pantry-mimic — left_derivative_or_pose_correction_required
+Frontal eyes/opening mouth; preserve label-like decoration and direct the action left. Contacts: orientation-audit/legacy-runtime-5.jpg
+
+sugar-golem — left_derivative_or_pose_correction_required
+Frontal face with bilateral fists/effects; needs leftward gaze and committed gesture. Contacts: orientation-audit/legacy-runtime-5.jpg
+
+oven-maw — left_derivative_saved_integration_pending
+Framewise reflected alternate preserves all original frame counts, rates, loop/hold/ping/fade semantics; source and runtime originals untouched. Attack contact shows flame travels left. Receipt: orientation-audit/legacy-derivatives/oven-maw/saved-assets.json
+
+confectioner — left_derivative_or_pose_correction_required
+Attack pastry effect travels right. Preserve unique held utensils and art identity; needs state-specific pose correction. Contacts: orientation-audit/legacy-runtime-5.jpg
+
+creeping-ivy — left_derivative_or_pose_correction_required
+Frontal face and center/right vine reach; needs leftward gaze and leading tendril. Contacts: orientation-audit/legacy-runtime-6.jpg
+
+compost-colossus — left_derivative_or_pose_correction_required
+Frontal face and bilateral glowing fists; needs leftward gaze and directional attack. Contacts: orientation-audit/legacy-runtime-6.jpg
+
+ancient-topiary — left_derivative_or_pose_correction_required
+Body reads near-front/three-quarter; a leftward leading gaze and fist are not established in all sampled states. Detailed pose work/review required. Contacts: orientation-audit/legacy-runtime-6.jpg
+
+carnivorous-conservatory — left_derivative_or_pose_correction_required
+Frontal central mouth and mixed side mouths; needs a consistent left-directed main mouth/action. Contacts: orientation-audit/legacy-runtime-6.jpg
+
+hall-mirror — left_in_inspected_keyposes
+Original pupils remain biased left. Attack withdraws right, then palm/head translate left with a left-travelling glint. Hurt recoils right; return uses the same left-looking face. Gold frame and source alpha remain unchanged. Review: representative-v7-left/orientation-review.json
+
+crib-curtains — left_in_inspected_keyposes
+Cloth rests with a left bias; rightward gathering precedes a shared leftward sweep of both panels. Hurt recoils right and defeat folds left. Moon stitching is not reflected. Review: batch-02/crib-curtains-v3-left/orientation-review.json
+
+foyer-chandelier — left_in_inspected_keyposes
+All flame tips lean left; the suspended body rests left of its mounting axis. Anticipation goes right and the main swing goes left; hurt recoils right. The extinguished endpoint retains the left-biased stance. Sub-1% empty-canvas alpha noise removed in derivative only. Review: batch-02/foyer-chandelier-v3-left/orientation-review.json
+
+hanging-pots — left_in_inspected_keyposes
+Whole unlettered fixture is reflected so all bowl openings face left. Each staggered strike moves left after a rightward anticipation. Hook/rack remain stable; original source and pot identity are preserved. Review: batch-03/hanging-pots-v4-left/orientation-review.json
+
+garden-shears — left_in_inspected_keyposes
+Ready blades point upper-left; closing action points directly left. Both halves remain connected at the original flower rivet. Recovery returns upper-left and defeat lies closed pointing left. Tool is rotated, not mirrored; handle/ribbon handedness is retained. Review: batch-03/garden-shears-v3-left/orientation-review.json
+
+bedsheet-apparition — left_in_inspected_keyposes
+Face-bearing fabric and authentic source eye/mouth holes turn left. Attack inflates the upper cloth, leans left and sends a small breath left; hurt compresses and recoils right; defeat sinks onto its hem. The original unlettered sheet is reflected. Review: batch-04/bedsheet-apparition-v2-left/orientation-review.json
+
+topiary-hare — left_in_inspected_keyposes
+Nose and eyes face left throughout inspected poses. Separate ears trail a crouch and leftward hop, hurt recoils right, and defeat bows the head with both foliage ears wilting left. All decoded frames retain a connected opaque body. Unlettered shrub reflected; no held prop. Review: batch-04/topiary-hare-v1-left/orientation-review.json
+
+servant-bell — left_in_inspected_keyposes
+Bell mouth points left. Rightward coil tension precedes two leftward strikes, then the painted shadow gives a delayed echo. Hurt recoils right. Defeat droops the metal and fades the shadow. Rope and plaque pixels remain fixed. Review: batch-05/servant-bell-v2-left/orientation-review.json
+
+masquerade-mask — left_in_inspected_keyposes
+Intact reflected mask faces left. It withdraws right and peeks left while separate trailing ribbons follow; hurt recoils right, recovery returns to its left profile. Defeat extinguishes eye light, tips downward and sinks. Foreground ribbon still covers the same hidden face region. Review: batch-05/masquerade-mask-v2-left/orientation-review.json
+
+imaginary-friend — left_in_inspected_keyposes
+Original crayon facial marks turn left within the head and the large hand gestures left. Distinct arc attack and house-outline cast appear to the left of that hand. Hurt recoils right; ready poses match exactly, and defeat progressively erases to a transparent endpoint. Review: batch-06/imaginary-friend-v3-left/orientation-review.json
+
+rain-chain — left_in_inspected_keyposes
+All copper cup openings stay tilted upper-left, including the reduced rightward hurt recoil. Attack tips the bottom cup and sends a bead up-left; cast relays one bead upward through three distinct cup tips. The source bead gap is preserved. Top hook stays fixed; recovery returns exactly to ready. Review: batch-06/rain-chain-v5-left/orientation-review.json
+
+rocking-chair — left_in_inspected_keyposes
+Original seat front and leading runners project left. Attack rocks back right, scoots left, compresses the cushion and returns. Hurt recoils right; defeat tips left. Ground contact is computed before rasterization and verified throughout every clip. Review: batch-07/rocking-chair-v3-left/orientation-review.json
+
+Browser file URL opening was denied by policy; no browser navigation, alternate route or workaround used. MP4s were rendered and fully decoded locally as authorized review deliverables.
+No game registry, gameplay, balance, publication or deployment edits. Oven Maw alternate is not selected by the live loader.

@@ -881,7 +881,7 @@ function announceOrderly(c) {
     name: stable ? `${stable.name.toUpperCase()} IS STABLE` : 'Doing the rounds',
     text: 'Anything it Stabilises survives the next blow that would finish it, at 1 Courage. '
       + `Take ${flag(c, 'breakAt', 14)} damage off the ORDERLY in one turn and that goes away. `
-      + 'Its Routine Check calms the animal by 1 Fright, which is a real kindness inside a system that should not exist.',
+      + 'Its Routine Check calms the animal by 1 Fright.',
   });
 }
 
@@ -981,8 +981,7 @@ function announceBlanket(c) {
     name: who ? `${who.name.toUpperCase()} IS TUCKED IN` : 'Looking for somebody to cover',
     text: 'The first 8 damage whoever it is covering would take each turn comes to the BLANKET instead — '
       + 'so hitting them is hitting it. '
-      + `Take ${flag(c, 'uncoverAt', 12)} damage off the blanket in one turn and it comes off. `
-      + 'It is not lying to anybody. It just cannot tell the difference between keeping you safe and not letting you go.',
+      + `Take ${flag(c, 'uncoverAt', 12)} damage off the blanket in one turn and it comes off.`,
   });
 }
 

@@ -1,0 +1,27 @@
+{
+  "variant": "current",
+  "resources": [
+    {
+      "url": "http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp",
+      "responseURL": "http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 6722,
+      "expectedSHA256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443",
+      "actualSHA256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443",
+      "width": 240,
+      "height": 64
+    },
+    {
+      "url": "http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp",
+      "responseURL": "http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 9568,
+      "expectedSHA256": "9f501bdc91d328bf47b82e026d6d0cb10b39fbb81fd3fdabf19041722b7139e7",
+      "actualSHA256": "9f501bdc91d328bf47b82e026d6d0cb10b39fbb81fd3fdabf19041722b7139e7",
+      "width": 240,
+      "height": 64
+    }
+  ]
+}

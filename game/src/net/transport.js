@@ -228,9 +228,12 @@ export class SteamTransport {
     this._peer = new Set();
     this.closed = false;
     this.known = new Set();
-    this.token = this.net.open(room, o.seats | 0);
+    /** The Steam lobby this wire is in, once it is in one; a save keeps it for a rejoin. */
+    this.lobbyId = null;
+    this.token = this.net.open(room, o.seats | 0, o.lobby || null);
     this._off = this.net.on(this.token, (ev) => {
       if (this.closed || !ev) return;
+      if (ev.type === 'lobby') { this.lobbyId = String(ev.id); return; }
       if (ev.type === 'peer') {
         const id = String(ev.id);
         if (ev.joined) this.known.add(id); else this.known.delete(id);

@@ -1,0 +1,34 @@
+"""Report only receipt-backed production; saved is distinct from final approval."""
+from pathlib import Path
+import json,hashlib,datetime,shutil
+P=Path(__file__).resolve().parent;ROOT=P.parents[2]
+now=datetime.datetime.now(datetime.timezone.utc).isoformat()
+matrix=json.loads((P/'enemy-action-matrix.json').read_text());registry=json.loads((P/'animation-deliveries.json').read_text())
+audit=[];deliveries={}
+for eid,entry in registry.items():
+ receipt=json.loads((P/entry['receipt']).read_text());assert receipt['complete']
+ for f in receipt['files']:
+  actual=hashlib.sha256((ROOT/f['path']).read_bytes()).hexdigest();assert actual==f['sha256'],f['path']
+  audit.append({'path':f['path'],'sha256':actual,'passed':True})
+ index=json.loads((ROOT/'game/assets/sprites/enemy-clips'/eid/'index.json').read_text())
+ deliveries[eid]={**entry,'quality_gate':'technical_pass_visual_review_pending','clips':{s:{k:c[k] for k in ['frames','fps','loop','hold','fw','fh','anchor','unit']} for s,c in index['clips'].items()}}
+pres=json.loads((P/'preservation-validation.json').read_text());assert pres['passed']
+pres['checked_utc']=datetime.datetime.fromtimestamp((P/'preservation-validation.json').stat().st_mtime,datetime.timezone.utc).isoformat()
+reel='review-reels/first-three-enemies-30fps.mp4'
+checkpoint={'status':'production_continues_visual_review_pending','updated_utc':now,**matrix['summary'],'fps':30,'deliveries':deliveries,'preservation':pres,'delivery_hashes_checked':len(audit),'review_reel':reel,'reel_validation':'review-reels/first-three-enemies-30fps.json','gallery':'animation-gallery.html','method_limit':'Individual source-art rigs; not fully redrawn animation or AI video. Creature, joint, cloth and prop designs need their own rigs and reviews.','visual_gate':'Hall Mirror revision 6 removes moving negative residuals and replaces pupil crossfades with opaque occluding eyelids. Chronological source and decoded contacts inspected. All new clips remain provisional until full-speed intended-size visual review.','temporal_verification':'Source/atlas order, exact 30 fps metadata, all preview frames and encoded reel frames decoded; loop seam and endpoint checks passed. No full-speed visual playback test performed.','browser_playback':'URL navigation explicitly denied by policy; not retried or worked around. MP4 produced offline as a separate authorized review deliverable.','in_game_integration':False,'spectral_scullion':'Dependency blocked by prior missing-still moderation denial; no retry.'}
+archive=P/'revisions'/'stale-pre-batch-02-reports';archive.mkdir(parents=True,exist_ok=True)
+for name in ['CHECKPOINT.json','ANIMATION-PRODUCTION-REPORT.txt']:
+ if (P/name).exists() and not (archive/name).exists():shutil.copy2(P/name,archive/name)
+(P/'CHECKPOINT.json').write_text(json.dumps(checkpoint,indent=2),encoding='utf-8')
+(P/'delivery-hash-validation.json').write_text(json.dumps({'checked_utc':now,'checked':len(audit),'passed':True,'files':audit},indent=2),encoding='utf-8')
+s=matrix['summary']
+lines=['MIDNIGHT MENAGERIE - ANIMATION PRODUCTION CHECKPOINT',f'Updated {now}','',f"SAVED, PROVISIONAL: {s['new_saved_enemies']} new enemies / {s['new_saved_actions']} actions. FINAL APPROVED: {s['new_final_actions']} actions.",f"PENDING PRODUCTION: {s['pending_actions']} usable actions. DEPENDENCY BLOCKED: 4 Spectral Scullion actions.",'The original 663 usable-action scope remains intact; saved actions are not counted as final-approved.','',f'PLAYABLE LOCAL REVIEW REEL: {reel}','H.264 MP4, 960x540, 30 fps, 267 decoded frames, 8.9 seconds; 12 saved actions in three columns.','Idle repeats twice; attack/hurt/defeat play once; final defeat endpoint held one second for review.','Rendering uses the same 200/unit normalization and anchors as enemy.js; actual stage scale varies.','Every video frame decoded successfully. Full-speed human visual review and in-game playback remain unverified.','No browser navigation was used; the prior browser URL-policy denial remains respected.','','SAVED ENEMIES']
+for eid,d in deliveries.items():
+ lines.extend([eid+' - '+d['quality_gate'],'  Receipt: '+d['receipt'],'  Validation: '+d['validation']])
+ for state,c in d['clips'].items():lines.append(f"  {state}: {c['frames']} frames / 30 fps / {c['frames']/30:g}s / loop={c['loop']} / hold={c['hold']}")
+lines.extend(['','SOURCE SHEETS: animations/sprites/enemies/animations/SS_<sourceKey>_<state>.png','RUNTIME: game/assets/sprites/enemy-clips/<id>/<state>.webp and index.json','Exact saved paths and hashes are in the per-enemy receipts and delivery-hash-validation.json.','','METHOD AND VISUAL LIMITS',checkpoint['method_limit'],checkpoint['visual_gate'],'Crib Curtains: fixed rod/rings, independently deforming panels and tiebacks, gather/part attack, flinch, sag/dissolve defeat.','Foyer Chandelier: fixed rose, crown pendulum, three separately hinged crystals, five flame layers, anticipation/swing/recovery, flame-dip hurt, sequential extinction defeat.','No generic whole-image wobble was used for these objects. No clip is represented as a final approved animation.',checkpoint['temporal_verification'],'','PRESERVATION',f"{pres['checked']} original files unchanged; zero changed/missing. Checked {pres['checked_utc']}.",f'{len(audit)} delivered asset hashes verified against receipts.','Existing 29 animated enemies / 118 clips and all stills preserved, including their original playback rates.','No game registry edits, gameplay integration, publish, deployment, external uploads, purchases or credential changes.','','BLOCKERS',checkpoint['spectral_scullion'],'Browser full-speed visual check: denied URL route; no retry. Offline MP4 review delivered; temporal visual approval still pending.','','RESUME','Use enemy-action-matrix.json/.csv and animation-deliveries.json as coverage authorities.','Continue character-specific production in resumable batches; do not use the normal prep_sprites.py batch command because it modifies FPS, trims frames and updates/deletes registry assets.','Rebuild matrix, rerun preservation, and refresh this report after the next saved batch.'])
+(P/'ANIMATION-PRODUCTION-REPORT.txt').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+gallery=P/'animation-gallery.html';html=gallery.read_text(encoding='utf-8');marker='<h2>Earlier generated idle diagnostic'
+link='<p><a href="'+reel+'">Download / play local 30 fps MP4 review (12 provisional actions)</a> | <a href="review-reels/first-three-enemies-30fps.json">Video verification</a></p>'
+if reel not in html:html=html.replace(marker,link+marker);gallery.write_text(html,encoding='utf-8')
+print(json.dumps({'saved_enemies':s['new_saved_enemies'],'saved_actions':s['new_saved_actions'],'final_approved':s['new_final_actions'],'pending':s['pending_actions'],'preserved_files':pres['checked'],'new_asset_hashes':len(audit)}),flush=True)

@@ -1,0 +1,168 @@
+{
+  "clips": {
+    "attack": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 360,
+      "fh": 292,
+      "anchor": [
+        190.0,
+        287.0
+      ],
+      "source": "SS_ovenMaw_left_attack.png",
+      "sourceFrames": 48,
+      "matte": "CONTAM",
+      "bg": [
+        170.3,
+        157.5,
+        161.7
+      ],
+      "grid": [
+        8,
+        6
+      ],
+      "lift": -32.1,
+      "dehalo": false,
+      "warm": 199.0,
+      "dewhite": false,
+      "dip": 0.407,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.994,
+      "scale": 1,
+      "unit": 286.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "cb190c43db3bb709",
+      "orientation": "screen-left derivative; do not add a runtime flip",
+      "derivativeOf": "game/assets/sprites/enemy-clips/oven-maw/attack.webp"
+    },
+    "defeat": {
+      "file": "defeat.webp",
+      "frames": 34,
+      "cols": 9,
+      "rows": 4,
+      "fw": 360,
+      "fh": 354,
+      "anchor": [
+        188.02,
+        347.69
+      ],
+      "source": "SS_ovenMaw_left_defeat.png",
+      "sourceFrames": 34,
+      "matte": "CONTAM",
+      "bg": [
+        171.0,
+        167.9,
+        170.4
+      ],
+      "grid": [
+        9,
+        4
+      ],
+      "lift": -21.9,
+      "dehalo": false,
+      "warm": 76.0,
+      "dewhite": false,
+      "dip": 0.151,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 33,
+      "endIoU": 0.65,
+      "scale": 1,
+      "unit": 286.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "993473d85c3d4f45",
+      "orientation": "screen-left derivative; do not add a runtime flip",
+      "derivativeOf": "game/assets/sprites/enemy-clips/oven-maw/defeat.webp"
+    },
+    "hurt": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 380,
+      "fh": 332,
+      "anchor": [
+        211.0,
+        322.86
+      ],
+      "source": "SS_ovenMaw_left_hurt.png",
+      "sourceFrames": 48,
+      "matte": "CONTAM",
+      "bg": [
+        167.4,
+        165.8,
+        170.4
+      ],
+      "grid": [
+        8,
+        6
+      ],
+      "lift": -26.7,
+      "dehalo": false,
+      "warm": 80.0,
+      "dewhite": false,
+      "dip": 0.106,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.993,
+      "scale": 1,
+      "unit": 286.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "e4bad9bb78f5efaf",
+      "orientation": "screen-left derivative; do not add a runtime flip",
+      "derivativeOf": "game/assets/sprites/enemy-clips/oven-maw/hurt.webp"
+    },
+    "idle": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 338,
+      "fh": 313,
+      "anchor": [
+        169.0,
+        308.11
+      ],
+      "source": "SS_ovenMaw_left_idle.png",
+      "sourceFrames": 48,
+      "matte": "CONTAM",
+      "bg": [
+        174.7,
+        171.7,
+        174.8
+      ],
+      "grid": [
+        8,
+        6
+      ],
+      "lift": -29.5,
+      "dehalo": false,
+      "warm": 86.0,
+      "dewhite": false,
+      "dip": 0.492,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.993,
+      "scale": 1,
+      "unit": 286.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "d6abe061b22b5f66",
+      "orientation": "screen-left derivative; do not add a runtime flip",
+      "derivativeOf": "game/assets/sprites/enemy-clips/oven-maw/idle.webp"
+    }
+  },
+  "scale": 1,
+  "unit": 286.0,
+  "orientationIntegration": "Alternate directory only. Existing enemyClips loader resolves enemy-clips/<id>/index.json; a separately authorized mapping to enemy-clips-left/oven-maw/index.json is needed. No renderer flip for oven-maw."
+}

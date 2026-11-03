@@ -1,0 +1,336 @@
+{
+  "baseline": "c483cbb33fe2b458d0e0cd5e43443dfb6a198e29",
+  "finalSourceFreeze": "501ebb999a1015d2c3435169baae75ec0d36c4f9",
+  "restProvenance": "Rest images from prior freeze46ff398e; subsequent production changes touch only event presentation. Parent explicitly approved retention.",
+  "screens": [
+    {
+      "screen": "rest",
+      "path": "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\rest.png",
+      "size": [
+        1600,
+        900
+      ],
+      "sha256": "1f087f3a836a74a00b7c5e60520af54e4d4ec795ecf51d3d0ce03ad723ee1848",
+      "sourceCommit": "46ff398e5b63a0afab149a3c269900a684e5adaa",
+      "exit": 0,
+      "visuallyInspected": true,
+      "metadata": {
+        "url": "http://localhost:9512/game/index.html#scene=rest&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"rest\",\"run\":null}",
+        "perf": {
+          "fps": 143,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 40.25,
+          "warmMs": 31930,
+          "settleMs": 210,
+          "band": 30.1
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "screen": "rest-1280",
+      "path": "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\rest-1280.png",
+      "size": [
+        1280,
+        800
+      ],
+      "sha256": "f177668d3fa58cf5c26e8cba79ae6599727fee212cce2bc277be6b89e34aaef9",
+      "sourceCommit": "46ff398e5b63a0afab149a3c269900a684e5adaa",
+      "exit": 0,
+      "visuallyInspected": true,
+      "metadata": {
+        "url": "http://localhost:9512/game/index.html#scene=rest&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"rest\",\"run\":null}",
+        "perf": {
+          "fps": 143,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 40.82,
+          "warmMs": 22009,
+          "settleMs": 314,
+          "band": 30.7
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "screen": "event",
+      "path": "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\event.png",
+      "size": [
+        1600,
+        900
+      ],
+      "sha256": "5ad869f43824459070fdfc2902a722fac1ce307eddcd095be35c2195409669bc",
+      "sourceCommit": "501ebb999a1015d2c3435169baae75ec0d36c4f9",
+      "exit": 0,
+      "visuallyInspected": true,
+      "metadata": {
+        "url": "http://localhost:9512/game/index.html#scene=event&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"event\",\"run\":null}",
+        "perf": {
+          "fps": 132,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 52.31,
+          "warmMs": 37205,
+          "settleMs": 314,
+          "band": 46.5
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "screen": "event-1280",
+      "path": "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\event-1280.png",
+      "size": [
+        1280,
+        800
+      ],
+      "sha256": "d18ed92423f9618af09b3b2ce38eaaa4aaf6caa675c3a90a4891e3b46088f319",
+      "sourceCommit": "501ebb999a1015d2c3435169baae75ec0d36c4f9",
+      "exit": 0,
+      "visuallyInspected": true,
+      "metadata": {
+        "url": "http://localhost:9512/game/index.html#scene=event&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"event\",\"run\":null}",
+        "perf": {
+          "fps": 145,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 53.29,
+          "warmMs": 29968,
+          "settleMs": 220,
+          "band": 49.7
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "screen": "gameover",
+      "path": "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\gameover.png",
+      "size": [
+        1600,
+        900
+      ],
+      "sha256": "585f37af9dc4f1936b78667985dd3b7b344d28c186d50be9a439b8fe48723edc",
+      "sourceCommit": "501ebb999a1015d2c3435169baae75ec0d36c4f9",
+      "exit": 0,
+      "visuallyInspected": true,
+      "metadata": {
+        "url": "http://localhost:9512/game/index.html#scene=gameover&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"gameover\",\"run\":null}",
+        "perf": {
+          "fps": 89,
+          "mem": 31,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 46.01,
+          "warmMs": 11808,
+          "settleMs": 312,
+          "band": 39.6
+        },
+        "void": false,
+        "errors": [],
+        "logs": []
+      }
+    },
+    {
+      "screen": "gameover-1280",
+      "path": "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\gameover-1280.png",
+      "size": [
+        1280,
+        800
+      ],
+      "sha256": "81160fa751b2b01db17d07fabe8a2af1f03d06e67f29e08c6509ba7a1135ddc4",
+      "sourceCommit": "501ebb999a1015d2c3435169baae75ec0d36c4f9",
+      "exit": 0,
+      "visuallyInspected": true,
+      "metadata": {
+        "url": "http://localhost:9512/game/index.html#scene=gameover&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"gameover\",\"run\":null}",
+        "perf": {
+          "fps": 98,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 48.61,
+          "warmMs": 10206,
+          "settleMs": 318,
+          "band": 40.6
+        },
+        "void": false,
+        "errors": [],
+        "logs": []
+      }
+    },
+    {
+      "screen": "shop",
+      "path": "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\shop.png",
+      "size": [
+        1600,
+        900
+      ],
+      "sha256": "ff8adfb095b9a79db2fd16cb8d1609194d671fd5fdf07b1174b567c5b6b7b3d8",
+      "sourceCommit": "501ebb999a1015d2c3435169baae75ec0d36c4f9",
+      "exit": 0,
+      "visuallyInspected": true,
+      "metadata": {
+        "url": "http://localhost:9512/game/index.html#scene=shop&seed=7&companion=bones&kid=maya",
+        "state": "{\"scene\":\"shop\",\"run\":null}",
+        "perf": {
+          "fps": 132,
+          "mem": 31,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 44.66,
+          "warmMs": 26468,
+          "settleMs": 326,
+          "band": 47.1
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "screen": "shop-1280",
+      "path": "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\shop-1280.png",
+      "size": [
+        1280,
+        800
+      ],
+      "sha256": "40bc165dfda9fbdc930b2ea55f84d4aa6211312f682ff513ece949e40d3406a7",
+      "sourceCommit": "501ebb999a1015d2c3435169baae75ec0d36c4f9",
+      "exit": 0,
+      "visuallyInspected": true,
+      "metadata": {
+        "url": "http://localhost:9512/game/index.html#scene=shop&seed=7&companion=bones&kid=maya",
+        "state": "{\"scene\":\"shop\",\"run\":null}",
+        "perf": {
+          "fps": 139,
+          "mem": 31,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 48.49,
+          "warmMs": 22720,
+          "settleMs": 325,
+          "band": 50.5
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "screen": "combat-floaters",
+      "path": "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\combat-floaters.png",
+      "size": [
+        1600,
+        900
+      ],
+      "sha256": "832570d2d9f4323095911d2b3b93a429b16d0f5e67571ad97f11a0f58c2730a9",
+      "sourceCommit": "501ebb999a1015d2c3435169baae75ec0d36c4f9",
+      "exit": 0,
+      "visuallyInspected": true,
+      "metadata": {
+        "url": "http://localhost:9512/game/index.html#scene=combat&seed=7&companion=bones&kid=maya&encounter=foyer-boss",
+        "state": "{\"scene\":\"combat\",\"run\":null}",
+        "perf": {
+          "fps": 146,
+          "mem": 33,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 43.47,
+          "warmMs": 29537,
+          "settleMs": 440,
+          "band": 40.4
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "screen": "combat-floaters-1280",
+      "path": "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\combat-floaters-1280.png",
+      "size": [
+        1280,
+        800
+      ],
+      "sha256": "3e74e800f0246221737b19c0a614525d608b77f3506fb27dfb03d1f096e415d1",
+      "sourceCommit": "501ebb999a1015d2c3435169baae75ec0d36c4f9",
+      "exit": 0,
+      "visuallyInspected": true,
+      "metadata": {
+        "url": "http://localhost:9512/game/index.html#scene=combat&seed=7&companion=bones&kid=maya&encounter=foyer-boss",
+        "state": "{\"scene\":\"combat\",\"run\":null}",
+        "perf": {
+          "fps": 145,
+          "mem": 33,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 44.88,
+          "warmMs": 21798,
+          "settleMs": 561,
+          "band": 42.2
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    }
+  ],
+  "ownTitle": {
+    "path": "D:\\UILOOP\\r51-20261029\\b\\shots\\SPINEL-own-title.png",
+    "sha256": "a62539f2ed75b686a4df044bea3dd93db4a3fb609b7bba2d040567224492838a",
+    "sourceCommit": "501ebb999a1015d2c3435169baae75ec0d36c4f9",
+    "visuallyInspected": true,
+    "metadata": {
+      "url": "http://localhost:9512/game/index.html#scene=title&seed=7&companion=bones&kid=maya",
+      "state": "{\"scene\":\"title\",\"run\":null}",
+      "perf": {
+        "fps": 145,
+        "mem": 30,
+        "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "software": false,
+        "glStd": 31.26,
+        "warmMs": 10329,
+        "settleMs": 433,
+        "band": 39.1
+      },
+      "void": false,
+      "errors": [],
+      "logs": []
+    }
+  }
+}

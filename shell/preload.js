@@ -6,10 +6,14 @@
  * `SteamTransport` in `game/src/net/transport.js` is written against:
  *
  *   net.me                    this player's SteamID64, as a string
- *   net.open(room, seats)     -> token; find or create the Steam lobby for `room`
+ *   net.open(room, seats, lobby) -> token; find or create the Steam lobby for
+ *                             `room`, trying the remembered `lobby` id first
+ *   net.invite()              Steam's friends picker for the current lobby
  *   net.send(token, msg)      a JSON-able object to every other member, reliable + ordered
  *   net.close(token)          leave; a stale token is ignored
- *   net.on(token, cb)         cb({type:'msg', from, msg} | {type:'peer', id, joined}) -> off
+ *   net.on(token, cb)         cb({type:'msg', from, msg} | {type:'peer', id, joined}
+ *                             | {type:'lobby', id}) -> off
+ *   net.onNotice(cb)          cb(text) when something the player asked for failed -> off
  *   net.onInvite(cb)          cb(room) when the player joined a friend through Steam -> off
  *
  * Absent entirely when Steam did not start, so the game falls back to
@@ -36,11 +40,18 @@ ipcRenderer.on('mm:invite', (_e, ev) => {
   for (const cb of [...invites]) { try { cb(room); } catch (err) { console.error('[host.invite]', err); } }
 });
 
+const notices = new Set();
+ipcRenderer.on('mm:notice', (_e, ev) => {
+  for (const cb of [...notices]) { try { cb(ev && ev.text); } catch (err) { console.error('[host.notice]', err); } }
+});
+
 let seq = 0;
 
 const host = {
   name: 'electron',
   version: process.versions.electron || '',
+  /** A demo depot: see `DEMO_WINGS` in game/src/state/run.js. */
+  demo: !!info.demo,
   steam: info.available ? {
     appId: info.appId,
     available: () => true,
@@ -55,12 +66,14 @@ const host = {
   net: info.available ? {
     me: info.me,
     name: info.name,
-    open(room, seats) {
+    open(room, seats, lobby) {
       const token = `t${++seq}-${Date.now().toString(36)}`;
       listeners.set(token, new Set());
-      ipcRenderer.send('mm:net-open', { room: String(room), seats: seats | 0, token });
+      ipcRenderer.send('mm:net-open', { room: String(room), seats: seats | 0, token, lobby: lobby ? String(lobby) : null });
       return token;
     },
+    invite() { ipcRenderer.send('mm:net-invite'); },
+    onNotice(cb) { notices.add(cb); return () => notices.delete(cb); },
     send(token, msg) { ipcRenderer.send('mm:net-send', { token, msg }); return true; },
     close(token) { listeners.delete(token); ipcRenderer.send('mm:net-close', { token }); },
     on(token, cb) {

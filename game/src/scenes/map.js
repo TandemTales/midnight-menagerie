@@ -16,7 +16,7 @@ import { RNG, hashSeed } from '../core/rng.js';
 import { NodeType } from '../data/schema.js';
 import {
   generateRegionMap, regionMeta, blueprintSection,
-  NODE_INFO, sceneForNode, legalNextIds, reachableFrom, hazardById,
+  NODE_INFO, sceneForNode, legalNextIds, reachableFrom, hazardById, MAP_STYLES,
 } from '../state/mapgen.js';
 import { mapNodeMarkup, nodeSymbol, hazardSymbol, hazardGlyphMarkup, pencilStroke, inkLine, wobbler, seedOf, escapeHtml } from '../ui/mapnode.js';
 /* The traced plans, and the pen that inks them. Lifted out of this file when
@@ -25,6 +25,13 @@ import { mapNodeMarkup, nodeSymbol, hazardSymbol, hazardGlyphMarkup, pencilStrok
    two screens can no longer drift apart on line weight. What stays here is how
    this sheet FRAMES a wing, which is a composition decision, not a drawing one. */
 import { loadPlanTrace, inkTrace, solvePen, traceBox, lru } from '../ui/plan.js';
+/* The FLOORPLAN map (2026-10-27): a wing generated as a building whose doors
+   are the route (state/floorplan.js), drawn as a cyanotype (ui/blueprint.js).
+   A map with `map.plan` takes these paths; a classic map never touches them. */
+import { mansionDoorStates } from '../state/mansion-layout.js';
+import { tintBlueprint, drawFloorplan, crayonText, crayonLine, secretNote, BP } from '../ui/blueprint.js';
+import { MapMarkings } from '../ui/map-markings.js';
+import { SECRET_DEVICES } from '../state/floorplan.js';
 import { HUD } from '../ui/hud.js';
 import { paintBackdrop } from '../ui/backdrop.js';
 import { pauseStageFor } from './_stage.js';
@@ -247,10 +254,13 @@ export class MapScene extends Scene {
     this._buildModel(params);
     // The wing's own section drawing: the traced linework is what gets inked,
     // the PNG is only the wash under it.  Both are optional — a missing file
-    // costs the plan, never the screen.
-    const sec = this._sec = blueprintSection(this.model.regionId, WIN.w / WIN.h);
-    const wantTrace = loadPlanTrace(sec.traceUrl);
-    const wantImg = ctx.assets.image(sec.url).catch(() => null);
+    // costs the plan, never the screen.  A FLOORPLAN map draws its own
+    // building and needs neither.
+    this._fp = this.model.map.plan || null;
+    this._sheetSize();
+    const sec = this._sec = this._fp ? null : blueprintSection(this.model.regionId, this.win.w / this.win.h);
+    const wantTrace = sec ? loadPlanTrace(sec.traceUrl) : Promise.resolve(null);
+    const wantImg = sec ? ctx.assets.image(sec.url).catch(() => null) : Promise.resolve(null);
 
     await this._css();
     const [trace, img] = await Promise.all([wantTrace, wantImg]);
@@ -301,6 +311,7 @@ export class MapScene extends Scene {
     this._off.push(bus.on('map:vote', () => this._paintBallot()));
     this._off.push(bus.on('map:voted', (v) => this._announceVote(v)));
     this._bindEvents();
+    if (this._fp) this.markings = new MapMarkings(this);
 
     const walk = parseInt(params.walk, 10);
     if (Number.isFinite(walk) && walk > 0) this._prewalk(walk);
@@ -361,6 +372,11 @@ export class MapScene extends Scene {
     const run = ctx.run || null;
     const seed = params.seed ?? run?.seed ?? 1;
     const regionId = regionMeta(params.region ?? run?.region ?? run?.regionId ?? 'foyer').slug;
+    // `#...&mapstyle=classic` (or plan) switches the map the house draws, and
+    // remembers it — mapgen.js reads the same key for every wing after this
+    if (MAP_STYLES.includes(params.mapstyle)) {
+      try { localStorage.setItem('mm.mapStyle', params.mapstyle); } catch { /* storage blocked */ }
+    }
     const hauntLevel = Number(params.haunt ?? run?.hauntLevel ?? ctx.Save?.data?.hauntLevel ?? 0) || 0;
     const companion = params.companion ?? run?.companion ?? regionMeta(regionId).companion;
 
@@ -421,7 +437,11 @@ export class MapScene extends Scene {
     return legalNextIds(m.map, m.currentId);
   }
 
-  _sheetSize() { this.SH = SHEET_H; this.SW = SHEET_W; }
+  _sheetSize() {
+    this.SH = this._fp?.sheet.h || SHEET_H;
+    this.SW = this._fp?.sheet.w || SHEET_W;
+    this.win = this._fp ? { x: 74, y: 60, w: this.SW - 148, h: this.SH - 234 } : WIN;
+  }
 
   // ──────────────────────────────────────────────────────────────── layout ──
   _buildDom() {
@@ -435,7 +455,7 @@ export class MapScene extends Scene {
        candles stand at the front corners and light the paper; everything past
        the rail falls into the dark. None of it takes a pointer event. */
     this.root.innerHTML = `
-      <div class="map-screen kit-board${this.still ? ' is-still kit-still' : ''}">
+      <div class="map-screen kit-board${this.still ? ' is-still kit-still' : ''}${this._fp ? ' map-screen--plan' : ''}${this._fp?.v >= 3 ? ' map-screen--mansion' : ''}${this._fp?.v >= 5 ? ' map-screen--local' : ''}">
         <div class="map-desk kit-ground" aria-hidden="true"></div>
         <div class="map-pool" aria-hidden="true"></div>
         <div class="kit-dress map-dress" aria-hidden="true">
@@ -526,7 +546,7 @@ export class MapScene extends Scene {
             <span class="kit-medallion map-atlas__medal" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2.6 22 10.4h-2.6V21h-5.2v-6.2H9.8V21H4.6V10.4H2Z"/></svg></span> The whole house
           </button>
           <div class="map-hint" aria-hidden="true">
-            <b>drag</b> pan · <b>scroll</b> zoom · <b>↑↓</b> choose · <b>⏎</b> go
+            ${this._fp ? '<b>drag / scroll</b> move · <b>Shift scroll</b> sideways · <b>Ctrl scroll</b> zoom' : '<b>drag</b> pan · <b>scroll</b> zoom'} · <b>↑↓</b> choose · <b>⏎</b> go
           </div>
         </div>
         <div class="map-tip" role="tooltip" aria-hidden="true"></div>
@@ -545,6 +565,15 @@ export class MapScene extends Scene {
     // used to duplicate here — Courage, Buttons, Keepsakes, Haunt, the cog
     // that did nothing — is that component's job now.
     this.hud = new HUD(this.ctx, { mount: this.el.hudHost, escape: true, useSnacks: false });
+    // The legend and conditions may wrap with larger reading sizes. Reserve
+    // their real height so the marker toolbar never covers a row of labels.
+    const bar = q('.map-bar');
+    if (bar) {
+      this._footerObserver = new ResizeObserver(() => {
+        this.el.screen.style.setProperty('--map-foot', `${Math.max(104, bar.offsetHeight + 24)}px`);
+      });
+      this._footerObserver.observe(bar);
+    }
     this.el.sheet.style.width = this.SW + 'px';
     this.el.sheet.style.height = this.SH + 'px';
     this.el.sheet.style.setProperty('--sw', this.SW + 'px');   // the wet edge's run
@@ -571,7 +600,7 @@ export class MapScene extends Scene {
     const cv = this.el.paper;
     // 1.25 is the point past which the parchment stops looking any better and
     // starts costing whole frames: at 1.6 this canvas is 3248x1616 = 5.2M px.
-    const q = this._paperQ = Math.min(1.25, Math.max(1, (devicePixelRatio || 1) * 1.1));
+    const q = this._paperQ = this._fp ? 1 : Math.min(1.25, Math.max(1, (devicePixelRatio || 1) * 1.1));
     const W = Math.round(this.SW * q), H = Math.round(this.SH * q);
     cv.width = W; cv.height = H;
     cv.style.width = this.SW + 'px'; cv.style.height = this.SH + 'px';
@@ -598,6 +627,9 @@ export class MapScene extends Scene {
     const old = await OLDPAPER;
     if (old) g.drawImage(old, 0, 0, w, h);
     else { g.fillStyle = parch; g.fillRect(0, 0, w, h); }
+    // A floorplan wing is a working drawing off the copier: the same old sheet,
+    // gone Prussian blue, so its clouding, folds and burnt edges stay as tone.
+    if (this._fp) tintBlueprint(g, w, h);
 
     // 2. folds -- this sheet has been in a backpack: each crease a shadowed
     //    valley with its lit ridge beside it, the paper worn along it
@@ -707,7 +739,7 @@ export class MapScene extends Scene {
     const { bx, by, bw, bh } = traceBox(t, s.w, s.h);
     // in sheet-facing orientation
     const pw = s.rot ? bh : bw, ph = s.rot ? bw : bh;
-    const scale = Math.max(WIN.w / pw, WIN.h / ph);
+    const scale = Math.max(this.win.w / pw, this.win.h / ph);
     const dw = pw * scale, dh = ph * scale;
 
     // Solve the pen for the coverage we want.  Cover-fitting means the window
@@ -717,8 +749,8 @@ export class MapScene extends Scene {
     const pen = solvePen(t, scale);
     return {
       scale, dw, dh, bx, by, bw, bh, pen,
-      dx: WIN.x + (WIN.w - dw) / 2,
-      dy: WIN.y + (WIN.h - dh) / 2,
+      dx: this.win.x + (this.win.w - dw) / 2,
+      dy: this.win.y + (this.win.h - dh) / 2,
     };
   }
 
@@ -739,17 +771,27 @@ export class MapScene extends Scene {
    *           resample: it is drawn at the size it is asked for.
    */
   _layPlan(g, ink) {
+    if (this._fp) {
+      // The floorplan is clean vector linework at sheet scale: drawn straight
+      // onto the paper, at full weight, because it is meant to be read.
+      g.save();
+      g.beginPath(); g.rect(this.win.x, this.win.y, this.win.w, this.win.h); g.clip();
+      drawFloorplan(g, this._fp, { regionId: this.model.regionId, seed: this.model.seed });
+      this._drawKidNotes(g);
+      g.restore();
+      return;
+    }
     const t = this._trace, sec = this._sec;
     const fit = this._plan = this._planFit();
     if (!t && !this._section) return;
 
     const q = this._paperQ || 1;
-    const cw = Math.max(1, Math.round(WIN.w * q)), ch = Math.max(1, Math.round(WIN.h * q));
+    const cw = Math.max(1, Math.round(this.win.w * q)), ch = Math.max(1, Math.round(this.win.h * q));
     const off = document.createElement('canvas');
     off.width = cw; off.height = ch;
     const o = off.getContext('2d');
     o.scale(q, q);
-    o.translate(-WIN.x, -WIN.y);            // offscreen shares the sheet's coords
+    o.translate(-this.win.x, -this.win.y);            // offscreen shares the sheet's coords
 
     // The whole plan lives in one transform: sheet px -> section px, turned if
     // this wing's sheet turns it.  Everything below is authored in section px.
@@ -783,11 +825,165 @@ export class MapScene extends Scene {
     // route is graphite laid over a printed survey and the survey has to sit
     // back or the pencil loses on line count (see the note over the route).
     g.save();
-    g.beginPath(); g.rect(WIN.x, WIN.y, WIN.w, WIN.h); g.clip();
+    g.beginPath(); g.rect(this.win.x, this.win.y, this.win.w, this.win.h); g.clip();
     g.globalCompositeOperation = 'multiply';
     g.globalAlpha = PLAN.ink;
-    g.drawImage(off, WIN.x, WIN.y, WIN.w, WIN.h);
+    g.drawImage(off, this.win.x, this.win.y, this.win.w, this.win.h);
     g.restore();
+  }
+
+  /**
+   * What the Kids scrawled on the copy they took.
+   *
+   * The plan is the house's; the marks on the rooms and these notes are the
+   * Kids'.  A note goes only where there is clear paper — outside the building
+   * beside the room it is about, or across a secret way — and never on a
+   * room's mark: a sheet that is mostly crayon is not a blueprint any more.
+   */
+  _drawKidNotes(g) {
+    const map = this.model.map, plan = this._fp, SW = this.SW, SH = this.SH;
+    const rng = new RNG(hashSeed(`notes|${map.regionId}|${this.model.seed}`));
+    const room = new Map(plan.rooms.map((r) => [r.id, r]));
+    const placed = [];
+    // the dimension chain over the building is lettering already
+    placed.push({ x0: plan.box.x0, x1: plan.box.x1, y0: plan.box.y0 - 44, y1: plan.box.y0 - 12 });
+    const marks = map.nodes.map((n) => ({ x: n.x * SW, y: n.y * SH, r: n.type === NodeType.BOSS ? 96 : 54 }));
+    const clear = (b, skip = null) =>
+      b.x0 >= this.win.x + 12 && b.x1 <= this.win.x + this.win.w - 12 && b.y0 >= this.win.y + 10 && b.y1 <= this.win.y + this.win.h - 10
+      && !placed.some((p) => p.x0 < b.x1 && b.x0 < p.x1 && p.y0 < b.y1 && b.y0 < p.y1)
+      && !marks.some((m) => m !== skip && m.x > b.x0 - m.r && m.x < b.x1 + m.r && m.y > b.y0 - m.r && m.y < b.y1 + m.r);
+    const size = 29;
+    const widthOf = (t) => {
+      g.save(); g.font = `700 ${size}px "Comic Sans MS", "Segoe Print", cursive`;
+      const w = g.measureText(t).width * 1.04;
+      g.restore(); return w;
+    };
+    // the wing conditions' seals and names hang round their districts
+    for (const hz of map.hazards || []) {
+      placed.push({ x0: hz.rect.x0 * SW - 60, x1: hz.rect.x1 * SW + 60, y0: hz.rect.y0 * SH - 60, y1: hz.rect.y1 * SH + 60 });
+    }
+
+    if(plan.v>=4) {
+      crayonText(g,'doors latch behind us. follow our marked ways!',plan.entries[map.startIds[0]][0]+20,plan.box.y0-60,{color:BP.crayon.yellow,size:25,seed:'latches'});
+      crayonText(g,'same S number = same hidden passage',plan.entries[map.startIds[0]][0]+20,plan.box.y0-28,{color:BP.crayon.white,size:21,seed:'pairs'});
+    }
+    // the secret ways first: the note sits beside the Kids' dotted line
+    for (const s of (plan.secrets || []).filter((s,i)=>plan.v<4 || i%7===0).slice(0,10)) {
+      const [ax, ay] = s.a, [bx, by] = s.b;
+      const mx = (ax + bx) / 2, my = (ay + by) / 2;
+      const L = Math.hypot(bx - ax, by - ay) || 1;
+      const px = -(by - ay) / L, py = (bx - ax) / L;
+      const rot = Math.max(-0.3, Math.min(0.3, Math.atan2(by - ay, bx - ax) * (bx < ax ? -1 : 1) * 0.35));
+      const t = secretNote(s.device), tw = widthOf(t);
+      for (const k of [0, 30, -30, 60, -60, 92, -92]) {
+        const x = mx + px * k, y = my + py * k;
+        const b = { x0: x - tw / 2 - 4, x1: x + tw / 2 + 4, y0: y - size * 0.7, y1: y + size * 0.7 };
+        if (!clear(b)) continue;
+        crayonText(g, t, x, y, { color: BP.crayon.yellow, size, rot, seed: s.from, align: 'center' });
+        placed.push(b);
+        break;
+      }
+    }
+
+    // the boss: inside its own hall, over its seal
+    const boss = map.nodes.find((n) => n.type === NodeType.BOSS);
+    const bh = boss && room.get(boss.id);
+    if (bh) {
+      let t = String(map.meta.boss || 'BOSS') + '!!';
+      if (widthOf(t) > bh.x1 - bh.x0 - 10) t = 'BOSS!!';
+      const x = (bh.x0 + bh.x1) / 2, y = bh.y0 + 34;
+      const tw = widthOf(t);
+      const b = { x0: x - tw / 2, x1: x + tw / 2, y0: y - size * 0.7, y1: y + size * 0.7 };
+      if (b.y1 < boss.y * SH - 92) {
+        crayonText(g, t, x, y, { color: BP.crayon.red, size, rot: -0.06, seed: boss.id, align: 'center' });
+        placed.push(b);
+      }
+    }
+
+    const entryNotes = ['we came in here', 'keep together!', 'doors keep moving...', 'try this way?'];
+    map.startIds.forEach((id, i) => {
+      if(plan.v >= 3 && i > 0) return;
+      const [x, y] = plan.v >= 3 ? [plan.entries[id][0]+300,plan.entries[id][1]-110] : plan.entries[id];
+      crayonText(g, entryNotes[i % entryNotes.length], x - 38, y - 48,
+        { color: BP.crayon.white, size: 20, rot: -.06, seed: id, align: 'right' });
+    });
+    crayonText(g, 'MAYA + BEA / our secret copy', plan.box.x0 + 14, plan.box.y0 - 78,
+      { color: BP.crayon.yellow, size: 26, rot: -.025, seed: map.seed });
+
+    // The larger rooms leave a strip of floor for the kids' own field notes.
+    const roomNotes = {
+      scuffle: ['heard scratching', 'tiptoe here!', 'NOT a coat rack', 'it moved!!'],
+      bigScare: ['nope nope NOPE', 'bring everyone!!'],
+      safe: ['our hiding spot', 'quiet in here :)'],
+      shop: ['bring buttons!', 'he seems nice?'],
+      treasure: ['look in here!', 'dibs on shiny things'],
+      curiosity: ['check the drawers', 'weird noise?', 'ask Bea about this'],
+      unknown: ['what is in here??', 'we should look'],
+      rescue: ['someone needs us!'],
+    };
+    let scribbled = 0;
+    for (const n of map.nodes) {
+      const r = room.get(n.id), lines = roomNotes[n.type];
+      if (!r || !lines || (n.row > 0 && rng.next() > .40) || scribbled >= 18) continue;
+      const text = lines[(n.row + n.col) % lines.length], x = (r.x0 + r.x1) / 2, y = r.side < 0 ? r.y1 - 90 : r.y1 - 34;
+      const tw = widthOf(text) * 24 / size;
+      const b = { x0: x - tw/2 - 8, x1: x + tw/2 + 8, y0: y - 22, y1: y + 22 };
+      if (b.x0 < r.x0 + 12 || b.x1 > r.x1 - 12 || !clear(b)) continue;
+      crayonText(g, text, x, y, { color: rng.pick([BP.crayon.yellow, BP.crayon.white, BP.crayon.red]),
+        size: 24, rot: (rng.next()-.5)*.14, seed: n.id, align: 'center' });
+      if (scribbled % 3 === 0) crayonLine(g, [[x-tw/2,y+17],[x+tw/2,y+13]], { color: BP.crayon.yellow, seed: n.id });
+      placed.push(b); scribbled++;
+    }
+
+    // a few rooms the Kids had opinions about — at the end of a column, so the
+    // note can sit on the clear paper outside the building with an arrow in
+    const SAY = [
+      [NodeType.BIG_SCARE, ["DON'T!!", 'nope nope', 'big scary'], BP.crayon.red],
+      [NodeType.SHOP, ['Mr Moth $$', 'buttons here'], BP.crayon.orange],
+      [NodeType.SAFE, ['safe spot', 'nap here zzz'], BP.crayon.green],
+      [NodeType.RESCUE, ["someone's in here!"], BP.crayon.white],
+      [NodeType.TREASURE, ['loot!!', 'shiny?'], BP.crayon.yellow],
+    ];
+    let said = 0;
+    const ends = new Set();
+    {
+      const byRow = new Map();
+      for (const r of plan.rooms) { if (!byRow.has(r.row)) byRow.set(r.row, []); byRow.get(r.row).push(r); }
+      for (const list of byRow.values()) {
+        list.sort((p, q) => p.y0 - q.y0);
+        ends.add(list[0].id + '|top'); ends.add(list[list.length - 1].id + '|bot');
+      }
+    }
+    for (const [type, lines, color] of SAY) {
+      if (said >= 9) break;
+      const cands = rng.shuffle(map.nodes.filter((n) => n.type === type && n.row > 0));
+      let done = false;
+      for (const n of cands) {
+        if (done) break;
+        const r = room.get(n.id);
+        if (!r) continue;
+        const t = rng.pick(lines), tw = widthOf(t);
+        const cx = (r.x0 + r.x1) / 2;
+        for (const side of rng.shuffle(['top', 'bot'])) {
+          if (!ends.has(r.id + '|' + side)) continue;
+          const y = side === 'top' ? r.y0 - 30 : r.y1 + 32;
+          for (const dx of [0, 40, -40, 80, -80]) {
+            const x = cx + dx;
+            const b = { x0: x - tw / 2 - 4, x1: x + tw / 2 + 4, y0: y - size * 0.7, y1: y + size * 0.7 };
+            if (!clear(b)) continue;
+            crayonText(g, t, x, y, { color, size, rot: (rng.next() - 0.5) * 0.12, seed: n.id, align: 'center' });
+            // the arrow in, from the note to the room's wall
+            const ex = cx + (dx ? -Math.sign(dx) * 6 : 14), ey = side === 'top' ? r.y0 - 4 : r.y1 + 4;
+            const sx = x + (dx ? -Math.sign(dx) * tw * 0.3 : tw * 0.5 + 6), sy = y + (side === 'top' ? 10 : -10);
+            crayonLine(g, [[sx, sy], [(sx + ex) / 2 + 6, (sy + ey) / 2], [ex, ey]], { color, width: 2.6, seed: n.id + 'a', arrow: true });
+            placed.push(b);
+            said++; done = true;
+            break;
+          }
+          if (done) break;
+        }
+      }
+    }
   }
 
   /** Border rules, corner flourishes, title block, compass rose, scale bar. */
@@ -803,21 +999,21 @@ export class MapScene extends Scene {
 
     // the plan window — this sheet shows exactly this much of the wing
     g.strokeStyle = hexA(ink, 0.62); g.lineWidth = 1.8;
-    g.strokeRect(WIN.x, WIN.y, WIN.w, WIN.h);
+    g.strokeRect(this.win.x, this.win.y, this.win.w, this.win.h);
     g.strokeStyle = hexA(ink, 0.26); g.lineWidth = 0.8;
-    g.strokeRect(WIN.x + 6, WIN.y + 6, WIN.w - 12, WIN.h - 12);
+    g.strokeRect(this.win.x + 6, this.win.y + 6, this.win.w - 12, this.win.h - 12);
     // registration ticks on the window
     g.strokeStyle = hexA(ink, 0.5); g.lineWidth = 1.2;
     g.beginPath();
     for (let i = 1; i < 8; i++) {
-      const x = WIN.x + WIN.w * i / 8;
-      g.moveTo(x, WIN.y); g.lineTo(x, WIN.y + 9);
-      g.moveTo(x, WIN.y + WIN.h); g.lineTo(x, WIN.y + WIN.h - 9);
+      const x = this.win.x + this.win.w * i / 8;
+      g.moveTo(x, this.win.y); g.lineTo(x, this.win.y + 9);
+      g.moveTo(x, this.win.y + this.win.h); g.lineTo(x, this.win.y + this.win.h - 9);
     }
     for (let i = 1; i < 4; i++) {
-      const y = WIN.y + WIN.h * i / 4;
-      g.moveTo(WIN.x, y); g.lineTo(WIN.x + 9, y);
-      g.moveTo(WIN.x + WIN.w, y); g.lineTo(WIN.x + WIN.w - 9, y);
+      const y = this.win.y + this.win.h * i / 4;
+      g.moveTo(this.win.x, y); g.lineTo(this.win.x + 9, y);
+      g.moveTo(this.win.x + this.win.w, y); g.lineTo(this.win.x + this.win.w - 9, y);
     }
     g.stroke();
 
@@ -839,7 +1035,7 @@ export class MapScene extends Scene {
     // ── title block, the full width of the sheet, like a real drawing: an
     //    engraved double-ruled box, the wing's name and its form in the wide
     //    cell, the record in small caps over the value in the rest.
-    const tx = WIN.x, ty = WIN.y + WIN.h + 32, tw = WIN.w, th = 86;
+    const tx = this.win.x, ty = this.win.y + this.win.h + 32, tw = this.win.w, th = 86;
     // round 30: the block is a dark inked band on the old paper, lettered in
     // gilt -- a pale band here was the milkiest thing left on the sheet
     // (round 30 graft: a shade darker, so the gilt lettering holds under the
@@ -886,6 +1082,13 @@ export class MapScene extends Scene {
     const cell = (i, head, val) => {
       const x0 = tx + tw * cells[i - 1], x1 = i < cells.length ? tx + tw * cells[i] : tx + tw;
       const cx = (x0 + x1) / 2;
+      const fit = (px, txt) => {
+        // a long name (THE CARNIVOROUS CONSERVATORY) steps down rather than
+        // running into the next cell
+        let sz = px;
+        g.font = `700 ${sz}px Cinzel, Georgia, serif`;
+        while (sz > 14 && g.measureText(txt).width > x1 - x0 - 24) { sz--; g.font = `700 ${sz}px Cinzel, Georgia, serif`; }
+      };
       g.textAlign = 'center';
       // round 30 graft: the record's cells in the brighter gilt -- the last
       // two sit in the sheet's burnt corner, under the shade's darkest
@@ -894,7 +1097,7 @@ export class MapScene extends Scene {
       g.font = '700 22px Cinzel, Georgia, serif'; spaced('2.1px');
       g.fillText(head, cx, ty + 33);
       g.fillStyle = hexA(GILT_HI, 1);
-      g.font = '700 26px Cinzel, Georgia, serif'; spaced('1.5px');
+      spaced('1.5px'); fit(26, val);
       g.fillText(val, cx, ty + 67);
       g.textAlign = 'left';
     };
@@ -915,7 +1118,7 @@ export class MapScene extends Scene {
     g.shadowColor = hexA(GALL, 0.95); g.shadowOffsetY = 1.2; g.shadowBlur = 1.5;
     g.fillStyle = hexA(GILT_HI, 0.96);
     g.font = '700 22px Cinzel, Georgia, serif'; spaced('1.8px');
-    g.fillText('DRAG TO PAN  \u00b7  SCROLL TO ZOOM  \u00b7  ARROWS CHOOSE  \u00b7  ENTER GOES', WIN.x + WIN.w - 4, WIN.y + WIN.h + 16);
+    g.fillText(this._fp ? 'RECOVERED SURVEY · 1891 · DO NOT TRUST THE WALLS' : 'DRAG TO PAN · SCROLL TO ZOOM · ARROWS CHOOSE · ENTER GOES', this.win.x + this.win.w - 4, this.win.y + this.win.h + 16);
     spaced('0px');
     g.restore();
 
@@ -927,7 +1130,17 @@ export class MapScene extends Scene {
     // the reader's only handle on which way the building is facing, and a rose
     // that keeps pointing up while the plan has been rotated is simply wrong.
     const turned = !!this._sec?.rot;
-    const cx = WIN.x + WIN.w - 84, cy = WIN.y + 88, rr = 48;
+    let cx = this.win.x + this.win.w - 84, cy = this.win.y + 88;
+    const rr = 48;
+    if (this._fp) {
+      // a floorplan building may stand where the rose usually goes: take the
+      // first corner of the window the building leaves clear
+      const R = 70;
+      const free = ([x, y]) => this._fp.rooms.every((q) =>
+        q.x1 < x - R || q.x0 > x + R || q.y1 < y - R || q.y0 > y + R);
+      const at = [[cx, cy], [cx, this.win.y + this.win.h - 92], [this.win.x + 150, this.win.y + 88], [this.win.x + 150, this.win.y + this.win.h - 92]].find(free);
+      if (at) [cx, cy] = at;
+    }
     g.save(); g.translate(cx, cy);
     g.strokeStyle = hexA(ink, 0.6); g.lineWidth = 1.4;
     g.beginPath(); g.arc(0, 0, rr, 0, 6.2832); g.stroke();
@@ -961,7 +1174,7 @@ export class MapScene extends Scene {
     g.restore(); g.textAlign = 'left';
 
     // ── scale bar, sitting just above the title bar
-    const bx = WIN.x, by = WIN.y + WIN.h + 10;
+    const bx = this.win.x, by = this.win.y + this.win.h + 10;
     g.strokeStyle = hexA(ink, 0.7); g.lineWidth = 1.4;
     g.strokeRect(bx, by, 180, 10);
     g.fillStyle = hexA(ink, 0.7);
@@ -1076,11 +1289,13 @@ export class MapScene extends Scene {
       };
       for (const e of map.edges) {
         const a = m.byId.get(e.from), b = m.byId.get(e.to);
-        if (a && b) leg(a.x * this.SW, a.y * this.SH, b.x * this.SW, b.y * this.SH);
+        if (!a || !b) continue;
+        const pts = [[a.x * this.SW, a.y * this.SH], ...(e.via || []), [b.x * this.SW, b.y * this.SH]];
+        for (let i = 0; i + 1 < pts.length; i++) leg(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1]);
       }
       for (const id of map.startIds) {
         const n = m.byId.get(id);
-        if (n) leg(WIN.x + 16, n.y * this.SH + 14, n.x * this.SW, n.y * this.SH);
+        if (n) leg(this.win.x + 16, n.y * this.SH + 14, n.x * this.SW, n.y * this.SH);
       }
     }
     /* ROUND 42: the pen's line bleeds into the paper's fibre (survey 7, J2:
@@ -1100,8 +1315,8 @@ export class MapScene extends Scene {
       for (const [kx, ky] of [[x - KEY - 4, y - KEY - 4], [x + w + 4, y - KEY - 4],
                               [x - KEY - 4, y + h + 4], [x + w + 4, y + h + 4],
                               [x - KEY - 4, y + h / 2 - KEY / 2], [x + w + 4, y + h / 2 - KEY / 2]]) {
-        const px = clampN(kx, WIN.x + 4, WIN.x + WIN.w - KEY - 4);
-        const py = clampN(ky, WIN.y + 4, WIN.y + WIN.h - KEY - 4);
+        const px = clampN(kx, this.win.x + 4, this.win.x + this.win.w - KEY - 4);
+        const py = clampN(ky, this.win.y + 4, this.win.y + this.win.h - KEY - 4);
         const box = { left: px, top: py, right: px + KEY, bottom: py + KEY };
         let c = 0;
         for (const mk of marks) c += rectOverlap(box, mk);
@@ -1185,7 +1400,7 @@ export class MapScene extends Scene {
           const left = anchor === 'start' ? tx : anchor === 'end' ? tx - tw : tx - tw / 2, right = left + tw;
           const box = { left: left - 6, right: right + 6, top: ty - 15, bottom: ty + 15 };
           let c = base;
-          if (box.left < WIN.x + 8 || box.right > WIN.x + WIN.w - 8 || box.top < WIN.y + 8 || box.bottom > WIN.y + WIN.h - 8) c += 1e7;
+          if (box.left < this.win.x + 8 || box.right > this.win.x + this.win.w - 8 || box.top < this.win.y + 8 || box.bottom > this.win.y + this.win.h - 8) c += 1e7;
           for (const mk of marks) c += rectOverlap(box, mk);
           for (const pl of plates) c += rectOverlap(box, pl) * 2;
           if (sb) c += rectOverlap(box, sb) * 4;
@@ -1273,9 +1488,12 @@ export class MapScene extends Scene {
         isle += `M${(ox + r).toFixed(1)} ${oy.toFixed(1)}a${r} ${r} 0 1 0 ${-2 * r} 0a${r} ${r} 0 1 0 ${2 * r} 0Z`;
       }
       if (isle) chain += isle;
+      const houseRooms=this._fp?.v >= 3 ? this._fp.rooms.filter(r=>hz.nodeIds.includes(r.id)) : null;
+      const roomOutline=houseRooms?.map(r=>`M${r.x0+8} ${r.y0+8}H${r.x1-8}V${r.y1-8}H${r.x0+8}Z`).join('');
+      if(houseRooms) {chain=roomOutline;isle='';}
       parts.push(`<g class="mi-zone mi-zone--${hz.kind}${shape ? ' mi-zone--drawn' : ''}" data-hz="${hz.id}" data-covers="${covers}">
-        <clipPath id="${clip}">${shape ? `<path d="${shape.d}${isle}" clip-rule="evenodd"/>` : `<rect x="${bx0.toFixed(1)}" y="${by0.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}"/>`}</clipPath>
-        ${shape ? `<path class="mi-zone-wash" d="${shape.d}${isle}" fill-rule="evenodd"/>` : ''}
+        <clipPath id="${clip}">${houseRooms ? `<path d="${roomOutline}"/>` : shape ? `<path d="${shape.d}${isle}" clip-rule="evenodd"/>` : `<rect x="${bx0.toFixed(1)}" y="${by0.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}"/>`}</clipPath>
+        ${shape ? `<path class="mi-zone-wash" d="${houseRooms ? roomOutline : shape.d+isle}" fill-rule="evenodd"/>` : ''}
         <path class="mi-zone-tex mi-zone-tex--${hz.kind === 'boon' ? 'stipple' : 'hatch'}" d="${tex}" clip-path="url(#${clip})"/>
         ${shape ? `<path class="mi-zone-retrace" d="${chain}" transform="translate(1.6 -1.2)"/>` : ''}
         <path class="mi-zone-line" d="${chain}"/>
@@ -1352,6 +1570,36 @@ export class MapScene extends Scene {
       // clearing 60px short; the hand's bow is taken out of the line (a bowed
       // leg crosses its neighbour where a straight one does not); and the
       // tiers are weighted apart in map.css.
+      if (e.via && e.via.length && e.kind !== 'secret') {
+        // A FLOORPLAN leg runs from the room's middle, out through the door in
+        // the wall the two rooms share (or along the hallway between them),
+        // and on to the next room's middle.  It never crosses a wall anywhere
+        // else, so it never crosses another leg.
+        const pts = [[a.x * this.SW, a.y * this.SH], ...e.via, [b.x * this.SW, b.y * this.SH]];
+        const n = pts.length - 1;
+        const A = [], B = [];
+        for (let i = 0; i < n; i++) {
+          const [px, py] = pts[i], [qx, qy] = pts[i + 1];
+          const L = Math.hypot(qx - px, qy - py) || 1;
+          const [x1, y1, x2, y2] = trim(px, py, qx, qy,
+            i === 0 ? Math.min(ra * 0.5, L * 0.3) : 0, i === n - 1 ? Math.min(rb * 0.5, L * 0.3) : 0);
+          const geo = pencilStroke(seedOf(e.from + e.to + i), x1, y1, x2, y2, { bow: 0.8, tremble: 0.7, step: 18 });
+          A.push(geo.a); B.push(geo.b);
+        }
+        put(e.from, e.to, { a: A.join(''), b: B.join('') }, e.kind === 'hall' ? ' mi-edge--hall' : '');
+        continue;
+      }
+      if (e.kind === 'secret') {
+        // the Kids' dotted crayon across the plan, wall or no wall: a secret
+        // way is the one route that ignores the building
+        const [sx, sy] = e.via?.[0] || [a.x * this.SW, a.y * this.SH];
+        const [tx, ty] = e.via?.[1] || [b.x * this.SW, b.y * this.SH];
+        const geo = pencilStroke(seedOf('s' + e.from + e.to), sx, sy, tx, ty, { bow: 26, tremble: 1.2, step: 22 });
+        const toA = pencilStroke(seedOf('sa' + e.from), a.x * this.SW, a.y * this.SH, sx, sy, { bow: 0, tremble: 0.5, step: 30 });
+        const toB = pencilStroke(seedOf('sb' + e.to), tx, ty, b.x * this.SW, b.y * this.SH, { bow: 0, tremble: 0.5, step: 30 });
+        put(e.from, e.to, { a: toA.a + geo.a + toB.a, b: geo.b }, ' mi-edge--secret');
+        continue;
+      }
       const L = Math.hypot((b.x - a.x) * this.SW, (b.y - a.y) * this.SH) || 1;
       const t1 = Math.min(ra * 0.5, L * 0.2), t2 = Math.min(rb * 0.5, L * 0.2);
       const [x1, y1, x2, y2] = trim(a.x * this.SW, a.y * this.SH, b.x * this.SW, b.y * this.SH, t1, t2);
@@ -1368,7 +1616,24 @@ export class MapScene extends Scene {
     for (const id of map.startIds) {
       const n = m.byId.get(id); if (!n) continue;
       const x = n.x * this.SW, y = n.y * this.SH;
-      const x0 = WIN.x + 16;
+      const x0 = this.win.x + 16;
+      const door = this._fp?.entries?.[id];
+      if (this._fp?.entryVia?.[id]) {
+        const pts=[[x0,door[1]],...this._fp.entryVia[id],[x,y]], A=[], B=[];
+        for(let i=0;i+1<pts.length;i++) {
+          const a=pencilStroke(seedOf('entry'+id+i),...pts[i],...pts[i+1],{bow:0,tremble:.6,step:18});
+          A.push(a.a);B.push(a.b);
+        }
+        put(ENTRY,id,{a:A.join(''),b:B.join('')},' mi-edge--entry');
+        continue;
+      }
+      if (door) {
+        // in off the drive, up the steps and through the front door
+        const a1 = pencilStroke(seedOf('in' + id), x0, door[1], door[0] - 14, door[1], { bow: 3, tremble: 1.2, step: 20 });
+        const a2 = pencilStroke(seedOf('in2' + id), door[0] - 14, door[1], x - NODE_R * 0.5, y, { bow: 0, tremble: 0.6, step: 18 });
+        put(ENTRY, id, { a: a1.a + a2.a, b: a1.b + a2.b }, ' mi-edge--entry');
+        continue;
+      }
       put(ENTRY, id,
         pencilStroke(seedOf('in' + id), x0, y + 14, x - NODE_R - 14, y,
           { bow: 10, tremble: 1.8, step: 20 }),
@@ -1385,7 +1650,7 @@ export class MapScene extends Scene {
     const sx = map.startIds.map(i => m.byId.get(i)).filter(Boolean);
     if (sx.length) {
       const my = sx.reduce((a, n) => a + n.y, 0) / sx.length * this.SH;
-      parts.push(`<g class="mi-entries"><text class="mi-in" transform="translate(${WIN.x - 16} ${my.toFixed(0)}) rotate(-90)">THE WAY IN</text></g>`);
+      parts.push(`<g class="mi-entries"><text class="mi-in" transform="translate(${this.win.x - 16} ${my.toFixed(0)}) rotate(-90)">THE WAY IN</text></g>`);
     }
 
     // "you are here" pin ring, positioned later
@@ -1464,7 +1729,7 @@ export class MapScene extends Scene {
    * Runs on state changes and when the counter-scale steps, never per frame.
    */
   _layoutLabels() {
-    if (!this._labels) return;
+    if (!this._labels || this._fp) return;
     const m = this.model;
     const k = this._mnK || 1;
     const close = this.el.screen.classList.contains('is-close');
@@ -1509,7 +1774,7 @@ export class MapScene extends Scene {
       }
       for (const id of m.map.startIds) {
         const n = m.byId.get(id);
-        if (n) this._legSegs.push([WIN.x + 16, n.y * this.SH + 14, n.x * this.SW, n.y * this.SH]);
+        if (n) this._legSegs.push([this.win.x + 16, n.y * this.SH + 14, n.x * this.SW, n.y * this.SH]);
       }
     }
     const legCost = (b) => {
@@ -1539,14 +1804,14 @@ export class MapScene extends Scene {
       const cx = L.n.x * this.SW, cy = L.n.y * this.SH;
       const ks = L.n.type === NodeType.BOSS ? k : k * (this._labS || 1);
       const hw = (L.w / 2 + 4) * ks, hh = (L.h || LABEL_H) * ks;
-      const lo = WIN.x + 10 + hw, hi = WIN.x + WIN.w - 10 - hw;
+      const lo = this.win.x + 10 + hw, hi = this.win.x + this.win.w - 10 - hw;
       const c = hi > lo ? clampN(cx + dx * k, lo, hi) : cx;
       /* ...and vertically. A name over the first row used to hang above the
          plan window, off the top of the paper and under the gilt rail
          ("East Reception Hall" on every seed): it stays on the sheet now, and
          a chip that cannot is scored where it really lands. */
       const want = cy + (L.box / 2 + 3 + dy) * k;
-      const top = clampN(want, WIN.y + 10, WIN.y + WIN.h - 10 - hh);
+      const top = clampN(want, this.win.y + 10, this.win.y + this.win.h - 10 - hh);
       return { left: c - hw, right: c + hw, top, bottom: top + hh,
                dx: (c - cx) / k, dy: dy + (top - want) / k };
     };
@@ -1673,7 +1938,7 @@ export class MapScene extends Scene {
     const RING = 42 * k;                                  // a lit room's pencil ring, outer edge
     const GLYPH = 22 * k;                                 // the drawing of any other room
     // on the paper, inside its double rule, and above the drawing's title block
-    const edge = { left: 52, top: 52, right: this.SW - 52, bottom: WIN.y + WIN.h + 24 };
+    const edge = { left: 52, top: 52, right: this.SW - 52, bottom: this.win.y + this.win.h + 24 };
     const isLit = (o) => o.n.id === m.currentId || legal.has(o.n.id);
     const marks = this._labels.map((o) => ({
       L: o, lit: isLit(o), cx: o.n.x * this.SW, cy: o.n.y * this.SH,
@@ -1684,14 +1949,14 @@ export class MapScene extends Scene {
     const starts = m.map.startIds.map((id) => m.byId.get(id)).filter(Boolean);
     if (starts.length) {
       const my = starts.reduce((a, n) => a + n.y, 0) / starts.length * this.SH;
-      blocks.push({ left: WIN.x - 36, right: WIN.x + 4, top: my - 150, bottom: my + 150 });
+      blocks.push({ left: this.win.x - 36, right: this.win.x + 4, top: my - 150, bottom: my + 150 });
     }
     // what the drawing prints in its margins: the way to drive it up the right
     // side, the compass rose at the plan's top right, the scale bar under it
-    blocks.push({ left: this.SW - 74, right: this.SW - 42, top: WIN.y, bottom: WIN.y + WIN.h });
+    blocks.push({ left: this.SW - 74, right: this.SW - 42, top: this.win.y, bottom: this.win.y + this.win.h });
     // round 38: the help line under the plan's right half, and the regions'
     // lettered names (_buildInk)
-    blocks.push({ left: WIN.x + WIN.w * 0.42, right: WIN.x + WIN.w, top: WIN.y + WIN.h + 2, bottom: WIN.y + WIN.h + 32 });
+    blocks.push({ left: this.win.x + this.win.w * 0.42, right: this.win.x + this.win.w, top: this.win.y + this.win.h + 2, bottom: this.win.y + this.win.h + 32 });
     for (const q of this._zoneTags || []) blocks.push(q);
     /* ...and the boss's plate keeps off the regions altogether (survey 5: at
        1280 "the RECEIVING CHAMBER boss plate lies over the blue region and
@@ -1703,8 +1968,8 @@ export class MapScene extends Scene {
         top: hz.rect.y0 * this.SH - 12, bottom: hz.rect.y1 * this.SH + 12,
       };
     });
-    blocks.push({ left: WIN.x + WIN.w - 140, right: WIN.x + WIN.w - 28, top: WIN.y + 32, bottom: WIN.y + 144 });
-    blocks.push({ left: WIN.x - 30, right: WIN.x + 280, top: WIN.y + WIN.h + 2, bottom: WIN.y + WIN.h + 32 });
+    blocks.push({ left: this.win.x + this.win.w - 140, right: this.win.x + this.win.w - 28, top: this.win.y + 32, bottom: this.win.y + 144 });
+    blocks.push({ left: this.win.x - 30, right: this.win.x + 280, top: this.win.y + this.win.h + 2, bottom: this.win.y + this.win.h + 32 });
     // the gilt rail's corner scrolls lie over the paper's four corners
     const cz = 64 / (this._fitZoom || this.view.z || 1);
     blocks.push({ left: 0, right: cz, top: 0, bottom: cz }, { left: this.SW - cz, right: this.SW, top: 0, bottom: cz },
@@ -1968,6 +2233,17 @@ export class MapScene extends Scene {
   _syncStates() {
     const m = this.model;
     const legal = new Set(this._legal());
+    if(this._fp?.v >= 4) {
+      let layer=this.el.ink.querySelector('.mi-access');
+      if(!layer){layer=document.createElementNS('http://www.w3.org/2000/svg','g');layer.setAttribute('class','mi-access');this.el.ink.appendChild(layer);}
+      layer.innerHTML=mansionDoorStates(m.map,m.currentId).map(d=>{
+        const half=d.w/2,turn=d.vert===false?0:90;
+        const leaf=d.open ? `M${-half} 0 v${(d.vert===false?d.opens==='north':d.opens!=='west')?-d.w:d.w}` : `M${-half} 0 H${half}`;
+        const lock=d.open?'':`<rect x="-7" y="-7" width="14" height="14"/><path d="M-4 -7 v-4 a4 4 0 0 1 8 0 v4"/>`;
+        return `<g class="mi-threshold ${d.open?'is-unlatched':'is-latched'}" data-door="${d.to}" data-threshold="${d.id || d.to}" data-open="${d.open}" transform="translate(${d.x} ${d.y}) rotate(${turn})"><title>${d.open?'Unlatched passage':'Latched — use a marked passage'}</title><path d="${leaf}"/>${lock}</g>`;
+      }).join('');
+    }
+
     const reach = this._reach = reachableFrom(m.map, m.currentId);
     // `reachableFrom` returns what you can reach FROM the seeds, so at the door
     // the seeds themselves — the whole first row — were not in the set, and
@@ -2150,14 +2426,19 @@ export class MapScene extends Scene {
     // The viewport is the inside of the gilt rail (map.css), so the fit keeps
     // the sheet FIT_PAD clear of it: a margin of desk between paper and gold.
     const fit = Math.min((vp.width - FIT_PAD) / this.SW, (vp.height - FIT_PAD) / this.SH);
-    this.view.minZ = Math.max(0.28, fit * 0.85);
+    this.view.minZ = this._fp ? Math.min(0.2, fit) : Math.max(0.28, fit * 0.85);
     this.view.maxZ = 2.4;
-    const z = clampN(fit, this.view.minZ, this.view.maxZ);
+    const z = this._fp ? 0.85 : clampN(fit, this.view.minZ, this.view.maxZ);
     this.view.z = this.view.tz = z;
     this.view.x = (vp.width - this.SW * z) / 2;
     this.view.y = (vp.height - this.SH * z) / 2;
-    this._fitZoom = z;
+    this._fitZoom = this._fp ? fit : z;
     this._applyView();
+    if(this._fp?.v >= 3 && !this.model.currentId) {
+      const entry=this._fp.entries[this.model.map.startIds[0]];
+      this._lookAt({x:(entry[0]+380)/this.SW,y:entry[1]/this.SH},0);
+    } else if (this._fp) this._lookAt(this.model.map.nodes.find(n => n.id === this.model.currentId)
+      || this.model.map.nodes.find(n => n.id === this.model.map.startIds[Math.floor(this.model.map.startIds.length / 2)]), 0);
   }
 
   _clampPan() {
@@ -2257,6 +2538,7 @@ export class MapScene extends Scene {
 
     // hover / click on nodes (delegated — one listener, not fifty)
     on(el.nodes, 'pointerover', (e) => {
+      if (this.markings && this.markings.mode !== 'pan') return;
       const b = e.target.closest('.map-node'); if (!b) return;
       this._showTip(b.dataset.id, b);
     });
@@ -2272,7 +2554,9 @@ export class MapScene extends Scene {
     });
     on(el.nodes, 'focusin', (e) => {
       const b = e.target.closest('.map-node'); if (!b) return;
-      this._focusId = b.dataset.id; this._markFocus(); this._showTip(b.dataset.id, b);
+      this._focusId = b.dataset.id; this._markFocus();
+      if (this._fp && b.matches(':focus-visible')) this._lookAt(this.model.byId.get(b.dataset.id), 0);
+      this._showTip(b.dataset.id, b);
     });
 
     // Pan.  The pointer is captured ONLY once a drag has actually started.
@@ -2311,7 +2595,12 @@ export class MapScene extends Scene {
     on(el.viewport, 'wheel', (e) => {
       e.preventDefault();
       const r = this._vpRect();
-      this._zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-e.deltaY * 0.0005));
+      if (this._fp && !e.ctrlKey && !e.metaKey) {
+        const unit = e.deltaMode === 1 ? 18 : e.deltaMode === 2 ? r.height : 1;
+        this.view.x -= (e.shiftKey ? e.deltaY : e.deltaX) * unit;
+        this.view.y -= (e.shiftKey ? e.deltaX : e.deltaY) * unit;
+        this._applyView();
+      } else this._zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-e.deltaY * 0.0005));
     }, { passive: false });
 
     // keyboard
@@ -2331,7 +2620,7 @@ export class MapScene extends Scene {
   }
 
   _key(e) {
-    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.defaultPrevented || e.target.closest?.('.map-tools') || e.metaKey || e.ctrlKey || e.altKey) return;
     const ids = this._legalIds || [];
     const idx = Math.max(0, ids.indexOf(this._focusId));
     const pan = (dx, dy) => { this.view.x += dx; this.view.y += dy; this._applyView(); };
@@ -2382,14 +2671,32 @@ export class MapScene extends Scene {
   }
   _focusMove() {
     this._markFocus();
+    if (this._fp) this._lookAt(this.model.map.nodes.find(n => n.id === this._focusId), 0);
     const el = this._nodeEls.get(this._focusId);
     if (el) { el.focus({ preventScroll: true }); this._showTip(this._focusId, el); }
   }
 
   // ───────────────────────────────────────────────────────────── the tip ───
+  /** On a floorplan, the line saying a room is reached by a secret way. */
+  _secretInto(id) {
+    const map = this.model.map;
+    if (!map.plan) return '';
+    const here = this.model.currentId;
+    const offered=here && map.edges.find(x=>x.from===here && x.to===id);
+    if(offered?.kind==='hall')return '<p class="tip-reward"><i>Passage</i> Follow the marked hallways to the unlatched door. Other doors stay shut.</p>';
+    const e = map.edges.find((x) => x.kind === 'secret' && x.to === id && (!here || x.from === here))
+      || map.edges.find((x) => x.kind === 'secret' && (x.to === id || x.from === id));
+    if (!e) return '';
+    const dev = SECRET_DEVICES[e.device] || { name: 'A secret way' };
+    const other = this.model.byId.get(e.to === id ? e.from : e.to);
+    const where = e.to === id ? `from ${escapeHtml(other?.roomName || 'another room')}` : `to ${escapeHtml(other?.roomName || 'another room')}`;
+    return `<p class="tip-reward"><i>${escapeHtml(e.passageId || 'Secret')}</i> ${escapeHtml(dev.name)} — ${where}. ${escapeHtml(e.reason || '')} Follow the matching marks; crossing lines are not junctions.</p>`;
+  }
+
   _showTip(id, anchor) {
     const n = this.model.byId.get(id); if (!n) return;
     this._hoverId = id;
+    if(this._fp?.v >= 3) for(const p of this.el.ink.querySelectorAll('[data-from]')) p.classList.toggle('is-route-preview',p.dataset.from===id);
     const info = NODE_INFO[n.type];
     const hz = n.hazard ? hazardById(n.hazard) : null;
     const legal = (this._legalIds || []).includes(id);
@@ -2412,6 +2719,7 @@ export class MapScene extends Scene {
       ${hz ? `<p class="tip-hz tip-hz--${hz.kind}">
           <span>${hazardSymbol(hz.glyph, 16)}</span>
           <b>${escapeHtml(hz.name)}</b> — ${escapeHtml(hz.rule)}</p>` : ''}
+      ${this._secretInto(id)}
       <p class="tip-foot">${depth} · ${
         current ? '<b>you are standing here</b>'
         : visited ? 'already walked'
@@ -2494,6 +2802,7 @@ export class MapScene extends Scene {
     if (hz) this.el.screen.dataset.hzFocus = hz.id;
   }
   _hideTip() {
+    if(this._fp?.v >= 3) for(const p of this.el.ink.querySelectorAll('.is-route-preview')) p.classList.remove('is-route-preview');
     this._hoverId = null;
     this.el.tip.classList.remove('is-on');
     this.el.tip.setAttribute('aria-hidden', 'true');
@@ -2764,6 +3073,9 @@ export class MapScene extends Scene {
 
   // ──────────────────────────────────────────────────────────────── exit ───
   async exit() {
+    this._footerObserver?.disconnect();
+    this._footerObserver = null;
+    this.markings?.destroy(); this.markings = null;
     this._unpauseStage?.();
     this._unpauseStage = null;
     for (const off of this._off) { try { off(); } catch {} }

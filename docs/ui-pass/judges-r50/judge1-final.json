@@ -1,0 +1,507 @@
+{
+  "judge": 1,
+  "inspected": {
+    "references": 4,
+    "captures": 40,
+    "order": [
+      "AMBER",
+      "SAPPHIRE",
+      "GARNET",
+      "PERIDOT"
+    ],
+    "references_first": true,
+    "capture_order": [
+      "rest.png",
+      "rest-1280.png",
+      "event.png",
+      "event-1280.png",
+      "gameover.png",
+      "gameover-1280.png",
+      "shop.png",
+      "shop-1280.png",
+      "combat-floaters.png",
+      "combat-floaters-1280.png"
+    ]
+  },
+  "method": "Independent screenshot-only judgment against all four references. All named images were viewed. Scores consider both resolutions conservatively. No interaction testing is claimed. The Standalone preview banner and unchanged combat room, actor and hand artwork were excluded from comparison. Below-viewport content was not presumed inaccessible. No pair reaches the same-painted-hand standard.",
+  "candidates": {
+    "AMBER": {
+      "system_overall": 7,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 7.7,
+            "palette": 8.1,
+            "typography": 7.7,
+            "material": 6.8,
+            "background": 6.7,
+            "composition": 7.2,
+            "readability": 7.2,
+            "coherence": 7.1
+          },
+          "overall": 7.1,
+          "fits_between_samples": false,
+          "worst_problem": "At 1280x800 the third choice ends abruptly inside its panel at the lower content edge; give the choices a physically framed boundary with its cue attached to that boundary.",
+          "size_notes": {
+            "1600x900": "The fort and its candle shelf provide an attractive left focal point, but the right panels have blurry, uneven interior treatments and the lower panel is cut by a dark strip. The upper-right utility buttons look like ordinary rounded rectangles.",
+            "1280x800": "The third panel loses its lower explanation at the edge, though More choices below identifies continuation. The detached cue and dark cutoff are less convincing than the richly framed illustration; the rest and sharpen text remain clear."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.3,
+            "typography": 8,
+            "material": 7.6,
+            "background": 7.4,
+            "composition": 7.6,
+            "readability": 7.8,
+            "coherence": 7.6
+          },
+          "overall": 7.7,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the lower parchment choices disappear into a broad dark cutoff that does not read as part of the page support; frame the story viewport and attach its cue to that frame.",
+          "size_notes": {
+            "1600x900": "Warm parchment, illuminated initial, enamel choice medallions and cold window light establish a coherent story setting; the third option is visibly cut at the bottom.",
+            "1280x800": "The first two choices remain readable, with the third partially shown above the continuation edge. The illustration and page remain stable, but the support's base and scrolling boundary do not form one believable object."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 7.7,
+            "palette": 8,
+            "typography": 7.5,
+            "material": 6.7,
+            "background": 6.3,
+            "composition": 6.6,
+            "readability": 7,
+            "coherence": 6.8
+          },
+          "overall": 6.8,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the enormous central trick card dominates the memorial and is severed before its complete rules, making the summary feel like a cropped inventory display; give the card a complete proportionate display or an explicitly framed detail viewport.",
+          "size_notes": {
+            "1600x900": "Portraits and extinguished candle are expressive, but the central card and left/right slabs compete for attention; the left map and central rules disappear beneath a wide dark footer boundary.",
+            "1280x800": "The card rules and left record continue behind the lower cutoff while the right list shows more rows; the More record below cue helps but does not explain the relationship of the three columns. Large unvaried purple textures remain unlike the references' painted staging."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 7.5,
+            "palette": 8,
+            "typography": 7.4,
+            "material": 6.5,
+            "background": 6.2,
+            "composition": 6.9,
+            "readability": 7.7,
+            "coherence": 6.8
+          },
+          "overall": 6.8,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the five very tall narrow cards under a mechanically repeated scalloped valance make the shop read as a stretched interface; use naturally proportioned cards on a painted shelf with believable velvet drapery.",
+          "size_notes": {
+            "1600x900": "All five visible cards include readable rules, but their deep empty middles and narrow silhouettes are unnatural. The purple valance and backdrop look flat compared with Mr. Moth's painted portrait.",
+            "1280x800": "The five-card layout compresses names and rules into narrower columns; the first BUY remains visible, and the lower category headings plus More wares below indicate continuation. The issue is proportions and material rather than the existence of scrolling."
+          }
+        },
+        "combat": {
+          "dimensions": {
+            "ornament": 7.8,
+            "palette": 8.2,
+            "typography": 7.6,
+            "material": 7.2,
+            "background": 8,
+            "composition": 6.4,
+            "readability": 7.2,
+            "coherence": 7.2
+          },
+          "overall": 7.1,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the condition labels along the upper edge have no explicit owner and sit far from their corresponding actor and resource plates; group and label them beside their owners while preserving actor clearance.",
+          "size_notes": {
+            "1600x900": "The player's three condition plaques form a wide overhead row, while the opponent's stack is high to the right; text is legible and avoids the main actor silhouettes, but ownership is only inferred from position. The plain How to play rectangle remains a conspicuous mismatch.",
+            "1280x800": "The player labels become a stack at the far upper left, separated from the child and companion; the opponent stack remains high right. The plates, bars and resource panel are clear, but the ownership problem is more pronounced.",
+            "comparison": "No meaningful UI difference among the four combat pairs justifies a visual preference. Actor poses, room rendering and unchanged hand artwork were excluded from comparative judgment; the shared background score is descriptive only."
+          }
+        }
+      }
+    },
+    "SAPPHIRE": {
+      "system_overall": 7.5,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.2,
+            "typography": 7.8,
+            "material": 7.1,
+            "background": 6.8,
+            "composition": 7.7,
+            "readability": 8.1,
+            "coherence": 7.5
+          },
+          "overall": 7.5,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the choices end in a pure black rectangular strip that looks detached from the surrounding gilt furniture; replace it with a textured, framed boundary belonging to the choice stack.",
+          "size_notes": {
+            "1600x900": "Three complete choices are shown with quieter purple, brown and red panel interiors, and the fort has a clearer shelf. Utility links now use the ornamental language. A fourth choice peeks above the black cue strip.",
+            "1280x800": "All three visible choices retain their explanations and costs. The cue clears the footer control, but the black rectangle is a conspicuous foreign material and the strongly red third panel weakens the otherwise unified aubergine scheme."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.3,
+            "typography": 8,
+            "material": 7.6,
+            "background": 7.4,
+            "composition": 7.6,
+            "readability": 8,
+            "coherence": 7.7
+          },
+          "overall": 7.7,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the full-width pure-black story boundary cuts across the painted walls and page support; turn it into a material edge that visibly belongs to the story display.",
+          "size_notes": {
+            "1600x900": "The parchment, illustrated initial and choice strips are readable and attractive. The first two choices end cleanly before the cue strip, but the abrupt black stripe interrupts the staged room.",
+            "1280x800": "The first two choices remain clear, and the cue has a dedicated space separated from Leave it be. The room and page still stop at an unpainted-looking horizontal bar, so the physical staging remains incomplete."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 7.8,
+            "palette": 8.1,
+            "typography": 7.6,
+            "material": 7,
+            "background": 6.4,
+            "composition": 7,
+            "readability": 7.5,
+            "coherence": 7.1
+          },
+          "overall": 7.1,
+          "fits_between_samples": false,
+          "worst_problem": "At 1280x800 the right-hand trick viewport slices through the second row of names just above its separate black continuation strip; give that inner viewport a clean material boundary and enough space for its visible row.",
+          "size_notes": {
+            "1600x900": "The compact left record reveals the map and more narrative, and the inner trick list has a named cue. The central card still appears oversized and its rules continue below the main record edge.",
+            "1280x800": "Two continuation levels are visually distinguishable, but the inner edge cuts Dig Up a Fight and Flying Femur while the central card and left text hit the outer edge. The black strips are clearer as reserved space than as painted objects."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.4,
+            "typography": 7.9,
+            "material": 8,
+            "background": 7.7,
+            "composition": 8.1,
+            "readability": 8.3,
+            "coherence": 8
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the separate narrow ledges underneath the cards are interrupted by deep vertical curtain folds, so their support is ambiguous; unify them into a convincingly grounded wooden display shelf.",
+          "size_notes": {
+            "1600x900": "Three naturally proportioned cards show complete rules and purchase tags against deep painted velvet. Mr. Moth and the card row feel like one shop display, although the large gaps and interrupted ledges weaken the structure.",
+            "1280x800": "The same three cards keep complete names, rules and tags with useful breathing room. The pure black bottom cue strip remains visually alien to the painted curtain and carved side supports."
+          }
+        },
+        "combat": {
+          "dimensions": {
+            "ornament": 7.8,
+            "palette": 8.2,
+            "typography": 7.6,
+            "material": 7.2,
+            "background": 8,
+            "composition": 6.4,
+            "readability": 7.2,
+            "coherence": 7.2
+          },
+          "overall": 7.1,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the condition labels along the upper edge have no explicit owner and sit far from their corresponding actor and resource plates; group and label them beside their owners while preserving actor clearance.",
+          "size_notes": {
+            "1600x900": "The player's three condition plaques form a wide overhead row, while the opponent's stack is high to the right; text is legible and avoids the main actor silhouettes, but ownership is only inferred from position. The plain How to play rectangle remains a conspicuous mismatch.",
+            "1280x800": "The player labels become a stack at the far upper left, separated from the child and companion; the opponent stack remains high right. The plates, bars and resource panel are clear, but the ownership problem is more pronounced.",
+            "comparison": "No meaningful UI difference among the four combat pairs justifies a visual preference. Actor poses, room rendering and unchanged hand artwork were excluded from comparative judgment; the shared background score is descriptive only."
+          }
+        }
+      }
+    },
+    "GARNET": {
+      "system_overall": 7.8,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.4,
+            "typography": 7.9,
+            "material": 7.7,
+            "background": 7.1,
+            "composition": 8,
+            "readability": 8.3,
+            "coherence": 7.9
+          },
+          "overall": 7.9,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the upper-right rectangular cost badges still look separately pasted onto the choice panels; paint them as inset plaques with lighting and patina consistent with the surrounding gilt frames.",
+          "size_notes": {
+            "1600x900": "The fort sits convincingly on its candle shelf, its interior is quieter, and the choice panels share restrained dark velvet. The Fort choices boundary names the viewport and holds its cue clear of the bottom exit.",
+            "1280x800": "Three choices retain complete explanations with their costs. The named boundary clears the panel text and footer controls, but remains a straight thin strip rather than a fully convincing carved lip; badge edging is harsher than the references."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.3,
+            "typography": 8,
+            "material": 7.8,
+            "background": 7.5,
+            "composition": 7.9,
+            "readability": 8.2,
+            "coherence": 7.9
+          },
+          "overall": 7.9,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the Story Register strip stretches across the entire room rather than belonging to the parchment stand; integrate this edge into the stand with wood depth and contact shadow.",
+          "size_notes": {
+            "1600x900": "The story text and first two options are readable; the illuminated initial and ornate stand carry the sample language. A named aubergine boundary makes the continuation deliberate and avoids the detached black void.",
+            "1280x800": "Two full choices remain legible above the boundary, and the continuation cue clears the exit. The stand's side supports provide depth, but its base is concealed, so the wide room-spanning strip still reads as a UI overlay."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.3,
+            "typography": 7.7,
+            "material": 7.5,
+            "background": 6.7,
+            "composition": 7.4,
+            "readability": 7.9,
+            "coherence": 7.5
+          },
+          "overall": 7.5,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the central trick card remains too dominant and terminates at the Memorial Record boundary before its complete rules; restructure this central display as a complete card or clearly bounded card-detail viewport without shrinking its text.",
+          "size_notes": {
+            "1600x900": "Quieter dark velvet panels and named Memorial Record and Final Tricks edges unify the screen. The inner right edge cuts part of the next row, although the cue identifies continuation; the card overwhelms the small memorial portraits.",
+            "1280x800": "The right viewport presents two complete rows before its labeled boundary, better than its larger counterpart's partial row. Left map and summaries have a clear hierarchy; the central card still runs through the outer viewport and the pale outlined main heading feels more rendered than engraved."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.3,
+            "palette": 8.6,
+            "typography": 8,
+            "material": 8.4,
+            "background": 8.2,
+            "composition": 8.4,
+            "readability": 8.5,
+            "coherence": 8.3
+          },
+          "overall": 8.3,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the cards' uniformly bright frames and isolated price tags lack the subtle contact shadows of the surrounding painted shelf; deepen those contacts so the cards feel physically seated.",
+          "size_notes": {
+            "1600x900": "Natural card proportions, full visible rules, star-embroidered velvet, tassels and a continuous wooden shelf are the strongest complete staging among the shops. The shelf visibly supports the merchandise and Mr. Moth's presentation.",
+            "1280x800": "All three cards retain their names, rules and prices with no crowded lower tags. The Shop shelves edge clearly signals continuation without covering these cards. The shared gold rims and text still have a sharper digital finish than the reference paintings, so this is not a 9."
+          }
+        },
+        "combat": {
+          "dimensions": {
+            "ornament": 7.8,
+            "palette": 8.2,
+            "typography": 7.6,
+            "material": 7.2,
+            "background": 8,
+            "composition": 6.4,
+            "readability": 7.2,
+            "coherence": 7.2
+          },
+          "overall": 7.1,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the condition labels along the upper edge have no explicit owner and sit far from their corresponding actor and resource plates; group and label them beside their owners while preserving actor clearance.",
+          "size_notes": {
+            "1600x900": "The player's three condition plaques form a wide overhead row, while the opponent's stack is high to the right; text is legible and avoids the main actor silhouettes, but ownership is only inferred from position. The plain How to play rectangle remains a conspicuous mismatch.",
+            "1280x800": "The player labels become a stack at the far upper left, separated from the child and companion; the opponent stack remains high right. The plates, bars and resource panel are clear, but the ownership problem is more pronounced.",
+            "comparison": "No meaningful UI difference among the four combat pairs justifies a visual preference. Actor poses, room rendering and unchanged hand artwork were excluded from comparative judgment; the shared background score is descriptive only."
+          }
+        }
+      }
+    },
+    "PERIDOT": {
+      "system_overall": 7.5,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 7.9,
+            "typography": 7.8,
+            "material": 7.2,
+            "background": 6.8,
+            "composition": 7.8,
+            "readability": 8.3,
+            "coherence": 7.5
+          },
+          "overall": 7.5,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the broad horizontal sheen on the choice panels and fort backing resembles brushed varnish rather than softly lit velvet; replace the strong directional streaks with quieter painted material.",
+          "size_notes": {
+            "1600x900": "Three full choices and a clear, framed Continue through choices rail provide strong legibility. The fourth panel peeks behind a clear edge. Glossy horizontal streaks and bright backing behind the fort compete with the candlelit illustration.",
+            "1280x800": "All three choices preserve their text and costs, and the continuation rail clears the exit. The rail belongs to the ornament family but becomes a very long stretched cartouche; the repeated sheen across every choice feels mechanical."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.3,
+            "typography": 8,
+            "material": 7.8,
+            "background": 7.5,
+            "composition": 7.6,
+            "readability": 8.1,
+            "coherence": 7.7
+          },
+          "overall": 7.7,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the full-width Continue through story rail and equally long exit rail form two dominant horizontal bars beneath the stand; localize the continuation boundary to the story object and restore a more compact exit hierarchy.",
+          "size_notes": {
+            "1600x900": "The parchment and decorated supports are attractive, and the first two choices remain complete above an explicit continuation rail. The two long bottom bars command too much visual weight relative to the page.",
+            "1280x800": "The story remains readable, with a clear separation between continuation and exit. The oversized bars still flatten the room staging; no legibility penalty was assigned for the ignored Standalone preview banner."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 7.9,
+            "palette": 7.8,
+            "typography": 7.6,
+            "material": 6.9,
+            "background": 6.5,
+            "composition": 6.9,
+            "readability": 7.8,
+            "coherence": 7
+          },
+          "overall": 7,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the large side panels have conspicuous silvery vertical glare that competes with the memorial portraits and text; soften that finish into dark painted velvet with localized candle lighting.",
+          "size_notes": {
+            "1600x900": "More right-hand tricks are visible, and the framed Continue through record rail clearly marks the bottom viewport. Bright broad panel glare, an oversized central card and spacious left headings pull focus in different directions.",
+            "1280x800": "The continuation boundary is explicit, but the left map, central rules and a further trick row all meet it at different cut points. The wide rail and glossy panels emphasize dashboard structure over a composed memorial scene."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.3,
+            "typography": 7.9,
+            "material": 8,
+            "background": 7.9,
+            "composition": 8,
+            "readability": 8.5,
+            "coherence": 8
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the shelf beneath the cards is broken into sections by curtain strips, weakening the sense that the merchandise rests on a single physical display; use a continuous support and consistent contact shadows.",
+          "size_notes": {
+            "1600x900": "Painted curtains with warm and cool folds, full rules on three proportionate cards, and readable purchase tags form a convincing shop. The bright right curtain and interrupted supports slightly distract from the merchandise.",
+            "1280x800": "The cards and purchase tags stay fully visible above a clear continuation rail. The rail is clean but conspicuously stretched; the brighter curtain folds are more prominent than in the quieter reference interiors."
+          }
+        },
+        "combat": {
+          "dimensions": {
+            "ornament": 7.8,
+            "palette": 8.2,
+            "typography": 7.6,
+            "material": 7.2,
+            "background": 8,
+            "composition": 6.4,
+            "readability": 7.2,
+            "coherence": 7.2
+          },
+          "overall": 7.1,
+          "fits_between_samples": false,
+          "worst_problem": "At both sizes the condition labels along the upper edge have no explicit owner and sit far from their corresponding actor and resource plates; group and label them beside their owners while preserving actor clearance.",
+          "size_notes": {
+            "1600x900": "The player's three condition plaques form a wide overhead row, while the opponent's stack is high to the right; text is legible and avoids the main actor silhouettes, but ownership is only inferred from position. The plain How to play rectangle remains a conspicuous mismatch.",
+            "1280x800": "The player labels become a stack at the far upper left, separated from the child and companion; the opponent stack remains high right. The plates, bars and resource panel are clear, but the ownership problem is more pronounced.",
+            "comparison": "No meaningful UI difference among the four combat pairs justifies a visual preference. Actor poses, room rendering and unchanged hand artwork were excluded from comparative judgment; the shared background score is descriptive only."
+          }
+        }
+      }
+    }
+  },
+  "ranking": {
+    "rest": [
+      "GARNET",
+      "SAPPHIRE",
+      "PERIDOT",
+      "AMBER"
+    ],
+    "event": [
+      "GARNET",
+      "SAPPHIRE",
+      "PERIDOT",
+      "AMBER"
+    ],
+    "gameover": [
+      "GARNET",
+      "SAPPHIRE",
+      "PERIDOT",
+      "AMBER"
+    ],
+    "shop": [
+      "GARNET",
+      "SAPPHIRE",
+      "PERIDOT",
+      "AMBER"
+    ],
+    "combat": [
+      "AMBER",
+      "SAPPHIRE",
+      "GARNET",
+      "PERIDOT"
+    ]
+  },
+  "ranking_notes": {
+    "combat": "All four are visually tied on the assessed UI; listed in inspection order solely to satisfy the ordered schema.",
+    "rest": "SAPPHIRE and PERIDOT are close; SAPPHIRE's quieter material wins over PERIDOT's stronger full-width cue treatment.",
+    "event": "SAPPHIRE, PERIDOT and AMBER are close. Dedicated clean boundary space favors SAPPHIRE, while PERIDOT's oversized footer bars and AMBER's floating cue weaken staging.",
+    "shop": "SAPPHIRE and PERIDOT are close; SAPPHIRE has the quieter velvet atmosphere, while PERIDOT has the clearer ornamented continuation boundary."
+  },
+  "system_ranking": [
+    "GARNET",
+    "SAPPHIRE",
+    "PERIDOT",
+    "AMBER"
+  ],
+  "winner": "GARNET",
+  "winner_rationale": "GARNET offers the most consistent dark painted materials, the strongest physically staged shop, and named scroll boundaries that remain understandable at both sizes. Its rest panels and memorial surfaces are quieter than the alternatives, and its shop's continuous wooden shelf and embroidered velvet are closest to the reference hand. It still falls short of reference fit: the memorial's oversized card, overlay-like boundary strips, sharp badge rendering and ownerless combat condition labels remain material defects.",
+  "winner_fixes": [
+    "Combat, upper condition groups at both sizes: add a compact owner name or portrait medallion and position each group in a dedicated lane beside its owner, clear of actor silhouettes, guard crests, health/name plates and the left resource panel.",
+    "Gameover, central card display at both sizes: preserve the enlarged rules text but show a complete naturally proportioned card in a dedicated framed detail region; give the memorial portraits and extinguished candle more focal authority.",
+    "Gameover, right Final Tricks viewport at 1600x900: stop the visible region after a complete row or add a deliberate framed reveal edge; the partial next-row names should not appear chopped by the cue strip.",
+    "Event, lower Story Register boundary at both sizes: confine it to a believable page or easel support and paint a carved lower lip with contact shadow, rather than laying a room-wide strip across the background.",
+    "Rest, cost badges at both sizes: integrate the rectangular amount plaques into the choice frames with softer antique-gold edge highlights, patina and shared directional light.",
+    "Rest, lower Fort choices boundary: give the named strip the thickness and corner treatment of the choice furniture while keeping its cue in reserved space clear of text and the exit control.",
+    "Shop, card feet and price tags at both sizes: add coherent contact shadows on the continuous shelf and soften the uniform bright card outlines so their painted depth matches the velvet and wood.",
+    "All noncombat headings: replace the hard white-and-gold outline effect with subtly shaded, worn engraved lavender lettering consistent with the reference title and nameplates.",
+    "Combat, upper-right How to play control: replace the plain rounded rectangle with the same antique-gold cartouche treatment already used by the rest screen's utility controls."
+  ],
+  "grafts": [
+    {
+      "candidate": "PERIDOT",
+      "screen": "rest/event/shop",
+      "idea": "Borrow the fully framed, explicit Continue through wording as an affordance, but keep GARNET's restrained material and local viewport width instead of stretching a cartouche across the whole room."
+    },
+    {
+      "candidate": "SAPPHIRE",
+      "screen": "shop",
+      "idea": "Borrow the especially quiet deep burgundy shadowing in the curtain interior while retaining GARNET's continuous shelf and embroidered valance."
+    },
+    {
+      "candidate": "AMBER",
+      "screen": "shop",
+      "idea": "Retain the idea of showing a small glimpse of the next merchandise category headings below the first display, when available space permits; preserve GARNET's natural card proportions and enlarged rules."
+    }
+  ]
+}

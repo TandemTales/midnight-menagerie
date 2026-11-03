@@ -205,8 +205,8 @@ async def main(a):
               "the empty shelf says so, in a visible sentence", repr(bare["none"]))
         check(bare["count"] == "0",
               "the ledger prints 0 Keepsakes left on the floor", f"{bare['count']!r}")
-        check(bare["total"] == "none kept",
-              "the section heading says none kept", f"{bare['total']!r}")
+        check(bare["total"] == "none carried",
+              "the section heading says none carried", f"{bare['total']!r}")
         check(bare["role"] is None,
               "the empty shelf is not announced as a list with no items",
               f"role={bare['role']!r}")

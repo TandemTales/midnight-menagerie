@@ -1,0 +1,58 @@
+{
+  "kind": "isolated regression fixtures; not a playthrough",
+  "checks": [
+    "Title after reload unions active snapshot rescues with lifetime, deduplicates, and excludes starter",
+    "Fifteen rescued plus starter make all sixteen available without an unreachable freed denominator",
+    "All sixteen Companion names appear as actual scene headings",
+    "Actual solo Kitchens boss scene omits absent Priya and retains a self-contained challenge",
+    {
+      "map": "Original CSS steals a legal row-13 hit; fixed CSS permits an actual mouse click and real Run arrival",
+      "point": {
+        "x": 980.8984619140625,
+        "y": 372.3692932128906,
+        "id": "kitchens-cellars-12-1",
+        "label": "Inner Servants' Dining Room. Scuffle. Row 13.",
+        "stolenBy": "kitchens-cellars-boss"
+      }
+    },
+    {
+      "dough_split_real_dom": {
+        "passed": true,
+        "rendered": [
+          {
+            "id": "s1",
+            "hp": 11
+          },
+          {
+            "id": "s2",
+            "hp": 11
+          }
+        ],
+        "checks": 5
+      }
+    },
+    {
+      "ward_real_renderer_keyboard": {
+        "index": 0,
+        "uid": "c1",
+        "dog": "e1",
+        "hp": 1,
+        "label": "A Small Grey Dog. Ward animal. Protected; cannot be attacked or hurt.",
+        "latch": "s1",
+        "legal": [
+          "e0",
+          "s1"
+        ]
+      },
+      "cycle": [
+        "e0",
+        "s1",
+        "e0"
+      ]
+    },
+    "Real keyboard latch release removes Ward view and stale rescue instructions; Cage open-door rule remains",
+    "Atlas actual pending survey completes safely after scene exit and delayed plan fetch"
+  ],
+  "errors": [],
+  "passed": true
+}

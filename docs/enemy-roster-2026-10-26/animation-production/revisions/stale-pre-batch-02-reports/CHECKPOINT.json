@@ -1,0 +1,68 @@
+{
+  "status": "hall_mirror_visual_corrections_in_progress",
+  "updated_utc": "2026-10-26T22:34:30.431359+00:00",
+  "new_final_enemies": 1,
+  "new_final_actions": 4,
+  "fps": 30,
+  "clips": {
+    "idle": {
+      "frames": 60,
+      "fps": 30,
+      "duration_seconds": 2.0,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    "attack": {
+      "frames": 48,
+      "fps": 30,
+      "duration_seconds": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    "hurt": {
+      "frames": 24,
+      "fps": 30,
+      "duration_seconds": 0.8,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    "defeat": {
+      "frames": 45,
+      "fps": 30,
+      "duration_seconds": 1.5,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    }
+  },
+  "remaining": {
+    "identities": 187,
+    "preserved_enemies": 29,
+    "preserved_actions": 118,
+    "new_final_enemies": 1,
+    "new_final_actions": 4,
+    "usable_enemies_pending": 156,
+    "dependency_blocked_enemies": 1,
+    "pending_actions": 659,
+    "dependency_blocked_actions": 4,
+    "action_totals": {
+      "attack": 187,
+      "defeat": 187,
+      "hurt": 187,
+      "idle": 187,
+      "cast": 37
+    },
+    "new_cast_actions": 35
+  },
+  "preview": "hall-mirror-preview.html",
+  "validation": "representative-v3/validation.json",
+  "saved_files": "published-clips.json",
+  "method_limit": "Object-specific source-art layered rig, not fully redrawn animation or AI video. Other enemies need their own coherent action design.",
+  "browser_playback": "explicitly denied by URL policy in independent review; do not retry via another surface",
+  "in_game_integration": false,
+  "spectral_scullion": "dependency blocked; no retry",
+  "visual_gate": "qualified: dark head-edge patches and pupil-to-eyelid crossfade reported by independent reviewer"
+}

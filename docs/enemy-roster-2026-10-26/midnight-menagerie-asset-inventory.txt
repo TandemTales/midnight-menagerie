@@ -1,0 +1,207 @@
+MIDNIGHT MENAGERIE - READ-ONLY ASSET INSPECTION
+Inspected 2026-10-26
+Project root: C:\Users\Josh\OneDrive\Desktop\Tandem Tales\Midnight Menagerie
+
+CONCLUSION
+29 enemies have 118 source animation sheets and 118 built, indexed WebP frame atlases. All have idle, attack, hurt, defeat. Butler and Governess also have cast. All 118 atlases decode, dimensions match metadata, transparent backgrounds exist, and first/middle/last frame samples differ. All raw sheets are represented in built clips; no orphan raw enemy sheets found. These are actual character animation assets, not merely procedural SVG motion. Representative idle, attack and defeat frames were visually reviewed for all 29, alongside stills. No game/build/development was run. This is asset inspection, not a claim of flawless full-motion/runtime QA.
+51 enemies have painted still art; 29 of these also have clips, leaving 22 still-only enemy identities. docs/art/enemy-stills-checklist.md reports 275 total enemy/part/summon entries and 224 unpainted; that generated count is contextual, not 275 independent roster slots.
+No region exceeds 7 regular / 3 elite / 1 boss with its existing animated assets. Animation totals: foyer 5/0/1; nursery 4/2/1; sleeping-quarters 3/2/0; kitchens-cellars 4/2/1; greenhouse 1/2/1; all later regions 0/0/0.
+
+PATH CONVENTIONS
+Raw: animations\sprites\enemies\animations\SS_<sourceKey>_<state>.png
+Built: game\assets\sprites\enemy-clips\<enemy-id>\<state>.webp
+Metadata: game\assets\sprites\enemy-clips\<enemy-id>\index.json
+Registry: game\assets\sprites\index.json -> enemyClips
+Still: game\assets\sprites\enemies\<enemy-id>.webp; original stills under animations\sprites\enemies\.
+Common states idle/attack/hurt each have 48 frames. Defeat counts vary below. The two cast clips each have 48 frames. WebP files are packed sprite atlases, not standalone animated-WebP files.
+
+EXACT REGIONS IN CURRENT PROJECT ORDER (schema.js REGION_ORDER; mapgen.js REGIONS)
+1. The Forgotten Foyer [foyer]; map metadata boss: The Butler
+2. The Forgotten Nursery [nursery]; map metadata boss: The Governess
+3. The Sleeping Quarters [sleeping-quarters]; map metadata boss: The Bedframe Beast
+4. The Kitchens and Cellars [kitchens-cellars]; map metadata boss: The Confectioner
+5. The Impossible Greenhouse [greenhouse]; map metadata boss: The Carnivorous Conservatory
+6. The Mansion Graveyard [graveyard]; map metadata boss: The Groundskeeper of Names
+7. The Grand Study and Library [study-library]; map metadata boss: The Archivist
+8. The Moonlit Attic and Observatory [attic-observatory]; map metadata boss: The Watcher in the Rafters
+9. The Lampworks [lampworks]; map metadata boss: The Lamplighter
+10. The Ballroom and Velvet Suites [ballroom]; map metadata boss: The Master of Revels
+11. The Crypt and Ossuary [crypt]; map metadata boss: The Bone Curator
+12. The Withered Hedge Maze [hedge-maze]; map metadata boss: The Gardener of Rot
+13. The Secret Passages [secret-passages]; map metadata boss: The Whisper Warden
+14. The Bathhouse and Rain Wing [bathhouse]; map metadata boss: The Drowned Matron
+15. The Kennels and Animal Ward [kennels]; map metadata boss: The Kennelmaster
+16. The Moon Courtyard and Pumpkin Grounds [pumpkin-grounds]; map metadata boss: The Harvest King
+17. The Heart of the House [heart]; map metadata boss: The Heart
+The project has 17 regions, each with 20 architectural rooms (340 rooms), not 18 combat levels. Older design prose uses section numbers such as 18 for Heart; use REGION_ORDER for level numbering. Heart map metadata says The Heart, while its implementation is bosses/keeper.js and design discusses The Keeper; this naming discrepancy does not affect any preserved animation.
+
+MANDATORY ANIMATED ENEMY PRESERVATION INVENTORY
+The Butler [butler] | foyer | boss
+Source key: butler; states: attack (48 frames), cast (48 frames), defeat (30 frames), hurt (48 frames), idle (48 frames)
+Visual: Tall slender formal servant with dark tailcoat, white gloves, towel, tray and blue spectral flame in place of a head; theatrical serving gestures.
+Data: game\src\data\bosses\butler.js
+
+Coatrack Crawler [coatrack-crawler] | foyer | normal
+Source key: coatrackCrawler; states: attack (48 frames), defeat (34 frames), hurt (48 frames), idle (48 frames)
+Visual: Brass-and-wood coat stand loaded with coats, hat and umbrella; curved hooks/feet swivel and it falls over.
+Data: game\src\data\enemies\foyer.js
+
+Door Greeter [door-greeter] | foyer | normal
+Source key: doorGreeter; states: attack (48 frames), defeat (22 frames), hurt (48 frames), idle (48 frames)
+Visual: Freestanding carved wooden front door; brass knocker and ornamental brows form a stern face; rocks and falls.
+Data: game\src\data\enemies\foyer.js
+
+Dust Bunny [dust-bunny] | foyer | normal
+Source key: dustBunny; states: attack (48 frames), defeat (38 frames), hurt (48 frames), idle (48 frames)
+Visual: Fuzzy lint rabbit with loose threads, large ears, little button details and warm glowing eyes; ears/body bounce and flatten.
+Data: game\src\data\enemies\foyer.js
+
+Lost Luggage [lost-luggage] | foyer | normal
+Source key: suitcase; states: attack (48 frames), defeat (23 frames), hurt (48 frames), idle (48 frames)
+Visual: Ornate strapped travel suitcase with tags, little feet, toothlike rim and red fabric tongue; lid opens and closes.
+Data: game\src\data\enemies\foyer.js
+
+Red Carpet Runner [red-carpet-runner] | foyer | normal
+Source key: rug; states: attack (48 frames), defeat (21 frames), hurt (48 frames), idle (48 frames)
+Visual: Face-free red-and-gold carpet with tassels; curls, ripples and rolls itself into a bundle.
+Data: game\src\data\enemies\foyer.js
+
+Blanket Blob [blanket-blob] | nursery | normal
+Source key: blanketBlob; states: attack (48 frames), defeat (23 frames), hurt (48 frames), idle (48 frames)
+Visual: Small shy dark creature with huge purple eyes peeking from a crocheted purple patchwork blanket; blanket lifts and glows.
+Data: game\src\data\enemies\nursery.js
+
+Button Baby [button-baby] | nursery | normal
+Source key: buttonBaby; states: attack (48 frames), defeat (35 frames), hurt (48 frames), idle (48 frames)
+Visual: Seated rag doll with button eyes, stitched mouth, purple yarn hair and bow; reaches and tumbles.
+Data: game\src\data\enemies\nursery.js
+
+The Governess [governess] | nursery | boss
+Source key: governess; states: attack (48 frames), cast (48 frames), defeat (32 frames), hurt (48 frames), idle (48 frames)
+Visual: Tall spectral Victorian governess/doll in layered dark dress, pale face, sewing/scissor props and lavender smoke; gestures and dissolves/slumps.
+Data: game\src\data\bosses\governess.js
+
+Jack in the Box [jack-in-the-box] | nursery | normal
+Source key: jackInTheBox; states: attack (48 frames), defeat (11 frames), hurt (48 frames), idle (48 frames)
+Visual: Friendly stitched jester doll on a spring in a patterned wooden crank box; pops out and waves/reaches.
+Data: game\src\data\enemies\nursery.js
+
+The Patchwork Giant [patchwork-giant] | nursery | elite
+Source key: patchworkGiant; states: attack (48 frames), defeat (19 frames), hurt (48 frames), idle (48 frames)
+Visual: Bulky composite of sewn stuffed toys, prominent rag rabbit face, many patches, buttons and smaller toy faces; opens arms and flops.
+Data: game\src\data\enemies\nursery.js
+
+Patchwork Soldier [patchwork-soldier] | nursery | normal
+Source key: patchworkSoldier; states: attack (48 frames), defeat (24 frames), hurt (48 frames), idle (48 frames)
+Visual: Small stitched toy soldier with tall red hat, wooden sword and star-marked round shield; points sword and falls.
+Data: game\src\data\enemies\nursery.js
+
+The Toy Chest [toy-chest] | nursery | elite
+Source key: toyChest; states: attack (48 frames), defeat (41 frames), hurt (48 frames), idle (48 frames)
+Visual: Ornate toy chest filled with plush toys, big expressive eyes on the front and clawlike feet; opens and spills toys.
+Data: game\src\data\enemies\nursery.js
+
+Blanket Creeper [blanket-creeper] | sleeping-quarters | normal
+Source key: blanketCreeper; states: attack (48 frames), defeat (29 frames), hurt (48 frames), idle (48 frames)
+Visual: Low crawling mound of patterned blankets with many pale clawlike feet around its hem.
+Data: game\src\data\enemies\sleeping-quarters.js
+
+The Blanket Hydra [blanket-hydra] | sleeping-quarters | elite
+Source key: blanketHydra; states: attack (48 frames), defeat (25 frames), hurt (48 frames), idle (48 frames)
+Visual: Patchwork blanket mound with plush rabbit, bear and dinosaurlike toy heads; heads bob and body slumps.
+Data: game\src\data\enemies\sleeping-quarters.js
+
+Slipper Skitter [slipper-skitter] | sleeping-quarters | normal
+Source key: slipperSkitter; states: attack (48 frames), defeat (13 frames), hurt (48 frames), idle (48 frames)
+Visual: Pair of soft purple/pink slippers with bows, large eyes at toes and pompomlike little legs; skitters/bobs.
+Data: game\src\data\enemies\sleeping-quarters.js
+
+The Wardrobe [the-wardrobe] | sleeping-quarters | elite
+Source key: grandWardrobe; states: attack (48 frames), defeat (25 frames), hurt (48 frames), idle (48 frames)
+Visual: Broad ornate many-compartment wardrobe with multiple glowing eyes inside and shadow arms extending from sides; doors open and cabinet collapses.
+Data: game\src\data\enemies\sleeping-quarters.js
+
+Wardrobe Guest [wardrobe-guest] | sleeping-quarters | normal
+Source key: wardrobeGuest; states: attack (48 frames), defeat (19 frames), hurt (48 frames), idle (48 frames)
+Visual: Tall narrow wooden wardrobe whose door cracks open to reveal purple eyes and a slender shadow guest; door opens and closes.
+Data: game\src\data\enemies\sleeping-quarters.js
+
+Candy Clump [candy-clump] | kitchens-cellars | normal
+Source key: candyClump; states: attack (48 frames), defeat (22 frames), hurt (48 frames), idle (48 frames)
+Visual: Small sticky candy-covered creature, glossy huge eyes and open gummy mouth; stretches and melts into sweets.
+Data: game\src\data\enemies\kitchens-cellars.js
+
+The Confectioner [confectioner] | kitchens-cellars | boss
+Source key: confectioner; states: attack (48 frames), defeat (33 frames), hurt (48 frames), idle (48 frames)
+Visual: Elaborate spectral pastry chef with tall cream-and-candy hat, sweets and whisk/lollipop props; pink magical splash and melting collapse.
+Data: game\src\data\bosses\confectioner.js
+
+Dough Blob [dough-blob] | kitchens-cellars | normal
+Source key: doughBlob; states: attack (48 frames), defeat (48 frames), hurt (48 frames), idle (48 frames)
+Visual: Soft pale lump of dough with enormous glossy eyes and several small dough faces/babies; wobbles and sags.
+Data: game\src\data\enemies\kitchens-cellars.js
+
+Jam Jar [jam-jar] | kitchens-cellars | normal
+Source key: jamJar; states: attack (48 frames), defeat (15 frames), hurt (48 frames), idle (48 frames)
+Visual: Red jam-filled glass jar with gingham cover, brass lid, tag, big eyes and jelly limbs; shakes, wobbles and droops.
+Data: game\src\data\enemies\kitchens-cellars.js
+
+The Oven Maw [oven-maw] | kitchens-cellars | elite
+Source key: ovenMaw; states: attack (48 frames), defeat (34 frames), hurt (48 frames), idle (48 frames)
+Visual: Anthropomorphic cast-iron oven with hot orange grill mouth, round stove-dial eyes and short feet; glows and belches flame.
+Data: game\src\data\enemies\kitchens-cellars.js
+
+Pantry Mimic [pantry-mimic] | kitchens-cellars | normal
+Source key: pantryMimic; states: attack (48 frames), defeat (22 frames), hurt (48 frames), idle (48 frames)
+Visual: Decorative floral pantry tin/canister with hinged toothlike lid, cloth tongue and small limbs; lid opens with purple glow and falls.
+Data: game\src\data\enemies\kitchens-cellars.js
+
+The Sugar Golem [sugar-golem] | kitchens-cellars | elite
+Source key: sugarGolem; states: attack (48 frames), defeat (29 frames), hurt (48 frames), idle (48 frames)
+Visual: Large stocky sugar/candy construct with sugar-cube fists, candy decorations and icing face; raises fists and slumps.
+Data: game\src\data\enemies\kitchens-cellars.js
+
+The Ancient Topiary [ancient-topiary] | greenhouse | elite
+Source key: ancientTopiary; states: attack (48 frames), defeat (31 frames), hurt (48 frames), idle (48 frames)
+Visual: Large ornate topiary beast with sculpted curls, antlerlike branches, flowers and glowing eyes; rears and folds into a heap.
+Data: game\src\data\enemies\greenhouse-scares.js
+
+The Carnivorous Conservatory [carnivorous-conservatory] | greenhouse | boss
+Source key: conservatory; states: attack (48 frames), defeat (23 frames), hurt (48 frames), idle (48 frames)
+Visual: Walking ornate glass greenhouse with root feet, central toothy mouth and flytrap blooms; mouth and blooms open wide, body crumples.
+Data: game\src\data\bosses\carnivorous-conservatory.js
+
+The Compost Colossus [compost-colossus] | greenhouse | elite
+Source key: compostColossus; states: attack (48 frames), defeat (27 frames), hurt (48 frames), idle (48 frames)
+Visual: Bulky leaf-and-mulch humanoid with glowing eyes, root beard, mushrooms, discarded pots and garden tools; arms rise and pile collapses.
+Data: game\src\data\enemies\greenhouse-scares.js
+
+Creeping Ivy [creeping-ivy] | greenhouse | normal
+Source key: creepingIvy; states: attack (48 frames), defeat (47 frames), hurt (48 frames), idle (48 frames)
+Visual: Compact tangle of ivy leaves and curling vines around dark face and warm glowing eyes; tendrils extend and curl.
+Data: game\src\data\enemies\greenhouse.js
+
+PAINTED STILL-ONLY ENEMIES - NOT ANIMATION-PRESERVATION LOCKS
+foyer: Calling Bell [calling-bell] (normal); The Grand Coatcheck [grand-coatcheck] (elite); The House Bell [house-bell] (elite); The Unwelcome Guest [unwelcome-guest] (elite)
+nursery: Porcelain Doll [porcelain-doll] (normal); Prim [porcelain-twin-prim] (elite (Porcelain Twins pair)); Proper [porcelain-twin-proper] (elite (Porcelain Twins pair)); Rocking Horse [rocking-horse] (normal)
+sleeping-quarters: The Bedframe Beast [bedframe-beast] (boss); The Night Terror [night-terror] (elite); Nightlight Snuffer [nightlight-snuffer] (normal); Pillow Puff [pillow-puff] (normal); Thing Beneath [thing-beneath] (normal)
+kitchens-cellars: Kitchen Imp [kitchen-imp] (normal); The Pantry Poltergeist [pantry-poltergeist] (elite); Rising Batter [rising-batter] (normal)
+greenhouse: Glassvine [glassvine] (normal); The Head Gardener [head-gardener] (elite); Potling [potling] (normal); Snapping Blossom [snapping-blossom] (normal); Spore Puff [spore-puff] (normal); Topiary Beast [topiary-beast] (normal)
+
+NO DEDICATED ENEMY ART IN REGIONS 6-17
+The manifest contains no enemy stills or clips for graveyard, study-library, attic-observatory, lampworks, ballroom, crypt, hedge-maze, secret-passages, bathhouse, kennels, pumpkin-grounds, or heart. Their enemy definitions, boss definitions, design prose, procedural rigs, and screenshots are not finished bespoke frame animation. Likewise missing summons and body parts in the first five regions do not become finished assets because their parent boss has a clip.
+
+COMPANIONS ARE NOT ENEMIES
+The 164 SS_ sheets at animations root belong to the 16 companions, not the enemy roster: Marmalade, Wisp, Count Crumbula, Boggle, Bones, Pipkin, Taffy, Truffle, Hush, Mopsy, Drizzle, Pudding, Wink, Crinkle, Mossbit, Brambleboo. Another 32 sheets under animations/kids are the 8 children. Manifest animated contains these 24 actors. All are useful style references but must not be accidentally added as hostile roster entries.
+
+VISUAL TONE AND ANIMATION FEASIBILITY
+Observed art is polished painterly/3D-render-like 2D cutout art with tactile fabric, crochet, patchwork, worn wood, carved brass, glass, candy and foliage; large round expressive eyes and compact toy-like proportions; warm plum, muted purple, brown, gold and green accented with cyan/violet/orange magical glows. The cast often resembles cherished household objects misbehaving. Characters are isolated on transparency and use readable whole-body silhouettes.
+Preserved animations already include toothy suitcases/tins, an oven mouth, root claws, sewing scissors and carnivorous glasshouse imagery. Keep the real asset identity and reframe behavior as theatrical surprise, harmless mess, blocking, bells, puffing, rattling, hiding or demanding attention; do not pretend teeth are absent or replace mandatory assets. New designs should lean toward the gentler plush/household end and avoid adding predatory chase/eating concepts.
+Useful motion vocabulary: bobs, flops, rocking doors/lids, twirls, ripples, spring pops, soft squash/stretch, expressive eyes, small glow bursts and a collapse/dissolve into ordinary household material. Prefer one distinctive readable object/body and one signature motion; complex independently moving mobs and scene-sized architecture increase 2D production cost.
+Existing repetition to distinguish carefully: Blanket Blob versus Blanket Creeper versus Blanket Hydra; Wardrobe Guest versus The Wardrobe; Candy Clump versus Sugar Golem; Topiary Beast (still) versus Ancient Topiary (animated). Preserve separate existing identities while avoiding more variants elsewhere.
+
+EVIDENCE AND LIMITATIONS
+Main evidence: game/assets/sprites/index.json; all 29 enemy-clips/*/index.json and 118 WebP atlases; all 118 source PNG sheets; game/src/data/enemies/*.js and game/src/data/bosses/*.js; game/src/data/schema.js lines 176-181; game/src/state/mapgen.js lines 183-201; docs/art/enemy-stills-checklist.md.
+Stale comments exist: game/src/ui/enemy.js still includes old claims that no enemy art exists or only 31 are painted. Current filesystem and manifest establish 51 painted and 29 animated, so do not use the old comments as inventory.
+No project files changed. No runtime/build/development commands run. No access denials or remaining blockers. Contact sheets generated only in task workspace: enemy-animation-contact-1.jpg, enemy-animation-contact-2.jpg, enemy-animation-contact-3.jpg, enemy-stills-only-contact.jpg, companion-style-contact.jpg. Total contact sheets are under 1 MB.
+The source Google Doc was not read in this delegated task; reconciliation with its completed levels 1-10 belongs to the parent task.

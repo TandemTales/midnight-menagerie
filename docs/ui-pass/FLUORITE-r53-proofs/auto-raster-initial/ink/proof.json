@@ -1,0 +1,205 @@
+{
+  "rows": [
+    {
+      "kind": "status",
+      "frames": 94,
+      "visible": 92,
+      "font": 20,
+      "styles": {
+        "font": "20px",
+        "color": "rgb(244, 239, 228)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.45, 0, 0, 1.45, 977.6, 113.8)",
+        "backing": "url(\"http://localhost:9533/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "buff",
+      "frames": 92,
+      "visible": 90,
+      "font": 20.75,
+      "styles": {
+        "font": "20.75px",
+        "color": "rgb(168, 236, 247)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.457, 0, 0, 1.457, 982.1, 116.8)",
+        "backing": "url(\"http://localhost:9533/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "debuff",
+      "frames": 100,
+      "visible": 98,
+      "font": 20.75,
+      "styles": {
+        "font": "20.75px",
+        "color": "rgb(255, 156, 138)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.455, 0, 0, 1.455, 982.1, 116.8)",
+        "backing": "url(\"http://localhost:9533/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "counter",
+      "frames": 99,
+      "visible": 97,
+      "font": 20,
+      "styles": {
+        "font": "20px",
+        "color": "rgb(255, 215, 94)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.459, 0, 0, 1.459, 977.6, 113.8)",
+        "backing": "url(\"http://localhost:9533/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "blocked",
+      "frames": 90,
+      "visible": 88,
+      "font": 23,
+      "styles": {
+        "font": "23px",
+        "color": "rgb(143, 183, 217)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.459, 0, 0, 1.459, 949.9, 114.7)",
+        "backing": "url(\"http://localhost:9533/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "status",
+      "frames": 72,
+      "visible": 70,
+      "font": 20,
+      "styles": {
+        "font": "20px",
+        "color": "rgb(244, 239, 228)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.457, 0, 0, 1.457, 1184.6, 113.8)",
+        "backing": "url(\"http://localhost:9533/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "buff",
+      "frames": 72,
+      "visible": 70,
+      "font": 20.75,
+      "styles": {
+        "font": "20.75px",
+        "color": "rgb(168, 236, 247)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.455, 0, 0, 1.455, 1189.1, 115.8)",
+        "backing": "url(\"http://localhost:9533/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "debuff",
+      "frames": 74,
+      "visible": 72,
+      "font": 20.75,
+      "styles": {
+        "font": "20.75px",
+        "color": "rgb(255, 156, 138)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.459, 0, 0, 1.459, 1189.1, 115.8)",
+        "backing": "url(\"http://localhost:9533/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "counter",
+      "frames": 72,
+      "visible": 70,
+      "font": 20,
+      "styles": {
+        "font": "20px",
+        "color": "rgb(255, 215, 94)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.453, 0, 0, 1.453, 1184.6, 113.8)",
+        "backing": "url(\"http://localhost:9533/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "blocked",
+      "frames": 72,
+      "visible": 70,
+      "font": 23,
+      "styles": {
+        "font": "23px",
+        "color": "rgb(143, 183, 217)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.459, 0, 0, 1.459, 1156.9, 117.7)",
+        "backing": "url(\"http://localhost:9533/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    }
+  ],
+  "errors": []
+}

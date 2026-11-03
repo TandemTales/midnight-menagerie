@@ -1,0 +1,19 @@
+{
+  "enemy": "rain-chain",
+  "source": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\rain-chain-original.png",
+  "source_sha256": "7b772b8a32a5d189357d5ac87ef94c51d62c43ae31ff0df22f1feaf7de69dc4a",
+  "method": "Three original copper cups and links rotate hierarchically beneath the original stationary hook. Overlapping connector regions preserve attachment. One soft painted-style water bead is an added action effect; no swarm or stream.",
+  "actions": {
+    "idle": "Small lagged cup sway under a fixed hook.",
+    "attack": "Bottom cup gathers then tips left, tossing one bead up and left; higher cups absorb the response and return.",
+    "hurt": "A brief rightward chain recoil travels through three joints, then settles left.",
+    "defeat": "Three cups slacken into an increasingly left-tipped, dim inactive chain; top hook remains.",
+    "cast": "A slower upward relay passes one bead through bottom, middle and upper cup, with three timed cup tips."
+  },
+  "orientation": {
+    "required": "screen-left",
+    "method": "Each opening is tilted upper-left even at rest; leftward tips and upward-left bead paths direct actions toward the kid. No reflection, text or prop reversal.",
+    "status": "prototype_review_pending"
+  },
+  "quality_gate": "Prototype; no delivered actions yet."
+}

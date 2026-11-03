@@ -1,0 +1,258 @@
+{
+  "judge": 2,
+  "inspected": {
+    "references": 4,
+    "captures": 40,
+    "references_first": true,
+    "order": ["AMBER", "ONYX", "TOPAZ", "OBSIDIAN"],
+    "capture_order": ["rest", "rest-1280", "event", "event-1280", "gameover", "gameover-1280", "shop", "shop-1280", "combat-floaters", "combat-floaters-1280"]
+  },
+  "method": "Read the assigned input and two rubrics, viewed title, mainMenu, selectCompanion and selectKid first, then opened all ten PNGs of each candidate individually with the Read tool in supplied order (AMBER, ONYX, TOPAZ, OBSIDIAN) and capture order. No contact sheets, source or other reviews. The candidates share nearly all layout and room art, so the comparison rests on visible differences in title planes, rest icons, condition plaques, memorial rows and badges, card wells, shop rims and cost disks, and combat plaque faces. Preview banners, combat room/actor/hand art, floater fade phase and scroll cut-offs were not penalised. Scored against the reference paintings, not against the other candidates; a 9 was reserved for the samples' hand and none reached it.",
+  "candidates": {
+    "AMBER": {
+      "system_overall": 6.7,
+      "screens": {
+        "rest": {
+          "dimensions": {"ornament": 7.2, "palette": 7.0, "typography": 6.8, "material": 6.5, "background": 5.5, "composition": 6.8, "readability": 7.8, "coherence": 6.6},
+          "overall": 6.7,
+          "fits_between_samples": false,
+          "worst_problem": "The condition plaques at the right of the option rows (Courage 46 to 68, 14 Tricks) are thin gold outlines around near-black faces, so they read as drawn pills instead of raised metal plates on the plum boards.",
+          "size_notes": {
+            "1600x900": "The pale mauve title is legible but greyer than the lavender of the samples; the lavender pillow has soft folds, while the candle icon is a bright white shape with little wax modelling.",
+            "1280x800": "The title regains more lavender at this size; the plaques stay thin-rimmed and flat, and the rows' lower lines sit tight against the row rims."
+          }
+        },
+        "event": {
+          "dimensions": {"ornament": 7.3, "palette": 7.0, "typography": 6.7, "material": 6.8, "background": 6.2, "composition": 7.0, "readability": 7.6, "coherence": 6.7},
+          "overall": 6.8,
+          "fits_between_samples": false,
+          "worst_problem": "The title THE LOST AND FOUND in the top cartouche is so pale it reads as silvered white, losing the saturated veined lavender letter body of the title sample.",
+          "size_notes": {
+            "1600x900": "The uneven highlights give the title some carved irregularity, but it stops being lavender; the bookmark and parchment hold up, while the straight paper edges still read as a box.",
+            "1280x800": "The title has more lilac but stays washed compared with the deeper variants; the torn option strip keeps its blurred red edge glow."
+          }
+        },
+        "gameover": {
+          "dimensions": {"ornament": 7.0, "palette": 6.9, "typography": 6.6, "material": 6.4, "background": 5.5, "composition": 6.1, "readability": 7.0, "coherence": 6.4},
+          "overall": 6.5,
+          "fits_between_samples": false,
+          "worst_problem": "The title THE CANDLE GOES OUT at top centre has a noisy, chipped pale surface, and the card's rules well below it carries a grey-brown haze that dirties the focal card.",
+          "size_notes": {
+            "1600x900": "The purple Trick rows are smooth gradients with a soft bright band, more like styled bars than shallow memorial boards; the title speckle looks like image noise rather than carving.",
+            "1280x800": "The title's pink-white speckle persists; the three-column stack feels tight, and FROM YOUR FINAL DECK presses against both ends of its cartouche."
+          }
+        },
+        "shop": {
+          "dimensions": {"ornament": 7.5, "palette": 7.2, "typography": 6.8, "material": 7.2, "background": 6.8, "composition": 7.0, "readability": 7.4, "coherence": 7.0},
+          "overall": 7.1,
+          "fits_between_samples": false,
+          "worst_problem": "The pale silvered title THE MIDNIGHT MARKET in the top cartouche breaks from the lavender language and is the one element below the otherwise weathered bronze shop.",
+          "size_notes": {
+            "1600x900": "Dark ring-shadowed tan cost disks and worn bronze card rims look the most handled of the set and sit well against the curtains; the TRICKS ribbon lettering is low contrast.",
+            "1280x800": "The rims and disks still read as weathered metal, and the title is better than at the larger size; the MR. MOTH nameplate remains cramped against its shelf."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {"ornament": 7.0, "palette": 6.6, "typography": 6.6, "material": 6.2, "background": 6.6, "composition": 6.4, "readability": 7.4, "coherence": 6.2},
+          "overall": 6.4,
+          "fits_between_samples": false,
+          "worst_problem": "The condition plaques around the fighters have thin pill-like faces and glowing tinted letters, so they read as overlaid labels and not objects lit by the room's candles.",
+          "size_notes": {
+            "1600x900": "The live faces are readable, but +2 WEAK lands across the left candle and sconce, and the row-versus-stack arrangement feels scattered around the actors.",
+            "1280x800": "The stacked columns are tidier and legible; the cyan-white letters remain outside the antique gold and lavender palette."
+          }
+        }
+      }
+    },
+    "ONYX": {
+      "system_overall": 7.0,
+      "screens": {
+        "rest": {
+          "dimensions": {"ornament": 7.4, "palette": 7.3, "typography": 7.2, "material": 7.0, "background": 5.5, "composition": 6.9, "readability": 7.8, "coherence": 7.0},
+          "overall": 7.1,
+          "fits_between_samples": false,
+          "worst_problem": "The dark floor and wall around the framed fort at lower left are an unresolved murk, so the most painted object on the board floats instead of sitting in a painted room.",
+          "size_notes": {
+            "1600x900": "The saturated lavender title, the muted cloth pillow, the darker whetstone and the candle glowing warm in its niche are the closest set to the fort's material; the plum plaques have dimensional gold rims.",
+            "1280x800": "The icons and plaques survive the reduction and still read as objects; the row content sits tight inside the rims, and the plaques' rims are the clearest of the four."
+          }
+        },
+        "event": {
+          "dimensions": {"ornament": 7.3, "palette": 7.3, "typography": 7.2, "material": 6.9, "background": 6.2, "composition": 7.0, "readability": 7.6, "coherence": 7.0},
+          "overall": 7.1,
+          "fits_between_samples": false,
+          "worst_problem": "The moonlight shafts falling across the wainscot at left and right are soft airbrushed wedges, and they read as overlays rather than as light painted into the room.",
+          "size_notes": {
+            "1600x900": "The title has the richest lavender with pale edges and is the nearest to the title sample's lettering; the folded bookmark and parchment read as physical, although the paper block is still very rectilinear.",
+            "1280x800": "The title remains saturated and carved in feel; the option strip's blurred red-orange edge glow looks like an effect instead of torn paper."
+          }
+        },
+        "gameover": {
+          "dimensions": {"ornament": 7.1, "palette": 7.2, "typography": 7.0, "material": 6.9, "background": 5.5, "composition": 6.2, "readability": 7.1, "coherence": 6.8},
+          "overall": 6.9,
+          "fits_between_samples": false,
+          "worst_problem": "The Trick rows at right carry bright diagonal lavender streaks that compete with the card and read as a repeated procedural satin rather than a shallow painted memorial row.",
+          "size_notes": {
+            "1600x900": "The rows have real cloth-like presence and thick rims, and the card's dark maroon well holds its text cleanly; the alcove's hard rectangular edges stay exposed against the dark ground.",
+            "1280x800": "The streaks are louder at this size and draw the eye right of the card; FROM YOUR FINAL DECK still presses against the ends of its cartouche."
+          }
+        },
+        "shop": {
+          "dimensions": {"ornament": 7.4, "palette": 7.3, "typography": 7.2, "material": 7.0, "background": 6.8, "composition": 7.0, "readability": 7.4, "coherence": 7.0},
+          "overall": 7.0,
+          "fits_between_samples": false,
+          "worst_problem": "The cost disks at the top left of the three cards are pale cream discs with a soft shadow, cleaner and less metallic than the weathered rims they sit on.",
+          "size_notes": {
+            "1600x900": "The lavender title anchors the board and the rims show some local darkening, but the disks look newer than the frame; the TRICKS ribbon lettering is low contrast.",
+            "1280x800": "Patches of rim wear are visible and good; the disks stay pale, and the MR. MOTH plate sits tight on its shelf edge."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {"ornament": 7.2, "palette": 6.9, "typography": 7.0, "material": 6.8, "background": 6.6, "composition": 6.5, "readability": 7.6, "coherence": 6.7},
+          "overall": 6.8,
+          "fits_between_samples": false,
+          "worst_problem": "The cyan and pink letters on the condition plaques around Maya and the Butler glow in a colour family the samples never use, keeping the otherwise solid plaques from sitting in the candlelit room.",
+          "size_notes": {
+            "1600x900": "The purple faces and gold rims are the most dimensional of the set and clearly read; +2 WEAK still crosses the left candle and sconce.",
+            "1280x800": "The stacked plaques are clean and strongly legible, and the rims and faces hold together as objects, although the column at left crowds the room's upper corner."
+          }
+        }
+      }
+    },
+    "TOPAZ": {
+      "system_overall": 6.8,
+      "screens": {
+        "rest": {
+          "dimensions": {"ornament": 7.3, "palette": 7.0, "typography": 7.1, "material": 6.7, "background": 5.5, "composition": 6.9, "readability": 7.8, "coherence": 6.7},
+          "overall": 6.8,
+          "fits_between_samples": false,
+          "worst_problem": "The saturated pink pillow in the REST row and the crisp blue-white whetstone below it look like candy-bright game icons rather than the same velvet and cloth as the fort.",
+          "size_notes": {
+            "1600x900": "The title and purple plaques are strong, but the pink pillow is the brightest off-palette spot on the right side of the board, and the white candle icon is plain.",
+            "1280x800": "The pink pillow still reads as a separate sticker; the plaques hold their dimensional rims and remain clear."
+          }
+        },
+        "event": {
+          "dimensions": {"ornament": 7.3, "palette": 7.2, "typography": 7.1, "material": 6.9, "background": 6.2, "composition": 7.0, "readability": 7.6, "coherence": 6.9},
+          "overall": 7.0,
+          "fits_between_samples": false,
+          "worst_problem": "The title letters in the top cartouche darken toward a heavier purple through their middles, which lowers their glow against the dark plate compared with the sample's marbled lavender.",
+          "size_notes": {
+            "1600x900": "The title is on palette and reads well; the parchment and bookmark are solid, and the light shafts remain airbrushed wedges.",
+            "1280x800": "The title remains clear and saturated; the option strip's blurred edge glow still undermines the torn-paper reading."
+          }
+        },
+        "gameover": {
+          "dimensions": {"ornament": 7.1, "palette": 7.1, "typography": 7.0, "material": 6.7, "background": 5.5, "composition": 6.2, "readability": 7.1, "coherence": 6.7},
+          "overall": 6.8,
+          "fits_between_samples": false,
+          "worst_problem": "A pale grey haze drifts across the card's rules well at centre and dirties the focal card, undoing the good restraint elsewhere on the board.",
+          "size_notes": {
+            "1600x900": "The gold coin badges on calm dark plum rows are the best-integrated row treatment and tie to the card cost disk, but the row faces are close to flat enamel.",
+            "1280x800": "The coin badges and restrained rows read cleanly; the rows are dignified but smoother than the painted board around them."
+          }
+        },
+        "shop": {
+          "dimensions": {"ornament": 7.3, "palette": 7.2, "typography": 7.1, "material": 6.8, "background": 6.8, "composition": 7.0, "readability": 7.4, "coherence": 6.8},
+          "overall": 6.9,
+          "fits_between_samples": false,
+          "worst_problem": "The cost disks on the three cards have a glossy even yellow-gold, reading as polished plastic coins beside the older curtains and shelf.",
+          "size_notes": {
+            "1600x900": "The disks are rich and match the sample gold, but the card rims are clean and uniform with little wear; TRICKS on the ribbon is low contrast.",
+            "1280x800": "The gold disks pop strongly and look more like game icons; the title's lavender is good, while rim wear stays hard to see."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {"ornament": 7.1, "palette": 6.9, "typography": 7.0, "material": 6.7, "background": 6.6, "composition": 6.5, "readability": 7.6, "coherence": 6.6},
+          "overall": 6.7,
+          "fits_between_samples": false,
+          "worst_problem": "The condition plaques around the fighters use cyan-tinted and pink-tinted letters with a glow that separates them from the warm room behind them.",
+          "size_notes": {
+            "1600x900": "The purple-faced plaques are solid and readable, though slightly less dimensional at the rims than the best variant; +2 WEAK crosses the left candle.",
+            "1280x800": "The stacks are tidy and very legible, and the rim and face separation holds; the letters stay cooler than the palette."
+          }
+        }
+      }
+    },
+    "OBSIDIAN": {
+      "system_overall": 6.5,
+      "screens": {
+        "rest": {
+          "dimensions": {"ornament": 7.1, "palette": 7.0, "typography": 7.1, "material": 6.3, "background": 5.5, "composition": 6.8, "readability": 7.8, "coherence": 6.4},
+          "overall": 6.5,
+          "fits_between_samples": false,
+          "worst_problem": "The stark white pillow with hard dark edges in the REST row reads like a pasted clip-art icon, far from the soft velvet of the fort beside it.",
+          "size_notes": {
+            "1600x900": "The icon's high contrast and the thin dark plaques at the row ends make the right panel feel more drawn than painted, although the title is on palette.",
+            "1280x800": "The white pillow and blue-white whetstone remain graphic, and the plaques are thin; all text is clear."
+          }
+        },
+        "event": {
+          "dimensions": {"ornament": 7.3, "palette": 7.2, "typography": 7.1, "material": 6.9, "background": 6.2, "composition": 7.0, "readability": 7.6, "coherence": 6.8},
+          "overall": 6.9,
+          "fits_between_samples": false,
+          "worst_problem": "The title in the top cartouche has a smoother, more even lavender fill, so it reads closer to styled type than carved, veined letter planes.",
+          "size_notes": {
+            "1600x900": "Clean and on palette, with solid parchment and bookmark; less carved irregularity in the title, and the light shafts remain airbrushed.",
+            "1280x800": "The title and the paper hold; the torn option strip's blurred edge glow is the visible weak point."
+          }
+        },
+        "gameover": {
+          "dimensions": {"ornament": 6.8, "palette": 7.0, "typography": 7.0, "material": 6.5, "background": 5.5, "composition": 6.2, "readability": 7.1, "coherence": 6.5},
+          "overall": 6.6,
+          "fits_between_samples": false,
+          "worst_problem": "The Trick rows at right are reduced to thin gold lines around very dark faces, so they read as outlined list items rather than shallow physical boards.",
+          "size_notes": {
+            "1600x900": "The deep oxblood embossed well behind the card's rules text is the best of the four; the rows are restrained to the point of feeling web-like.",
+            "1280x800": "The well stays strong and readable, and the rows' faint brush streaks barely register against the thin rims."
+          }
+        },
+        "shop": {
+          "dimensions": {"ornament": 7.1, "palette": 7.1, "typography": 7.1, "material": 6.7, "background": 6.8, "composition": 7.0, "readability": 7.4, "coherence": 6.7},
+          "overall": 6.7,
+          "fits_between_samples": false,
+          "worst_problem": "The smooth, light gold card rims and pale cost disks on the three wares look clean and manufactured against the frayed curtains behind them.",
+          "size_notes": {
+            "1600x900": "The tidy disks and even rims lack local wear; the embossed navy wells are good and the title is on palette, while TRICKS is low contrast.",
+            "1280x800": "The damask emboss in the wells is visible, which helps; rims still read uniform, and the nameplate is tight on the shelf."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {"ornament": 6.9, "palette": 6.8, "typography": 6.9, "material": 6.4, "background": 6.6, "composition": 6.4, "readability": 7.4, "coherence": 6.3},
+          "overall": 6.3,
+          "fits_between_samples": false,
+          "worst_problem": "The condition plaques around the fighters have thin dark faces that sink into the room, leaving tinted letters and a rim line rather than a solid dimensional object.",
+          "size_notes": {
+            "1600x900": "The plaques feel lighter and less built than the others, independent of fade phase; +2 WEAK crosses the left candle.",
+            "1280x800": "The stacks are legible and tidy, but faces and rims have less body, and the +3 STRENGTH column looks greyed against the wall."
+          }
+        }
+      }
+    }
+  },
+  "ranking": {
+    "rest": ["ONYX", "TOPAZ", "AMBER", "OBSIDIAN"],
+    "event": ["ONYX", "TOPAZ", "OBSIDIAN", "AMBER"],
+    "gameover": ["ONYX", "TOPAZ", "OBSIDIAN", "AMBER"],
+    "shop": ["AMBER", "ONYX", "TOPAZ", "OBSIDIAN"],
+    "combat-floaters": ["ONYX", "TOPAZ", "AMBER", "OBSIDIAN"]
+  },
+  "winner": "ONYX",
+  "winner_fixes": [
+    "Gameover, right column Trick rows: replace the bright repeating diagonal lavender streaks with a darker, irregular worn-velvet or lacquer surface so the rows stop competing with the central card.",
+    "Shop, top left of each card: rework the pale cream cost disks into aged gold discs with dented rims, local tarnish and a directional candle highlight that match the worn card frames.",
+    "Combat, condition plaques around Maya and the Butler: bring the cyan and pink letter glow into warm-lit painted lettering with a gold or lavender base tint, keeping the large size and readable faces.",
+    "Combat at 1600x900, left plaque row: seat +2 WEAK so it no longer lands across the left candle and sconce, keeping its size and the full row of readable plaques.",
+    "Event, option strips under the parchment: replace the blurred red-orange edge glow with hand-painted torn and scorched fibres with a physical shadow on the page.",
+    "Event, left and right walls: paint the moonlight shafts into the room, with dust, broken edges and light landing on the wainscot and floor, so they stop reading as airbrushed wedges.",
+    "Gameover, centre: dress the hard rectangular edges of the card alcove into the dark ground with falloff, stonework or carved trim so it reads as part of the board.",
+    "Gameover, centre plaque: give FROM YOUR FINAL DECK a wider painted cartouche at both sizes, so the letters stop pressing against the ornament ends without reducing the type.",
+    "Rest, lower left: paint the floor and wall around the framed fort, with candlelit boards and a cast shadow, so the frame stands in a room instead of floating in murk.",
+    "Shop, top ribbon: strengthen the engraved contrast of TRICKS at both sizes, and let the MR. MOTH plate sit clear of the shelf edge so its two lines do not crowd its rims."
+  ],
+  "grafts": [
+    {"from": "AMBER", "screen": "shop", "idea": "Move the darker, ring-shadowed tan cost disks and the more worn bronze card rims onto the winner's wares, as the most handled metal in the set."},
+    {"from": "TOPAZ", "screen": "gameover", "idea": "Use the gold coin cost badges and the calmer dark plum row faces on the memorial Trick rows, so they tie to the card cost disk and stop competing with the card; retain some cloth texture."},
+    {"from": "OBSIDIAN", "screen": "gameover", "idea": "Take the deep oxblood embossed well behind the featured card's rules text for its clean, leather-like depth."}
+  ]
+}

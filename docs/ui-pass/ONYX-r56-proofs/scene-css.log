@@ -1,0 +1,2 @@
+  (47 classes shared across scenes with compatible layout — likely shared components, consider lifting into ui/: .f, .haunt__pip, .j, .kidpf, .kit-board, .kit-btn, .kit-btn--quiet, .kit-btn__medal)
+RESULT: 14 scene sheets, 1592 classes, 0 conflicts

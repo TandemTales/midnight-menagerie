@@ -1,0 +1,89 @@
+{
+  "rows": [
+    {
+      "size": [
+        1280,
+        800
+      ],
+      "max": 238,
+      "keys": [
+        {
+          "key": "Enter",
+          "before": 0,
+          "after": 107
+        },
+        {
+          "key": "Space",
+          "before": 0,
+          "after": 107
+        }
+      ],
+      "items": [
+        {
+          "text": "\n          \n          Friendship Bracelet\n          Gain 1 Guard at the start of every turn for each Keepsake you carry.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Spare Key\n          Curiosities show you one extra way through. The locked option is never locked to you.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Night Vendor's Lantern\n          Mr. Moth's always has one Rare Trick on the table, and everything costs 10% less.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Bathhouse Slippers\n          Your first Trick each turn ignores any increase to its Nerve cost.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Bent Garden Fork\n          The first time each Scuffle an enemy recovers Courage, deal 3 damage to it.\n        ",
+          "hit": true
+        }
+      ],
+      "endToTop": true
+    },
+    {
+      "size": [
+        1600,
+        900
+      ],
+      "max": 242,
+      "keys": [
+        {
+          "key": "Enter",
+          "before": 0,
+          "after": 130
+        },
+        {
+          "key": "Space",
+          "before": 0,
+          "after": 130
+        }
+      ],
+      "items": [
+        {
+          "text": "\n          \n          Friendship Bracelet\n          Gain 1 Guard at the start of every turn for each Keepsake you carry.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Spare Key\n          Curiosities show you one extra way through. The locked option is never locked to you.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Night Vendor's Lantern\n          Mr. Moth's always has one Rare Trick on the table, and everything costs 10% less.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Bathhouse Slippers\n          Your first Trick each turn ignores any increase to its Nerve cost.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Bent Garden Fork\n          The first time each Scuffle an enemy recovers Courage, deal 3 damage to it.\n        ",
+          "hit": true
+        }
+      ],
+      "endToTop": true
+    }
+  ],
+  "errors": []
+}

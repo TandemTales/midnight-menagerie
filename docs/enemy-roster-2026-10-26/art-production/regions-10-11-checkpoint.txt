@@ -1,0 +1,8 @@
+COMPLETE: 22 new validated roster sprites for levels 10 and 11.
+44 new final files in existing source/runtime folders.
+0 blocked, 0 pending assigned. Global coverage manifest untouched for root merge.
+Source sizes: regular256, elite512, boss1024 square RGBA PNG; aspect preserved. Runtime WebP follows existing content-trim conversion.
+All originals and prompts retained here; rejected variants listed in regions-10-11-validation.json.
+Use region-10-results.json and region-11-results.json for merge. Contact sheets: region-10-contact.jpg, region-11-contact.jpg.
+All 367 initial inventory files still match their saved SHA256 values. No gameplay, code, registry or animation changes.
+Prompt-file quoting initially failed on curly apostrophes before generation; normalized quoting fixed it. No denial or explicit cancellation during this assigned batch.

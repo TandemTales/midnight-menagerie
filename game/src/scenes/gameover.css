@@ -58,7 +58,7 @@
 .go-motes, .go-vignette { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .go-head, .go-wrap, .go-foot { position: relative; z-index: 3; }
 
-.go-ground { transition: filter 1.6s var(--ease-out); }
+.go-ground { transition: filter calc(1.6s * var(--anim-scale)) var(--ease-out); }
 .scene--gameover.is-dark .go-ground { filter: saturate(.8) brightness(.9); }
 
 .go-vignette {
@@ -74,7 +74,7 @@
   background:
     radial-gradient(70% 60% at 50% 34%, transparent 30%, color-mix(in srgb, var(--kit-void) 58%, transparent) 100%);
   opacity: 0;
-  transition: opacity 1.6s var(--ease-out);
+  transition: opacity calc(1.6s * var(--anim-scale)) var(--ease-out);
   will-change: opacity;
 }
 .scene--gameover.is-dark .go-vignette::after { opacity: 1; }
@@ -84,7 +84,7 @@
   background: linear-gradient(102deg, transparent 40%,
     color-mix(in srgb, var(--spectre-200) 7%, transparent) 50%, transparent 60%);
   mix-blend-mode: screen;
-  animation: go-sweep 9s var(--ease-soft) infinite;
+  animation: go-sweep calc(9s * var(--anim-scale)) var(--ease-soft) infinite;
 }
 @keyframes go-sweep {
   0%, 100% { transform: translate3d(-14%, 0, 0); opacity: 0; }
@@ -99,7 +99,7 @@
   background: var(--go-key-hi);
   box-shadow: 0 0 6px 1px color-mix(in srgb, var(--go-key) 55%, transparent);
   opacity: 0;
-  animation: go-rise var(--dur) linear var(--del) infinite;
+  animation: go-rise calc(var(--dur) * var(--anim-scale)) linear calc(var(--del) * var(--anim-scale)) infinite;
   will-change: transform, opacity;
 }
 @keyframes go-rise {
@@ -108,7 +108,7 @@
   78%  { opacity: var(--op); }
   100% { transform: translate3d(var(--dx), calc(-1 * var(--y0)), 0) scale(1); opacity: 0; }
 }
-.scene--gameover.is-dark .go-motes { opacity: .45; transition: opacity 2s var(--ease-out); }
+.scene--gameover.is-dark .go-motes { opacity: .45; transition: opacity calc(2s * var(--anim-scale)) var(--ease-out); }
 
 /* ── the headline, in the cartouche, off the board's top rule ─────────────── */
 .go-head { justify-self: center; margin-top: clamp(14px, 1.8vh, 18px); }
@@ -186,7 +186,7 @@
   left: 50%; top: 45%; width: 150%; aspect-ratio: 2 / 1; translate: -50% -50%;
   border-radius: 50%;
   background: radial-gradient(closest-side, var(--go-warm), transparent 72%);
-  transition: opacity 1.6s var(--ease-out);
+  transition: opacity calc(1.6s * var(--anim-scale)) var(--ease-out);
 }
 .scene--gameover.is-dark .go-stage::before { opacity: .45; }
 
@@ -207,8 +207,8 @@
   min-width: 82%; max-width: 116%;
   border-image-source: url("../../assets/ui/kit/plate-lit.webp");
 }
-.go-portrait__plate .kit-plate__name { font-size: max(14px, calc(var(--plate-h) * .38)); }
-.go-portrait__plate .kit-plate__epithet { white-space: nowrap; font-size: max(12px, calc(var(--plate-h) * .27)); }
+.go-portrait__plate .kit-plate__name { --reading-size: max(14px, calc(var(--plate-h) * .38)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+.go-portrait__plate .kit-plate__epithet { white-space: nowrap; --reading-size: max(12px, calc(var(--plate-h) * .27)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 
 /* defeat: she came back out with you, but neither of you is glowing */
 .go-plate.is-spent .pf__img { filter: saturate(.55) brightness(.8) contrast(1.05); }
@@ -224,7 +224,7 @@
   margin-bottom: 2px;
 }
 .go-candle__prop { position: relative; display: block; width: 100%; }
-.go-candle__prop::after { transition: opacity 1.1s var(--ease-out); }
+.go-candle__prop::after { transition: opacity calc(1.1s * var(--anim-scale)) var(--ease-out); }
 /* the snuff: the flame is gone, its light goes after it */
 .go-candle.is-out .go-candle__prop {
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 27%, black 35%);
@@ -238,8 +238,8 @@
   transform: translateX(-50%);
   pointer-events: none;
   background: radial-gradient(closest-side, var(--go-warm), transparent 72%);
-  animation: go-breathe 4.2s var(--ease-soft) infinite;
-  transition: opacity 1.6s var(--ease-out);
+  animation: go-breathe calc(4.2s * var(--anim-scale)) var(--ease-soft) infinite;
+  transition: opacity calc(1.6s * var(--anim-scale)) var(--ease-out);
 }
 .scene--gameover.is-dark .go-halo { opacity: 0; }
 @keyframes go-breathe { 0%,100% { opacity: .85; } 45% { opacity: 1; } }
@@ -252,7 +252,7 @@
   transform: translateX(-50%);
   pointer-events: none;
   opacity: 0;
-  transition: opacity 1.2s var(--ease-out);
+  transition: opacity calc(1.2s * var(--anim-scale)) var(--ease-out);
   overflow: visible;
   z-index: 3;
 }
@@ -265,9 +265,9 @@
 }
 .scene--gameover.is-dark .go-smoke { opacity: .9; }
 .scene--gameover.is-dark .go-smoke path {
-  animation: go-smoke-draw 2.6s var(--ease-out) forwards, go-smoke-drift 9s var(--ease-soft) 2.6s infinite;
+  animation: go-smoke-draw calc(2.6s * var(--anim-scale)) var(--ease-out) forwards, go-smoke-drift calc(9s * var(--anim-scale)) var(--ease-soft) calc(2.6s * var(--anim-scale)) infinite;
 }
-.scene--gameover.is-dark .go-smoke path:nth-child(2) { animation-delay: .4s, 3s; opacity: .55; }
+.scene--gameover.is-dark .go-smoke path:nth-child(2) { animation-delay: calc(.4s * var(--anim-scale)), calc(3s * var(--anim-scale)); opacity: .55; }
 @keyframes go-smoke-draw { to { stroke-dashoffset: 0; } }
 @keyframes go-smoke-drift {
   0%, 100% { opacity: .9; }
@@ -412,7 +412,7 @@
   --plate-h: 26px;
   min-width: 58px;
   padding-inline: 12px;
-  font-family: var(--font-display); font-weight: 700; font-size: 12px;
+  font-family: var(--font-display); font-weight: 700; --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .12em; text-transform: uppercase;
   color: var(--kit-text-mid);
   cursor: pointer;
@@ -444,7 +444,7 @@
 /* the gauge is the fights' own (.kit-tube, READINGS IN METAL): brass round
    a glazed enamel fill, driven by scaleX like the Kid's bar in a fight */
 .go-courage__track.kit-tube { --tube-h: 18px; width: 100%; max-width: 120px; }
-.go-courage__track .kit-tube__fill { transition: transform 1.2s var(--ease-out); }
+.go-courage__track .kit-tube__fill { transition: transform calc(1.2s * var(--anim-scale)) var(--ease-out); }
 .go-courage__n { font-family: var(--font-num); font-variant-numeric: var(--num-feat); font-size: max(14px, var(--fs-md)); font-weight: 600; color: var(--courage-300); }
 .go-courage__note { font-size: max(12.5px, var(--fs-xs)); font-style: italic; color: var(--kit-text-lo); }
 
@@ -480,7 +480,7 @@
   background: radial-gradient(closest-side, color-mix(in srgb, var(--flame-glow) 34%, transparent), transparent 78%);
   box-shadow: 0 0 34px 8px color-mix(in srgb, var(--flame-glow) 72%, transparent),
               inset 0 0 22px color-mix(in srgb, var(--flame-glow) 40%, transparent);
-  animation: go-mark 3.2s var(--ease-soft) infinite;
+  animation: go-mark calc(3.2s * var(--anim-scale)) var(--ease-soft) infinite;
 }
 @keyframes go-mark { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
 .scene--gameover[data-result="victory"] .go-bp__wash {
@@ -490,7 +490,7 @@
 .go-bp__label { min-width: 0; }
 .go-bp__count { flex: none; margin-left: auto; white-space: nowrap; }
 .go-bp__label, .go-bp__count {
-  font-family: var(--font-display); font-weight: 700; font-size: 12px;
+  font-family: var(--font-display); font-weight: 700; --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .04em; text-transform: uppercase; color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -550,7 +550,7 @@
   font-size: max(12px, calc(var(--fs-xs) * 1.02)); letter-spacing: .12em;
   color: var(--kit-text-mid);
 }
-.go-stats .kit-stats__value { font-size: clamp(18px, 1.3vw, 21px); line-height: 1.05; }
+.go-stats .kit-stats__value { --reading-size: clamp(18px, 1.3vw, 21px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.05; }
 
 /* --- blocks and their headings --------------------------------------------- */
 .go-block { display: grid; gap: clamp(4px, .7vh, 8px); min-width: 0; align-content: start; }
@@ -599,14 +599,14 @@
   width: var(--coin); height: var(--coin); border-radius: 50%;
   padding-bottom: 1px;
   font-family: var(--font-num); font-variant-numeric: var(--num-feat);
-  font-size: calc(var(--coin) * .5); font-weight: 700; font-style: normal; line-height: 1;
+  --reading-size: calc(var(--coin) * .5); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 700; font-style: normal; line-height: 1;
   color: #241406;
   text-shadow: 0 1px 0 rgba(255, 238, 190, .55);
   background: url("../../assets/ui/kit/coin-face.webp") 50% 50% / 100% 100% no-repeat;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .8));
 }
 .go-trick__name {
-  font-family: var(--font-body); font-size: 13px; font-weight: 600; line-height: 1;
+  font-family: var(--font-body); --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 600; line-height: 1;
   color: var(--kit-name); white-space: nowrap;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -614,7 +614,7 @@
 .go-trick[data-rarity="rare"] .go-trick__name { color: color-mix(in oklab, var(--rarity-rare) 70%, var(--kit-name)); }
 /* the sharpened mark, in the same green the card face uses for an upgrade */
 .go-trick__name u { text-decoration: none; color: var(--good-300); font-weight: 700; }
-.go-trick__n { font-family: var(--font-num); font-variant-numeric: var(--num-feat); font-size: 12.5px; font-style: normal; color: var(--kit-gold-hi); }
+.go-trick__n { font-family: var(--font-num); font-variant-numeric: var(--num-feat); --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-style: normal; color: var(--kit-gold-hi); }
 
 
 /* ── round 6: the seed on a plaque, the Tricks as a list ─────────────────────
@@ -635,7 +635,7 @@
   border-image-width: calc(var(--plate-h) * 18 / 64) calc(var(--plate-h) * 34 / 64);
   background: none;
   box-shadow: none;
-  font-size: max(14px, calc(var(--plate-h) * .46));
+  --reading-size: max(14px, calc(var(--plate-h) * .46)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .14em;
   color: var(--kit-gold-hi);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 80%, transparent);
@@ -663,7 +663,7 @@
 }
 .go-trick.go-trick .go-trick__name {
   font-family: var(--font-display); font-weight: 600;
-  font-size: 12.5px; line-height: 1.16; letter-spacing: .03em;
+  --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.16; letter-spacing: .03em;
   white-space: normal; text-wrap: pretty;
   color: var(--kit-name);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .85), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 46%, transparent);
@@ -738,7 +738,7 @@
 .go-reach__n {
   font-family: var(--font-num); font-weight: 700;
   font-variant-numeric: lining-nums tabular-nums;
-  font-size: clamp(46px, 4.2vw, 68px); line-height: .95;
+  --reading-size: clamp(46px, 4.2vw, 68px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: .95;
   margin: 2px 0 1px;
   color: var(--kit-gold-hi);
   background: linear-gradient(172deg, #fff4d0 0%, var(--kit-gold-hi) 28%, #c99a52 54%, var(--kit-gold-lo) 76%, #d9b26c 100%);
@@ -787,8 +787,8 @@
 .go-block--mvp[hidden] { display: none; }
 /* WORKED HARDEST on its ribbon, over the frame's top rail */
 .go-mvp__h { position: relative; z-index: 3; margin: 0 0 -6px; }
-.go-mvp__h.kit-heading--ribbon { --rib-h: clamp(26px, 3.2vh, 30px); font-size: max(12px, calc(var(--rib-h) * .44)); letter-spacing: .14em; }
-.go-mvp__h.kit-heading--ribbon > em { font-size: max(12px, calc(var(--rib-h) * .42)); }
+.go-mvp__h.kit-heading--ribbon { --rib-h: clamp(26px, 3.2vh, 30px); --reading-size: max(12px, calc(var(--rib-h) * .44)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .14em; }
+.go-mvp__h.kit-heading--ribbon > em { --reading-size: max(12px, calc(var(--rib-h) * .42)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .go-mvp { position: relative; display: block; }
 .go-mvp__slot { position: relative; flex: none; margin: 14px 18px calc(15px + var(--plinth-h) * .9); }
 .go-board { --go-mvp-s: .84; }
@@ -863,14 +863,14 @@
 }
 .go-mvp__h .kit-plate__name {
   font-family: var(--font-display); font-weight: 700;
-  font-size: max(12.5px, calc(var(--plate-h) * .33));
+  --reading-size: max(12.5px, calc(var(--plate-h) * .33)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .16em; text-transform: uppercase;
   white-space: nowrap; color: var(--kit-name);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 70%, transparent);
 }
 .go-mvp__h .kit-plate__epithet {
   font-family: var(--font-body); font-style: italic; font-weight: 400;
-  font-size: max(12px, calc(var(--plate-h) * .26)); white-space: nowrap;
+  --reading-size: max(12px, calc(var(--plate-h) * .26)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); white-space: nowrap;
   color: color-mix(in oklab, var(--kit-name) 70%, var(--kit-text-mid));
 }
 .go-mvp__h .kit-plate__epithet:empty { display: none; }
@@ -926,7 +926,7 @@
 }
 .go-keep em {
   grid-area: e; align-self: start;
-  font-size: 12.5px; font-style: italic; line-height: 1.2;
+  --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-style: italic; line-height: 1.2;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -958,21 +958,21 @@
   content: ''; position: absolute; inset: -30% -8%; z-index: -1; pointer-events: none;
   border-radius: 50%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 26%, transparent), transparent);
-  animation: go-ready 2.6s var(--ease-soft) infinite;
+  animation: go-ready calc(2.6s * var(--anim-scale)) var(--ease-soft) infinite;
 }
 @keyframes go-ready { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 
 /* ═══ entrance ════════════════════════════════════════════════════════════ */
-.scene--gameover.is-entering .go-head     { animation: go-in-up .8s var(--ease-out) .05s both; }
-.scene--gameover.is-entering .go-stage    { animation: go-in-up .9s var(--ease-out) .2s both; }
-.scene--gameover.is-entering .go-stanza   { animation: go-in-up .7s var(--ease-out) both; }
-.scene--gameover.is-entering .go-stanza:nth-child(1) { animation-delay: .62s; }
-.scene--gameover.is-entering .go-stanza:nth-child(2) { animation-delay: .76s; }
-.scene--gameover.is-entering .go-stanza:nth-child(3) { animation-delay: .90s; }
-.scene--gameover.is-entering .go-ledger   { animation: go-in-up .9s var(--ease-out) .5s both; }
-.scene--gameover.is-entering .go-altar     { animation: go-in-up .9s var(--ease-out) .7s both; }
-.scene--gameover.is-entering .go-stats    { animation: go-in-up .8s var(--ease-out) .9s both; }
-.scene--gameover.is-entering .go-foot     { animation: go-in-up .7s var(--ease-out) 1.2s both; }
+.scene--gameover.is-entering .go-head     { animation: go-in-up calc(.8s * var(--anim-scale)) var(--ease-out) calc(.05s * var(--anim-scale)) both; }
+.scene--gameover.is-entering .go-stage    { animation: go-in-up calc(.9s * var(--anim-scale)) var(--ease-out) calc(.2s * var(--anim-scale)) both; }
+.scene--gameover.is-entering .go-stanza   { animation: go-in-up calc(.7s * var(--anim-scale)) var(--ease-out) both; }
+.scene--gameover.is-entering .go-stanza:nth-child(1) { animation-delay: calc(.62s * var(--anim-scale)); }
+.scene--gameover.is-entering .go-stanza:nth-child(2) { animation-delay: calc(.76s * var(--anim-scale)); }
+.scene--gameover.is-entering .go-stanza:nth-child(3) { animation-delay: calc(.90s * var(--anim-scale)); }
+.scene--gameover.is-entering .go-ledger   { animation: go-in-up calc(.9s * var(--anim-scale)) var(--ease-out) calc(.5s * var(--anim-scale)) both; }
+.scene--gameover.is-entering .go-altar     { animation: go-in-up calc(.9s * var(--anim-scale)) var(--ease-out) calc(.7s * var(--anim-scale)) both; }
+.scene--gameover.is-entering .go-stats    { animation: go-in-up calc(.8s * var(--anim-scale)) var(--ease-out) calc(.9s * var(--anim-scale)) both; }
+.scene--gameover.is-entering .go-foot     { animation: go-in-up calc(.7s * var(--anim-scale)) var(--ease-out) calc(1.2s * var(--anim-scale)) both; }
 @keyframes go-in-up    { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes go-in-right { from { opacity: 0; transform: translateX(26px); } to { opacity: 1; transform: none; } }
 
@@ -1015,19 +1015,19 @@
   .go-courage > .go-lbl { letter-spacing: .1em; }
   .go-altar { gap: 10px; }
   .go-mvp__slot { margin-inline: 14px; }
-  .go-mvp__note { font-size: 12.5px; line-height: 1.3; }
+  .go-mvp__note { --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.3; }
   .go-stat { column-gap: 6px; }
   .go-stat__ico { width: 26px; }
-  .go-stats .kit-stats__label { font-size: 12px; letter-spacing: .05em; }
-  .go-trick__name { font-size: 12.5px; }
+  .go-stats .kit-stats__label { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .05em; }
+  .go-trick__name { --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
   .go-trick { --coin: 20px; }
   .go-keep { column-gap: 8px; }
-  .go-seed__hint { font-size: 12px; }
+  .go-seed__hint { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
   /* the three ways out: each hint under its words, so the row fits the board */
   .go-foot .go-btn { --plate-h: 48px; font-size: var(--fs-sm); }
   .go-foot .go-btn.kit-btn--quiet { --plate-h: 46px; }
   .go-acts { gap: 46px; }
-  .go-bp__label, .go-bp__count { font-size: 12px; letter-spacing: .02em; }
+  .go-bp__label, .go-bp__count { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .02em; }
 }
 
 /* ── the Steam Deck and every short laptop panel ──────────────────────────── */
@@ -1038,10 +1038,10 @@
   /* the Heart's three sentences still need their taller plaque on a short
      panel: the compact height above would hang them across the ribbon */
   .go-head.kit-titleblock--compact.is-long { --cart-h: 142px; }
-  .go-head.is-long .go-lede { font-size: 12px; line-height: 1.2; }
+  .go-head.is-long .go-lede { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.2; }
   .go-board:has(.go-head.is-long) { --go-mvp-s: .62; }
   .go-board:has(.go-head.is-long) .go-stage { --go-pic-w: 104px; }
-  .go-head .kit-cartouche__title { font-size: 25px; }
+  .go-head .kit-cartouche__title { --reading-size: 25px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
   .go-head .kit-titleblock__note { margin-top: 1px; }
   .go-wrap { padding-top: 14px; }
   .go-stage { --go-plate-h: 36px; --go-pic-w: 132px; padding-top: 0; }
@@ -1051,9 +1051,9 @@
   .go-stanza { padding-block: 7px; }
   .go-sh { letter-spacing: .14em; }
   .go-sh::before, .go-sh::after { width: 16px; }
-  .go-stanza li { line-height: 1.3; font-size: 13px; }
+  .go-stanza li { line-height: 1.3; --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
   .go-pet__snap { width: 60px; }
-  .go-pet__text { font-size: 13px; line-height: 1.34; }
+  .go-pet__text { --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.34; }
   .go-ledger { margin-top: 6px; padding: 32px 16px 22px; --ledger-gap: 9px; }
   .go-courage { column-gap: 6px; }
   .go-courage > .go-lbl { letter-spacing: .06em; }
@@ -1061,12 +1061,12 @@
   .go-mvp__slot { margin: 12px 14px calc(13px + var(--plinth-h) * .9); }
   .go-reach__n { font-size: 44px; }
   .go-stats.kit-stats { margin-top: 10px; }
-  .go-stats .kit-stats__value { font-size: 17px; line-height: 1.05; }
+  .go-stats .kit-stats__value { --reading-size: 17px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.05; }
   .go-trick.go-trick { --plate-h: 22px; --coin: 17px; gap: 6px; padding: 1px 1px 2px 0; }
-  .go-trick.go-trick .go-trick__name { font-size: 12px; line-height: 1.12; }
+  .go-trick.go-trick .go-trick__name { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.12; }
   .go-keep { padding-block: 1px 2px; }
-  .go-keep b { font-size: 13px; line-height: 1.1; }
-  .go-keep em { font-size: 12px; line-height: 1.14; }
+  .go-keep b { --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.1; }
+  .go-keep em { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.14; }
   .go-keep__sigil.kit-hw-well { --well: 29px; }
   /* the way home's filigree medallion reaches up past its plate: the row
      stands a little lower, and the medallion a step smaller, so it never
@@ -1111,11 +1111,11 @@
 .go-keep:focus-visible { outline: 1px solid color-mix(in srgb, var(--kit-gold-hi) 70%, transparent); outline-offset: 2px; }
 .go-keep:hover b, .go-keep:focus-visible b { color: var(--kit-gold-hi); }
 .go-trick.go-trick { padding-block: 5px 6px; }
-.go-trick.go-trick .go-trick__name { font-size: 13.5px; }
+.go-trick.go-trick .go-trick__name { --reading-size: 13.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 @media (max-height: 860px) {
   .go-trick.go-trick { padding-block: 3px 4px; }
-  .go-trick.go-trick .go-trick__name { font-size: 12.5px; }
-  .go-keep b { font-size: 13px; }
+  .go-trick.go-trick .go-trick__name { --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+  .go-keep b { --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 }
 
 /* ═══ round 26 graft: the record folded, one page at a time ════════════════
@@ -1149,12 +1149,12 @@
   --plate-h: clamp(38px, 4.6vh, 42px);
   gap: 9px;
   padding-inline: calc(var(--plate-h) * .78);
-  font-size: 13px;
+  --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
 }
 .go-fold__n {
   font-family: var(--font-body); font-variant-numeric: var(--num-feat);
   font-style: italic; font-weight: 600;
-  font-size: 14px; letter-spacing: .01em; text-transform: none;
+  --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .01em; text-transform: none;
   color: var(--kit-gold);
 }
 .go-fold__tab[aria-selected="true"] .go-fold__n { color: var(--kit-gold-hi); }
@@ -1167,9 +1167,9 @@
   padding-inline: 6px;
 }
 .go-ledger[data-fold] .go-trick.go-trick { --coin: 23px; gap: 10px; padding: 5px 2px 6px 1px; }
-.go-ledger[data-fold] .go-trick.go-trick .go-trick__name { font-size: 15px; line-height: 1.15; }
-.go-ledger[data-fold] .go-trick.go-trick .go-trick__n { font-size: 14px; }
-.go-ledger[data-fold] .go-trick.go-trick .go-trick__cost { font-size: max(12px, calc(var(--coin) * .54)); }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__name { --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.15; }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__n { --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__cost { --reading-size: max(12px, calc(var(--coin) * .54)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 /* the Keepsakes page: each one its object, its name and what it did */
 .go-keep__desc {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
@@ -1180,32 +1180,32 @@
 .go-ledger[data-fold] .go-keep + .go-keep { padding-top: 9px; }
 .go-ledger[data-fold] .go-keep + .go-keep::before { display: block; }
 .go-ledger[data-fold] .go-keep__sigil.kit-hw-well { --well: clamp(38px, 2.8vw, 44px); }
-.go-ledger[data-fold] .go-keep b { align-self: end; font-size: 15px; line-height: 1.15; }
+.go-ledger[data-fold] .go-keep b { align-self: end; --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.15; }
 .go-ledger[data-fold] .go-keep__desc {
   position: static; width: auto; height: auto; margin: 0; overflow: visible; clip: auto; white-space: normal;
-  font-size: 13.5px; line-height: 1.28;
+  --reading-size: 13.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.28;
 }
 @media (max-height: 860px) {
-  .go-fold__tab.kit-tab { --plate-h: 36px; font-size: 12.5px; }
+  .go-fold__tab.kit-tab { --plate-h: 36px; --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
   .go-ledger[data-fold] .go-trick.go-trick { --coin: 21px; padding: 4px 2px 5px 1px; }
-  .go-ledger[data-fold] .go-trick.go-trick .go-trick__name { font-size: 14px; }
+  .go-ledger[data-fold] .go-trick.go-trick .go-trick__name { --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
   .go-ledger[data-fold] .go-keep { padding-block: 4px 5px; }
   .go-ledger[data-fold] .go-keep + .go-keep { padding-top: 7px; }
   .go-ledger[data-fold] .go-keep__sigil.kit-hw-well { --well: 36px; }
-  .go-ledger[data-fold] .go-keep b { font-size: 14px; }
-  .go-ledger[data-fold] .go-keep__desc { font-size: 13px; line-height: 1.24; }
+  .go-ledger[data-fold] .go-keep b { --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+  .go-ledger[data-fold] .go-keep__desc { --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.24; }
 }
 
 /* round 26 graft (both judges): the ledger's italics -- 'the candle ran out',
    the seed's 'Run this house again', the counts by each heading -- were about
    9 px to the eye at the Deck's 1280 (Grenze's italic reads well under its
    em). Set to read 11 px or more there. */
-.go-courage__note, .go-seed__hint { font-size: 14px; font-weight: 500; }
-.go-h .go-h__n { font-size: 14px; }
-.go-mvp__h .kit-plate__epithet { font-size: max(13px, calc(var(--plate-h, 40px) * .3)); }
-.go-bp__label, .go-bp__count { font-size: 12.5px; }
+.go-courage__note, .go-seed__hint { --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 500; }
+.go-h .go-h__n { --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+.go-mvp__h .kit-plate__epithet { --reading-size: max(13px, calc(var(--plate-h, 40px) * .3)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+.go-bp__label, .go-bp__count { --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 @media (max-width: 1400px) {
-  .go-courage__note, .go-seed__hint { font-size: 13.5px; }
+  .go-courage__note, .go-seed__hint { --reading-size: 13.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 }
 
 /* ── ROUND 40: the pictures whole, on their cords, over plaques cut to fit ──
@@ -1218,12 +1218,12 @@
    picture to hang WHOLE on its cord (gameover.js _hangPictures; no plate
    under it since 2026-10-21: no painting is named). */
 .go-tri { min-height: clamp(150px, 18vh, 172px); }
-.go-said .go-mvp__note { font-size: 13px; line-height: 1.24; }
+.go-said .go-mvp__note { --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.24; }
 /* the line that says why runs the plaque's width, not a 70 px column */
 .go-said.go-tri { padding-inline: calc(var(--carve) * .5 + 3px); }
 @media (max-height: 860px) {
   .go-tri { min-height: 0; padding-block: calc(var(--carve) + 3px) calc(var(--carve) + 4px); }
-  .go-said .go-mvp__note { font-size: 12px; line-height: 1.2; }
+  .go-said .go-mvp__note { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.2; }
   .go-reach__unit { letter-spacing: .04em; white-space: nowrap; }
   .go-tri__h { letter-spacing: .08em; }
   .go-said .go-said__mark { width: 11px; height: 11px; margin-bottom: 2px; }
@@ -1287,7 +1287,7 @@
 }
 .go-shrine > .go-said { grid-area: said; padding: 0 clamp(6px, .8vw, 14px); }
 .go-shrine > .go-said > .go-said__mark, .go-shrine > .go-said > .go-tri__rule { display: none; }
-.go-shrine .go-mvp__note { font-size: clamp(13.5px, .95vw, 15px); line-height: 1.32; max-width: 46ch; justify-self: center; }
+.go-shrine .go-mvp__note { --reading-size: clamp(13.5px, .95vw, 15px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.32; max-width: 46ch; justify-self: center; }
 /* HOW FAR, once, along the foot of the niche, under a fleuron rule */
 .go-shrine > .go-reach {
   grid-area: reach;
@@ -1303,9 +1303,9 @@
     linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kit-gold) 72%, transparent) 26%, color-mix(in srgb, var(--kit-gold) 72%, transparent) 46%, transparent 47.5%, transparent 52.5%, color-mix(in srgb, var(--kit-gold) 72%, transparent) 54%, color-mix(in srgb, var(--kit-gold) 72%, transparent) 74%, transparent 100%) 0 4px / 100% 1px no-repeat;
 }
 .go-shrine > .go-reach > .go-tri__rule { display: none; }
-.go-shrine .go-reach__n { font-size: clamp(30px, 2.5vw, 40px); margin: 0 .04em; line-height: 1; }
-.go-shrine :is(.go-tri__h, .go-reach__unit, .go-reach__wing) { font-size: clamp(12.5px, .86vw, 14px); }
-.go-shrine .go-reach__where { font-size: clamp(14px, 1vw, 16px); }
+.go-shrine .go-reach__n { --reading-size: clamp(30px, 2.5vw, 40px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); margin: 0 .04em; line-height: 1; }
+.go-shrine :is(.go-tri__h, .go-reach__unit, .go-reach__wing) { --reading-size: clamp(12.5px, .86vw, 14px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+.go-shrine .go-reach__where { --reading-size: clamp(14px, 1vw, 16px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .go-shrine .go-reach__wing::before { content: '\00b7\2002'; color: var(--kit-gold); letter-spacing: 0; }
 /* the pictures in the flanks, on their cords */
 .go-shrine > .go-hang { z-index: 1; }
@@ -1343,9 +1343,9 @@
   filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .85));
 }
 .go-shrine > .go-reach::before { content: none; }
-.go-shrine .go-reach__n { font-size: clamp(24px, 2vw, 32px); }
-.go-shrine :is(.go-tri__h, .go-reach__unit, .go-reach__wing) { font-size: 12.5px; letter-spacing: .1em; }
-.go-shrine .go-reach__where { font-size: 14px; }
+.go-shrine .go-reach__n { --reading-size: clamp(24px, 2vw, 32px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+.go-shrine :is(.go-tri__h, .go-reach__unit, .go-reach__wing) { --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .1em; }
+.go-shrine .go-reach__where { --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .go-board:has(.go-shrine) { --go-mvp-s: .94; }
 @media (max-height: 860px) { .go-board:has(.go-shrine) { --go-mvp-s: .92; } }
 .go-board:has(.go-shrine) { --go-mvp-s: .86; }
@@ -1378,11 +1378,11 @@
 }
 .go-trick.go-trick .go-trick__n { align-self: center; flex: none; }
 
-.go-stanza li { font-size: 16px; font-weight: 500; line-height: 1.28; }
-.go-pet__text { font-size: 15px; line-height: 1.3; }
+.go-stanza li { --reading-size: 16px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 500; line-height: 1.28; }
+.go-pet__text { --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.3; }
 @media (max-height: 860px) {
-  .go-stanza li { font-size: 15.5px; line-height: 1.2; }
-  .go-pet__text { font-size: 14.5px; line-height: 1.24; }
+  .go-stanza li { --reading-size: 15.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.2; }
+  .go-pet__text { --reading-size: 14.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.24; }
 }
 
 .go-bp__paper {
@@ -1439,8 +1439,8 @@
 .go-rt__wing.is-ghost .go-rt__edge { stroke: rgb(46 26 10 / .62); stroke-width: 1; stroke-dasharray: 3 2; }
 .go-rt__wing.is-ghost .go-rt__walls { stroke: rgb(46 26 10 / .3); stroke-width: .8; }
 .go-rt__ring { fill: none; stroke: #8c1a10; stroke-width: 2.4; filter: drop-shadow(0 0 .6px rgb(255 226 190 / .5)); }
-.go-rt__q { font-family: var(--font-display); font-weight: 700; font-size: 17px; fill: rgb(46 26 10 / .7); text-anchor: middle; }
-.go-rt__n { font-family: var(--font-display); font-weight: 700; font-size: 14px; fill: #1e0f06; text-anchor: middle; letter-spacing: .04em; }
+.go-rt__q { font-family: var(--font-display); font-weight: 700; --reading-size: 17px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); fill: rgb(46 26 10 / .7); text-anchor: middle; }
+.go-rt__n { font-family: var(--font-display); font-weight: 700; --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); fill: #1e0f06; text-anchor: middle; letter-spacing: .04em; }
 .go-rt__wing.is-ghost .go-rt__n { fill: rgb(46 26 10 / .72); }
 .scene--gameover[data-result="victory"] .go-rt__wing .go-rt__wash { fill: rgb(232 188 104 / .75); }
 
@@ -1455,6 +1455,166 @@
 .go-ledger[data-fold] .go-trick.go-trick .go-trick__name { line-height: 1.1; }
 /* the wings' numerals read on the burned vellum: heavy ink with a lip of
    paler paper round each stroke */
-.go-rt__n, .go-rt__wing.is-ghost .go-rt__n { fill: #140904; stroke: rgb(255 236 200 / .42); stroke-width: 2.2px; paint-order: stroke fill; font-size: 15px; }
+.go-rt__n, .go-rt__wing.is-ghost .go-rt__n { fill: #140904; stroke: rgb(255 236 200 / .42); stroke-width: 2.2px; paint-order: stroke fill; --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .go-rt__wing.is-ghost .go-rt__n { fill: #2a160a; }
 .go-rt__q { stroke: rgb(255 236 200 / .3); stroke-width: 2px; paint-order: stroke fill; fill: rgb(46 26 10 / .8); }
+
+/* Larger reading sizes need room, including on a 1280px panel. */
+.go-fold.kit-tabs { flex-wrap: wrap; gap: 5px; }
+.go-fold__tab.kit-tab { padding-inline: 12px; }
+
+/* Preserve the memorial's columns while allowing the taller record to scroll. */
+.go-wrap { overflow-y: auto; overflow-x: hidden; grid-template-rows: auto minmax(430px, 1fr) auto; row-gap: 14px; padding-bottom: 18px; }
+.go-ledhead { grid-template-columns: minmax(0, 1fr); row-gap: 12px; }
+.go-seed { justify-items: start; }
+.go-stats.kit-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); height: auto; min-height: 110px; padding-block: 10px; gap: 10px; }
+.go-stats .kit-stats__label { white-space: normal; letter-spacing: .02em; }
+.go-stat { min-width: 0; }
+.go-shrine > .go-reach { flex-wrap: wrap; white-space: normal; justify-content: center; gap: 3px 8px; }
+.go-wrap .go-altar.go-shrine { padding-top: 42px; }
+.go-mvp__h .kit-plate__name { white-space: normal; text-align: center; letter-spacing: .04em; }
+.go-acts { gap: 16px; }
+.go-btn b { white-space: normal; text-align: center; letter-spacing: .04em; }
+
+/* Round 48: a cabinet of complete engraved card cartouches. */
+.go-ledger[data-fold] .go-tricks.go-tricks { gap: 8px 9px; background: none; padding: 3px; }
+.go-ledger[data-fold] .go-trick.go-trick { min-height: 59px; padding: 9px 10px; gap: 7px; border: 0 solid transparent; border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 9px 14px stretch; background: radial-gradient(ellipse at 22% 12%, color-mix(in srgb, var(--kit-candle) 19%, transparent), transparent 80%); box-shadow: 0 4px 3px color-mix(in srgb, var(--kit-void) 70%, transparent); }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__cost { --coin: 29px; border-radius: 30%; background: radial-gradient(ellipse at 30% 20%, var(--kit-violet), var(--kit-violet-lo) 64%, var(--kit-void)); border: 2px solid var(--kit-gold); color: var(--kit-gold-hi); box-shadow: inset 0 0 0 1px var(--kit-void), 0 2px 3px var(--kit-void); }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__name { line-height: 1.2; }
+.go-stat { padding: 8px 10px; border: 0 solid transparent; border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 8px 13px stretch; background: radial-gradient(ellipse at 50% 15%, color-mix(in srgb, var(--kit-candle) 15%, transparent), transparent 70%); }
+.go-stat__ico { padding: 3px; background: url("../../assets/ui/kit/button.webp") center / contain no-repeat; }
+.go-wrap .go-altar.go-shrine::after { background: radial-gradient(ellipse at 50% 62%, color-mix(in srgb, var(--kit-candle) 28%, transparent), transparent 70%), repeating-linear-gradient(88deg, transparent 0 18px, color-mix(in srgb, var(--kit-gold-lo) 17%, transparent) 19px 21px), url("../../assets/ui/kit/flock.webp") center / cover, var(--kit-void); }
+.go-shrine .go-mvp__slot::after { box-shadow: 0 13px 17px var(--kit-void); }
+
+/* Explicit row flow overrides the shared rail's column flow: all eight remain. */
+.go-stats.kit-stats { grid-auto-flow: row; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, auto); }
+/* The central object has room for the established larger card lettering. */
+.go-shrine .go-block--mvp { --card-w: clamp(260px, 20vw, 300px); --go-mvp-s: 1; }
+.go-wrap { grid-template-rows: auto minmax(540px, 1fr) auto; }
+
+/* Round 49 RUBY: complete compact engraved plaques and generous foot clearance. */
+.go-ledger[data-fold] .go-trick.go-trick { min-height: 54px; padding: 12px 15px; }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__name { line-height: 1.25; }
+.go-stat { padding: 13px 12px; }
+.go-wrap { padding-bottom: 44px; scrollbar-color: var(--kit-gold) var(--kit-void); }
+.go-shrine > .go-reach { padding-block: 12px; line-height: 1.3; }
+
+.go-ledger[data-fold] .go-tricks.go-tricks { grid-auto-rows: min-content; }
+.go-ledger[data-fold] { grid-template-rows: auto auto auto; align-content: start; }
+.go-ledger[data-fold] > .go-block--deck, .go-ledger[data-fold] > .go-block--keep { overflow-y: visible; min-height: max-content; }
+.go-wrap { grid-template-rows: auto minmax(540px, max-content) auto; }
+
+.go-ledger[data-fold] { min-height: max-content; }
+.go-wrap { grid-template-rows: auto auto auto; }
+.go-stats .go-stat { min-height: 62px; box-sizing: border-box; padding-block: 12px; }
+
+.go-wrap { grid-template-rows: auto minmax(540px, 1fr) auto; }
+.go-ledger[data-fold] { min-height: 0; grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-areas: "head" "fold" "page" "guide"; align-content: stretch; }
+.go-ledger[data-fold] > .go-block--deck, .go-ledger[data-fold] > .go-block--keep { min-height: 0; overflow-y: auto; }
+.go-ledger > .r49-scrollcue--inset { position: relative; grid-area: guide; top: auto; right: auto; justify-self: end; }
+
+/* Round 49 selected-build clearance repair: each control and card has its own row. */
+.go-ledger[data-fold] { grid-template-areas: "head" "fold" "guide" "page"; grid-template-rows: auto auto auto minmax(0, 1fr); }
+.go-ledger > .r49-scrollcue--inset { margin: 4px 0 12px; }
+.go-wrap { grid-template-rows: auto minmax(min-content, 1fr) auto; }
+.go-wrap .go-altar.go-shrine { grid-template-rows: auto minmax(min-content, 1fr) auto; grid-template-areas: "reach reach reach" ". mvp ." "said said said"; padding-top: var(--shrine-in); }
+.go-shrine > .go-reach { position: relative; left: auto; top: auto; translate: none; grid-area: reach; width: auto; max-width: 100%; margin: 0; align-self: start; }
+.go-shrine > .go-block--mvp { align-self: start; margin-top: 16px; }
+
+/* The record cue occupies a real footer row instead of covering inventory. */
+.go-foot { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; row-gap: 12px; justify-items: center; padding-top: 12px; }
+.go-foot > .r49-scrollcue { position: relative; top: auto; right: auto; grid-row: 1; justify-self: end; }
+.go-foot > .go-acts { grid-row: 2; }
+
+
+/* Round 50 GARNET: worn velvet behind complete memorial data. */
+.go-stanzas.kit-panel, .go-ledger.kit-panel { background: url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") center / cover; box-shadow: inset 0 0 25px var(--kit-void), 0 8px 10px -5px var(--kit-void); }
+.go-ledger[data-fold] { grid-template-areas: "head" "fold" "page" "guide"; grid-template-rows: auto auto minmax(0,1fr) auto; }
+.go-ledger > .r50-scrollrail { grid-area: guide; margin: 10px 0 0; }
+.go-foot { display: flex; justify-content: center; padding-top: 8px; }
+.go-board:has(> .r50-scrollrail) { grid-template-rows: auto minmax(0,1fr) auto auto; }
+.go-board > .r50-scrollrail { margin-inline: calc(var(--kit-vine-w) + 16px); }
+.go-stat { padding: 9px 10px; }
+
+/* Keep the inventory page a real viewport, with its own named bottom rail. */
+.go-ledger[data-fold] { height: min(620px, calc(100vh - 280px)); min-height: 0; box-sizing: border-box; align-self: start; }
+
+/* Round 51 SPINEL: portraits beside a complete card in a painted mourning alcove. */
+.go-wrap:has(.go-shrine) { grid-template-columns: minmax(0,.92fr) minmax(0,1.18fr) minmax(0,1fr); grid-template-areas: "stage altar ledger" "left altar ledger" "stats stats stats"; grid-template-rows: auto auto auto; gap: 14px 20px; align-content: start; padding-top: 8px; }
+.go-stage { --go-pic-w: 130px; grid-template-columns: minmax(0,1fr) 48px minmax(0,1fr); gap: 8px; padding: 0 9px 18px; align-self: start; }
+.go-portrait__pic { max-width: 142px; }
+.go-portrait__plate { width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; padding: 6px 12px; margin-top: -6px; min-height: 64px; }
+.go-portrait__plate .kit-plate__epithet { white-space: normal; line-height: 1.15; text-align: center; }
+.go-candle { width: 48px; align-self: center; filter: drop-shadow(0 4px 3px var(--kit-void)); }
+.go-stanzas { align-self: start; }
+.go-wrap .go-altar.go-shrine { --shrine-in: 18px; align-self: start; margin: 0; padding: 30px 24px 50px; grid-template-rows: auto auto auto; grid-template-areas: "reach reach reach" ". mvp ." "said said said"; row-gap: 8px; }
+.go-wrap .go-altar.go-shrine::after { border: 0; border-image: none; background: url("../../assets/ui/r51-spinel/alcove-v1.webp") center / 100% 100% no-repeat; box-shadow: 0 8px 14px -5px var(--kit-void); }
+.go-wrap .go-altar.go-shrine::before { background: none; border: 0; }
+.go-shrine > .go-reach { display: grid; grid-template-columns: auto auto 1fr; grid-template-areas: "label count unit" "where where wing"; gap: 3px 9px; padding: 8px 16px; width: 100%; box-sizing: border-box; }
+.go-reach .go-tri__h { grid-area: label; }
+.go-reach .go-reach__n { grid-area: count; }
+.go-reach .go-reach__unit { grid-area: unit; }
+.go-reach .go-reach__where { grid-area: where; text-align: left; }
+.go-reach .go-reach__wing { grid-area: wing; text-align: right; }
+.go-shrine .go-reach__wing::before { content: none; }
+.go-shrine > .go-block--mvp { --card-w: 260px; --go-mvp-s: 1; margin-top: 0; width: 276px; }
+.go-shrine .go-mvp__slot { margin: 0 8px 8px; }
+.go-shrine .go-mvp__slot::before { inset: -5px; border-image-width: 15px; box-shadow: 0 5px 10px var(--kit-void); }
+.go-shrine .go-mvp__slot::after { content: none; }
+.go-shrine .go-mvp__h { margin: 0; padding: 6px 18px; }
+.go-shrine > .go-said { padding: 0 10px; }
+.go-shrine .go-mvp__note { margin: 3px 0; }
+.go-ledger[data-fold] { height: min(620px, calc(100vh - 280px)); }
+.go-ledger[data-fold] > .go-block--deck, .go-ledger[data-fold] > .go-block--keep { scrollbar-gutter: stable; padding-bottom: 16px; mask-image: linear-gradient(to bottom, black calc(100% - 14px), transparent); }
+
+.go-shrine > .go-block--mvp { --card-w: clamp(260px,20vw,300px); width: calc(var(--card-w) + 16px); }
+
+/* Round 52 TOURMALINE: a left-hand account and a complete central memorial. */
+.go-wrap:has(.go-shrine) { grid-template-areas: "stage altar ledger" "reach altar ledger" "left altar ledger" "stats stats stats"; grid-template-rows: auto auto auto auto; gap: 12px 20px; }
+.go-stage { padding-bottom: 0; }
+.go-portrait__plate .kit-plate__epithet > span { display: block; white-space: nowrap; }
+.go-portrait__plate { padding-inline: 8px; min-height: 86px; }
+.go-wrap > .go-reach { grid-area: reach; position: relative; inset: auto; translate: none; box-sizing: border-box; width: 100%; margin: 0; padding: 12px 18px; display: grid; grid-template-columns: auto 1fr; grid-template-areas: "label label" "count unit" "where where" "wing wing"; gap: 3px 9px; align-items: center; justify-items: center; background: radial-gradient(ellipse at 20% 5%,color-mix(in srgb,var(--kit-candle) 13%,transparent),transparent 70%),url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") center / cover; border: 0 solid transparent; border-image: url("../../assets/ui/kit/frame.webp") 52 / 17px stretch; }
+.go-wrap > .go-reach .go-tri__rule { display: none; }
+.go-wrap > .go-reach .go-reach__n { justify-self: end; margin: 0; line-height: 1; }
+.go-wrap > .go-reach .go-reach__unit { justify-self: start; }
+.go-wrap > .go-reach .go-reach__where, .go-wrap > .go-reach .go-reach__wing { text-align: center; }
+.go-wrap .go-altar.go-shrine { padding: 20px 24px 45px; grid-template-areas: ". mvp ." "said said said"; grid-template-rows: auto auto; row-gap: 4px; }
+.go-shrine .go-mvp__h { padding: 6px 12px; }
+.go-shrine > .go-said { padding: 0 16px; }
+.go-shrine .go-mvp__note { margin: 0; }
+.go-wrap .go-altar.go-shrine::after { filter: saturate(.82); box-shadow: 0 8px 12px -7px var(--kit-void); }
+.go-ledger[data-fold] .go-tricks.go-tricks { grid-template-columns: minmax(0,1fr); }
+.go-ledger[data-fold] .go-trick.go-trick { display: grid; grid-template-columns: 29px minmax(0,1fr) minmax(36px,max-content); min-height: 58px; padding: 9px 15px; column-gap: 10px; }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__n { justify-self: end; margin: 0; padding-left: 8px; border-left: 1px solid var(--kit-gold-lo); white-space: nowrap; }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__name { min-width: 0; overflow-wrap: anywhere; }
+
+/* Relocating the progress plaque retains its inherited responsive reading sizes. */
+.go-wrap > .go-reach :is(.go-tri__h,.go-reach__unit,.go-reach__wing) { --reading-size: clamp(12.5px,.86vw,14px); font-size: max(var(--reading-floor),var(--reading-size),calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+.go-wrap > .go-reach .go-reach__where { --reading-size: clamp(14px,1vw,16px); font-size: max(var(--reading-floor),var(--reading-size),calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+
+
+/* Worn violet cloth follows the cartouche; the quantity bay remains separate. */
+.go-ledger[data-fold] .go-trick.go-trick {
+ border-image-source: url("../../assets/ui/r53-fluorite/velvet-cartouche-v1.webp"); background: none; box-shadow: 0 3px 3px -2px var(--kit-void);
+}
+.go-wrap > .go-reach { grid-template-columns: 1fr auto auto 1fr; grid-template-areas: "label label label label" ". count unit ." "where where where where" "wing wing wing wing"; column-gap: 7px; }
+
+/* Rows pass into a narrow, physical lower rebate rather than dissolving. */
+.go-ledger[data-fold] > .go-block--deck, .go-ledger[data-fold] > .go-block--keep {
+ padding-bottom: 5px; mask-image: none;
+}
+.go-ledger > .r50-scrollrail { margin-top: 0; box-shadow: 0 -3px 2px var(--kit-void),inset 0 2px 1px var(--kit-gold-lo),0 4px 3px -2px var(--kit-void); }
+.go-ledger[data-fold] .go-trick.go-trick { border-image-source: url("../../assets/ui/r54-peridot/worn-plaque-v1.webp"); }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__n { border-left-color: color-mix(in srgb,var(--kit-gold) 70%,var(--kit-violet-lo)); text-shadow: 0 1px 0 var(--kit-void); }
+
+/* Enamel drawer faces share the small painted plaques; quantity bays remain separate. */
+.go-ledger[data-fold] .go-trick.go-trick { border-image-source: url("../../assets/ui/r55-iolite/enamel-plaque.webp"); }
+.go-ledger[data-fold] .go-trick.go-trick .go-trick__n { box-shadow: inset 3px 0 5px -4px var(--kit-void); }
+.go-ledger > .r50-scrollrail { box-shadow: 0 -2px 1px var(--kit-void),inset 0 2px 1px var(--kit-gold-lo),0 3px 3px -2px var(--kit-void); }
+/* Pet artwork is already a complete film print; no extra frame or crop. */
+.go-pet__snap { aspect-ratio: 1122 / 1402; }
+.go-stanza--pet .go-pet__snap .petpic { filter: none; }
+
+/* Round56 ONYX: shallow enamel drawers; separate quantity bays stay clear. */
+.go-ledger[data-fold] .go-trick.go-trick { border-image-source: url("../../assets/ui/r56-onyx/enamel-plaque.webp"); }

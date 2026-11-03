@@ -1,0 +1,1079 @@
+{
+  "level": 7,
+  "region": "Grand Study and Library",
+  "entries": [
+    {
+      "level": 7,
+      "region": "Grand Study and Library",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Rolling Ladder",
+      "existing_animation": false,
+      "description": "Large wooden library ladder racing along brass rails under invisible control, stopping and changing direction abruptly. Insists on reshelving the visitor, rolling across the usable space.",
+      "animation": "2D animation Idle rung creak; tell wheel pivot; action short rail slide; resolve brake.",
+      "signature": "Signature Tall open diagonal lattice; strong lateral movement.",
+      "production_id": "rolling-ladder",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\rolling-ladder.webp",
+      "source_path": "animations\\sprites\\enemies\\rollingLadder.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            170,
+            242
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 27989,
+          "partial_alpha_pixels": 11398,
+          "alpha_bbox": [
+            0,
+            0,
+            170,
+            242
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            170,
+            242
+          ],
+          "sha256": "6b748ae6cd6c6ae1c710306dd8f39d7927fd80c4b010c8acb6c1ca7a95c8994d"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 50557,
+          "partial_alpha_pixels": 13226,
+          "alpha_bbox": [
+            33,
+            5,
+            237,
+            251
+          ],
+          "visible_bbox_alpha64": [
+            43,
+            7,
+            213,
+            249
+          ],
+          "sha256": "71b24d60d0dce7e2906fa947cdcb609e4d4df63a9e2a5226aff28d5b231182c4"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1234575,
+          "partial_alpha_pixels": 336077,
+          "alpha_bbox": [
+            45,
+            31,
+            1230,
+            1230
+          ],
+          "visible_bbox_alpha64": [
+            211,
+            36,
+            1043,
+            1216
+          ],
+          "sha256": "a22075c944b116300ddf32c6293f78235274a311a749794205a6be0af4cb6891"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\rolling-ladder-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\rolling-ladder-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "rolling-ladder.webp",
+          "w": 170,
+          "h": 242,
+          "source": "rollingLadder.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 7,
+      "region": "Grand Study and Library",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Loose Pages",
+      "existing_animation": false,
+      "description": "Three oversized old pages orbit an unseen center, each bearing one fixed line of faint writing; they align into a fussy correction without morphing into new silhouettes. Rearranges a sentence into a fussy correction, suggesting a temporary nuisance.",
+      "animation": "2D animation Idle three-page orbit; tell pages align; action fan out; resolve orbit.",
+      "signature": "Signature Flat pale paper fan, not closed books or liquid ink.",
+      "production_id": "loose-pages",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\loose-pages.webp",
+      "source_path": "animations\\sprites\\enemies\\loosePages.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            214,
+            216
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 21463,
+          "partial_alpha_pixels": 24001,
+          "alpha_bbox": [
+            0,
+            0,
+            214,
+            216
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            214,
+            216
+          ],
+          "sha256": "c921fa94882b59f3949b7ac4f7ad84cfbea672f4b2dd662173e055abe0e3ee62"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 36990,
+          "partial_alpha_pixels": 27786,
+          "alpha_bbox": [
+            5,
+            4,
+            245,
+            244
+          ],
+          "visible_bbox_alpha64": [
+            26,
+            15,
+            240,
+            231
+          ],
+          "sha256": "0d7ac179f69e26877a13f58b5d19e2eebd927feff4bd4e04bd547e31d6594339"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 884304,
+          "partial_alpha_pixels": 687870,
+          "alpha_bbox": [
+            0,
+            17,
+            1238,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            128,
+            76,
+            1175,
+            1129
+          ],
+          "sha256": "343d36d8e0cae5cad4ce82f828f0ce43388ba36cec3b3178417edbe3bd1bc12a"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\loose-pages-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\loose-pages-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "loose-pages.webp",
+          "w": 214,
+          "h": 216,
+          "source": "loosePages.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 7,
+      "region": "Grand Study and Library",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Studying Ghost",
+      "existing_animation": false,
+      "description": "Deep leather reading chair that glides through the room while a ghost reader sitting on it turns pages. Raises a finger for quiet, then goes back to a book held upside down.",
+      "animation": "2D animation Idle page turn; tell glasses lift; action shush; resolve embarrassed page flip.",
+      "signature": "Signature Seated reader integrated with low chair, unlike standing staff.",
+      "production_id": "studying-ghost",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\studying-ghost.webp",
+      "source_path": "animations\\sprites\\enemies\\studyingGhost.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            209,
+            216
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 14702,
+          "partial_alpha_pixels": 29856,
+          "alpha_bbox": [
+            0,
+            0,
+            209,
+            216
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            208,
+            216
+          ],
+          "sha256": "dd46ea8574e722e0258f9dddc8e66cb8c97e24eec4f29833dbd83deb827526e5"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 33699,
+          "partial_alpha_pixels": 31251,
+          "alpha_bbox": [
+            8,
+            20,
+            249,
+            255
+          ],
+          "visible_bbox_alpha64": [
+            28,
+            22,
+            235,
+            238
+          ],
+          "sha256": "d6209555cbc9dfa0f5b97b003220c3ba7fc9736c83e11d5bf931bac6433c8d00"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 824124,
+          "partial_alpha_pixels": 747971,
+          "alpha_bbox": [
+            0,
+            20,
+            1240,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            137,
+            111,
+            1153,
+            1163
+          ],
+          "sha256": "c4f4880f08e51358af15abff3b367c5ef4f6adf53c7b0ac4b5999e9e7e49c70f"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\studying-ghost-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\studying-ghost-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "studying-ghost.webp",
+          "w": 209,
+          "h": 216,
+          "source": "studyingGhost.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 7,
+      "region": "Grand Study and Library",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Bookmark Ribbon",
+      "existing_animation": false,
+      "description": "One wide silk bookmark floats like a streamer, curling into a neat loop beside a book without wrapping around arbitrary scenery. Marks the wrong place with a neat ribbon loop, suggesting a delayed action.",
+      "animation": "2D animation Idle tip sway; tell curl; action one loop flick using fixed ribbon poses; resolve untie.",
+      "signature": "Signature Single flat ribbon with a tasselled tip and one loop gesture, not a large cloth body.",
+      "production_id": "bookmark-ribbon",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\bookmark-ribbon.webp",
+      "source_path": "animations\\sprites\\enemies\\bookmarkRibbon.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            184,
+            216
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 21174,
+          "partial_alpha_pixels": 17814,
+          "alpha_bbox": [
+            0,
+            0,
+            184,
+            216
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            184,
+            215
+          ],
+          "sha256": "1be79273c1ddcb438c55212e5e868ee44bf604fa7eb6e4c47d3135ebc0a242a4"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 45735,
+          "partial_alpha_pixels": 19045,
+          "alpha_bbox": [
+            40,
+            19,
+            249,
+            251
+          ],
+          "visible_bbox_alpha64": [
+            42,
+            21,
+            226,
+            236
+          ],
+          "sha256": "f01c90845a3f1a3e8f6f512a583b0fcef4bbe3eb62de56e926cb71a77da59453"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1116728,
+          "partial_alpha_pixels": 455011,
+          "alpha_bbox": [
+            25,
+            32,
+            1240,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            206,
+            106,
+            1105,
+            1158
+          ],
+          "sha256": "81a25afb218e6cf7ecce252eb5282e3bb3003c6d66d80248c3c6a2d10afb9ce9"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\bookmark-ribbon-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\bookmark-ribbon-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "bookmark-ribbon.webp",
+          "w": 184,
+          "h": 216,
+          "source": "bookmarkRibbon.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 7,
+      "region": "Grand Study and Library",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Globe",
+      "existing_animation": false,
+      "description": "Antique globe spinning by itself while continents shift position and tiny lights move across its surface. Spins the wrong continent forward and proposes a detour.",
+      "animation": "2D animation Idle slow spin; tell meridian tilt; action map layer shifts; resolve click.",
+      "signature": "Signature Round sphere in crescent support; one rotating map layer.",
+      "production_id": "globe",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\globe.webp",
+      "source_path": "animations\\sprites\\enemies\\globe.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            147,
+            237
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 13981,
+          "partial_alpha_pixels": 20029,
+          "alpha_bbox": [
+            0,
+            0,
+            147,
+            237
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            147,
+            236
+          ],
+          "sha256": "4f3fba1639d4f58df698da1621f26927a5aa88a17cd44eec016eec3535d4e0ce"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 43582,
+          "partial_alpha_pixels": 21125,
+          "alpha_bbox": [
+            7,
+            4,
+            204,
+            246
+          ],
+          "visible_bbox_alpha64": [
+            54,
+            7,
+            201,
+            243
+          ],
+          "sha256": "391a5c187b295e0715115cd6d6d0496142e00c3f31d43a59a9a48582422881ca"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1065538,
+          "partial_alpha_pixels": 505789,
+          "alpha_bbox": [
+            31,
+            31,
+            1216,
+            1194
+          ],
+          "visible_bbox_alpha64": [
+            267,
+            34,
+            984,
+            1191
+          ],
+          "sha256": "d867d1f74f919d1de573953cf45897fd50f9b3f30112a2f2075ead3f929f2e04"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\globe-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\globe-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "globe.webp",
+          "w": 147,
+          "h": 237,
+          "source": "globe.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 7,
+      "region": "Grand Study and Library",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Writing Desk",
+      "existing_animation": false,
+      "description": "Large desk whose drawers, blotter, papers, ink bottles, and correspondence all move under a single unseen presence. Reorders its correspondence into an unhelpfully perfect queue.",
+      "animation": "2D animation Idle pen bob; tell drawer opens; action three envelopes exchange; resolve drawer shuts.",
+      "signature": "Signature Low horizontal furniture; stationery sorting instead of catalogue storage.",
+      "production_id": "writing-desk",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\writing-desk.webp",
+      "source_path": "animations\\sprites\\enemies\\writingDesk.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            220,
+            184
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 22029,
+          "partial_alpha_pixels": 17818,
+          "alpha_bbox": [
+            0,
+            0,
+            220,
+            184
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            220,
+            184
+          ],
+          "sha256": "693e164aa57dd1fbbea1c8914b430abda7dfa6c18c2dd335888caa4ba7126925"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 45729,
+          "partial_alpha_pixels": 19174,
+          "alpha_bbox": [
+            20,
+            31,
+            244,
+            219
+          ],
+          "visible_bbox_alpha64": [
+            22,
+            34,
+            242,
+            217
+          ],
+          "sha256": "cb9f6ccf03979a58d1e7d0a8c2fa4183e98fc0a437495867a1d99a833ce09577"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1109789,
+          "partial_alpha_pixels": 462197,
+          "alpha_bbox": [
+            0,
+            35,
+            1234,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            108,
+            166,
+            1184,
+            1062
+          ],
+          "sha256": "21d7b8c02990ceb0156ace945e76c39221da26c5ba71f8e490b417a38c2825e0"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\writing-desk-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\writing-desk-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "writing-desk.webp",
+          "w": 220,
+          "h": 184,
+          "source": "writingDesk.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 7,
+      "region": "Grand Study and Library",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Library Clock",
+      "existing_animation": false,
+      "description": "Tall clock whose hands reverse, accelerate, and stop while its chimes cause nearby books to react. Demands one more minute of quiet reading and repeats its chime.",
+      "animation": "2D animation Idle pendulum; tell hand pauses; action hand steps backward; resolve chime wobble.",
+      "signature": "Signature Tall narrow pendulum clock; domestic minutes rather than celestial cycles.",
+      "production_id": "library-clock",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\library-clock.webp",
+      "source_path": "animations\\sprites\\enemies\\libraryClock.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            71,
+            221
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 4477,
+          "partial_alpha_pixels": 10765,
+          "alpha_bbox": [
+            0,
+            0,
+            71,
+            221
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            71,
+            221
+          ],
+          "sha256": "847c0859f0474e1cfdb6e852f1ff15614b3432bb48bd3df53949b92e571a57da"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 53656,
+          "partial_alpha_pixels": 11431,
+          "alpha_bbox": [
+            66,
+            12,
+            165,
+            237
+          ],
+          "visible_bbox_alpha64": [
+            91,
+            15,
+            162,
+            235
+          ],
+          "sha256": "524c0c4e3834c1edcb76279ba679d838064caa0febaec390d304a75b1edbb212"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1294280,
+          "partial_alpha_pixels": 277990,
+          "alpha_bbox": [
+            0,
+            0,
+            1200,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            446,
+            70,
+            794,
+            1150
+          ],
+          "sha256": "694e66d1a562b8029deac75a3f0480a9b2321e0e7cdea1b99c896ca0cda838c1"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\library-clock-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\library-clock-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "library-clock.webp",
+          "w": 71,
+          "h": 221,
+          "source": "libraryClock.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 7,
+      "region": "Grand Study and Library",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Living Index",
+      "existing_animation": false,
+      "description": "A broad catalogue cabinet with staggered drawers and cream index cards. Files every visitor under the wrong heading, repeatedly changing its order.",
+      "animation": "2D animation Idle label twitch; tell one drawer opens; action three drawer/card pairs cycle; resolve drawers settle.",
+      "signature": "Signature Wide grid geometry with mechanical filing waves, not a single writing desk.",
+      "production_id": "living-index",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\living-index.webp",
+      "source_path": "animations\\sprites\\enemies\\livingIndex.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            476,
+            351
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 23290,
+          "partial_alpha_pixels": 142634,
+          "alpha_bbox": [
+            0,
+            0,
+            476,
+            351
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            476,
+            350
+          ],
+          "sha256": "2acb876f363e68cfaabc274b6514854fff96c1061917c11e980ee5e036379f3e"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 114105,
+          "partial_alpha_pixels": 146887,
+          "alpha_bbox": [
+            10,
+            10,
+            504,
+            509
+          ],
+          "visible_bbox_alpha64": [
+            19,
+            96,
+            495,
+            446
+          ],
+          "sha256": "6bf1c4559bde94d1c435f2102c93da5193dc17c1fe6152d978a12410a4f5cf7e"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 685840,
+          "partial_alpha_pixels": 886140,
+          "alpha_bbox": [
+            23,
+            19,
+            1240,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            47,
+            237,
+            1212,
+            1093
+          ],
+          "sha256": "e7e37f5897074d9e8bc3d8a6128d18e69ea95ebd6700d01bf12a04f0a7986ec3"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\living-index-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\living-index-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "living-index.webp",
+          "w": 476,
+          "h": 351,
+          "source": "livingIndex.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 7,
+      "region": "Grand Study and Library",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Black Ink Manuscript",
+      "existing_animation": false,
+      "description": "A narrow handwritten book on a tall lectern, with one hovering ink ribbon. Corrects the visitor’s intentions with a pompous flourish, suggesting a one-turn instruction nuisance.",
+      "animation": "2D animation Idle nib trace; tell line gathers; action calligraphy curl; resolve blot dries.",
+      "signature": "Signature Tall lectern and liquid line; unlike the Atlas’s broad map window and loose-page fan.",
+      "production_id": "black-ink-manuscript",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\black-ink-manuscript.webp",
+      "source_path": "animations\\sprites\\enemies\\blackInkManuscript.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            171,
+            481
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 49304,
+          "partial_alpha_pixels": 31949,
+          "alpha_bbox": [
+            0,
+            0,
+            171,
+            481
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            171,
+            480
+          ],
+          "sha256": "981ce1782934dc2cddd3e08659849e393d5ffe872bc6100a0d1fb16b83583b49"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 226162,
+          "partial_alpha_pixels": 34984,
+          "alpha_bbox": [
+            20,
+            11,
+            470,
+            496
+          ],
+          "visible_bbox_alpha64": [
+            180,
+            13,
+            350,
+            493
+          ],
+          "sha256": "22f1afb8642972b4938325d73431e720ebed81f2bcf156f6b9c01a66d391f875"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1358632,
+          "partial_alpha_pixels": 213421,
+          "alpha_bbox": [
+            33,
+            30,
+            1224,
+            1211
+          ],
+          "visible_bbox_alpha64": [
+            440,
+            33,
+            856,
+            1208
+          ],
+          "sha256": "f0bbea58b61cb34d503394a094c8c764eccbddc83fd1b1b30d3e7a1c8226318d"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\black-ink-manuscript-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\black-ink-manuscript-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "black-ink-manuscript.webp",
+          "w": 171,
+          "h": 481,
+          "source": "blackInkManuscript.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 7,
+      "region": "Grand Study and Library",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Atlas Room",
+      "existing_animation": false,
+      "description": "Oversized open atlas on an angled stand, with two map spreads visible. Offers an impressive detour on a page that folds back to the starting point.",
+      "animation": "2D animation Idle page edge lift; tell map glows; action page wipe to one alternate flat vista; resolve shut halfway.",
+      "signature": "Signature Broad open-book silhouette and folded geography; no objects physically travel into a fully built scene.",
+      "production_id": "atlas-room",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\atlas-room.webp",
+      "source_path": "animations\\sprites\\enemies\\atlasRoom.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            485,
+            400
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 58433,
+          "partial_alpha_pixels": 134307,
+          "alpha_bbox": [
+            0,
+            0,
+            485,
+            400
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            484,
+            399
+          ],
+          "sha256": "b0ddcaae6cc95faab86d46bee134835dff3171ba79026cd4c61eda34b8430ad9"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 120877,
+          "partial_alpha_pixels": 140007,
+          "alpha_bbox": [
+            0,
+            4,
+            509,
+            505
+          ],
+          "visible_bbox_alpha64": [
+            22,
+            61,
+            506,
+            460
+          ],
+          "sha256": "1e337b35e289509d08dcfea77e1014ae2089d52f43f22078ccbd3407a8938178"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 726078,
+          "partial_alpha_pixels": 845782,
+          "alpha_bbox": [
+            0,
+            4,
+            1243,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            54,
+            150,
+            1240,
+            1127
+          ],
+          "sha256": "1d609b34390aaf4a7e7efeab524658a27045f5f85947ce07cf0f648ae8c2159b"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\atlas-room-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\atlas-room-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "atlas-room.webp",
+          "w": 485,
+          "h": 400,
+          "source": "atlasRoom.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 7,
+      "region": "Grand Study and Library",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Head Librarian",
+      "existing_animation": false,
+      "description": "A compact spectral librarian with round spectacles, a ledger and neatly arranged sleeves. Shushes, checks the catalogue and directs books into perfect order. Their sternness becomes comic when a single page refuses to stay put.",
+      "animation": "2D animation Idle ledger glance; tell raised finger; action three book silhouettes return to a small shelf strip; resolve spectacles slip.",
+      "signature": "Signature Seated-height, compact authority and precise finger gestures; scenery represented by a short shelf strip.",
+      "production_id": "head-librarian",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\head-librarian.webp",
+      "source_path": "animations\\sprites\\enemies\\headLibrarian.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            938,
+            933
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 393451,
+          "partial_alpha_pixels": 481027,
+          "alpha_bbox": [
+            0,
+            0,
+            938,
+            933
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            1,
+            937,
+            933
+          ],
+          "sha256": "c333bcf9d430f0e00887deb1b182931323e49b565bfb279570af30c5289459f5"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 535804,
+          "partial_alpha_pixels": 512096,
+          "alpha_bbox": [
+            0,
+            7,
+            1022,
+            1024
+          ],
+          "visible_bbox_alpha64": [
+            51,
+            45,
+            987,
+            977
+          ],
+          "sha256": "ef9947c968d4801723250683030358eb05a41eb0a2bcfb164dc153f90e086070"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 803180,
+          "partial_alpha_pixels": 769006,
+          "alpha_bbox": [
+            0,
+            9,
+            1251,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            62,
+            55,
+            1209,
+            1196
+          ],
+          "sha256": "d6910379ba62c7a96486b0cd224c64c2e7bb806202a6cc84713a4e8d7a7ae12a"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\head-librarian-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\head-librarian-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "head-librarian.webp",
+          "w": 938,
+          "h": 933,
+          "source": "headLibrarian.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    }
+  ],
+  "counts": {
+    "new": 11,
+    "remaining_in_region": 0
+  },
+  "complete": true,
+  "review": "All 11 original images and final regional contact sheet visually reviewed. Distinct roster identities, complete silhouettes, valid anatomy, true transparent alpha and matching tactile cute haunted-house style. All source/runtime dimensions and hashes checked."
+}

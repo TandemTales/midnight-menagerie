@@ -1,0 +1,169 @@
+{
+  "round": 53,
+  "status": "complete; unanimously selected build validated and applied as working changes",
+  "winner": "FLUORITE",
+  "votes": [
+    "FLUORITE",
+    "FLUORITE"
+  ],
+  "selection": "independent blind image-only votes",
+  "system_scores_descriptive_only": {
+    "judge1": {
+      "SARDONYX": 7.9,
+      "BERYL": 8.3,
+      "CITRINE": 8.3,
+      "FLUORITE": 8.6
+    },
+    "judge2": {
+      "FLUORITE": 8.6,
+      "CITRINE": 8.3,
+      "BERYL": 8.5,
+      "SARDONYX": 7.9
+    }
+  },
+  "base": "fc83661a68ac2b7144d19d9c75e6e33cacc953f9",
+  "comparison_captures": "CAPTURES-r53.json",
+  "all_fit_thresholds_met": false,
+  "applied_to_main": true,
+  "main_committed_or_pushed": false,
+  "evidence_root": "D:\\UILOOP\\r53-20261029",
+  "selected_commit": "5a5da72d94b0b92956e024dec7a793d8fae74e52",
+  "comparison_source": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2",
+  "validated_captures": "VALIDATED-CAPTURES-r53.json",
+  "applied_files_byte_verified": 109,
+  "main_index_preserved": true,
+  "main_index_sha256": "6f75cb9060c5ed58cb981e6b487beb233e9a17128a9974379c659d651d389129",
+  "browser_gates": [
+    {
+      "gate": "chrome/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "steam-deck/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "gamepad/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "events/check.py",
+      "exit": 0
+    },
+    {
+      "gate": "gameover-keeps/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "seams/proof.py",
+      "exit": 0
+    },
+    {
+      "gate": "combat-scene/seam.py",
+      "exit": 0
+    }
+  ],
+  "selected_post_review_repair_required": false,
+  "static_checks": {
+    "scene_css_conflicts": 0,
+    "undefined_css_tokens": 0,
+    "seam_sites": 9110,
+    "unchanged_local_Map_false_positives": 4,
+    "syntax": "pass",
+    "endings": "pass",
+    "whitespace": "pass"
+  },
+  "scope_review": "Six scoped presentation CSS files and six painted derivatives; game JavaScript unchanged. Other applied files are tests, evidence and notes.",
+  "derivative_asset_bytes": 73458,
+  "combat_proofs": {
+    "source": "27b3b5d6 (byte-equivalent final game tree)",
+    "proof": "auto-raster-initial/queue/proof.json",
+    "cases": 16,
+    "delivered": 96,
+    "expired": 96,
+    "frames": 2443,
+    "ordinaryDrainMaxMs": 5778.199999988079,
+    "ordinaryOnsetMaxMs": 4086.0999999940395,
+    "repeats": [
+      {
+        "width": 1280,
+        "drainMs": 10251.300000011921,
+        "onsetMs": 8626.199999988079
+      },
+      {
+        "width": 1600,
+        "drainMs": 4866.5,
+        "onsetMs": 3304.9000000059605
+      }
+    ],
+    "layoutP95Ms": 2.0999999940395355,
+    "layoutMaxMs": 5.300000011920929,
+    "frameP95RangeMs": [
+      31.400000005960464,
+      136.19999998807907
+    ],
+    "frameMaxMs": 189.40000000596046,
+    "timingLimitation": "Full safety fixture includes screenshot work; causal comparison uses final six uninterrupted pre/post-verified controls.",
+    "ink_cases": 10,
+    "max_ink_overflow_px": 0,
+    "idle_and_owner_teardown": "pass",
+    "actual_long_quantity_rows": 109,
+    "copies_each": 12
+  },
+  "controlled_rendering_validation": {
+    "raw": "FLUORITE-r53-proofs/raster-controls-final/proof.json",
+    "trials": [
+      {
+        "variant": "baseline",
+        "frame_p95_ms": 20.5,
+        "frame_max_ms": 75.40000000596046,
+        "paused_ms": 0,
+        "full_lifetimes": 6
+      },
+      {
+        "variant": "auto",
+        "frame_p95_ms": 22.69999998807907,
+        "frame_max_ms": 65.40000000596046,
+        "paused_ms": 0,
+        "full_lifetimes": 6
+      },
+      {
+        "variant": "current",
+        "frame_p95_ms": 25.19999998807907,
+        "frame_max_ms": 60.099999994039536,
+        "paused_ms": 0,
+        "full_lifetimes": 6
+      },
+      {
+        "variant": "current",
+        "frame_p95_ms": 22,
+        "frame_max_ms": 55.29999998211861,
+        "paused_ms": 0,
+        "full_lifetimes": 6
+      },
+      {
+        "variant": "auto",
+        "frame_p95_ms": 21.700000017881393,
+        "frame_max_ms": 66.90000000596046,
+        "paused_ms": 0,
+        "full_lifetimes": 6
+      },
+      {
+        "variant": "baseline",
+        "frame_p95_ms": 28.399999976158142,
+        "frame_max_ms": 61.79999998211861,
+        "paused_ms": 0,
+        "full_lifetimes": 6
+      }
+    ],
+    "effective_styles_verified_before_and_after": true,
+    "screenshots_or_extra_browser_work_during_measurement": false,
+    "conclusion": "No repeatable current-auto penalty demonstrated in the bounded verified control; not a universal performance claim."
+  },
+  "evidence_limitations": [
+    "Earlier selected-build causal timing comparisons were invalid because overrides lost to lazy-loaded CSS; the4x attribution is retracted.",
+    "A directory-substitution error overwrote the first invalid isolation JSON and five PNGs; its log and other invalid raw runs remain. Final valid controls are preserved separately."
+  ],
+  "parent_server_shutdown": "winner-battery/server-shutdown.json",
+  "next_brief": "BRIEF-r54.md"
+}

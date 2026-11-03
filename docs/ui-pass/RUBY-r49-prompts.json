@@ -1,0 +1,36 @@
+{
+  "mode": "built-in image_gen",
+  "intent": "generate",
+  "fort": {
+    "prompt": "Use case: illustration-story. Asset type: transparent cutout game prop for Midnight Menagerie rest screen. Paint a cozy blanket fort made of sagging heavy plum and lavender quilts draped across carved chair backs, irregular hand-stitched patches, plush compressed cushions and rumpled rugs, a small warm brass lantern at right. Front-facing three-quarter storybook illustration, richly hand-painted gouache/oil shading with fine ink detail, antique brass and purple against deep candlelit shadows. Broad empty dark central doorway with a rug floor for game characters to be composited, no characters. Entire object fits inside canvas with transparent margins, genuinely transparent background. No room, no text, no controls, no portraits, no lettering, no logos. The opening occupies center third, clear from roof to floor. Weighted soft cloth, convincing contact shadows. Landscape composition.",
+    "source": "game/assets/ui/r49-ruby/fort-source-v1.png",
+    "optimized": "game/assets/ui/r49-ruby/fort-v1.webp",
+    "cache": "Generated images are saved to C:\\Users\\Josh\\.codex\\generated_images\\01a18731-054c-7c01-9efd-a91efc7061a1 as C:\\Users\\Josh\\.codex\\generated_images\\01a18731-054c-7c01-9efd-a91efc7061a1\\exec-65a3ece3-824b-4363-a9d5-50f8470f671f.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+  },
+  "lectern": {
+    "prompt": "Use case: illustration-story. Asset type: transparent game prop. Paint one carved walnut writing lectern with an unusually broad, tall rectangular book rest facing almost straight toward viewer, shallow perspective, generous empty dark walnut surface for a live parchment page overlay. Thick beveled boards, carved gothic side supports, ornate antique brass fasteners, sturdy pedestal with splayed feet. One small lit brass reading lamp is physically attached to its upper right side, lamp outside the main writing surface. Rich hand-painted storybook gouache/oil detail, dark aubergine shadows, warm amber light, restrained lavender highlights and fine ink edges. Entire furniture visible and isolated on genuinely transparent background with transparent margins. No paper, no book, no text, no letters, no portraits, no controls, no logos. Landscape composition, writing surface takes upper two thirds and is wider than tall.",
+    "source": "game/assets/ui/r49-ruby/lectern-source-v1.png",
+    "optimized": "game/assets/ui/r49-ruby/lectern-v1.webp",
+    "cache": "Generated images are saved to C:\\Users\\Josh\\.codex\\generated_images\\01a18731-054c-7c01-9efd-a91efc7061a1 as C:\\Users\\Josh\\.codex\\generated_images\\01a18731-054c-7c01-9efd-a91efc7061a1\\exec-dc63e700-d1a9-4756-af63-05576c5bd56c.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "derived_assets": [
+      "game/assets/ui/r49-ruby/lectern-desk-v1.webp",
+      "game/assets/ui/r49-ruby/lectern-foot-v1.webp"
+    ]
+  },
+  "preparation": "python tools/prep_r49_ruby.py; preserves generated alpha, downsizes to1280px, WebPquality90; crops lectern at56% height and foot from52% height.",
+  "validation": {
+    "new_asset_bytes": 5954247,
+    "fort_source_alpha": [
+      0,
+      254
+    ],
+    "lectern_source_alpha": [
+      0,
+      255
+    ],
+    "optimized_alpha": [
+      0,
+      255
+    ]
+  }
+}

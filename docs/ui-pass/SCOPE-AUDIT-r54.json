@@ -1,0 +1,70 @@
+{
+  "base": "7fc1b303cd84aeaac93c3b16a3620a40becae372",
+  "candidates": [
+    {
+      "code": "MORGANITE",
+      "commit": "78dafd816316e805f5596bd65f0d834f220b9a20",
+      "changed_files": 108,
+      "game_source_changes": [
+        "game/src/scenes/combat.css",
+        "game/src/scenes/event.css",
+        "game/src/scenes/gameover.css",
+        "game/src/scenes/rest.css",
+        "game/src/ui/kit.css"
+      ],
+      "raster_assets": [
+        "game/assets/ui/r54-morganite/cut-lavender.webp",
+        "game/assets/ui/r54-morganite/enamel-plaque.webp",
+        "game/assets/ui/r54-morganite/rail-wood.webp"
+      ],
+      "raster_asset_bytes": 55286,
+      "game_javascript_unchanged": true,
+      "scope_pass": true
+    },
+    {
+      "code": "PERIDOT",
+      "commit": "a5a53eb4d74e966e5acee8a1c8e8bce5858aeca4",
+      "changed_files": 86,
+      "game_source_changes": [
+        "game/src/scenes/combat.css",
+        "game/src/scenes/event.css",
+        "game/src/scenes/gameover.css",
+        "game/src/scenes/rest.css",
+        "game/src/scenes/shop.css",
+        "game/src/ui/kit.css"
+      ],
+      "raster_assets": [
+        "game/assets/ui/r54-peridot/lavender-paint-v1.webp",
+        "game/assets/ui/r54-peridot/wood-rail-v1.webp",
+        "game/assets/ui/r54-peridot/worn-plaque-v1.webp"
+      ],
+      "raster_asset_bytes": 52354,
+      "game_javascript_unchanged": true,
+      "scope_pass": true
+    },
+    {
+      "code": "KUNZITE",
+      "commit": "0d3108dd52950534046639203364332621b5b431",
+      "changed_files": 82,
+      "game_source_changes": [
+        "game/src/scenes/combat.css",
+        "game/src/scenes/event.css",
+        "game/src/scenes/gameover.css",
+        "game/src/scenes/rest.css",
+        "game/src/ui/kit.css"
+      ],
+      "raster_assets": [
+        "game/assets/ui/r54-kunzite/letter-face-v1.webp",
+        "game/assets/ui/r54-kunzite/rail-center-v1.webp",
+        "game/assets/ui/r54-kunzite/rail-grain-v1.webp",
+        "game/assets/ui/r54-kunzite/rail-left-v1.webp",
+        "game/assets/ui/r54-kunzite/rail-right-v1.webp",
+        "game/assets/ui/r54-kunzite/recessed-cartouche-v1.webp",
+        "game/assets/ui/r54-kunzite/walnut-bed-v1.webp"
+      ],
+      "raster_asset_bytes": 51936,
+      "game_javascript_unchanged": true,
+      "scope_pass": true
+    }
+  ]
+}

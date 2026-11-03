@@ -6,6 +6,11 @@ to concurrent whole-file writes, so this is now structural rather than a convent
 
 | Note | Size |
 |---|---|
+| [2026-10-28-tutorial-restore](notes/2026-10-28-tutorial-restore.md) | 3 KB |
+| [2026-10-27-pet-polaroids](notes/2026-10-27-pet-polaroids.md) | 2 KB |
+| [2026-10-27-dust-bunny-cleanup](notes/2026-10-27-dust-bunny-cleanup.md) | 3 KB |
+| [2026-10-27-legacy-enemy-30fps](notes/2026-10-27-legacy-enemy-30fps.md) | 2 KB |
+| [2026-10-26-codex-continuation](notes/2026-10-26-codex-continuation.md) | 6 KB |
 | [2026-08-19-atmosphere](notes/2026-08-19-atmosphere.md) | 9 KB |
 | [2026-08-19-audio](notes/2026-08-19-audio.md) | 4 KB |
 | [2026-08-19-card-feel-agent-cardview-hand-procedural-card-art](notes/2026-08-19-card-feel-agent-cardview-hand-procedural-card-art.md) | 9 KB |

@@ -1,0 +1,72 @@
+[
+  {
+    "kind": "status",
+    "width": 1280,
+    "fontBefore": 20,
+    "fontAfter": 20,
+    "maxOutside": 0
+  },
+  {
+    "kind": "buff",
+    "width": 1280,
+    "fontBefore": 20.75,
+    "fontAfter": 20.75,
+    "maxOutside": 0
+  },
+  {
+    "kind": "debuff",
+    "width": 1280,
+    "fontBefore": 20.75,
+    "fontAfter": 20.75,
+    "maxOutside": 0
+  },
+  {
+    "kind": "counter",
+    "width": 1280,
+    "fontBefore": 20,
+    "fontAfter": 20,
+    "maxOutside": 0
+  },
+  {
+    "kind": "blocked",
+    "width": 1280,
+    "fontBefore": 23,
+    "fontAfter": 23,
+    "maxOutside": 0
+  },
+  {
+    "kind": "status",
+    "width": 1600,
+    "fontBefore": 20,
+    "fontAfter": 20,
+    "maxOutside": 0
+  },
+  {
+    "kind": "buff",
+    "width": 1600,
+    "fontBefore": 20.75,
+    "fontAfter": 20.75,
+    "maxOutside": 0
+  },
+  {
+    "kind": "debuff",
+    "width": 1600,
+    "fontBefore": 20.75,
+    "fontAfter": 20.75,
+    "maxOutside": 0
+  },
+  {
+    "kind": "counter",
+    "width": 1600,
+    "fontBefore": 20,
+    "fontAfter": 20,
+    "maxOutside": 0
+  },
+  {
+    "kind": "blocked",
+    "width": 1600,
+    "fontBefore": 23,
+    "fontAfter": 23,
+    "maxOutside": 0
+  }
+]

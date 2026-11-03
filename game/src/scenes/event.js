@@ -1,3 +1,4 @@
+import { boardScrollCue } from './r49-board-scroll.js';
 /**
  * A Curiosity.  OWNER: meta-run.
  *
@@ -107,6 +108,7 @@ export class EventScene extends RoomScene {
     const mine = r.eventAnswerFor ? r.eventAnswerFor() : (r.pendingEvent?.resolved
       ? { resolved: r.pendingEvent.resolved, pending: r.pendingEvent.pending } : null);
     if (mine) this._showOutcome(mine.resolved, mine.pending, false);
+    this._own(boardScrollCue(this.root, this.$page.querySelector('.ev-reading-r51'), 'story', this.$page));
     bus.emit('event:ready', { id: this.def.id });
   }
 
@@ -132,13 +134,18 @@ export class EventScene extends RoomScene {
     // illuminated initial dropped three lines into it, and the words beside
     // the initial in engraved small caps (event.css).
     page.innerHTML = `
-      <i class="ev-register__fold" aria-hidden="true"></i>
+      <i class="ev-register__fold" aria-hidden="true"></i><i class="ev-bookmark" aria-hidden="true"></i><i class="ev-readinglamp kit-prop kit-prop--candle" aria-hidden="true"></i>
       <div class="ev-prose">
         ${this._proseMarkup(this._proseParagraphs(d.text))}
       </div>
       <div class="ev-options" role="group" aria-label="What do you do?"></div>
       <div class="ev-outcome" hidden aria-live="polite"></div>`;
-    this.$body.appendChild(page);
+    const reading = el('div', 'ev-reading-r51');
+    for (const node of page.querySelectorAll('.ev-prose, .ev-options, .ev-outcome')) reading.appendChild(node);
+    page.appendChild(reading);
+    const stand = el('div', 'ev-painted-stand-r49');
+    stand.appendChild(page);
+    this.$body.appendChild(stand);
     this.$options = page.querySelector('.ev-options');
     this.$outcome = page.querySelector('.ev-outcome');
     this.$page = page;
@@ -374,7 +381,7 @@ export class EventScene extends RoomScene {
     const p = this.pending || {};
     if (p.combat) return `<p class="ev-out__next">Something in the room has decided against you.</p>`;
     if (p.removeCard) return `<p class="ev-out__next">You will have to choose what to give up.</p>`;
-    if (p.upgradeCard) return `<p class="ev-out__next">Choose what gets mended.</p>`;
+    if (p.upgradeCard) return `<p class="ev-out__next">Choose a Trick to sharpen.</p>`;
     return '';
   }
 
@@ -404,7 +411,7 @@ export class EventScene extends RoomScene {
     const p = this.pending || {};
     const label = p.combat ? 'Face it'
       : p.removeCard ? `Choose a ${TERMS.card} to give up`
-        : p.upgradeCard ? `Choose what gets mended`
+        : p.upgradeCard ? `Choose a Trick to sharpen`
           : this._answered ? 'Go on' : 'Leave it be';
     this.$go.querySelector('span').textContent = label;
     const hint = this.$go.querySelector('em');
@@ -421,8 +428,8 @@ export class EventScene extends RoomScene {
         .filter(c => c.def);
       if (cards.length) {
         const uid = await this.pickCard({
-          title: `What gets mended?`, sub: 'It comes back stronger and slightly wrong.',
-          cards, preview: 'upgrade', confirmLabel: 'Mend it', allowCancel: false,
+          title: `Which Trick will you sharpen?`, sub: 'Hover over a Trick to compare before and after above.',
+          cards, preview: 'upgrade', confirmLabel: 'Sharpen it', allowCancel: false,
         });
         const i = uid ? deckIndex(this.run, this.run.localSeat, uid) : -1;
         if (i >= 0) await act(this.run, { t: INPUT.ROOM, act: ACT.EVENT_MEND, index: i });
@@ -505,10 +512,10 @@ export class EventScene extends RoomScene {
       <div class="ev-prose">
         <p>${already
     ? 'The door is already open and the room is already empty, and there is a small tidy pile in the corner of things somebody decided not to take with them.'
-    : `The door is wedged from the outside with a chair, which tells you everything about who put it there. ${esc(name)} has been in this room a long time — long enough to have arranged it, long enough to have stopped expecting the door to open.`}</p>
+    : `A chair is braced beneath the outside handle. ${esc(name)} nudges the door from within. The chair holds.`}</p>
         <p>${already
     ? 'You leave the door open anyway.'
-    : 'You move the chair. It takes both hands and it is the easiest thing you have done all night.'}</p>
+    : 'The chair can slide aside. There is room for the door to open.'}</p>
       </div>
       <div class="ev-options" role="group" aria-label="What do you do?"></div>
       <div class="ev-outcome" hidden aria-live="polite"></div>`;
@@ -549,7 +556,7 @@ export class EventScene extends RoomScene {
       if (this._dead) return;
       this._showOutcome({
         option: 'free', title: `${name}, come out`,
-        text: `${name} does not run. ${name} walks out slowly, looks both ways down the corridor like somebody checking a road, and then sits down next to your Companion as though they have been introduced. You will see them again at the clubhouse.`,
+        text: `You slide the chair aside and open the door. ${name} has a clear way out. A place at the clubhouse is waiting, too.`,
       }, { gained: [{ kind: 'clues', n: 2 }] }, true);
       this._syncHud();
     });

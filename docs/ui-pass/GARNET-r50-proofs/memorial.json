@@ -1,0 +1,465 @@
+{
+  "rows": [
+    {
+      "size": [
+        1600,
+        900
+      ],
+      "initial": {
+        "heading": {
+          "left": 485.4375,
+          "right": 1001.171875,
+          "top": 381.921875,
+          "bottom": 460.890625,
+          "width": 515.734375,
+          "height": 78.96875
+        },
+        "card": {
+          "left": 593.1024780273438,
+          "right": 893.4912719726562,
+          "top": 489.67889404296875,
+          "bottom": 908.078125,
+          "width": 300.3887939453125,
+          "height": 418.39923095703125
+        },
+        "headingOverlap": 0,
+        "cues": [
+          {
+            "text": "\u2193 More Tricks below",
+            "box": {
+              "left": 1298.78125,
+              "right": 1483.390625,
+              "top": 735.125,
+              "bottom": 771.125,
+              "width": 184.609375,
+              "height": 36
+            },
+            "hit": true
+          },
+          {
+            "text": "\u2193 More record below",
+            "box": {
+              "left": 1323.953125,
+              "right": 1510,
+              "top": 784.015625,
+              "bottom": 820.015625,
+              "width": 186.046875,
+              "height": 36
+            },
+            "hit": true
+          }
+        ],
+        "cueOverlap": 0,
+        "stats": 8,
+        "tricks": 16,
+        "scrollMax": 433,
+        "deckScrollMax": 483
+      },
+      "keys": [
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=Tricks]",
+          "key": "Enter",
+          "before": [
+            0,
+            0
+          ],
+          "after": [
+            0,
+            130
+          ],
+          "sameScene": true
+        },
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=Tricks]",
+          "key": "Space",
+          "before": [
+            0,
+            130
+          ],
+          "after": [
+            0,
+            260
+          ],
+          "sameScene": true
+        },
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=record]",
+          "key": "Enter",
+          "before": [
+            0,
+            260
+          ],
+          "after": [
+            433,
+            260
+          ],
+          "sameScene": true
+        },
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=record]",
+          "key": "Space",
+          "before": [
+            433,
+            260
+          ],
+          "after": [
+            0,
+            260
+          ],
+          "sameScene": true
+        }
+      ],
+      "endChecks": [
+        "record",
+        "Tricks"
+      ],
+      "trickHits": [
+        {
+          "text": "\n        1\n        Bite\n        \u00d74\n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Sit Pretty\n        \u00d73\n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Dig Up a Fight\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Flying Femur\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Go Get It!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        3\n        Jawbone Jamboree\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Off Leash\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Put Yourself Back Together\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Roll Over\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Shake, Boy!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Sit, Stay\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Tighten the Collar\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Toss and Chase\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Treat Stash\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Wet Dog Shake\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Who Buried That?\n        \n      ",
+          "hit": true
+        }
+      ],
+      "bottom": [
+        {
+          "text": "\n    \n    \n    \n    \n    \n    Scuffles won6",
+          "top": 635.015625,
+          "bottom": 697.015625,
+          "clear": true
+        },
+        {
+          "text": "\n    \n    \n    \n    Big Scares2",
+          "top": 635.015625,
+          "bottom": 697.015625,
+          "clear": true
+        },
+        {
+          "text": "\n    \n    \n    \n    Curiosities3",
+          "top": 635.015625,
+          "bottom": 697.015625,
+          "clear": true
+        },
+        {
+          "text": "\n    \n    \n    \n    \n    \n    \n    \n    \n    Naps taken2",
+          "top": 635.015625,
+          "bottom": 697.015625,
+          "clear": true
+        },
+        {
+          "text": "Tricks played162",
+          "top": 707.015625,
+          "bottom": 769.015625,
+          "clear": true
+        },
+        {
+          "text": "Damage dealt1445",
+          "top": 707.015625,
+          "bottom": 769.015625,
+          "clear": true
+        },
+        {
+          "text": "Buttons92",
+          "top": 707.015625,
+          "bottom": 769.015625,
+          "clear": true
+        },
+        {
+          "text": "Turns taken89",
+          "top": 707.015625,
+          "bottom": 769.015625,
+          "clear": true
+        }
+      ]
+    },
+    {
+      "size": [
+        1280,
+        800
+      ],
+      "initial": {
+        "heading": {
+          "left": 382.6875,
+          "right": 804.703125,
+          "top": 331.5,
+          "bottom": 406.96875,
+          "width": 422.015625,
+          "height": 75.46875
+        },
+        "card": {
+          "left": 463.73785400390625,
+          "right": 723.6371459960938,
+          "top": 435.3436584472656,
+          "bottom": 797.359375,
+          "width": 259.8992919921875,
+          "height": 362.0157165527344
+        },
+        "headingOverlap": 0,
+        "cues": [
+          {
+            "text": "\u2193 More Tricks below",
+            "box": {
+              "left": 1020.625,
+              "right": 1189.96875,
+              "top": 613.6875,
+              "bottom": 646.6875,
+              "width": 169.34375,
+              "height": 33
+            },
+            "hit": true
+          },
+          {
+            "text": "\u2193 More record below",
+            "box": {
+              "left": 1030.5625,
+              "right": 1201.203125,
+              "top": 698,
+              "bottom": 731,
+              "width": 170.640625,
+              "height": 33
+            },
+            "hit": true
+          }
+        ],
+        "cueOverlap": 0,
+        "stats": 8,
+        "tricks": 16,
+        "scrollMax": 422,
+        "deckScrollMax": 564
+      },
+      "keys": [
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=Tricks]",
+          "key": "Enter",
+          "before": [
+            0,
+            0
+          ],
+          "after": [
+            0,
+            107
+          ],
+          "sameScene": true
+        },
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=Tricks]",
+          "key": "Space",
+          "before": [
+            0,
+            107
+          ],
+          "after": [
+            0,
+            214
+          ],
+          "sameScene": true
+        },
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=record]",
+          "key": "Enter",
+          "before": [
+            0,
+            214
+          ],
+          "after": [
+            391,
+            214
+          ],
+          "sameScene": true
+        },
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=record]",
+          "key": "Space",
+          "before": [
+            391,
+            214
+          ],
+          "after": [
+            422,
+            214
+          ],
+          "sameScene": true
+        }
+      ],
+      "endChecks": [
+        "record",
+        "Tricks"
+      ],
+      "trickHits": [
+        {
+          "text": "\n        1\n        Bite\n        \u00d74\n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Sit Pretty\n        \u00d73\n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Dig Up a Fight\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Flying Femur\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Go Get It!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        3\n        Jawbone Jamboree\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Off Leash\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Put Yourself Back Together\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Roll Over\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Shake, Boy!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Sit, Stay\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Tighten the Collar\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Toss and Chase\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Treat Stash\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Wet Dog Shake\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Who Buried That?\n        \n      ",
+          "hit": true
+        }
+      ],
+      "bottom": [
+        {
+          "text": "\n    \n    \n    \n    \n    \n    Scuffles won6",
+          "top": 548.46875,
+          "bottom": 610.46875,
+          "clear": true
+        },
+        {
+          "text": "\n    \n    \n    \n    Big Scares2",
+          "top": 548.46875,
+          "bottom": 610.46875,
+          "clear": true
+        },
+        {
+          "text": "\n    \n    \n    \n    Curiosities3",
+          "top": 548.46875,
+          "bottom": 610.46875,
+          "clear": true
+        },
+        {
+          "text": "\n    \n    \n    \n    \n    \n    \n    \n    \n    Naps taken2",
+          "top": 548.46875,
+          "bottom": 610.46875,
+          "clear": true
+        },
+        {
+          "text": "Tricks played162",
+          "top": 620.46875,
+          "bottom": 682.46875,
+          "clear": true
+        },
+        {
+          "text": "Damage dealt1445",
+          "top": 620.46875,
+          "bottom": 682.46875,
+          "clear": true
+        },
+        {
+          "text": "Buttons92",
+          "top": 620.46875,
+          "bottom": 682.46875,
+          "clear": true
+        },
+        {
+          "text": "Turns taken89",
+          "top": 620.46875,
+          "bottom": 682.46875,
+          "clear": true
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

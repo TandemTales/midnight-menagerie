@@ -1,0 +1,490 @@
+{
+  "judge": 1,
+  "inspected": {
+    "references": 4,
+    "captures": 40,
+    "references_first": true,
+    "order": [
+      "ONYX",
+      "ALEXANDRITE",
+      "IOLITE",
+      "TOURMALINE"
+    ],
+    "capture_order": [
+      "rest.png",
+      "rest-1280.png",
+      "event.png",
+      "event-1280.png",
+      "gameover.png",
+      "gameover-1280.png",
+      "shop.png",
+      "shop-1280.png",
+      "combat-floaters.png",
+      "combat-floaters-1280.png"
+    ]
+  },
+  "method": "Read only the assigned input and two rubrics. Inspected the four reference PNGs first, individually, then all forty full candidate PNGs using view_image in the supplied candidate and within-candidate order, viewing each screen's two sizes sequentially. Judged each paired screen conservatively against the references' painted ornament, lavender lettering, worn brass, light and spatial framing. Holistic scores are not arithmetic means; 9 requires the same painted hand. Large type and scrolling were treated as intentional. Standalone preview banners and unchanged combat room, actor and hand art were excluded; combat background scores concern the remaining framing and integration only. No browser, rendering, source, metadata, other reports or interaction testing were used. The combat treatments were visually equivalent within the excluded differences, so their ranking is a stable tie-break in supplied order.",
+  "candidates": {
+    "ONYX": {
+      "system_overall": 7.9,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.2,
+            "palette": 8.5,
+            "typography": 7.5,
+            "material": 7.7,
+            "background": 8.1,
+            "composition": 8.2,
+            "readability": 8.7,
+            "coherence": 8
+          },
+          "overall": 7.9,
+          "fits_between_samples": false,
+          "worst_problem": "The large lavender title in the upper cartouche is an even flat face rather than the chipped, modeled lettering of the references.",
+          "size_notes": {
+            "1600x900": "The fort painting, inset scene frame and moon medallion make a strong focal pair with the choices; the heavy luminous choice borders and long bottom rail feel assembled from separate surfaces.",
+            "1280x800": "All three visible choices remain legible with the reading lip indicating continuation. The lower recovery explanation is tight against its rule, and the rail joins have more visual weight than the scene-frame corners."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.3,
+            "palette": 8.6,
+            "typography": 7.6,
+            "material": 8,
+            "background": 8.2,
+            "composition": 8.4,
+            "readability": 8.5,
+            "coherence": 8.1
+          },
+          "overall": 8.1,
+          "fits_between_samples": false,
+          "worst_problem": "The lower Story Register rail looks like a separate glossy strip laid over the parchment rather than a worn physical lip with a recessed paper edge.",
+          "size_notes": {
+            "1600x900": "The illuminated initial, parchment, windows and carved stand form a coherent reading stage. The flat lavender heading remains less materially convincing than the reference title.",
+            "1280x800": "The first option and body text are clear; the partial next option is justified by the More below lip. A stronger shadow and continuing paper plane behind that lip would clarify depth without reducing type."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.4,
+            "typography": 7.2,
+            "material": 7.8,
+            "background": 8,
+            "composition": 6.9,
+            "readability": 7.4,
+            "coherence": 7.5
+          },
+          "overall": 7.5,
+          "fits_between_samples": false,
+          "worst_problem": "The progress plaque above the center card interrupts the memorial reading order while the left portrait caption and two-column deck tiles crowd their distinct pieces of information.",
+          "size_notes": {
+            "1600x900": "The center cabinet is attractive, but progress shares its crown, the card explanation meets the main reading lip, and the right deck titles and counts compete within narrow tiles.",
+            "1280x800": "Portrait subcaptions wrap awkwardly, including the kid's Haunt Level information; From your final deck wraps across two lines. The explanation is below the visible lip rather than integrated into the visible cabinet stage; scrolling itself is not penalized."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.5,
+            "palette": 8.7,
+            "typography": 7.7,
+            "material": 8.3,
+            "background": 8.6,
+            "composition": 8.7,
+            "readability": 8.7,
+            "coherence": 8.4
+          },
+          "overall": 8.4,
+          "fits_between_samples": false,
+          "worst_problem": "The upper market title and the long Shop Shelves rail have flatter, more uniform surfaces than the painted curtain-and-shelf stage.",
+          "size_notes": {
+            "1600x900": "The merchant niche, three cards, curtain folds and dangling prices form the strongest unified scene; the thin gold rail and smooth card rims still have a more manufactured finish than the reference frames.",
+            "1280x800": "The cards and prices retain clear separation and readable text. The footer rail remains a bright continuous stripe below a convincingly painted shelf."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.5,
+            "typography": 7.6,
+            "material": 7.6,
+            "background": 8,
+            "composition": 8,
+            "readability": 8.4,
+            "coherence": 7.9
+          },
+          "overall": 7.9,
+          "fits_between_samples": false,
+          "worst_problem": "The colored condition lettering in the upper owner groups has a soft luminous edge and uniformly bright rails that need crisp painted letter faces and quieter worn brass support.",
+          "size_notes": {
+            "1600x900": "Both owner headings are legible; the three player conditions spread horizontally while the enemy conditions stack, making the two groups visually unequal. Excluded room, actor and hand art does not affect this judgment.",
+            "1280x800": "The two condition groups are readable vertical stacks with clear owner labels; the left group sits very close to the HUD. The small gold frames and glow around the large lettering still look mechanically repeated. No interaction was tested."
+          }
+        }
+      }
+    },
+    "ALEXANDRITE": {
+      "system_overall": 8.1,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.2,
+            "palette": 8.5,
+            "typography": 7.6,
+            "material": 7.9,
+            "background": 8.1,
+            "composition": 8.3,
+            "readability": 8.7,
+            "coherence": 8.1
+          },
+          "overall": 8.1,
+          "fits_between_samples": false,
+          "worst_problem": "The upper title and large choice panels retain smooth, uniform lettering and surface lighting against the more richly painted fort scene.",
+          "size_notes": {
+            "1600x900": "The carved lower choice rail supplies convincing texture and a clear continuation boundary, though its repeated supports and bright enclosing rules remain conspicuous.",
+            "1280x800": "The third explanation stays readable and the More choices below cue is distinct. The black rectangular label area in the lower rail meets its carved interior with an abrupt material seam."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.4,
+            "palette": 8.6,
+            "typography": 7.6,
+            "material": 8.2,
+            "background": 8.2,
+            "composition": 8.4,
+            "readability": 8.5,
+            "coherence": 8.2
+          },
+          "overall": 8.2,
+          "fits_between_samples": false,
+          "worst_problem": "The Story Register label's black inset and repeating carved rail segments create abrupt seams under the continuous parchment sheet.",
+          "size_notes": {
+            "1600x900": "The stand and paper are well staged with warm and cool light. The carved lip improves physical support, but the heading lacks the reference's chipped lavender depth.",
+            "1280x800": "Readable body and first option retain a deliberate reading window. The pale paper edge stops very sharply at the rail; add a recessed shadow rather than treating the visible next option as an error."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.2,
+            "palette": 8.5,
+            "typography": 7.7,
+            "material": 8,
+            "background": 8.1,
+            "composition": 8.6,
+            "readability": 8.7,
+            "coherence": 8.2
+          },
+          "overall": 8.2,
+          "fits_between_samples": false,
+          "worst_problem": "The separate How Far panel and right deck rows use conspicuous smooth gloss, weakening the painted cabinet and memorial materials around them.",
+          "size_notes": {
+            "1600x900": "Portrait captions have distinct lines, progress owns a region, and the full natural card plus explanation sits on a supported cabinet. The single-column deck keeps title and count separate.",
+            "1280x800": "Both portrait captions and the center explanation remain complete and legible; the deck rows have usable title width. The progress panel's smooth highlight band and bottom rail's repeated carved segments are the main material breaks."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.5,
+            "palette": 8.7,
+            "typography": 7.6,
+            "material": 8.4,
+            "background": 8.6,
+            "composition": 8.7,
+            "readability": 8.5,
+            "coherence": 8.4
+          },
+          "overall": 8.4,
+          "fits_between_samples": false,
+          "worst_problem": "The Tricks lettering in the upper brass ribbon is too dark to match the clear engraved label hierarchy of the references.",
+          "size_notes": {
+            "1600x900": "Excellent curtain, merchant and card staging is preserved. The carved bottom rail has depth but its tiled supports and stark black label segment read as separate additions.",
+            "1280x800": "Cards and prices remain clearly separated; the low-contrast Tricks ribbon is more noticeable at this size. The ornate bottom rail could use more natural corner transitions."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.5,
+            "typography": 7.6,
+            "material": 7.6,
+            "background": 8,
+            "composition": 8,
+            "readability": 8.4,
+            "coherence": 7.9
+          },
+          "overall": 7.9,
+          "fits_between_samples": false,
+          "worst_problem": "The colored condition lettering in the upper owner groups has a soft luminous edge and uniformly bright rails that need crisp painted letter faces and quieter worn brass support.",
+          "size_notes": {
+            "1600x900": "Both owner headings are legible; the three player conditions spread horizontally while the enemy conditions stack, making the two groups visually unequal. Excluded room, actor and hand art does not affect this judgment.",
+            "1280x800": "The two condition groups are readable vertical stacks with clear owner labels; the left group sits very close to the HUD. The small gold frames and glow around the large lettering still look mechanically repeated. No interaction was tested."
+          }
+        }
+      }
+    },
+    "IOLITE": {
+      "system_overall": 8,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.5,
+            "typography": 7.6,
+            "material": 7.9,
+            "background": 8.1,
+            "composition": 8.2,
+            "readability": 8.7,
+            "coherence": 8
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "The bottom Fort Choices rail is a long nearly planar purple strip whose thin bright outline lacks the reference frames' carved depth.",
+          "size_notes": {
+            "1600x900": "The choice surfaces have some warmth and texture, and the requirement badges relate to their panels; the single continuous bottom stripe still has a web-panel silhouette.",
+            "1280x800": "Content remains legible at the intended size, with a clear continuation label. The lower rail is visually flatter than the richly carved scene plinth on the left."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.6,
+            "typography": 7.6,
+            "material": 7.9,
+            "background": 8.2,
+            "composition": 8.4,
+            "readability": 8.5,
+            "coherence": 8.1
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "The flat purple Story Register strip underneath the parchment does not convincingly belong to the carved wooden stand.",
+          "size_notes": {
+            "1600x900": "The parchment, illuminated initial and room dressing work together, but the broad plain lip loses the depth established by the side supports and pedestal.",
+            "1280x800": "The paper remains legible and the partial next choice is visibly continued below. Give the paper a recessed edge and the lip a physical underside; the current dark strip reads too evenly."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.5,
+            "typography": 7.6,
+            "material": 8,
+            "background": 8.1,
+            "composition": 8.3,
+            "readability": 8.3,
+            "coherence": 8.1
+          },
+          "overall": 8.1,
+          "fits_between_samples": false,
+          "worst_problem": "The broad pale reflection across the center card's rule area reduces its painted clarity, especially in the smaller memorial view.",
+          "size_notes": {
+            "1600x900": "Separate progress and single-column deck rows give a clear reading order. The full card and explanation are visible in a supported cabinet; textured purple progress and deck surfaces are welcome.",
+            "1280x800": "The center rule text remains readable but is washed by the pale diagonal glow; the Final Tricks reading-lip title wraps awkwardly. Portrait captions and the cabinet explanation remain distinct."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.3,
+            "palette": 8.7,
+            "typography": 7.7,
+            "material": 8.1,
+            "background": 8.6,
+            "composition": 8.7,
+            "readability": 8.7,
+            "coherence": 8.3
+          },
+          "overall": 8.3,
+          "fits_between_samples": false,
+          "worst_problem": "The long purple Shop Shelves strip is visibly flatter than the carved merchandise shelf immediately above it.",
+          "size_notes": {
+            "1600x900": "The merchant and cards remain well staged and readable, but the nearly uniform rail is an unconvincing material transition under the curtain cabinet.",
+            "1280x800": "The three cards keep strong spacing; the continuous purple lower band feels like a generic panel despite the gold outline and ornamental end caps."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.5,
+            "typography": 7.6,
+            "material": 7.6,
+            "background": 8,
+            "composition": 8,
+            "readability": 8.4,
+            "coherence": 7.9
+          },
+          "overall": 7.9,
+          "fits_between_samples": false,
+          "worst_problem": "The colored condition lettering in the upper owner groups has a soft luminous edge and uniformly bright rails that need crisp painted letter faces and quieter worn brass support.",
+          "size_notes": {
+            "1600x900": "Both owner headings are legible; the three player conditions spread horizontally while the enemy conditions stack, making the two groups visually unequal. Excluded room, actor and hand art does not affect this judgment.",
+            "1280x800": "The two condition groups are readable vertical stacks with clear owner labels; the left group sits very close to the HUD. The small gold frames and glow around the large lettering still look mechanically repeated. No interaction was tested."
+          }
+        }
+      }
+    },
+    "TOURMALINE": {
+      "system_overall": 8.2,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.6,
+            "typography": 7.8,
+            "material": 8.2,
+            "background": 8.1,
+            "composition": 8.2,
+            "readability": 8.7,
+            "coherence": 8.2
+          },
+          "overall": 8.1,
+          "fits_between_samples": false,
+          "worst_problem": "The three rectangular requirement plaques at the right of the choices have abrupt square silhouettes that conflict with the reference cartouche language.",
+          "size_notes": {
+            "1600x900": "The carved Fort Choices lip and worn brass edge provide tangible support. The heading has some lavender depth, but the requirement plaques look pasted onto otherwise well-framed choices.",
+            "1280x800": "The text and reading cue remain legible. The wide choice rail meets the fine side rules with oversized terminal blocks; preserve the physical material while refining these joins."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.4,
+            "palette": 8.6,
+            "typography": 7.8,
+            "material": 8.4,
+            "background": 8.2,
+            "composition": 8.5,
+            "readability": 8.5,
+            "coherence": 8.3
+          },
+          "overall": 8.3,
+          "fits_between_samples": false,
+          "worst_problem": "The left Story Register plaque is a hard rectangular label attached to an otherwise convincingly carved reading lip.",
+          "size_notes": {
+            "1600x900": "The worn brass lip, central carving and pedestal make the reading surface physically persuasive. The parchment's bottom edge still needs a recessed shadow to establish continuation behind the rail.",
+            "1280x800": "The reading window is clear and the first option is fully legible. At this size the carved edge has better depth than a flat strip, though the label's corners and end joins remain abrupt."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.3,
+            "palette": 8.5,
+            "typography": 7.9,
+            "material": 8.3,
+            "background": 8.1,
+            "composition": 8.6,
+            "readability": 8.7,
+            "coherence": 8.3
+          },
+          "overall": 8.3,
+          "fits_between_samples": false,
+          "worst_problem": "The right deck rows remain smooth glossy capsules, visibly less painted than the center cabinet and worn memorial rail.",
+          "size_notes": {
+            "1600x900": "Distinct portrait captions, a dedicated progress region and a full supported card with explanation give the best complete memorial structure; the large progress numeral is somewhat detached from its centered heading.",
+            "1280x800": "The natural card and explanation remain complete, the two portrait captions are distinct, and deck counts have separate right-hand space. The main rail has strong physical depth but its stretched center carving and blunt ends need proportionate joins."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.5,
+            "palette": 8.7,
+            "typography": 7.9,
+            "material": 8.5,
+            "background": 8.6,
+            "composition": 8.7,
+            "readability": 8.7,
+            "coherence": 8.5
+          },
+          "overall": 8.5,
+          "fits_between_samples": false,
+          "worst_problem": "The Shop Shelves rail's horizontally stretched carving and rectangular label are less naturally proportioned than the merchant niche and curtain cabinet.",
+          "size_notes": {
+            "1600x900": "The successful three-card stage, merchant portrait and hanging tags are preserved. The brass lip is convincingly worn, while the lavender Tricks lettering on brass is less engraved than the reference ribbon labels.",
+            "1280x800": "Card spacing, descriptions and prices remain clear. The lower carved rail adds material depth, but its broad central motif is stretched relative to the smaller ornaments around it."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.5,
+            "typography": 7.6,
+            "material": 7.6,
+            "background": 8,
+            "composition": 8,
+            "readability": 8.4,
+            "coherence": 7.9
+          },
+          "overall": 7.9,
+          "fits_between_samples": false,
+          "worst_problem": "The colored condition lettering in the upper owner groups has a soft luminous edge and uniformly bright rails that need crisp painted letter faces and quieter worn brass support.",
+          "size_notes": {
+            "1600x900": "Both owner headings are legible; the three player conditions spread horizontally while the enemy conditions stack, making the two groups visually unequal. Excluded room, actor and hand art does not affect this judgment.",
+            "1280x800": "The two condition groups are readable vertical stacks with clear owner labels; the left group sits very close to the HUD. The small gold frames and glow around the large lettering still look mechanically repeated. No interaction was tested."
+          }
+        }
+      }
+    }
+  },
+  "ranking": {
+    "rest": [
+      "ALEXANDRITE",
+      "TOURMALINE",
+      "IOLITE",
+      "ONYX"
+    ],
+    "event": [
+      "TOURMALINE",
+      "ALEXANDRITE",
+      "ONYX",
+      "IOLITE"
+    ],
+    "gameover": [
+      "TOURMALINE",
+      "ALEXANDRITE",
+      "IOLITE",
+      "ONYX"
+    ],
+    "shop": [
+      "TOURMALINE",
+      "ONYX",
+      "ALEXANDRITE",
+      "IOLITE"
+    ],
+    "combat-floaters": [
+      "ONYX",
+      "ALEXANDRITE",
+      "IOLITE",
+      "TOURMALINE"
+    ]
+  },
+  "winner": "TOURMALINE",
+  "winner_fixes": [
+    "Gameover, right deck column: replace the uniform glossy row faces with worn purple enamel or velvet carrying localized candle highlights; retain the single-column titles and distinct right-hand counts.",
+    "Rest, upper-right requirement plaques: give each textured purple plaque a shaped brass cartouche perimeter and modeled corner transitions instead of a hard rectangular silhouette, keeping its current readable text size.",
+    "Rest, event, gameover and shop, primary lavender headings: paint irregular pale edge highlights, violet interior modulation and restrained cast shadows into the letter faces to match the references' carved lettering rather than relying on even fill and shadow.",
+    "Event, lower parchment-to-rail boundary: show the sheet receding behind the brass lip with a narrow uneven shadow and visible paper continuation at the side recesses, keeping the reading window and scroll cue.",
+    "Gameover, full-width Memorial Record rail: retain the carved material but replace the stretched central ornament with proportionate motifs and physically joined corner blocks aligned with the fine vertical frames.",
+    "Shop, lower Shop Shelves rail: preserve the current merchant, cards, curtains and price staging while giving the rail a correctly scaled central carving and a shaped inset nameplate.",
+    "Gameover, left How Far region: align the progress numeral, Wings Explored label and location into a coherent inset composition with restrained painted detailing around the existing large text.",
+    "Combat-floaters, both upper condition groups: sharpen the cyan and coral letter interiors, reduce the blurred glow, and give their brass supports a quieter patina while retaining readable local owner headings.",
+    "Rest and event, lower reading-lip nameplates: replace the plain rectangular label patches with shallow engraved plaques that join the carved support without a hard black seam."
+  ],
+  "grafts": [
+    {
+      "from": "IOLITE",
+      "screen": "gameover",
+      "idea": "Carry the textured purple inset treatment of the progress panel and deck rows into the winner's glossy deck list while retaining its separate title and count columns."
+    },
+    {
+      "from": "ALEXANDRITE",
+      "screen": "gameover",
+      "idea": "Use the relaxed line spacing and distinct name, companion and Haunt Level lines in the portrait captions as the spacing model for the winner's memorial captions."
+    },
+    {
+      "from": "ONYX",
+      "screen": "rest",
+      "idea": "Borrow the shaped gold cartouche silhouette of the requirement badges, combining it with the winner's textured purple materials instead of the square plaques."
+    }
+  ]
+}

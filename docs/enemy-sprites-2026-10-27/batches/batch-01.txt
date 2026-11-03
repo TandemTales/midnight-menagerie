@@ -1,0 +1,23 @@
+create a composite image of sprites of the following enemies in a turn based ccg. make sure the final image has a truly transparent background. Make sure the images are good quality and will 2D animate well (nothing in mid-action pose, extra floating parts around it, etc.). Make sure the enemies match the visual style of the included menu screen with companion characters from another part of the game:
+
+1. Door Greeter (Level/Region 1)
+A heavy brass umbrella stand that glides by itself while its umbrellas open, spin, hook things, and jab outward under invisible control.
+
+2. Hall Mirror (Level/Region 1)
+A freestanding antique mirror whose reflection moves independently, gestures before the real character does, and occasionally reaches toward the glass from inside.
+
+3. Portrait Greeter (Level/Region 1)
+A formal foyer portrait whose painted host changes posture, points, rings for service, or briefly leans partly outside the frame as a translucent painted apparition.
+
+4. Luggage Trolley (Level/Region 1)
+A brass hotel style luggage cart that rolls itself around while stacked trunks and cases levitate, rearrange, and occasionally launch themselves from it.
+
+5. Unwelcome Guest (Level/Region 1)
+A tall, impeccably dressed shadow person standing silently in the foyer as though they arrived decades ago and never left. Their face is never visible beneath their hat, and their body occasionally stretches unnaturally with the surrounding shadows.
+This can be eerie without being frightening enough to break the younger audience tone.
+
+6. The Grand Mirror (Level/Region 1)
+A huge gilded floor mirror containing several different reflections of the room at once. One reflection may be seconds ahead, another behind, and another may contain spectral figures that are not actually present.
+The mirror itself barely needs to move. Most of the animation happens inside the glass.
+Production requirements: Create one static composite, one complete enemy design per numbered entry, with clear empty margins separating every enemy. Use the attached UI/selectCompanion.png as the primary visual reference and the accepted source sheets as rendering/style references only. Do not generate animation frames or sequences. All enemies face LEFT toward the players in neutral stable resting poses, no mid-action gesture or attack. Preserve each described identity; action wording above is character context, not a request to depict the action. Keep props held, supported, attached, contained, or touching the core design; omit loose particle effects and orbiting fragments. For inherently grouped enemies, keep the group compact and contained within its own distinct cell. No cropped silhouettes, merged enemies, stray anatomy, halos/matte fringes, text, labels, borders, floors, shadows detached from the sprite, or background scene. Cute, readable and spooky but not threatening; match the accepted art's rich material texture, soft dimensional shading and warm whimsical detail. Output PNG with genuine transparent alpha outside the sprites, never a painted checkerboard or solid-color background. Keep the character itself legible and sufficiently opaque; translucent ghost bodies may have partial alpha. The roster descriptions are quoted from the current original MM Enemies document, not the separate revised roster.
+Exactly 6 enemy designs in this batch.

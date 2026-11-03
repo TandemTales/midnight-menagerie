@@ -1,0 +1,17 @@
+{
+  "source": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+  "listeners": [
+    {
+      "LocalAddress": "::1",
+      "LocalPort": 9562,
+      "OwningProcess": 41444
+    },
+    {
+      "LocalAddress": "127.0.0.1",
+      "LocalPort": 9562,
+      "OwningProcess": 41444
+    }
+  ],
+  "command": "\"C:\\Users\\Josh\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" tools/devserver.py 9562",
+  "pid": 41444
+}

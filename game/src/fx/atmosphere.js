@@ -60,7 +60,7 @@
 import * as THREE from 'three';
 import { clock } from '../core/clock.js';
 import { Save } from '../core/save.js';
-import { Backdrop, fittingFor, FIT } from './backdrop.js';
+import { Backdrop, fittingFor, FIT, lensOf } from './backdrop.js';
 import { LightRig } from './lights.js';
 import { ParticleField, PTYPE } from './particles.js';
 import { exitsFrom, legalNextIds, wingDistance } from '../state/mapgen.js';
@@ -3641,16 +3641,48 @@ function stageRig(pal) {
   const tanV = Math.tan((c.fov ?? 42) * deg / 2);
   const square = !pal.vantageKind || pal.vantageKind === 'square';
   const ex = c.x ?? 0, ez = c.z ?? 9.6;
-  const ey = square ? Math.max(1.15, (c.y ?? 2.3) * STAGE_EYE) : (c.y ?? 2.3);
+  const baseEye = square ? Math.max(1.15, (c.y ?? 2.3) * STAGE_EYE) : (c.y ?? 2.3);
+  // Pool fights are viewed from the walkway. A gallery-height eye needs a
+  // steep overhead view to reach that walkway, mismatching the upright art.
+  const ey = pal.pool ? Math.min(1.85, baseEye) : baseEye;
   const lx = c.lookX ?? 0, lz = c.lookZ ?? 0;
   const hd = Math.max(Math.hypot(lx - ex, lz - ez), 0.5);   // horizontal run to the look point
-  const wallDist = Math.max(ez + R.d, 1);                   // the far wall stands at z = -d
+  // A basin is not standing room. Frame its NEAR coping above the fight,
+  // so the combatants stand on the apron rather than over the water.
+  const floorEdge = pal.pool ? Math.min(ez + R.d, ez - pal.pool.z0 - 0.75) : ez + R.d;
+  const wallDist = Math.max(floorEdge, 1);
   const below = Math.atan(ey / wallDist);                   // its foot, below level
   const target = Math.atan((STAGE_BASE - 0.5) * 2 * tanV);  // negative: above the axis
   const pitch = below - target;                             // down, radians
   const look = ey - hd * Math.tan(pitch);
   const lookA = ey - ((c.y ?? 2.3) - (c.look ?? 2.4));        // the authored pitch, from the new eye
-  pal.cam = Object.assign({}, c, { y: ey, look: Math.min(look, lookA) });
+  pal.cam = Object.assign({}, c, { y: ey, look: pal.pool ? look : Math.min(look, lookA) });
+  // The far wall alone cannot guarantee floor under a wide party in a narrow
+  // or angled room. Cast the outer standing positions onto the floor and
+  // gently pitch down until they fit inside the room, including its side walls.
+  // Leave width for resizing to a wide desktop without rebuilding the room.
+  const aspect = Math.max(pal.aspect || 16 / 9, 2);
+  const shifted = pal.trueVert && !['door', 'rail', 'gate'].includes(pal.frame);
+  for (let step = 0; step < 100; step++) {
+    const L = lensOf(pal.cam, aspect);
+    const slope = (ey - pal.cam.look) / hd;
+    const lens = shifted ? lensOf({ ...pal.cam, look: ey }, aspect) : L;
+    const up = 0.12 * tanV - (shifted ? slope : 0); // 44vh: highest supported sole line
+    let clear = true;
+    for (const nx of [-0.96, 0, 0.96]) {
+      const dx = lens.fx + lens.rx * nx * lens.tanH + lens.ux * up;
+      const dy = lens.fy + lens.uy * up;
+      const dz = lens.fz + lens.rz * nx * lens.tanH + lens.uz * up;
+      const t = -ey / dy, x = ex + dx * t, z = ez + dz * t;
+      if (dy >= 0 || Math.abs(x) > R.w / 2 - 0.20 || z < -R.d + 0.20 || z > 14.8) clear = false;
+      const pool = pal.pool;
+      if (pool && Math.abs(x) < pool.hw + 0.25 && z < pool.z0 + 0.25 && z > pool.z1 - 0.25) clear = false;
+    }
+    if (clear) break;
+    const angle = Math.atan(slope) + 0.5 * deg;
+    if (angle > 65 * deg) break;
+    pal.cam.look = ey - hd * Math.tan(angle);
+  }
 }
 
 /* ── TRUE VERTICALS (round 25) ────────────────────────────────────────────
@@ -3755,27 +3787,31 @@ export class Atmosphere {
     const cv = stage?.renderer?.domElement;
     if (cam && cv && typeof document !== 'undefined') {
       const els = document.querySelectorAll(
-        '.cb-hero .pr-shadow, .cb-hero .pr-palset, .cb-enemy:not(.is-removed):not(.is-dead) .cb-enemy__pool');
+        '.cb-hero .pr-shadow, .cb-hero .pr-palshadow, .cb-enemy:not(.is-removed):not(.is-dead) .cb-enemy__pool');
       if (els.length) {
         const cr = cv.getBoundingClientRect();
-        /* the Companion stands on the Kid's own floor line: her shadow's
-           centre gives the height, the Companion's figure only its x */
+        /* The companion shares the kid's sole line. Recover that line from
+           the fixed contact ellipses. Sprite atlas bounds include clipped frames
+           and must not be used as the companion's floor anchor. */
         let heroY = null;
         for (const el of els) {
-          if (el.classList.contains('pr-shadow')) { const r = el.getBoundingClientRect(); heroY = r.top + r.height / 2; break; }
+          if (el.classList.contains('pr-shadow')) { const r = el.getBoundingClientRect(); heroY = r.top + r.height * (0.5 - 5 / 24); break; }
         }
         const tanV = Math.tan((cam.fov * Math.PI) / 360);
         for (const el of els) {
           if (list.length >= 6) break;
           const r = el.getBoundingClientRect();
           if (r.width < 2) continue;
-          const pal = el.classList.contains('pr-palset');
+          const pal = el.classList.contains('pr-palshadow');
           /* (the Kid's contact ellipse is 52 x 12 rig units centred 5 below
              her soles since the graft: 0.74 of its width is the 0.62 of the
              old 62 x 16 one, so the room's shadow keeps its size) */
           const sx = r.left + r.width / 2;
           if (pal && heroY === null) continue;
-          let sy = pal ? heroY : r.top + r.height / 2;
+          // The hero ellipse is centred five rig units below the soles;
+          // cast from the soles, not from that offset centre. The companion
+          // shares this floor line, including during its idle animation.
+          let sy = pal || el.classList.contains('pr-shadow') ? heroY : r.top + r.height / 2;
           /* (round 21 graft) A CREATURE'S CONTACT IS AT ITS FEET, and its pool
              is not: the pool straddles the bottom of the stage, and a figure
              is fitted 6 rig units above that (EnemyView._fitTo) -- 2.6% of
@@ -3799,7 +3835,7 @@ export class Atmosphere {
           const mpp = (2 * tanV * dist) / cr.height;     // metres per CSS pixel there
           /* a flier's pool is most of the width it spans (PRUSSIAN's Grave
              Moth, the grafted treatment): a clear dark ellipse under it */
-          const w = pal ? Math.min(r.width, r.height * 1.4) * 0.60
+          const w = pal ? r.width * 0.80
                         : r.width * (el.classList.contains('pr-shadow') ? 0.74 : fly ? 0.90 : 0.50);
           list.push({ x, z, r: Math.max(0.12, Math.min(pal ? 0.6 : 1.4, w * 0.5 * mpp)), s: pal ? 0.70 : fly ? 0.95 : 0.85, fly });
         }

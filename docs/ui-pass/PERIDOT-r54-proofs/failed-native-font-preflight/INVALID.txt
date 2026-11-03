@@ -1,0 +1,1 @@
+Native timing preflight stopped before any measured animation: custom harness used raw30px generic numeric default for status, overlooking inherited combat.css status-specific16px declaration (computed20px at1280). Sourcefa332a64. Corrected status minimum to actual inherited16px; exact baseline/current font equality remains asserted for allfive kinds. No production change.

@@ -1,0 +1,555 @@
+{
+  "level": 4,
+  "entries": [
+    {
+      "level": 4,
+      "region": "Kitchens and Cellars",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Dough Blob",
+      "existing_animation": true,
+      "description": "Soft pale dough mass with huge glossy eyes and smaller dough faces. Puffs up as if overproofing, then slumps into a floury wobble.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: dough-blob.",
+      "signature": "Signature Pale soft dough silhouette with stretchy folds, no candy coating.",
+      "asset_id": "dough-blob",
+      "production_id": "dough-blob",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\dough-blob.webp",
+      "source_path": "animations\\sprites\\enemies\\doughBlob.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          245,
+          189
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 18202,
+        "partial_alpha_pixels": 27985,
+        "alpha_bbox": [
+          0,
+          0,
+          245,
+          189
+        ],
+        "sha256": "b029bd6e511d4eb86dae2c245ffe58e14f1e23e928c41cea688192d1c12767e9"
+      },
+      "blocker": null
+    },
+    {
+      "level": 4,
+      "region": "Kitchens and Cellars",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Candy Clump",
+      "existing_animation": true,
+      "description": "A small sticky creature covered in colorful sweets, with large eyes and a gummy mouth. Drops and retrieves sticky sweets while trying to hold itself together.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: candy-clump.",
+      "signature": "Signature Small irregular multicolor candy cluster; differs from Sugar Golem’s blocky cube body.",
+      "asset_id": "candy-clump",
+      "production_id": "candy-clump",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\candy-clump.webp",
+      "source_path": "animations\\sprites\\enemies\\candyClump.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          233,
+          227
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 15674,
+        "partial_alpha_pixels": 37095,
+        "alpha_bbox": [
+          0,
+          0,
+          233,
+          227
+        ],
+        "sha256": "8df71bd6301dc67f19d782d55a1997a4d48980f594e0407ea8caa8f4056ce908"
+      },
+      "blocker": null
+    },
+    {
+      "level": 4,
+      "region": "Kitchens and Cellars",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Jam Jar",
+      "existing_animation": true,
+      "description": "Red jam jar with a gingham cover, lid, tag, expressive eyes and jelly limbs. Wobbles its lid and spills a little jelly to make a sticky nuisance.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: jam-jar.",
+      "signature": "Signature Glass cylinder, gingham cap and red translucent limbs.",
+      "asset_id": "jam-jar",
+      "production_id": "jam-jar",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\jam-jar.webp",
+      "source_path": "animations\\sprites\\enemies\\jamJar.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          223,
+          236
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 17862,
+        "partial_alpha_pixels": 34607,
+        "alpha_bbox": [
+          0,
+          0,
+          223,
+          236
+        ],
+        "sha256": "17055ea2361b522461dbd270d72a7b9757c44696e87ec89ea7c6f8577d20475a"
+      },
+      "blocker": null
+    },
+    {
+      "level": 4,
+      "region": "Kitchens and Cellars",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Pantry Mimic",
+      "existing_animation": true,
+      "description": "Decorative floral pantry tin with a hinged toothlike lid, cloth tongue and little limbs. Rattles and pops its lid to demand refilling, never bites or swallows visitors.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: pantry-mimic.",
+      "signature": "Signature Upright floral tin, unlike Lost Luggage’s horizontal strapped travel case.",
+      "asset_id": "pantry-mimic",
+      "production_id": "pantry-mimic",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\pantry-mimic.webp",
+      "source_path": "animations\\sprites\\enemies\\pantryMimic.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          204,
+          238
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 18998,
+        "partial_alpha_pixels": 29350,
+        "alpha_bbox": [
+          0,
+          0,
+          204,
+          238
+        ],
+        "sha256": "85fdbb9e77b6b67efe216a2f909736645207c95ebb9ce76cd5fc313231ddd605"
+      },
+      "blocker": null
+    },
+    {
+      "level": 4,
+      "region": "Kitchens and Cellars",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Kitchen Poltergeist",
+      "existing_animation": false,
+      "description": "Three cooking tools hover around an empty workspace: whisk, wooden spoon and folded towel. Whisks an invisible recipe so vigorously that the towel keeps escaping.",
+      "animation": "2D animation Idle tools float; tell whisk lifts; action short mixing loop; resolve towel catches.",
+      "signature": "Signature Open triangular utensil cluster; avoid knife-point presentation or a body made of food.",
+      "production_id": "kitchen-poltergeist",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\kitchen-poltergeist.webp",
+      "source_path": "animations\\sprites\\enemies\\kitchenPoltergeist.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            197,
+            221
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 29764,
+          "partial_alpha_pixels": 12986,
+          "alpha_bbox": [
+            0,
+            0,
+            197,
+            221
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            197,
+            221
+          ],
+          "sha256": "405132e4079408223d85ac0c1eee6e4f0167466eac78396212d26849bacbaeca"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 47573,
+          "partial_alpha_pixels": 17176,
+          "alpha_bbox": [
+            18,
+            8,
+            252,
+            242
+          ],
+          "visible_bbox_alpha64": [
+            39,
+            18,
+            236,
+            238
+          ],
+          "sha256": "792b94bd96825ae5a03229a91c902546e448b58bc612470ef9527e137b03090e"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1125248,
+          "partial_alpha_pixels": 446941,
+          "alpha_bbox": [
+            0,
+            9,
+            1240,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            191,
+            87,
+            1153,
+            1165
+          ],
+          "sha256": "b7ef5a04dd89dc3b17293638c654fdeecc450083cc82cedd00b7a495d85288a9"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\kitchen-poltergeist-original.png",
+        "visual": "Reviewed: three separate hovering tools, wire whisk, wooden spoon and folded towel; open triangle, no added character or anatomy, complete components.",
+        "conversion": "Tier-size source, isolated build_enemy_still; no registry integration",
+        "runtime_metadata": {
+          "file": "kitchen-poltergeist.webp",
+          "w": 197,
+          "h": 221,
+          "source": "kitchenPoltergeist.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 4,
+      "region": "Kitchens and Cellars",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Spectral Scullion",
+      "existing_animation": false,
+      "description": "A small translucent kitchen servant in rolled sleeves, balancing three mismatched dishes. Insists on washing already clean dishes and rearranges the stack mid-bow.",
+      "animation": "2D animation Idle stack wobble; tell plate lifts; action three-plate exchange; resolve proud nod.",
+      "signature": "Signature Tiny staff silhouette with tall plate stack, unlike large pastry chef.",
+      "production_id": "spectral-scullion",
+      "status": "blocked",
+      "output_path": "game\\assets\\sprites\\enemies\\spectral-scullion.webp",
+      "source_path": "animations\\sprites\\enemies\\spectralScullion.png",
+      "validation": null,
+      "blocker": {
+        "action": "Generate separate Spectral Scullion sprite using built-in imagegen",
+        "target": "animations\\sprites\\enemies\\spectralScullion.png",
+        "outcome": "denied",
+        "reason": "HTTP400 image_generation_user_error moderation_blocked; moderation_stage output; categories other; no image payload returned",
+        "request_id": "c49ad1f6-4178-418a-b8ec-ea7bb5ccec89",
+        "retry": "Not retried. Continued independent sprites."
+      }
+    },
+    {
+      "level": 4,
+      "region": "Kitchens and Cellars",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Hanging Pots",
+      "existing_animation": false,
+      "description": "Three copper pots hang at uneven lengths from one short ceiling rack. Clinks an accidental kitchen rhythm while pretending nothing moved.",
+      "animation": "2D animation Idle sway; tell one pot tilts; action staggered short swings; resolve final tiny clink.",
+      "signature": "Signature Wide hanging row with hollow copper shapes; not a rolling pot or food creature.",
+      "production_id": "hanging-pots",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\hanging-pots.webp",
+      "source_path": "animations\\sprites\\enemies\\hangingPots.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            234,
+            184
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 21564,
+          "partial_alpha_pixels": 20358,
+          "alpha_bbox": [
+            0,
+            0,
+            234,
+            184
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            234,
+            184
+          ],
+          "sha256": "eaf081e0247eb8a479216563f5fe8cb9d8f06fa083a7ca2a02e028a3d2c9e57a"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 42243,
+          "partial_alpha_pixels": 22159,
+          "alpha_bbox": [
+            14,
+            5,
+            253,
+            248
+          ],
+          "visible_bbox_alpha64": [
+            17,
+            22,
+            251,
+            206
+          ],
+          "sha256": "6e8240e09cc77e986c9f99482d0f018bb8a09533f5c9ed8d8adea86e4938bb2c"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1031067,
+          "partial_alpha_pixels": 540815,
+          "alpha_bbox": [
+            0,
+            9,
+            1239,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            83,
+            110,
+            1229,
+            1009
+          ],
+          "sha256": "c1feefa634b2031c0a82d3ffe7ee0fa473e2db47d3b0f83e89d31565fe324a42"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\hanging-pots-original.png",
+        "visual": "Reviewed: exactly three hollow copper pots on uneven hanging hooks from one short wood and brass rack; no extra faces or props, complete rims and brackets.",
+        "conversion": "Tier-size source, isolated build_enemy_still; no registry integration",
+        "runtime_metadata": {
+          "file": "hanging-pots.webp",
+          "w": 234,
+          "h": 184,
+          "source": "hangingPots.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 4,
+      "region": "Kitchens and Cellars",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Sugar Golem",
+      "existing_animation": true,
+      "description": "Stocky candy construct with sugar-cube fists and an icing face. Stacks and restacks its own sugar blocks in a solemn confectionery demonstration.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: sugar-golem.",
+      "signature": "Signature Large stepped white cube silhouette and blocky gestures, unlike sticky small Candy Clump.",
+      "asset_id": "sugar-golem",
+      "production_id": "sugar-golem",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\sugar-golem.webp",
+      "source_path": "animations\\sprites\\enemies\\sugarGolem.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          460,
+          386
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 60020,
+        "partial_alpha_pixels": 117449,
+        "alpha_bbox": [
+          0,
+          0,
+          460,
+          386
+        ],
+        "sha256": "ecd4dd883388715c06077abf9b2d664fa909c7824933e1999dd3986f4b7a7b02"
+      },
+      "blocker": null
+    },
+    {
+      "level": 4,
+      "region": "Kitchens and Cellars",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Oven Maw",
+      "existing_animation": true,
+      "description": "Cast-iron oven with glowing orange grill mouth, dial eyes and short feet. Huffs a warm cloud, opens for inspection and insists the timer has not finished.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: oven-maw.",
+      "signature": "Signature Heavy squat iron appliance and warm grill light; preserve mouth, no engulfing animation meaning.",
+      "asset_id": "oven-maw",
+      "production_id": "oven-maw",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\oven-maw.webp",
+      "source_path": "animations\\sprites\\enemies\\ovenMaw.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          460,
+          393
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 64595,
+        "partial_alpha_pixels": 116075,
+        "alpha_bbox": [
+          0,
+          0,
+          460,
+          393
+        ],
+        "sha256": "b3355761cd26f1af786fd49b467e4aece93b837eb42e87c42e28e9614fa6ad39"
+      },
+      "blocker": null
+    },
+    {
+      "level": 4,
+      "region": "Kitchens and Cellars",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Cellar Steward",
+      "existing_animation": false,
+      "description": "A lantern-carrying spectral servant in waistcoat and apron, with a narrow inventory ledger. Counts bottles, discovers an extra and starts over with great dignity.",
+      "animation": "2D animation Idle ledger scan; tell pencil taps; action three bottle silhouettes reorder; resolve resigned nod.",
+      "signature": "Signature Lean ledger-bearing human silhouette and bottled inventory ritual; not another appliance.",
+      "production_id": "cellar-steward",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\cellar-steward.webp",
+      "source_path": "animations\\sprites\\enemies\\cellarSteward.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            255,
+            490
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 62301,
+          "partial_alpha_pixels": 61292,
+          "alpha_bbox": [
+            0,
+            0,
+            255,
+            490
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            254,
+            490
+          ],
+          "sha256": "5d8e7939807e3cc73c39e9175e258aba71c61fd9d47dd969774844d5cbf9d654"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 193016,
+          "partial_alpha_pixels": 67771,
+          "alpha_bbox": [
+            13,
+            6,
+            507,
+            500
+          ],
+          "visible_bbox_alpha64": [
+            137,
+            8,
+            391,
+            498
+          ],
+          "sha256": "93ed45333a64746ff2e0be17d6103ab2441c590a61d9dd2c1e9f5f86c48c1c50"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1157757,
+          "partial_alpha_pixels": 413974,
+          "alpha_bbox": [
+            33,
+            17,
+            1244,
+            1223
+          ],
+          "visible_bbox_alpha64": [
+            336,
+            21,
+            958,
+            1219
+          ],
+          "sha256": "b1c11e77570235d656c861fdc9cc121c9e17bb318ba10346a8b13c198f181665"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\cellar-steward-original.png",
+        "visual": "Reviewed: lean spectral adult servant with lantern and narrow ledger, waistcoat and apron, three inventory bottles; coherent limbs and gentle dignified expression.",
+        "conversion": "Tier-size source, isolated build_enemy_still; no registry integration",
+        "runtime_metadata": {
+          "file": "cellar-steward.webp",
+          "w": 255,
+          "h": 490,
+          "source": "cellarSteward.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 4,
+      "region": "Kitchens and Cellars",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Confectioner",
+      "existing_animation": true,
+      "description": "Elaborate spectral pastry chef with cream-and-candy hat, sweet-making props and pink magic. Conducts an elaborate dessert demonstration, dusting and decorating rather than threatening to cook or eat anyone.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: confectioner.",
+      "signature": "Signature Large decorated hat and pink confectionery flourish; preserves actual stylized chef instead of a new flour-only silhouette.",
+      "asset_id": "confectioner",
+      "production_id": "confectioner",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\confectioner.webp",
+      "source_path": "animations\\sprites\\enemies\\confectioner.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          747,
+          995
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 291130,
+        "partial_alpha_pixels": 451956,
+        "alpha_bbox": [
+          0,
+          0,
+          747,
+          995
+        ],
+        "sha256": "1383a7c155ea581b96677ffd2341e2a9ef5971821eecf61e89aa3fcb9dcd15cd"
+      },
+      "blocker": null
+    }
+  ]
+}

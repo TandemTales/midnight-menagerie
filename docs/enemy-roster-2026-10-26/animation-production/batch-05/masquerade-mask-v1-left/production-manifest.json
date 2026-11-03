@@ -1,0 +1,18 @@
+{
+  "enemy": "masquerade-mask",
+  "source": "docs\\enemy-roster-2026-10-26\\art-production\\masquerade-mask-original.png",
+  "source_sha256": "e84739e455b1d1890ffaf9b96fd7dd9bfe645ea5dec58b81f528d3835ee1d1b9",
+  "method": "Intact source mask tilts as a rigid face; trailing ribbon regions bend with delayed curves. Broad foreground ribbon remains over the unpainted hidden face. Reflected unlettered mask points left. No invented hidden anatomy.",
+  "actions": {
+    "idle": "Float gently while the trailing ribbons and tassels sway around a quiet face.",
+    "attack": "Withdraw and tilt, then peek sharply left while ribbons follow through and return.",
+    "hurt": "Quick rightward recoil and tilted flinch, with asymmetric trailing ribbon response.",
+    "defeat": "Eye illumination dies, mask tips downward left, ribbons droop, and the inactive ornament sinks into a final held pose."
+  },
+  "orientation": {
+    "required": "screen-left",
+    "method": "Whole unlettered mask reflected; nose points left, peek travels left after rightward anticipation. Hurt recoils right; final tilt remains leftward. No text or handed prop reversed.",
+    "status": "prototype_review_pending"
+  },
+  "quality_gate": "Prototype; no delivered actions yet."
+}

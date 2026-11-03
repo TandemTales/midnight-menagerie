@@ -1,0 +1,8 @@
+{
+  "enemy": "red-carpet-runner",
+  "reviewed_utc": "2026-10-27T00:16:42.879263+00:00",
+  "evidence": "red-carpet-detail.jpg",
+  "status": "directional_redraw_required",
+  "findings": "Legacy idle/attack visibly turn through frontal and opposing curls. A single horizontal reflection or whole-image tilt cannot consistently orient every pose left while preserving the existing roll/tumble action. No derivative counted or original changed.",
+  "capability_limit": "The current source-art rig workflow cannot reconstruct unseen embroidered surfaces across these changing legacy poses without new painted or generated pose art. Full-speed review also unavailable through the denied browser route."
+}

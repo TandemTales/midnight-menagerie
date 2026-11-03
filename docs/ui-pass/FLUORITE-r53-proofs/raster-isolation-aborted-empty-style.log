@@ -1,0 +1,29 @@
+Traceback (most recent call last):
+  File "D:\UILOOP\r53-20261029\c\tests\ui-r53-fluorite\raster_isolation.py", line 16, in <module>
+    page.goto(f'http://localhost:{sys.argv[1]}/game/index.html#scene=title&seed=42&companion=crumbula&kid=maya');page.wait_for_function('window.MM&&MM.ctx.stage.warmStage==="done"',timeout=150000);page.add_style_tag(content='')
+                                                                                                                                                                                                     ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Josh\AppData\Local\Programs\Python\Python313\Lib\site-packages\playwright\sync_api\_generated.py", line 9606, in add_style_tag
+    self._sync(
+    ~~~~~~~~~~^
+        self._impl_obj.add_style_tag(url=url, path=path, content=content)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Josh\AppData\Local\Programs\Python\Python313\Lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+           ~~~~~~~~~~~^^
+  File "C:\Users\Josh\AppData\Local\Programs\Python\Python313\Lib\site-packages\playwright\_impl\_page.py", line 510, in add_style_tag
+    return await self._main_frame.add_style_tag(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Josh\AppData\Local\Programs\Python\Python313\Lib\site-packages\playwright\_impl\_frame.py", line 558, in add_style_tag
+    return from_channel(await self._channel.send("addStyleTag", None, params))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Josh\AppData\Local\Programs\Python\Python313\Lib\site-packages\playwright\_impl\_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\Josh\AppData\Local\Programs\Python\Python313\Lib\site-packages\playwright\_impl\_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.Error: Page.add_style_tag: Provide an object with a `url`, `path` or `content` property

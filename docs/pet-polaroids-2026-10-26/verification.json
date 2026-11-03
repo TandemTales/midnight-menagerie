@@ -1,0 +1,17 @@
+{
+  "pets": [
+    "orbit",
+    "pepper",
+    "mochi",
+    "sprocket",
+    "pixel",
+    "scout",
+    "mooncake",
+    "bean"
+  ],
+  "decoded": 8,
+  "cacheSize": 8,
+  "contactSheetErrors": [],
+  "boardPets": 8,
+  "gameErrors": []
+}

@@ -1,0 +1,558 @@
+{
+  "round": 55,
+  "method": "Independent verification of complete raw functional evidence; source reuse and visual quality require separate review.",
+  "candidates": [
+    {
+      "code": "JADE",
+      "head": "526b280c88490547b0fc44d890cab4c408678aa3",
+      "raw_functional_invariants_pass": true,
+      "visual_sources": [
+        "09b68c97cf72be12eae28abee90753d209119db9"
+      ],
+      "labels": 96,
+      "frames": 2416,
+      "ink_cases": 10,
+      "runtime_checks": [
+        {
+          "name": "queue",
+          "exit": 0,
+          "seconds": 163.656,
+          "source_commit": "09b68c97cf72be12eae28abee90753d209119db9",
+          "log": "queue.log",
+          "logSHA256": "52c562212f10194e407788fd33b8d8b28318d7ac7022f9143effae49b040fcc4"
+        },
+        {
+          "name": "ink",
+          "exit": 0,
+          "seconds": 56.853,
+          "source_commit": "09b68c97cf72be12eae28abee90753d209119db9",
+          "log": "ink.log",
+          "logSHA256": "cd14f2b385fa8dd666ae3a4fa7c600ca13940cb70c712e5001d3e1df8949679f"
+        },
+        {
+          "name": "idle",
+          "exit": 0,
+          "seconds": 25.461,
+          "source_commit": "09b68c97cf72be12eae28abee90753d209119db9",
+          "log": "idle.log",
+          "logSHA256": "42b36009438c9d74fd2c3391dfb09516cc39b4e8c2712df27d189f9a2272c1dc"
+        },
+        {
+          "name": "lifecycle",
+          "exit": 0,
+          "seconds": 26.139,
+          "source_commit": "09b68c97cf72be12eae28abee90753d209119db9",
+          "log": "lifecycle.log",
+          "logSHA256": "0e17f27213d21acce01ea1519f059b03606bccdfdbcaf38ef7e13a225dfa4c4e"
+        },
+        {
+          "name": "memorial",
+          "exit": 0,
+          "seconds": 26.939,
+          "source_commit": "09b68c97cf72be12eae28abee90753d209119db9",
+          "log": "memorial.log",
+          "logSHA256": "0f05ecf89cce61a804631737f5056189fa2d685bb3cc137fb59cbd4c67cb3eeb"
+        },
+        {
+          "name": "memorial-long",
+          "exit": 0,
+          "seconds": 44.91,
+          "source_commit": "09b68c97cf72be12eae28abee90753d209119db9",
+          "log": "memorial-long.log",
+          "logSHA256": "0fafa4258f79e39b44d7044a7dad03d0c5c3080085ca00be8f14f41066c06289"
+        },
+        {
+          "name": "keepsakes",
+          "exit": 0,
+          "seconds": 24.636,
+          "source_commit": "09b68c97cf72be12eae28abee90753d209119db9",
+          "log": "keepsakes.log",
+          "logSHA256": "7403104817115bcfbbb68f3cbb05263e004f0c33b4c33a162800802f3f38acc5"
+        },
+        {
+          "name": "event-boundary",
+          "exit": 0,
+          "seconds": 39.144,
+          "source_commit": "09b68c97cf72be12eae28abee90753d209119db9",
+          "log": "event-boundary.log",
+          "logSHA256": "fab021bf3f213a82e6dd71e0c33ba1cf9bcc2fef9a0c5d806512c1c8400cfd18"
+        },
+        {
+          "name": "shop-rules",
+          "exit": 0,
+          "seconds": 28.733,
+          "source_commit": "09b68c97cf72be12eae28abee90753d209119db9",
+          "log": "shop-rules.log",
+          "logSHA256": "03fbfe06d51c9943b3a8c6f619af266b02ada9f4843de9e1158d9c0c1cc64956"
+        },
+        {
+          "name": "interactions",
+          "exit": 0,
+          "source_commit": "833e22a98d49f3271f8abdff600c16a29d6b3129",
+          "reused": true,
+          "proof": "initial-board-source833e22a9/interactions.json",
+          "proofSHA256": "fe0011ee797cc541d7628f8f482d710efc7b1c98a1ee9d66b2701fb43a486aa3",
+          "scenes": 4,
+          "viewports": 2,
+          "identityEvidence": [
+            {
+              "path": "game/src/scenes/combat.css",
+              "sourceSHA256": "6a14fbd507cd26ede24da63d83646d0ee5acf0e715eb253f10c5ee3b200993e4",
+              "finalSHA256": "6a14fbd507cd26ede24da63d83646d0ee5acf0e715eb253f10c5ee3b200993e4",
+              "identical": true
+            },
+            {
+              "path": "game/src/scenes/event.css",
+              "sourceSHA256": "c01a153efe3b6da27885eb872d745ac2d046277a2983d33d6fbd9490df1b6a0b",
+              "finalSHA256": "c01a153efe3b6da27885eb872d745ac2d046277a2983d33d6fbd9490df1b6a0b",
+              "identical": true
+            },
+            {
+              "path": "game/src/scenes/gameover.css",
+              "sourceSHA256": "d40b523b14d9c6a00eec48fb8118f6406da4a2688f88ccf27c24be8448b45da0",
+              "finalSHA256": "d40b523b14d9c6a00eec48fb8118f6406da4a2688f88ccf27c24be8448b45da0",
+              "identical": true
+            },
+            {
+              "path": "game/src/scenes/rest.css",
+              "sourceSHA256": "78732bf4904379330701f1f4a44cd9087fe93618435c28acbb7b838e38a25efd",
+              "finalSHA256": "78732bf4904379330701f1f4a44cd9087fe93618435c28acbb7b838e38a25efd",
+              "identical": true
+            },
+            {
+              "path": "game/src/scenes/shop.css",
+              "sourceSHA256": "dcca57021d174f3d589b4e142455113fabd0a464ec5980e98bf0c5c41dd7de84",
+              "finalSHA256": "dcca57021d174f3d589b4e142455113fabd0a464ec5980e98bf0c5c41dd7de84",
+              "identical": true
+            },
+            {
+              "path": "game/src/ui/kit.css",
+              "sourceSHA256": "697b750cbf69ebfa883a4e2e737c7be144fad93fa23b7412b2dcc31849bfacb6",
+              "finalSHA256": "697b750cbf69ebfa883a4e2e737c7be144fad93fa23b7412b2dcc31849bfacb6",
+              "identical": true
+            },
+            {
+              "path": "game/src/scenes/rest.js",
+              "sourceSHA256": "bf629b42109df983e5e636116445535bce69c4dafda72d1b4819c25f2a5f4e88",
+              "finalSHA256": "bf629b42109df983e5e636116445535bce69c4dafda72d1b4819c25f2a5f4e88",
+              "identical": true
+            },
+            {
+              "path": "game/src/scenes/event.js",
+              "sourceSHA256": "9b283f4a88df8d7941538c0a5a8199b237684003ac150fdde594c1a7693d8a11",
+              "finalSHA256": "9b283f4a88df8d7941538c0a5a8199b237684003ac150fdde594c1a7693d8a11",
+              "identical": true
+            },
+            {
+              "path": "game/src/scenes/shop.js",
+              "sourceSHA256": "00611f87fff8bebc1b31d49617b6c3978955abdc2c47675e5525ae12c3dbccdf",
+              "finalSHA256": "00611f87fff8bebc1b31d49617b6c3978955abdc2c47675e5525ae12c3dbccdf",
+              "identical": true
+            },
+            {
+              "path": "game/src/scenes/gameover.js",
+              "sourceSHA256": "cb349eaba150745fa7e72f649022100f11519e000fce11a90cc6b2297fb57876",
+              "finalSHA256": "cb349eaba150745fa7e72f649022100f11519e000fce11a90cc6b2297fb57876",
+              "identical": true
+            },
+            {
+              "path": "game/src/fx/combatfx.js",
+              "sourceSHA256": "2ae4ce4e0a7e3f08cdc6a20f6f6cd2cd5ea151d70c510f05b99bd5cba0c2ba47",
+              "finalSHA256": "2ae4ce4e0a7e3f08cdc6a20f6f6cd2cd5ea151d70c510f05b99bd5cba0c2ba47",
+              "identical": true
+            }
+          ],
+          "postPreviewChanges": [
+            "game/assets/ui/r55-jade/provenance.json",
+            "game/assets/ui/r55-jade/worn-plaque-v1.webp"
+          ],
+          "reason": "All production CSS/JS and input/ARIA/geometry are byte-identical. Only the240x64 plaque alpha export crop changed. Post-crop native condition pixels, memorial geometry and all10 canonical images were inspected; no new physical extent or metrics were introduced.",
+          "affectedRegionProofs": [
+            "condition-pixels/proof.json",
+            "memorial-geometry.json",
+            "long-quantities-1280.json",
+            "long-quantities-1600.json",
+            "canonical-provenance.json"
+          ]
+        }
+      ],
+      "quantities": [
+        {
+          "width": 1280,
+          "definitions": 109,
+          "copies_each": 12
+        },
+        {
+          "width": 1600,
+          "definitions": 109,
+          "copies_each": 12
+        }
+      ],
+      "full_initial_memorial_geometry": "pass",
+      "native_abba": {
+        "raw": "D:\\UILOOP\\r55-20261029\\a\\docs\\ui-pass\\JADE-r55-proofs\\native-material-timing\\proof.json",
+        "selected_case": {
+          "width": 1280,
+          "kind": "crowd",
+          "mode": "all-long",
+          "frameTimes": {
+            "max": 188.09999999403954,
+            "p95": 130.30000001192093
+          }
+        },
+        "trials": [
+          {
+            "variant": "inherited",
+            "p95_ms": 24.30000001192093,
+            "max_ms": 72.30000001192093,
+            "drain_ms": 3749.4000000059605,
+            "lives": 6
+          },
+          {
+            "variant": "current",
+            "p95_ms": 36.599999994039536,
+            "max_ms": 103.19999998807907,
+            "drain_ms": 3801.5999999940395,
+            "lives": 6
+          },
+          {
+            "variant": "current",
+            "p95_ms": 27,
+            "max_ms": 55.30000001192093,
+            "drain_ms": 3772,
+            "lives": 6
+          },
+          {
+            "variant": "inherited",
+            "p95_ms": 23.80000001192093,
+            "max_ms": 54.29999998211861,
+            "drain_ms": 3776.0999999940395,
+            "lives": 6
+          }
+        ],
+        "effective_styles_before_after_equal": true,
+        "retained_semantics_match_baseline": true,
+        "native_asset_http_decode_bytes_local_hash_checks": 8,
+        "paused_ms": 0,
+        "query_free_measured_check_verified": false,
+        "limitation": "Bounded native-stylesheet geometry harness; no general causal performance claim."
+      },
+      "server_shutdown": {
+        "stopped": true,
+        "portClear": true,
+        "port": 9551,
+        "pid": 15364,
+        "pidAbsent": true,
+        "allBrowserJobsCompleted": true,
+        "source": "09b68c97cf72be12eae28abee90753d209119db9",
+        "verifiedCommand": "\"C:\\Users\\Josh\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" tools/devserver.py 9551"
+      }
+    },
+    {
+      "code": "IOLITE",
+      "head": "5a4c985298d63b392712544a0c113cde08bfabaf",
+      "raw_functional_invariants_pass": true,
+      "visual_sources": [
+        "c59235be77bafe1508cb069bdef208e3fe92f6bb"
+      ],
+      "labels": 96,
+      "frames": 2535,
+      "ink_cases": 10,
+      "runtime_checks": [
+        {
+          "name": "interactions",
+          "exit": 0,
+          "seconds": 83.656,
+          "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+          "evidence": "IOLITE-r55-proofs/interactions.log",
+          "reused": true
+        },
+        {
+          "name": "queue",
+          "exit": 0,
+          "seconds": 167.905,
+          "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+          "evidence": "IOLITE-r55-proofs/queue.log",
+          "reused": false
+        },
+        {
+          "name": "ink",
+          "exit": 0,
+          "seconds": 57.809,
+          "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+          "evidence": "IOLITE-r55-proofs/ink.log",
+          "reused": false
+        },
+        {
+          "name": "idle",
+          "exit": 0,
+          "seconds": 27.268,
+          "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+          "evidence": "IOLITE-r55-proofs/idle.log",
+          "reused": false
+        },
+        {
+          "name": "lifecycle",
+          "exit": 0,
+          "seconds": 27.376,
+          "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+          "evidence": "IOLITE-r55-proofs/lifecycle.log",
+          "reused": false
+        },
+        {
+          "name": "memorial",
+          "exit": 0,
+          "seconds": 27.85,
+          "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+          "evidence": "IOLITE-r55-proofs/memorial.log",
+          "reused": false
+        },
+        {
+          "name": "memorial-long",
+          "exit": 0,
+          "seconds": 44.058,
+          "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+          "evidence": "IOLITE-r55-proofs/memorial-long.log",
+          "reused": false
+        },
+        {
+          "name": "keepsakes",
+          "exit": 0,
+          "seconds": 25.223,
+          "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+          "evidence": "IOLITE-r55-proofs/keepsakes.log",
+          "reused": false
+        },
+        {
+          "name": "event-boundary",
+          "exit": 0,
+          "seconds": 39.471,
+          "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+          "evidence": "IOLITE-r55-proofs/event-boundary.log",
+          "reused": false
+        },
+        {
+          "name": "shop-rules",
+          "exit": 0,
+          "seconds": 28.218,
+          "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+          "evidence": "IOLITE-r55-proofs/shop-rules.log",
+          "reused": false
+        }
+      ],
+      "quantities": [
+        {
+          "width": 1280,
+          "definitions": 109,
+          "copies_each": 12
+        },
+        {
+          "width": 1600,
+          "definitions": 109,
+          "copies_each": 12
+        }
+      ],
+      "full_initial_memorial_geometry": "pass",
+      "native_abba": {
+        "raw": "D:\\UILOOP\\r55-20261029\\b\\docs\\ui-pass\\IOLITE-r55-proofs\\native-material-timing\\proof.json",
+        "selected_case": {
+          "width": 1280,
+          "kind": "crowd",
+          "mode": "all-long",
+          "frameTimes": {
+            "max": 151.39999997615814,
+            "p95": 134.30000001192093
+          }
+        },
+        "trials": [
+          {
+            "variant": "inherited",
+            "p95_ms": 28.399999976158142,
+            "max_ms": 73.30000001192093,
+            "drain_ms": 3768.5999999940395,
+            "lives": 6
+          },
+          {
+            "variant": "current",
+            "p95_ms": 25.299999982118607,
+            "max_ms": 55.5,
+            "drain_ms": 3777,
+            "lives": 6
+          },
+          {
+            "variant": "current",
+            "p95_ms": 24.599999994039536,
+            "max_ms": 68.30000001192093,
+            "drain_ms": 3776.5999999940395,
+            "lives": 6
+          },
+          {
+            "variant": "inherited",
+            "p95_ms": 30.30000001192093,
+            "max_ms": 59.80000001192093,
+            "drain_ms": 3771.199999988079,
+            "lives": 6
+          }
+        ],
+        "effective_styles_before_after_equal": true,
+        "retained_semantics_match_baseline": true,
+        "native_asset_http_decode_bytes_local_hash_checks": 8,
+        "paused_ms": 0,
+        "query_free_measured_check_verified": false,
+        "limitation": "Bounded native-stylesheet geometry harness; no general causal performance claim."
+      },
+      "server_shutdown": {
+        "pid": 28692,
+        "processAbsent": true,
+        "command": "\"C:\\Users\\Josh\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" tools/devserver.py 9552",
+        "portClear": true,
+        "verifiedBefore": true,
+        "port": 9552,
+        "stopped": true
+      }
+    },
+    {
+      "code": "ZIRCON",
+      "head": "8ec98889b1cf30c7e3047e31b7fba4f9e232b54e",
+      "raw_functional_invariants_pass": true,
+      "visual_sources": [
+        "feff897ee50a713484587a510ae67ee70cb75f55"
+      ],
+      "labels": 96,
+      "frames": 4595,
+      "ink_cases": 10,
+      "runtime_checks": [
+        {
+          "name": "queue",
+          "exit": 0,
+          "seconds": 156.477,
+          "visual_source_commit": "feff897ee50a713484587a510ae67ee70cb75f55"
+        },
+        {
+          "name": "ink",
+          "exit": 0,
+          "seconds": 55.985,
+          "visual_source_commit": "feff897ee50a713484587a510ae67ee70cb75f55"
+        },
+        {
+          "name": "idle",
+          "exit": 0,
+          "seconds": 25.956,
+          "visual_source_commit": "feff897ee50a713484587a510ae67ee70cb75f55"
+        },
+        {
+          "name": "lifecycle",
+          "exit": 0,
+          "seconds": 25.797,
+          "visual_source_commit": "feff897ee50a713484587a510ae67ee70cb75f55"
+        },
+        {
+          "name": "memorial",
+          "exit": 0,
+          "seconds": 27.577,
+          "visual_source_commit": "feff897ee50a713484587a510ae67ee70cb75f55"
+        },
+        {
+          "name": "memorial-long",
+          "exit": 0,
+          "seconds": 43.169,
+          "visual_source_commit": "feff897ee50a713484587a510ae67ee70cb75f55"
+        },
+        {
+          "name": "keepsakes",
+          "exit": 0,
+          "seconds": 23.965,
+          "visual_source_commit": "feff897ee50a713484587a510ae67ee70cb75f55"
+        },
+        {
+          "name": "event-boundary",
+          "exit": 0,
+          "seconds": 36.746,
+          "visual_source_commit": "feff897ee50a713484587a510ae67ee70cb75f55"
+        },
+        {
+          "name": "shop-rules",
+          "exit": 0,
+          "seconds": 27.237,
+          "visual_source_commit": "feff897ee50a713484587a510ae67ee70cb75f55"
+        },
+        {
+          "name": "interactions",
+          "exit": 0,
+          "visual_source_commit": "31b7b457dff7e9897269c4cabc55f0fc2628ff74",
+          "acceptedFor": "feff897ee50a713484587a510ae67ee70cb75f55",
+          "reuseEvidence": "interaction-reuse.json"
+        }
+      ],
+      "quantities": [
+        {
+          "width": 1280,
+          "definitions": 109,
+          "copies_each": 12
+        },
+        {
+          "width": 1600,
+          "definitions": 109,
+          "copies_each": 12
+        }
+      ],
+      "full_initial_memorial_geometry": "pass",
+      "native_abba": {
+        "raw": "D:\\UILOOP\\r55-20261029\\c\\docs\\ui-pass\\ZIRCON-r55-proofs\\native-material-timing\\proof.json",
+        "selected_case": {
+          "width": 1600,
+          "kind": "crowd",
+          "mode": "all-long",
+          "frameTimes": {
+            "max": 153.09999999403954,
+            "p95": 57.19999998807907
+          }
+        },
+        "trials": [
+          {
+            "variant": "inherited",
+            "p95_ms": 38,
+            "max_ms": 55.29999998211861,
+            "drain_ms": 2393.2000000178814,
+            "lives": 6
+          },
+          {
+            "variant": "current",
+            "p95_ms": 36.900000005960464,
+            "max_ms": 76.59999999403954,
+            "drain_ms": 2385.9000000059605,
+            "lives": 6
+          },
+          {
+            "variant": "current",
+            "p95_ms": 31.19999998807907,
+            "max_ms": 69.30000001192093,
+            "drain_ms": 2403.2999999821186,
+            "lives": 6
+          },
+          {
+            "variant": "inherited",
+            "p95_ms": 27.299999982118607,
+            "max_ms": 70.10000002384186,
+            "drain_ms": 2412.199999988079,
+            "lives": 6
+          }
+        ],
+        "effective_styles_before_after_equal": true,
+        "retained_semantics_match_baseline": true,
+        "native_asset_http_decode_bytes_local_hash_checks": 8,
+        "paused_ms": 0,
+        "query_free_measured_check_verified": false,
+        "limitation": "Bounded native-stylesheet geometry harness; no general causal performance claim."
+      },
+      "server_shutdown": {
+        "pid": 2820,
+        "portClear": true,
+        "time": "2026-10-29T20:00:12.4440176-06:00",
+        "command": "\"C:\\Users\\Josh\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" tools/devserver.py 9553",
+        "pidAbsent": true,
+        "port": 9553
+      }
+    }
+  ]
+}

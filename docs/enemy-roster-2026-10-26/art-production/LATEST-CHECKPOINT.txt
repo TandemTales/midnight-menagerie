@@ -1,0 +1,52 @@
+MIDNIGHT MENAGERIE - ENEMY STILL ART PRODUCTION
+
+COVERAGE: 31 existing, 155 new, 0 pending, 1 blocked; 187 identities total.
+186 approved identities have saved, validated source PNG and runtime WebP files.
+New deliverables: 310 final files (155 PNG + 155 WebP).
+
+DELIVERABLE LOCATIONS
+Sources: animations/sprites/enemies/<camelCase>.png
+Runtime stills: game/assets/sprites/enemies/<kebab-case>.webp
+Exact per-identity paths: coverage-manifest.json / coverage-manifest.csv
+Review gallery: enemy-art-gallery.html
+Overview: all-completed-overview.jpg
+Regional previews: contact-sheet links in gallery
+Full-resolution original and prompt paths: prompt-index.csv
+
+VALIDATION
+372 approved final files checked for decoding, format, RGBA transparency, dimensions, and recorded hashes.
+155 new full-resolution PNG originals and prompt records verified.
+375 protected files unchanged: 367 initial enemy assets/atlases/metadata plus 8 completed foyer finals.
+All 29 mandatory animated identities preserved. Every region retains 7 regular / 3 elite / 1 boss; 187 unique identities.
+Validation errors: 0. Evidence: full-coverage-validation.json.
+No game code, gameplay data, asset registries or animation atlases changed. Still art is saved for later integration.
+Built-in imagegen used throughout. No external paid service, purchase or credential setup.
+
+REGION COVERAGE
+01 Forgotten Foyer: existing 7, new 4, pending 0, blocked 0
+02 Forgotten Nursery: existing 8, new 3, pending 0, blocked 0
+03 Sleeping Quarters: existing 5, new 6, pending 0, blocked 0
+04 Kitchens and Cellars: existing 7, new 3, pending 0, blocked 1
+05 Impossible Greenhouse: existing 4, new 7, pending 0, blocked 0
+06 Mansion Graveyard: existing 0, new 11, pending 0, blocked 0
+07 Grand Study and Library: existing 0, new 11, pending 0, blocked 0
+08 Moonlit Attic and Observatory: existing 0, new 11, pending 0, blocked 0
+09 Lampworks: existing 0, new 11, pending 0, blocked 0
+10 Ballroom and Velvet Suites: existing 0, new 11, pending 0, blocked 0
+11 Crypt and Ossuary: existing 0, new 11, pending 0, blocked 0
+12 Withered Hedge Maze: existing 0, new 11, pending 0, blocked 0
+13 Secret Passages: existing 0, new 11, pending 0, blocked 0
+14 Bathhouse and Rain Wing: existing 0, new 11, pending 0, blocked 0
+15 Kennels and Animal Ward: existing 0, new 11, pending 0, blocked 0
+16 Moon Courtyard and Pumpkin Grounds: existing 0, new 11, pending 0, blocked 0
+17 Heart of the House: existing 0, new 11, pending 0, blocked 0
+
+REMAINING BLOCKER
+Spectral Scullion (level 4 R6): built-in imagegen denied generation at output moderation, HTTP400 moderation_blocked, category other. No image payload or final sprite was saved. Not retried; independent production continued.
+Request ID: c49ad1f6-4178-418a-b8ec-ea7bb5ccec89. Exact action/target/status: spectral-scullion-blocker.json.
+
+PRESERVATION AND HISTORY
+Twenty additional preexisting still identities do not match this roster and remain unchanged; see unmatched-existing-art.json. They are not counted as coverage. No conflicting filenames were overwritten.
+First Hall Mirror large-save tool outcome was exactly "aborted by user"; no inference is made about intentional cancellation versus technical abort. CHECKPOINT.txt retains the history.
+A later Kennels report rename returned Windows Access is denied; the agent preserved it and saved immutable versioned result reports instead. Sprite delivery continued without repeating that rename.
+Rejected render variants and original PNGs are retained in this documentation folder. No placeholder or prompt-only entry is counted as a completed sprite.

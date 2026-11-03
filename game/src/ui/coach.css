@@ -79,7 +79,7 @@
 }
 .coach__spot .coach__fl {
   --fl: clamp(40px, 3.7vw, 56px);
-  animation: coach-gilt 2.8s var(--ease-soft) infinite;
+  animation: coach-gilt calc(2.8s * var(--anim-scale)) var(--ease-soft) infinite;
 }
 .coach__spot .kit-flourish--tl { translate: -38% -38%; }
 .coach__spot .kit-flourish--tr { translate: 38% -38%; }
@@ -169,13 +169,13 @@
   padding-inline: calc(var(--plate-h) * .46);
 }
 .coach__sig .kit-plate__name {
-  font-size: max(11.5px, calc(var(--plate-h) * .42));
+  --reading-size: max(11.5px, calc(var(--plate-h) * .42)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   white-space: nowrap;
 }
 /* named the way every plate in the samples names a Companion — the name over
    a small italic epithet — so this plate and the HUD's say the same thing */
 .coach__sig .kit-plate__epithet {
-  font-size: max(9.5px, calc(var(--plate-h) * .30));
+  --reading-size: max(9.5px, calc(var(--plate-h) * .30)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   line-height: 1.1;
   white-space: nowrap;
 }
@@ -200,7 +200,7 @@
      with a cameo, and the line has to stand on one line */
   grid-column: 1 / -1; grid-row: 1;
   margin: 0 0 12px;
-  font-size: clamp(20px, 1.58vw, 26px);
+  --reading-size: clamp(20px, 1.58vw, 26px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   line-height: 1.04;
   letter-spacing: .12em;
   color: var(--kit-lav);
@@ -262,7 +262,7 @@
   white-space: nowrap;
   color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 12px color-mix(in srgb, var(--kit-candle) 45%, transparent);
-  animation: coach-hint 2.6s var(--ease-soft) infinite;
+  animation: coach-hint calc(2.6s * var(--anim-scale)) var(--ease-soft) infinite;
 }
 .coach__hint::before {
   content: ''; flex: none;
@@ -335,7 +335,7 @@
 /* the Deck's 1280x800: the same note, a notch tighter */
 @media (max-height: 820px) {
   .coach__card { width: min(29rem, calc(100vw - 48px)); padding: 17px 18px 14px 17px; }
-  .coach__head { font-size: 21px; margin-bottom: 9px; }
+  .coach__head { --reading-size: 21px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); margin-bottom: 9px; }
   .coach__row { gap: 10px; min-height: 42px; }
   .coach__text { margin-bottom: 10px; line-height: 1.4; }
   .coach__who { width: clamp(70px, 6.4vw, 86px); }

@@ -1,93 +1,12 @@
-/**
- * The Atlas — the whole estate on one sheet.  OWNER: map.
- *
- * `scenes/map.js` is the plan of the wing you are STANDING IN: rooms, route,
- * nodes, one section drawing cover-fitted onto a survey sheet.  This screen is
- * the level above it — the recovered master drawing of the entire house, all
- * seventeen wings at once, with the kids' own annotations pencilled over it.
- *
- * ── WHY THE WING GETS SHARPER WHEN YOU ZOOM IN ─────────────────────────────
- *
- * `mansion.png` is 1448x1086 and a wing is a fifth of it, so pushing in on one
- * is a 4x to 6x blow-up of about forty thousand pixels — which is a smear.  It
- * is not drawn that way.  Each wing's section file is a 1:1 CROP of the master
- * at exactly the rectangle `sections.json` records, and `blueprint_trace.py`
- * has already reduced that crop to the marks it is made of.  So zooming lays
- * the wing's own vectors back down on the exact rectangle they were cut from,
- * at whatever size the screen is now showing it: the house goes soft, and the
- * wing you are looking at goes hard.  See `ui/plan.js`.
- *
- * The detail box round it is not decoration covering a seam.  A section is a
- * rectangle of the master and the neighbouring wings overlap it, so re-inking
- * one has to say where it stops.  Enlarged details on a real drawing say so the
- * same way, with a ruled box and a scale.
- *
- * ── WHAT THE DRAWING KNOWS AND WHAT THE KIDS KNOW ──────────────────────────
- *
- * `docs/design/03-content-architecture.md` §9 splits these and so does this
- * screen: "Architectural blueprint as the permanent base / Player investigation
- * annotations as a separate overlay."  Every wing's plan and its name are on
- * the master because the house drew them — you can look at all seventeen from
- * the first night.  Who is HELD in a wing, and what guards it, is an annotation
- * and only appears on a wing you have surveyed.
- *
- * That is also the rule `scenes/select.js` already enforces from the other
- * side: it draws no tile at all for a Companion you have not freed, expressly
- * so the board cannot tell you how many are missing or where each one is.  An
- * atlas that printed "Hush — the Secret Passages" on night one would hand back
- * everything that screen refuses to say.
- *
- * ONE DELIBERATE EXCEPTION, added 2026-09-06 on the design owner's call: at
- * the WAY-IN fork — choosing which wing tonight starts in — every wing shows
- * who is held there, surveyed or not.  The whole point of that fork is "go and
- * get the one you want first", and it cannot be used for that if it will not
- * say who is where.  It is not night one either: the fork does not exist until
- * the Foyer has been cleared (`canChooseEntry`).
- *
- * WIDENED 2026-09-10, same owner: EVERY fork — the way on as well as the way
- * in — names who each offered wing holds and who keeps it.  Choosing the next
- * wing is choosing which Companion to go and get and which boss to face for
- * them, and a door marked with a wing's name alone is not that choice.  It is
- * still only the wings ON OFFER: the rest of the house keeps the survey gate,
- * which is why this reads `pendingWing.options` and never touches
- * `_surveyed`.  The name is `option.held` — the Companion the run will
- * actually free in that wing (`Run#_assignHeld`), which is not always the
- * wing's own: the Foyer's own is Marmalade, who starts at home.
- *
- * ── AND IT IS WHERE THE EXPEDITION TURNS ───────────────────────────────────
- *
- * A cleared wing does not hand the party the next one. `Run#openWingFork` sends
- * them here with every wing they have not walked marked as a way on — the Heart
- * excepted, which is the ending rather than a wing you pick.
- *
- * `docs/design/01-mansion-structure.md` no longer decides WHETHER a wing can be
- * reached; it decides how each one reads. A wing this one architecturally joins,
- * whose door the house has left open tonight, is printed with the doc's own
- * reason for the join, because the chapter insists the regions "should not
- * merely touch because the map needs them to". Everything else is a manifested
- * way in — a wardrobe that does not end — and is styled as one.
- *
- * This is the right screen for it and the map is not: the choice is about the
- * HOUSE, and this is the only place that shows which wings exist, which you
- * have surveyed, and what is held in them.
- *
- * Deep link: `#scene=atlas`, `&wing=<slug>` to open zoomed on one,
- * `&all=1` to survey everything (a review door, never progress),
- * `&choose=1` for the fork (needs a run standing on one).
- *
- * THE WAY IN IS A FORK TOO, and that is why there is no second mode here for
- * it: `Run` opens one at `ENTRY_STEP` when an expedition may choose where it
- * begins, so it arrives through `run.pendingWing` like any other, votes through
- * the same ballot, and settles on the same seeded roulette.  It differs in
- * exactly two ways, both read off `pendingWing.step`: there is no wing to come
- * FROM, and backing out is allowed because nothing has been spent yet.
- */
+/** The recovered master survey. Section footprints and zoomed details are
+ * rendered from the playable architecture, including separate foundation and
+ * roof insets. Encounter state and companion discovery remain independent. */
 import { Scene } from '../core/scenes.js';
 import { bus } from '../core/bus.js';
 import { Save } from '../core/save.js';
 import { COMPANIONS, REGION_ORDER } from '../data/schema.js';
-import { regionMeta, blueprintTraceUrl, blueprintSectionUrl, MASTER, exitReason } from '../state/mapgen.js';
-import { loadPlanTrace, solvePen, inkTrace } from '../ui/plan.js';
+import { regionMeta, MASTER, exitReason, ROOMS } from '../state/mapgen.js';
+import { estateSections, surveyMap, drawSurveySection, drawMasterSurvey } from '../ui/estate-blueprint.js';
 import {
   ensureCss, fontsReady, el, svg, rovingFocus,
   companionPortrait, COMPANION_BY_SLUG, setReduceMotion, reduceMotion,
@@ -108,7 +27,7 @@ const GLYPH = {
 
 const CSS_KIT = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_ATL = new URL('./atlas.css', import.meta.url).href;
-const SECTIONS_URL = new URL('../../assets/blueprint/sections.json', import.meta.url).href;
+
 
 /** Fraction of the frame left as margin round a wing when it is zoomed. */
 const ZOOM_MARGIN = 0.06;
@@ -138,79 +57,17 @@ const HAIRLINE = 0.95;
  * printing its pale sheet across it. Built once per page -- one pass over the
  * master's 1.6M pixels -- and copied into each visit's canvas.
  */
-let PENCIL = null;
-function pencilOf(img) {
-  if (PENCIL) return PENCIL;
-  const c = document.createElement('canvas');
-  c.width = MASTER.w; c.height = MASTER.h;
-  const g = c.getContext('2d', { willReadFrequently: true });
-  g.drawImage(img, 0, 0, MASTER.w, MASTER.h);
-  const d = g.getImageData(0, 0, MASTER.w, MASTER.h), p = d.data;
-  for (let i = 0; i < p.length; i += 4) {
-    const r = p[i], gg = p[i + 1], b = p[i + 2];
-    const blue = (b - r) / 255;
-    const dark = 1 - (r * 0.299 + gg * 0.587 + b * 0.114) / 255;
-    let v = blue * 2.4 + Math.max(0, dark - 0.38) * 1.3;
-    v = v <= 0 ? 0 : v >= 1 ? 1 : v;
-    p[i] = 31; p[i + 1] = 19; p[i + 2] = 10; p[i + 3] = (v * 255) | 0;
-  }
-  /* a pencil, not a hairline: each line is thickened by a pixel either way,
-     or the plan laid at the Deck's 0.55x sinks into the paper's grain */
-  const W = MASTER.w, H = MASTER.h, a0 = new Uint8ClampedArray(W * H);
-  for (let j = 0; j < W * H; j++) a0[j] = p[j * 4 + 3];
-  for (let y = 1; y < H - 1; y++) {
-    for (let x = 1; x < W - 1; x++) {
-      const j = y * W + x;
-      const m = Math.max(a0[j], a0[j - 1], a0[j + 1], a0[j - W], a0[j + W]);
-      p[j * 4 + 3] = m;
-    }
-  }
-  g.putImageData(d, 0, 0);
-  return (PENCIL = c);
-}
-
-/**
- * A wing's own drawing as INK (round 38): its section bitmap -- everything
- * outside the wing already erased to paper -- lifted off that paper into
- * alpha, in one colour, at the section's own pixel size. At the atlas's laid-
- * flat size (about half a section pixel per screen pixel) the bitmap's own
- * hand-drawn walls downsample into clean, thin, continuous lines; the traced
- * vectors, solved for the map's 2-4x blow-ups, broke into dashes and beads
- * there and read as a blot. Cached per wing and colour.
- */
 const SECTION_INK = new Map();
-function sectionInk(slug, color) {
-  const key = `${slug}|${color}`;
-  if (SECTION_INK.has(key)) return SECTION_INK.get(key);
-  const p = new Promise((resolve) => {
-    const img = new Image();
-    img.decoding = 'async';
-    img.onload = () => {
-      try {
-        const c = document.createElement('canvas');
-        c.width = img.naturalWidth; c.height = img.naturalHeight;
-        const g = c.getContext('2d', { willReadFrequently: true });
-        g.drawImage(img, 0, 0);
-        const d = g.getImageData(0, 0, c.width, c.height), px = d.data;
-        const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(color) || [0, '1f', '13', '0a'];
-        const R = parseInt(m[1], 16), G = parseInt(m[2], 16), B = parseInt(m[3], 16);
-        for (let i = 0; i < px.length; i += 4) {
-          const r = px[i], gg = px[i + 1], b = px[i + 2];
-          const blue = (b - r) / 255;
-          const dark = 1 - (r * 0.299 + gg * 0.587 + b * 0.114) / 255;
-          let v = (blue * 2.6 + Math.max(0, dark - 0.36) * 1.5) * 1.35;
-          v = v <= 0 ? 0 : v >= 1 ? 1 : v;
-          px[i] = R; px[i + 1] = G; px[i + 2] = B; px[i + 3] = (v * 255) | 0;
-        }
-        g.putImageData(d, 0, 0);
-        resolve(c);
-      } catch { resolve(null); }
-    };
-    img.onerror = () => resolve(null);
-    img.src = new URL(`../../${blueprintSectionUrl(slug)}`, import.meta.url).href;
-  });
-  SECTION_INK.set(key, p);
-  return p;
+function sectionInk(slug,color) {
+  const key=`${slug}|${color}`;
+  if(!SECTION_INK.has(key)) {
+    const plan=surveyMap(slug).plan,c=document.createElement('canvas');
+    const scale=1200/Math.max(plan.sheet.w,plan.sheet.h);
+    c.width=Math.round(plan.sheet.w*scale);c.height=Math.round(plan.sheet.h*scale);
+    drawSurveySection(c.getContext('2d'),slug,c.width,c.height,color);
+    SECTION_INK.set(key,c);
+  }
+  return Promise.resolve(SECTION_INK.get(key));
 }
 
 /**
@@ -351,32 +208,7 @@ function inkThin(w, ink) {
  * to disagree the moment a boss is renamed.  The rectangle is the one thing the
  * tool actually MEASURED, so the rectangle is the one thing we take.
  */
-async function loadSections() {
-  const r = await fetch(SECTIONS_URL);
-  if (!r.ok) throw new Error(`sections.json ${r.status}`);
-  const j = await r.json();
-  const out = [];
-  for (const slug of REGION_ORDER) {
-    const s = j.sections?.[slug];
-    if (!s) continue;
-    const meta = regionMeta(slug);
-    out.push({
-      slug, meta,
-      n: meta.section,
-      x: s.x, y: s.y, w: s.w, h: s.h,
-      nx: s.nx, ny: s.ny, nw: s.nw, nh: s.nh,
-      /* round 38: the wing's own FOOTPRINT on the estate (rings of estate px),
-         where its label is lettered and how wide it runs there -- measured by
-         `tools/blueprint_locate.py --wings` off the section's own ink, so the
-         seventeen are seventeen parts that do not overlap */
-      outline: Array.isArray(s.outline) ? s.outline : null,
-      pole: Array.isArray(s.pole) ? s.pole : null,
-      span: Array.isArray(s.span) ? s.span : null,
-      companion: COMPANIONS.find((c) => c.region === slug) || null,
-    });
-  }
-  return out;
-}
+async function loadSections() { return estateSections(); }
 
 export class AtlasScene extends Scene {
   constructor(ctx) {
@@ -623,35 +455,11 @@ export class AtlasScene extends Scene {
     const vp = this._vp = el('div', 'at-vp');
     const plate = this._plate = el('div', 'at-plate');
 
-    const img = this._estate = document.createElement('img');
-    img.className = 'at-estate';
-    img.src = new URL(`../../${MASTER.url}`, import.meta.url).href;
-    img.width = MASTER.w; img.height = MASTER.h;
-    img.decoding = 'async';
-    img.fetchPriority = 'high';
-    img.draggable = false;
-    /* Presentational: everything this drawing says is said again by the
-       seventeen buttons over it, each of which carries its own label. */
-    img.alt = '';
-    plate.appendChild(img);
-
-    /* ROUND 30: the house in FADED PENCIL on the old paper (the master's
-       lines lifted off its own pale sheet, pencilOf), and over it every
-       SURVEYED wing in strong iron-gall with a gilt wash under it -- so the
-       plan says what "1 of 17" means at a glance. Survey 3: "all seventeen
-       wings at the same blue-grey line weight, so the one surveyed wing and
-       the sixteen unknown ones look identical". */
-    const pencil = this._pencil = document.createElement('canvas');
-    pencil.className = 'at-pencil';
-    pencil.width = MASTER.w; pencil.height = MASTER.h;
-    pencil.setAttribute('aria-hidden', 'true');
-    plate.appendChild(pencil);
-    const lay = () => {
-      if (!this._pencil || !img.naturalWidth) return;
-      try { this._pencil.getContext('2d').drawImage(pencilOf(img), 0, 0); this.root?.setAttribute('data-pencil', '1'); }
-      catch { /* a tainted or missing master: the printed drawing shows instead */ }
-    };
-    if (img.complete && img.naturalWidth) lay(); else img.addEventListener('load', lay, { once: true });
+    const pencil=this._pencil=document.createElement('canvas');
+    pencil.className='at-pencil';pencil.width=MASTER.w;pencil.height=MASTER.h;
+    pencil.setAttribute('aria-hidden','true');plate.appendChild(pencil);
+    drawMasterSurvey(pencil.getContext('2d'),this.wings,this._tok('--bp-paper-ink','#e5d9b4'));
+    this.root.setAttribute('data-pencil','1');
     const survey = this._survey = el('div', 'at-survey');
     survey.setAttribute('aria-hidden', 'true');
     plate.appendChild(survey);
@@ -826,8 +634,9 @@ export class AtlasScene extends Scene {
       : this.choosing ? ' No way through tonight.' : '';
     if (!seen) return `${w.meta.name}. Unsurveyed.${way}`;
     const hc = o ? (o.held ? COMPANIONS.find((x) => x.slug === o.held) : null) : w.companion;
-    const held = hc ? ` ${hc.name}, ${hc.title}, is held here.`
-      : (o && w.slug !== 'heart') ? ' Nobody is held here any more.' : '';
+    const held = hc ? (o ? ` ${hc.name}, ${hc.title}, is held here.`
+      : ` Known Companion of this wing: ${hc.name}, ${hc.title}.`)
+      : (o && w.slug !== 'heart') ? ' Nobody is held here.' : '';
     const state = this.surveyed.has(w.slug) ? 'Surveyed' : 'Unsurveyed';
     return `${w.meta.name}. ${state}.${held} Guarded by ${w.meta.boss}.${way}`;
   }
@@ -929,8 +738,8 @@ export class AtlasScene extends Scene {
         </div>
       </div>
       <dl class="at-dos__facts kit-stats">
-        <div><dt class="kit-stats__label">Kept by</dt><dd class="at-dos__boss kit-stats__value">&mdash;</dd></div>
-        <div><dt class="kit-stats__label">Rooms</dt><dd class="at-dos__rooms kit-stats__value">20</dd></div>
+        <div><dt class="kit-stats__label">Guardian</dt><dd class="at-dos__boss kit-stats__value">&mdash;</dd></div>
+        <div><dt class="kit-stats__label">Room types</dt><dd class="at-dos__rooms kit-stats__value">&mdash;</dd></div>
         <div><dt class="kit-stats__label">Survey</dt><dd class="at-dos__state kit-stats__value">&mdash;</dd></div>
       </dl>
       <p class="at-dos__why" hidden></p>
@@ -1099,49 +908,13 @@ export class AtlasScene extends Scene {
    * and the supersample is free to be whatever fits in `INK_MAX` without
    * changing a single line weight.
    */
-  async _paintInk(w, r, k) {
-    const cv = this._ink;
-    const token = this._inkToken = (this._inkToken || 0) + 1;
-    cv.style.left = `${w.nx * 100}%`;
-    cv.style.top = `${w.ny * 100}%`;
-    cv.style.width = `${w.nw * 100}%`;
-    cv.style.height = `${w.nh * 100}%`;
-
-    const t = await loadPlanTrace(new URL(`../../${blueprintTraceUrl(w.slug)}`, import.meta.url).href);
-    if (token !== this._inkToken || !this._ink) return;
-
-    // on-screen px per section px, and a supersample that stays inside INK_MAX
-    const D = (r.w * k) / w.w;
-    const ss = Math.max(1, Math.min(D * (window.devicePixelRatio || 1), INK_MAX / Math.max(w.w, w.h)));
-    const cw = Math.max(1, Math.round(w.w * ss)), ch = Math.max(1, Math.round(w.h * ss));
-    cv.width = cw; cv.height = ch;
-
-    const g = cv.getContext('2d');
-    /* round 30: the redraw is iron-gall on the old paper, over the house's
-       faded pencil (which recedes further while a wing is read) */
-    const ink = GALL;
-    const paper = this._tok('--kit-oldpaper-hi', '#9b7a4e');
-
-    /* A fresh sheet under the redraw. Feathered, because the section is a
-       RECTANGLE of the master and its neighbours overlap it — a hard-edged
-       opaque patch would blank a slice of the wing next door. The ruled box
-       drawn in CSS over this is what makes the edge a mark rather than a seam. */
-    g.save();
-    const feather = Math.max(2, Math.round(Math.min(cw, ch) * 0.05));
-    g.fillStyle = paper;
-    g.globalAlpha = 0.3;
-    g.fillRect(feather, feather, cw - feather * 2, ch - feather * 2);
-    g.globalAlpha = 0.14;
-    g.fillRect(0, 0, cw, ch);
-    g.restore();
-
-    if (!t) { cv.hidden = false; return; }
-
-    g.save();
-    g.scale(cw / w.w, ch / w.h);              // section px -> backing store
-    inkTrace(g, t, { pen: solvePen(t, D), scale: D, ink, layerAlpha: 0.88 });
-    g.restore();
-    cv.hidden = false;
+  async _paintInk(w,r,k) {
+    const cv=this._ink;
+    cv.style.left=`${w.nx*100}%`;cv.style.top=`${w.ny*100}%`;
+    cv.style.width=`${w.nw*100}%`;cv.style.height=`${w.nh*100}%`;
+    const scale=Math.min(k*(window.devicePixelRatio||1),INK_MAX/Math.max(r.w,r.h));
+    cv.width=Math.max(1,Math.round(r.w*scale));cv.height=Math.max(1,Math.round(r.h*scale));
+    drawSurveySection(cv.getContext('2d'),w.slug,cv.width,cv.height,GALL);cv.hidden=false;
   }
 
   /**
@@ -1254,7 +1027,7 @@ export class AtlasScene extends Scene {
     const goldHi = this._tok('--kit-gold-hi', '#e6c98a');
 
     for (const w of this.wings) {
-      const t = await loadPlanTrace(new URL(`../../${blueprintTraceUrl(w.slug)}`, import.meta.url).href);
+
       if (token !== this._surveyToken) return;
       const seen = this.surveyed.has(w.slug);
       const D = (w.nw * pw) / w.w;                     // on-screen px per section px
@@ -1429,9 +1202,6 @@ export class AtlasScene extends Scene {
           pg.drawImage(drawn, w.nx * pw, w.ny * ph, w.nw * pw, w.nh * ph);
         }
         pg.globalAlpha = 1;
-      } else if (t) {
-        toSection(pg);
-        inkTrace(pg, t, { pen: clamp(2.5 * D, 1.0, 1.5), scale: D, ink: GALL, layerAlpha: 1 });
       }
       /* the walls left off where the wing's name is lettered, the way a
          draughtsman letters a plan: the wash laid again over them there,
@@ -1691,22 +1461,21 @@ export class AtlasScene extends Scene {
     d.querySelector('.at-dos__name').textContent = w.meta.name;
     /* The form is written as two clauses parted by a middle dot: set as two
        lines broken AT the dot (OCHRE's), so no line ends on a stray point. */
-    d.querySelector('.at-dos__form').innerHTML = String(w.meta.form).split(/\s+·\s+/).map(esc).join('<br>');
+    d.querySelector('.at-dos__form').innerHTML = String(w.meta.form + ' · ' + w.level + ' survey').split(/\s+·\s+/).map(esc).join('<br>');
     d.querySelector('.at-dos__boss').textContent = known ? w.meta.boss : 'Not yet known';
-    d.querySelector('.at-dos__rooms').textContent = '20';
+    d.querySelector('.at-dos__rooms').textContent = String(ROOMS[slug].length);
     d.querySelector('.at-dos__state').textContent = seen ? 'Surveyed' : 'Unsurveyed';
 
     /* WHO IS HELD HERE. At a fork: the Companion the RUN will free in that
        wing, the same answer its Rescue room and its boss act on. Away from
        one, a surveyed wing names its own Companion, as it always has. */
     const held = d.querySelector('.at-dos__held');
+    d.querySelector('.at-dos__heldlbl').textContent = offered ? 'Held here' : 'Known Companion';
     const heldSlug = offered ? (offered.held || null)
       : (seen && w.companion ? w.companion.slug : null);
     const c = heldSlug ? (COMPANIONS.find((x) => x.slug === heldSlug) || null) : null;
-    /* NOBODY IS AN ANSWER TOO. Every wing is on offer at a fork and there are
-       usually fewer Companions left than wings, so some doors hold no one —
-       the Kid's own Companion's wing, for a start. Saying so is the difference
-       between "this wing is empty" and "the screen forgot to say". */
+    /* A wing holds only its own Companion (Run#heldIn), so an empty door is a
+       fact the run already knows: they are home, or walking beside you. */
     const empty = !!offered && !c && slug !== 'heart';
     held.hidden = !c && !empty;
     held.classList.toggle('is-empty', empty);
@@ -1722,7 +1491,7 @@ export class AtlasScene extends Scene {
       host.appendChild(this._pf.el);
     } else if (empty) {
       d.querySelector('.at-dos__cname').textContent = 'Nobody';
-      d.querySelector('.at-dos__ctitle').textContent = 'everyone this wing could hold is already free';
+      d.querySelector('.at-dos__ctitle').textContent = 'this wing has no one left to free';
     }
     /* The Heart holds no Companion — it is what holds the house — so the
        "Held here" block is simply absent there rather than reading empty. */
@@ -1947,6 +1716,8 @@ export class AtlasScene extends Scene {
   update() { /* every animation on this screen is CSS-composited */ }
 
   async exit() {
+    // Pending trace/ink loads must stop before touching the discarded atlas.
+    this._surveyToken = (this._surveyToken || 0) + 1;
     this._unpauseStage?.();
     this._unpauseStage = null;
     this._ro?.disconnect();

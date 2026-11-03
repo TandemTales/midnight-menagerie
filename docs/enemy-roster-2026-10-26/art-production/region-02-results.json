@@ -1,0 +1,564 @@
+{
+  "level": 2,
+  "entries": [
+    {
+      "level": 2,
+      "region": "Forgotten Nursery",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Button Baby",
+      "existing_animation": true,
+      "description": "Small rag doll with button eyes, stitched mouth, purple yarn hair and a bow. Tilts its head, waves and makes an exaggerated request to be picked for play.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: button-baby.",
+      "signature": "Signature Upright small purple-haired rag doll, not a rocking horse.",
+      "asset_id": "button-baby",
+      "production_id": "button-baby",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\button-baby.webp",
+      "source_path": "animations\\sprites\\enemies\\buttonBaby.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          205,
+          214
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 13512,
+        "partial_alpha_pixels": 30272,
+        "alpha_bbox": [
+          0,
+          0,
+          205,
+          214
+        ],
+        "sha256": "7a27abd9cff39cbe369343d447180b5a4d7d5b6ea64223f2a47f28c1290fe026"
+      },
+      "blocker": null
+    },
+    {
+      "level": 2,
+      "region": "Forgotten Nursery",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Patchwork Soldier",
+      "existing_animation": true,
+      "description": "Stitched toy soldier wearing a red hat, with a wooden sword and star shield. Marches a ceremonial patrol and performs an over-serious toy salute; no injury depiction.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: patchwork-soldier.",
+      "signature": "Signature Red cap, wooden toy sword and star shield; plush soldier, not tin rifleman.",
+      "asset_id": "patchwork-soldier",
+      "production_id": "patchwork-soldier",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\patchwork-soldier.webp",
+      "source_path": "animations\\sprites\\enemies\\patchworkSoldier.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          169,
+          246
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 16924,
+        "partial_alpha_pixels": 24367,
+        "alpha_bbox": [
+          0,
+          0,
+          169,
+          246
+        ],
+        "sha256": "3c45e17739047ef6649d4c7d601efe05c9fcf65ebb70ee34afe4f9e39a340c45"
+      },
+      "blocker": null
+    },
+    {
+      "level": 2,
+      "region": "Forgotten Nursery",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Jack in the Box",
+      "existing_animation": true,
+      "description": "Smiling stitched jester on a spring inside a patterned crank box. Cranks up a clearly signaled, gentle surprise and bobs to demand applause.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: jack-in-the-box.",
+      "signature": "Signature Square base with tall spring curve; no untelegraphed jump scare.",
+      "asset_id": "jack-in-the-box",
+      "production_id": "jack-in-the-box",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\jack-in-the-box.webp",
+      "source_path": "animations\\sprites\\enemies\\jackInTheBox.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          181,
+          245
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 16565,
+        "partial_alpha_pixels": 27330,
+        "alpha_bbox": [
+          0,
+          0,
+          181,
+          245
+        ],
+        "sha256": "20d3a51e1cd82658f4d08cc788c3b940b3b6e8f0ebbd9867d3753efabd8ffb01"
+      },
+      "blocker": null
+    },
+    {
+      "level": 2,
+      "region": "Forgotten Nursery",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Blanket Blob",
+      "existing_animation": true,
+      "description": "A shy large-eyed creature peeking from a crocheted purple patchwork blanket. Peeks out, hides again and nudges the blanket into a cozy shelter.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: blanket-blob.",
+      "signature": "Signature Small rounded crochet mound with one face; distinct from low many-footed Creeper and multiheaded Hydra.",
+      "asset_id": "blanket-blob",
+      "production_id": "blanket-blob",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\blanket-blob.webp",
+      "source_path": "animations\\sprites\\enemies\\blanketBlob.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          241,
+          184
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 14653,
+        "partial_alpha_pixels": 29561,
+        "alpha_bbox": [
+          0,
+          0,
+          241,
+          184
+        ],
+        "sha256": "fcccaf1f821fe4961168cb897363ff06096faab812556c982c12551322d206ee"
+      },
+      "blocker": null
+    },
+    {
+      "level": 2,
+      "region": "Forgotten Nursery",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Crib Curtains",
+      "existing_animation": false,
+      "description": "Two small nursery drapes hanging from a short brass rod, patterned with tiny stitched moons. Part to reveal nobody, then close as if a bedtime show has ended.",
+      "animation": "2D animation Idle hem sway; tell tiebacks lift; action two cloth panels part; resolve close.",
+      "signature": "Signature Paired overhead drapes; no standalone shrouded body or wrapping around children.",
+      "production_id": "crib-curtains",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\crib-curtains.webp",
+      "source_path": "animations\\sprites\\enemies\\cribCurtains.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            229,
+            206
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 22602,
+          "partial_alpha_pixels": 23596,
+          "alpha_bbox": [
+            0,
+            0,
+            229,
+            206
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            229,
+            206
+          ],
+          "sha256": "c12cb8b9a21ee8a2b5cf2d24e0ee14cbf3eda16ed573f3077c2df8182e99c264"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 39433,
+          "partial_alpha_pixels": 25127,
+          "alpha_bbox": [
+            10,
+            20,
+            249,
+            236
+          ],
+          "visible_bbox_alpha64": [
+            17,
+            24,
+            246,
+            229
+          ],
+          "sha256": "1ef5256165cad4c00842f166cc0529e600a280c24a3f59aa32c64f41faf5ae19"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 956908,
+          "partial_alpha_pixels": 615202,
+          "alpha_bbox": [
+            0,
+            0,
+            1232,
+            1218
+          ],
+          "visible_bbox_alpha64": [
+            86,
+            117,
+            1205,
+            1120
+          ],
+          "sha256": "aee4d8fc416ecf3763c566b80a0cc3d62ef78e8e03fa81977ae5d4d22b733693"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\crib-curtains-original.png",
+        "visual": "Reviewed: paired stitched moon nursery drapes with complete short rod; open transparent gap, tactile fabric, readable silhouette, no clipping.",
+        "conversion": "Tier-size source, isolated build_enemy_still; no registry integration",
+        "runtime_metadata": {
+          "file": "crib-curtains.webp",
+          "w": 229,
+          "h": 206,
+          "source": "cribCurtains.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 2,
+      "region": "Forgotten Nursery",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Porcelain Doll",
+      "existing_animation": false,
+      "description": "A neat old doll in a bell-shaped dress, with painted cheeks and folded hands. Quietly swaps between three polite poses while pretending to remain an ornament.",
+      "animation": "2D animation Idle still; tell eye glance; action masked pose swap; resolve innocent smile.",
+      "signature": "Signature Glossy upright ceramic figure, unlike Button Baby’s soft stitched rag body.",
+      "production_id": "porcelain-doll",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\porcelain-doll.webp",
+      "source_path": "animations\\sprites\\enemies\\porcelainDoll.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          189,
+          241
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 13437,
+        "partial_alpha_pixels": 32001,
+        "alpha_bbox": [
+          0,
+          0,
+          189,
+          241
+        ],
+        "sha256": "2018141c18e7141665abd84186f87553510c68b1eb0c22fdbfcfee931752330e"
+      },
+      "blocker": null
+    },
+    {
+      "level": 2,
+      "region": "Forgotten Nursery",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Imaginary Friend",
+      "existing_animation": false,
+      "description": "A small translucent outline drawn in rounded crayon strokes, with one oversized waved hand. Redraws a missing feature and invents a silly rule for the next game.",
+      "animation": "2D animation Idle line shimmer; tell finger doodle; action single outline stroke appears; resolve erase.",
+      "signature": "Signature Flat colored scribble silhouette; no solid doll or fully rendered ghost child.",
+      "production_id": "imaginary-friend",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\imaginary-friend.webp",
+      "source_path": "animations\\sprites\\enemies\\imaginaryFriend.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            193,
+            229
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 22481,
+          "partial_alpha_pixels": 21329,
+          "alpha_bbox": [
+            0,
+            0,
+            193,
+            229
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            193,
+            228
+          ],
+          "sha256": "e8a27d06aa9e1dfa42255b0e0de14c0c985c89ddade8307ed1813b5cc9cd2dab"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 35761,
+          "partial_alpha_pixels": 29388,
+          "alpha_bbox": [
+            4,
+            0,
+            253,
+            256
+          ],
+          "visible_bbox_alpha64": [
+            53,
+            15,
+            245,
+            243
+          ],
+          "sha256": "6b3c058f2dbc138cb5428be1e99ef48f7052e721f8c9610c7a67bc31cf68b5d9"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 847710,
+          "partial_alpha_pixels": 724806,
+          "alpha_bbox": [
+            0,
+            0,
+            1254,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            260,
+            76,
+            1199,
+            1191
+          ],
+          "sha256": "41328c4da9669f7fad08a4f5d11f5fc93a63e3743bc96566856571428621bde6"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\imaginary-friend-original.png",
+        "visual": "Reviewed: crayon-stroke outline playmate, translucent body, large waving hand, intact limbs and friendly face; distinct flat scribble design.",
+        "conversion": "Tier-size source, isolated build_enemy_still; no registry integration",
+        "runtime_metadata": {
+          "file": "imaginary-friend.webp",
+          "w": 193,
+          "h": 229,
+          "source": "imaginaryFriend.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 2,
+      "region": "Forgotten Nursery",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Patchwork Giant",
+      "existing_animation": true,
+      "description": "Bulky assemblage of stuffed toys, patches, buttons and plush faces. Attempts one enormous group hug toward its own toys and tumbles into a soft jostle.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: patchwork-giant.",
+      "signature": "Signature Broad plush assemblage; retain each visible stuffed face, distinct from single small ragdoll.",
+      "asset_id": "patchwork-giant",
+      "production_id": "patchwork-giant",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\patchwork-giant.webp",
+      "source_path": "animations\\sprites\\enemies\\patchworkGiant.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          457,
+          446
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 67494,
+        "partial_alpha_pixels": 136276,
+        "alpha_bbox": [
+          0,
+          0,
+          457,
+          446
+        ],
+        "sha256": "49fb30c960058bb7c3941fae5c85fb4687712e4c1e9617f797695c7e27e09c2a"
+      },
+      "blocker": null
+    },
+    {
+      "level": 2,
+      "region": "Forgotten Nursery",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Toy Chest",
+      "existing_animation": true,
+      "description": "Ornate chest with expressive front eyes, plush contents and small clawlike feet. Pops open to insist everyone tidy the toys, then rearranges them incorrectly.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: toy-chest.",
+      "signature": "Signature Heavy eyed chest with toy contents; preserve eyes and clawlike feet, never portray biting.",
+      "asset_id": "toy-chest",
+      "production_id": "toy-chest",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\toy-chest.webp",
+      "source_path": "animations\\sprites\\enemies\\toyChest.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          467,
+          397
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 50719,
+        "partial_alpha_pixels": 134571,
+        "alpha_bbox": [
+          0,
+          0,
+          467,
+          397
+        ],
+        "sha256": "7dc2d4442559b0ec79a7b7e63080a5357c914aed7cbd6102749fd1e5b41a3024"
+      },
+      "blocker": null
+    },
+    {
+      "level": 2,
+      "region": "Forgotten Nursery",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Grand Music Box",
+      "existing_animation": false,
+      "description": "An ornate wide music box opening onto a miniature stage with three simple performer silhouettes. Repeats the finale until every toy has taken a bow.",
+      "animation": "2D animation Idle crank turn; tell lid opens; action three fixed dancers slide across stage; resolve bow and close.",
+      "signature": "Signature Wide opening stage with miniature chorus, not a single ballerina or flying box.",
+      "production_id": "grand-music-box",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\grand-music-box.webp",
+      "source_path": "animations\\sprites\\enemies\\grandMusicBox.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            496,
+            412
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 62016,
+          "partial_alpha_pixels": 141317,
+          "alpha_bbox": [
+            0,
+            0,
+            496,
+            412
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            496,
+            411
+          ],
+          "sha256": "324fc180e9ad36b85be2c42e5cbb91168d169bcaed39532448df4523c0235411"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 116294,
+          "partial_alpha_pixels": 144831,
+          "alpha_bbox": [
+            10,
+            0,
+            512,
+            505
+          ],
+          "visible_bbox_alpha64": [
+            12,
+            47,
+            508,
+            457
+          ],
+          "sha256": "7ad51488957fc00a85eb4a231c60a0024eb5adb572d984a0488e9805f8639cbc"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 698712,
+          "partial_alpha_pixels": 873459,
+          "alpha_bbox": [
+            0,
+            0,
+            1254,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            31,
+            114,
+            1243,
+            1120
+          ],
+          "sha256": "9288e7acccace4b1c117e4b56195cd36deddc91ee578feb6243316a2013fbee6"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\grand-music-box-original.png",
+        "visual": "Reviewed: ornate wide open music box with three distinct miniature wooden performers and visible crank; all silhouettes contained and separated, soft brass and velvet detailing.",
+        "conversion": "Tier-size source, isolated build_enemy_still; no registry integration",
+        "runtime_metadata": {
+          "file": "grand-music-box.webp",
+          "w": 496,
+          "h": 412,
+          "source": "grandMusicBox.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 2,
+      "region": "Forgotten Nursery",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Governess",
+      "existing_animation": true,
+      "description": "Spectral Victorian governess or doll with layered dark dress, sewing props and lavender smoke. Fusses over bedtime and toy placement, arranging everything with prim gestures rather than striking.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: governess.",
+      "signature": "Signature Layered violet dress and sewing motif; existing supernatural caretaker identity preserved.",
+      "asset_id": "governess",
+      "production_id": "governess",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\governess.webp",
+      "source_path": "animations\\sprites\\enemies\\governess.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          727,
+          987
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 294266,
+        "partial_alpha_pixels": 423209,
+        "alpha_bbox": [
+          0,
+          0,
+          727,
+          987
+        ],
+        "sha256": "d456419a7e714689b9f2c6d1750375c33533b7f96f56412a04c2c0bce869b01d"
+      },
+      "blocker": null
+    }
+  ]
+}

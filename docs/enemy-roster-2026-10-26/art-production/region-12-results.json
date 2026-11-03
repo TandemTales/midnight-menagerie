@@ -1,0 +1,872 @@
+{
+  "level": 12,
+  "entries": [
+    {
+      "level": 12,
+      "region": "Withered Hedge Maze",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Wrong-Way Sign",
+      "existing_animation": false,
+      "description": "A forked wooden signpost with three unequal arrow boards and a single faded lilac trail ribbon. It confidently gives contradictory directions; its shadow points somewhere none of its arrows do. Intent idea: misdirect a planned effect.",
+      "animation": "2D animation Idle: ribbon twitch. Tell: shadow arrow glows. Action: boards pivot one at a time. Resolve: shadow smugly turns last.",
+      "signature": "Signature Asymmetrical branching silhouette and independent shadow, not a garden gate or carved statue.",
+      "production_id": "wrong-way-sign",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\wrong-way-sign.webp",
+      "source_path": "animations\\sprites\\enemies\\wrongWaySign.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            200,
+            218
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 29612,
+          "partial_alpha_pixels": 13013,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            200,
+            217
+          ],
+          "sha256": "027695ce37141080512b8f1f42480ef141420c918132ea73101f768068734ce5"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 50095,
+          "partial_alpha_pixels": 14466,
+          "visible_bbox_alpha64": [
+            33,
+            16,
+            233,
+            233
+          ],
+          "sha256": "500450c3d9e3717bc04a52350b19b2373e3a7ec4a1dc9680c1207dd8609c2643"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1221006,
+          "partial_alpha_pixels": 350691,
+          "visible_bbox_alpha64": [
+            162,
+            79,
+            1140,
+            1142
+          ],
+          "sha256": "bcc23191e59a08b701f146a70605ec3b98fbb36167628400585bcc30ab1e991f"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\wrong-way-sign-original.png",
+        "visual": "Reviewed full generated image: three unequal blank wooden arrows on forked post, lilac ribbon and independent compact purple arrow shadow. Complete tip-to-tip silhouette; polished tactile wood and brass.",
+        "runtime_metadata": {
+          "file": "wrong-way-sign.webp",
+          "w": 200,
+          "h": 218,
+          "source": "wrongWaySign.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 12,
+      "region": "Withered Hedge Maze",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Boundary Rope",
+      "existing_animation": false,
+      "description": "Two squat white stone boundary posts supporting one thick, moss-green garden cord in a broad U. An invisible steward insists visitors walk around a boundary that politely sags upward. Intent idea: briefly obstruct an approach.",
+      "animation": "2D animation Idle: cord bobs. Tell: post caps glow. Action: U reverses into an arch. Resolve: impossible arch droops normally.",
+      "signature": "Signature Paired low posts with one broad curve; not a barred gate, moving vine or whipping leash.",
+      "production_id": "boundary-rope",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\boundary-rope.webp",
+      "source_path": "animations\\sprites\\enemies\\boundaryRope.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            238,
+            149
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 22469,
+          "partial_alpha_pixels": 12283,
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            237,
+            149
+          ],
+          "sha256": "006d632fde36dc390be1b4c07884025eb67f3a5f1be70ea2423697f6265f43d9"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 51104,
+          "partial_alpha_pixels": 13722,
+          "visible_bbox_alpha64": [
+            10,
+            55,
+            246,
+            204
+          ],
+          "sha256": "3cf1703997fbe1415f3284133693a32dd61d39134b98de1558bb55f300efbe7e"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1229923,
+          "partial_alpha_pixels": 341978,
+          "visible_bbox_alpha64": [
+            49,
+            273,
+            1205,
+            998
+          ],
+          "sha256": "721d8ee767a18c5253585cdd0d1f6ceb246397c36b1020fe3152d1bfe718fbe8"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\boundary-rope-original.png",
+        "visual": "Reviewed full generated image: two white stone posts, one thick moss-green U cord and gently luminous caps. Clear wide paired-post silhouette, no anatomy or cutoffs.",
+        "runtime_metadata": {
+          "file": "boundary-rope.webp",
+          "w": 238,
+          "h": 149,
+          "source": "boundaryRope.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 12,
+      "region": "Withered Hedge Maze",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Lawn Roller",
+      "existing_animation": false,
+      "description": "A heavy striped iron lawn roller under a long bent push handle, a single brown leaf stuck to its drum. It smooths an imaginary path; the leaf remains motionless while the drum turns beneath it. Intent idea: build steady protection.",
+      "animation": "2D animation Idle: handle wags. Tell: stripe glows. Action: roll briefly; a flat spectral strip unfurls. Resolve: strip curls back inside.",
+      "signature": "Signature One low cylinder and a tall diagonal handle; no cart load or walking plant.",
+      "production_id": "lawn-roller",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\lawn-roller.webp",
+      "source_path": "animations\\sprites\\enemies\\lawnRoller.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            169,
+            209
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 20360,
+          "partial_alpha_pixels": 14001,
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            169,
+            209
+          ],
+          "sha256": "9d247f13d6aba8d3148d434c0bbcceba7698182943fb6efd344bdfbfbce9826c"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 49388,
+          "partial_alpha_pixels": 15188,
+          "visible_bbox_alpha64": [
+            55,
+            26,
+            224,
+            234
+          ],
+          "sha256": "02492eed2c32f9309a2545d8f75c2651e402bd9112ad1f205aa9451a6bf72f7a"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1195052,
+          "partial_alpha_pixels": 376595,
+          "visible_bbox_alpha64": [
+            272,
+            127,
+            1095,
+            1144
+          ],
+          "sha256": "2df028cd693177a98c9b76cc214e9a09694ef83a0a31922669a97745bfdc25ed"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\lawn-roller-original.png",
+        "visual": "Reviewed full generated image: low striped iron drum, long bent handle, single brown leaf. Entire handle and drum visible, distinct tool silhouette and warm worn material.",
+        "runtime_metadata": {
+          "file": "lawn-roller.webp",
+          "w": 169,
+          "h": 209,
+          "source": "lawnRoller.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 12,
+      "region": "Withered Hedge Maze",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Chalk-Line Reel",
+      "existing_animation": false,
+      "description": "A squat triangular gardener's reel, brass winding knob and short bright blue chalk cord. It redraws boundaries just as visitors understand them; the loose cord holds a perfect unsupported right angle. Intent idea: change a simple restriction.",
+      "animation": "2D animation Idle: knob ticks backward. Tell: cord brightens. Action: extend a small luminous corner. Resolve: corner reels into housing.",
+      "signature": "Signature Compact spool plus angular local line; not writing, a map page or animated root.",
+      "production_id": "chalk-line-reel",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\chalk-line-reel.webp",
+      "source_path": "animations\\sprites\\enemies\\chalkLineReel.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            197,
+            167
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 17498,
+          "partial_alpha_pixels": 14893,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            194,
+            164
+          ],
+          "sha256": "f9de40385f022a2d397a2b737cc3165d54a4cd07a22a488dbe32391b5fd09749"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 48575,
+          "partial_alpha_pixels": 16453,
+          "visible_bbox_alpha64": [
+            31,
+            40,
+            225,
+            204
+          ],
+          "sha256": "c3870926bc7229e48061681d35c2722c7548cde0c9f511f176170dc74cb28eed"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1175390,
+          "partial_alpha_pixels": 396917,
+          "visible_bbox_alpha64": [
+            152,
+            199,
+            1116,
+            1009
+          ],
+          "sha256": "5d38b9ba78447640d6210392505e82100c4b6527f4a8ea36ae751462e2e78e12"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\chalk-line-reel-original.png",
+        "visual": "Reviewed full generated image: squat triangular wood/brass spool housing, winding knob, bright blue chalk cord with clear unsupported right angle. Complete silhouette and compact local glow.",
+        "runtime_metadata": {
+          "file": "chalk-line-reel.webp",
+          "w": 197,
+          "h": 167,
+          "source": "chalkLineReel.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 12,
+      "region": "Withered Hedge Maze",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Corner Hedge",
+      "existing_animation": false,
+      "description": "One waist-high, squared brown hedge corner on a small soil island; clipped branches make a clear blocky L. It sulks when bypassed, turning its missing corner the other way while its shadow refuses to follow. Intent idea: switch between two defensive positions.",
+      "animation": "2D animation Idle: two leaves tremble. Tell: corner glows. Action: crossfade two quarter-turn poses. Resolve: delayed shadow catches up.",
+      "signature": "Signature Geometric maze segment, never an animal topiary or thorn creature.",
+      "production_id": "corner-hedge",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\corner-hedge.webp",
+      "source_path": "animations\\sprites\\enemies\\cornerHedge.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            209,
+            146
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 9039,
+          "partial_alpha_pixels": 21033,
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            209,
+            145
+          ],
+          "sha256": "d0152f8bc86ffae61b59593113ff9de2c9f2ac377c6738d3b3649c379b7b3c46"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 43301,
+          "partial_alpha_pixels": 21793,
+          "visible_bbox_alpha64": [
+            27,
+            60,
+            235,
+            205
+          ],
+          "sha256": "273e1d72dffbd038c12bb9f1e08799fb0bca9ff664acbbe54f086332dd20978c"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1045348,
+          "partial_alpha_pixels": 526761,
+          "visible_bbox_alpha64": [
+            131,
+            293,
+            1152,
+            1004
+          ],
+          "sha256": "6aeca01b4ed6df89915501a44df7b23251a96bd561113f1babd69e8fae686db5"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\corner-hedge-original.png",
+        "visual": "Reviewed full generated image: geometric brown L-shaped hedge with clipped foliage and compact L soil island. No animal outline or creature anatomy; full edges visible.",
+        "runtime_metadata": {
+          "file": "corner-hedge.webp",
+          "w": 209,
+          "h": 146,
+          "source": "cornerHedge.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 12,
+      "region": "Withered Hedge Maze",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Whispering Wind Sock",
+      "existing_animation": false,
+      "description": "A faded green conical fabric wind sock on a crooked forked pole, its narrow tail tied in a little bow. It whispers a helpful shortcut, but inflates toward the wind instead of away. Intent idea: foreshadow a misleading repeat.",
+      "animation": "2D animation Idle: tail droops. Tell: pale breath gathers. Action: cone inflates backward and gives one soft puff. Resolve: collapses with a nod.",
+      "signature": "Signature Long tapering horizontal cone, unlike curtains, ribbon swarms or human-shaped cloth.",
+      "production_id": "whispering-wind-sock",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\whispering-wind-sock.webp",
+      "source_path": "animations\\sprites\\enemies\\whisperingWindSock.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            225,
+            178
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 27761,
+          "partial_alpha_pixels": 11535,
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            225,
+            177
+          ],
+          "sha256": "92ed9b4c5f78e824f9be4df65d825cd5452b6819c4c185dde9d12ee7325cc8c3"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 52118,
+          "partial_alpha_pixels": 12664,
+          "visible_bbox_alpha64": [
+            20,
+            42,
+            244,
+            219
+          ],
+          "sha256": "0d1d0a22a008081c2204cd578fcb5b1216fd9fcf4c979ac373376009afc4e55a"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1258279,
+          "partial_alpha_pixels": 313786,
+          "visible_bbox_alpha64": [
+            97,
+            209,
+            1194,
+            1073
+          ],
+          "sha256": "0624be179b3365c120f002f398df3e6dc9194b9aaf5ecc4169fe04ff477aba0f"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\whispering-wind-sock-original.png",
+        "visual": "Reviewed full generated image: green stitched tapered cone on forked crooked pole, tied tail bow and small pale whisper puff. Complete separate silhouette, no humanlike body.",
+        "runtime_metadata": {
+          "file": "whispering-wind-sock.webp",
+          "w": 225,
+          "h": 178,
+          "source": "whisperingWindSock.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 12,
+      "region": "Withered Hedge Maze",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Boot Scraper",
+      "existing_animation": false,
+      "description": "A low cast-iron estate boot scraper with two broad bristle brushes flanking an ornate central blade; rounded edges, no cutting action. It scrubs away a spectral footprint that keeps politely reappearing. Intent idea: remove one small benefit.",
+      "animation": "2D animation Idle: bristles shiver. Tell: footprint gleams above it. Action: brushes tilt inward and erase print. Resolve: print returns faintly.",
+      "signature": "Signature Small wide comb silhouette; the footprint is a local effect, not a separate invisible walker.",
+      "production_id": "boot-scraper",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\boot-scraper.webp",
+      "source_path": "animations\\sprites\\enemies\\bootScraper.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            236,
+            171
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 23180,
+          "partial_alpha_pixels": 16693,
+          "visible_bbox_alpha64": [
+            1,
+            1,
+            235,
+            171
+          ],
+          "sha256": "a21af5bf15f764ba592a9dcf6c629db0d4555c1f62c3246c83070578635fba1f"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 46826,
+          "partial_alpha_pixels": 18227,
+          "visible_bbox_alpha64": [
+            12,
+            45,
+            246,
+            215
+          ],
+          "sha256": "d40d99d6ade58d5ae51636db883004d9255e19faf34b19ec9ef31d4e35fa77fb"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1131333,
+          "partial_alpha_pixels": 440829,
+          "visible_bbox_alpha64": [
+            57,
+            221,
+            1206,
+            1050
+          ],
+          "sha256": "dabec1c4bfca797e4bb3dd763f28626b3cd376ae4a41a30405b49a02ff910318"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\boot-scraper-original.png",
+        "visual": "Reviewed full generated image: low ornate rounded iron scraper with two bristle brushes and one compact spectral footprint. No sharp cutting action, complete silhouette and gentle glow.",
+        "runtime_metadata": {
+          "file": "boot-scraper.webp",
+          "w": 236,
+          "h": 171,
+          "source": "bootScraper.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 12,
+      "region": "Withered Hedge Maze",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Rotting Gazebo",
+      "existing_animation": false,
+      "description": "A compact, lopsided octagonal gazebo with a green patinated roof, four visible posts and one empty suspended swing seat. Moss and dry leaves soften the abandoned structure. Its unseen host offers a break that somehow never begins: the seat swings forward while its shadow swings backward. Intent idea: shelter fellow haunts, then lose that protection while resetting.",
+      "animation": "2D animation Idle: roof finial trembles. Tell: seat pauses unnaturally high. Action: one broad swing, opposing oval shadow. Resolve: seat centers; two leaves drift down. Keep roof and posts fixed.",
+      "signature": "Signature An open roofed shelter with pendulum seating, not a fountain, portal, cabinet or miniature inhabited house.",
+      "production_id": "rotting-gazebo",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\rotting-gazebo.webp",
+      "source_path": "animations\\sprites\\enemies\\rottingGazebo.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            347,
+            438
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 77003,
+          "partial_alpha_pixels": 73404,
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            346,
+            438
+          ],
+          "sha256": "0d93db24ded39f9c6325e7f016e76ee98752b43eb3147e2d5746ae78f47efdb3"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 181224,
+          "partial_alpha_pixels": 79341,
+          "visible_bbox_alpha64": [
+            85,
+            24,
+            431,
+            461
+          ],
+          "sha256": "e4e04633f94f3e490fde8d6a31a9e967da92f511aadb2684d2f4ac508e70f8ee"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1083039,
+          "partial_alpha_pixels": 489118,
+          "visible_bbox_alpha64": [
+            209,
+            58,
+            1056,
+            1128
+          ],
+          "sha256": "5f6a6776780aa04cbc25e1f2a61bf7083cd25011f49d2cc9b4696988a8314712"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\rotting-gazebo-original.png",
+        "visual": "Reviewed full generated image: compact open gazebo with patinated green roof, four visible supporting posts and one empty swing seat. Moss and dry leaves; full finial and base visible.",
+        "runtime_metadata": {
+          "file": "rotting-gazebo.webp",
+          "w": 347,
+          "h": 438,
+          "source": "rottingGazebo.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 12,
+      "region": "Withered Hedge Maze",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Croquet Umpire",
+      "existing_animation": false,
+      "description": "A tall freestanding croquet scoreboard with a stepped crown, chunky wooden number drums and two crossed mallets fixed beneath it. No face or body is attached. It declares every route out of bounds, then secretly changes its own score. Two tiny ghostly applause marks appear whenever it cheats. Intent idea: a predictable count followed by a penalty.",
+      "animation": "2D animation Idle: one drum twitches. Tell: drums align. Action: three drums flip sequentially; a small striped ball rolls through its empty base. Resolve: the first drum quietly changes again. Use one ball sprite.",
+      "signature": "Signature Vertical sporting score apparatus; no nursery toy creature or repeatedly animated croquet set.",
+      "production_id": "croquet-umpire",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\croquet-umpire.webp",
+      "source_path": "animations\\sprites\\enemies\\croquetUmpire.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            247,
+            478
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 57180,
+          "partial_alpha_pixels": 59308,
+          "visible_bbox_alpha64": [
+            2,
+            0,
+            245,
+            478
+          ],
+          "sha256": "d4e6d632bf942ee4d2deadabb27022abf1893a8c6df6436f71f25185d1c01593"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 196545,
+          "partial_alpha_pixels": 64021,
+          "visible_bbox_alpha64": [
+            137,
+            17,
+            380,
+            495
+          ],
+          "sha256": "5d9bc80a9c78091fb646bed455f6a8f9a8e2a4aad8ab6e158d92c91267f9c224"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1178744,
+          "partial_alpha_pixels": 392812,
+          "visible_bbox_alpha64": [
+            337,
+            43,
+            931,
+            1212
+          ],
+          "sha256": "b368f0fb3cbf50b4d1f70287d7d143146d7fbe99ed2d08d0eab359d67f913d2d"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\croquet-umpire-original.png",
+        "visual": "Reviewed full generated image: stepped wooden scoreboard, three clearly legible 0 1 2 drums, fixed crossed mallets, single striped ball and tiny applause marks. No attached face or body; full apparatus visible.",
+        "runtime_metadata": {
+          "file": "croquet-umpire.webp",
+          "w": 247,
+          "h": 478,
+          "source": "croquetUmpire.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 12,
+      "region": "Withered Hedge Maze",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Lost Compass",
+      "existing_animation": false,
+      "description": "An oversized open pocket compass resting on its rim, a broad oval lid behind a round brass bowl and a long blue needle hovering just above it. It takes pride in helping travelers, though its needle points inward at itself and its shadow points away. Intent idea: announce one intent, then visibly switch to a different one.",
+      "animation": "2D animation Idle: shallow rocking. Tell: needle stands upright. Action: needle pivots outside the bowl and draws one short hooked direction trail. Resolve: trail retracts; needle returns. No landscape changes.",
+      "signature": "Signature Open oval-and-circle profile; directions, never time, moon phases, astronomy or a changing atlas scene.",
+      "production_id": "lost-compass",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\lost-compass.webp",
+      "source_path": "animations\\sprites\\enemies\\lostCompass.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            433,
+            436
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 83830,
+          "partial_alpha_pixels": 103971,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            433,
+            435
+          ],
+          "sha256": "ed75762c85283afcc2f97563d2130aefde8c4f001bc89f402bb8acc110ad7f16"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 154759,
+          "partial_alpha_pixels": 106398,
+          "visible_bbox_alpha64": [
+            45,
+            26,
+            478,
+            461
+          ],
+          "sha256": "b477e82332f7ea1c707a79b68a383c2f9c869606b8d09cbbdde4fc253dc5d803"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 930205,
+          "partial_alpha_pixels": 641850,
+          "visible_bbox_alpha64": [
+            111,
+            64,
+            1170,
+            1129
+          ],
+          "sha256": "642805408d9c092571c0ff48419446661c250a3026d3b578c498bccdb79d31ab"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\lost-compass-original.png",
+        "visual": "Reviewed full generated image: open brass oval lid and circular compass bowl, single long raised blue needle, simple compass rose. Clearly compass rather than clock, all lid/ring/body tips visible.",
+        "runtime_metadata": {
+          "file": "lost-compass.webp",
+          "w": 433,
+          "h": 436,
+          "source": "lostCompass.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 12,
+      "region": "Withered Hedge Maze",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Gardener of Rot",
+      "existing_animation": false,
+      "description": "A spectral estate gardener with a drooping broad hat, patched coat and wooden clogs fading into dry leaves. A mushroom grows from his hatband, never his skin. His blunt planting dibber points downward. Fond of the old maze, he repairs the wrong paths and composts yesterday’s directions. Intent idea: preparation becomes renewal, with a readable interruption opportunity.",
+      "animation": "2D animation Idle: inspect a dry leaf. Tell: leaf glows green. Action: raise one palm; three leaves circle and become fresh leaf shapes. Resolve: they fade brown and settle. One rig, paired leaf sprites and local glow; no transforming garden.",
+      "signature": "Signature A wistful, muddled gardener, without decay wounds, aggressive tools, body vines or topiary transformations.",
+      "production_id": "gardener-of-rot",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\gardener-of-rot.webp",
+      "source_path": "animations\\sprites\\enemies\\gardenerOfRot.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            548,
+            931
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 200654,
+          "partial_alpha_pixels": 308508,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            548,
+            931
+          ],
+          "sha256": "bada9441eafa60d35f165148325b0de6df0ed50b8df9692cb78dbae9e618b146"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 714922,
+          "partial_alpha_pixels": 332628,
+          "visible_bbox_alpha64": [
+            278,
+            43,
+            826,
+            974
+          ],
+          "sha256": "b1797fc0b438d54c1d570290082d2cfa3a733e736e83391cd30d6eed31f271e8"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1072029,
+          "partial_alpha_pixels": 499893,
+          "visible_bbox_alpha64": [
+            341,
+            53,
+            1011,
+            1192
+          ],
+          "sha256": "0673f48836dd147d378d3fe79a181ad24570a873c2314226f4b82e23e7091ed5"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\gardener-of-rot-original.png",
+        "visual": "Reviewed full generated image: kindly spectral gardener with drooping hat, hatband mushroom only, patched coat, wooden clogs and dry leaves. Two clear hands holding one dry leaf and a downward planting dibber. No decay wounds, predatory pose or body vines.",
+        "runtime_metadata": {
+          "file": "gardener-of-rot.webp",
+          "w": 548,
+          "h": 931,
+          "source": "gardenerOfRot.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    }
+  ],
+  "counts": {
+    "existing": 0,
+    "new": 11,
+    "pending": 0,
+    "blocked": 0,
+    "total": 11
+  },
+  "contact_sheet": "docs/enemy-roster-2026-10-26/art-production/region-12-contact.jpg",
+  "contact_visual_review": "Reviewed all eleven finished sprites together; distinct silhouettes/materials, readable forms, no visible clipping or anomalous anatomy."
+}

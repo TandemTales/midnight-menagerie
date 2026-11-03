@@ -1,0 +1,316 @@
+{
+  "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+  "status": "Board checks passed and reused; enlarged padding failed1280 crowded delivery and idle resize. Original condition evidence retained separately.",
+  "images": [
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\event-initial-1280.png",
+      "sha256": "ff5f5966609d71d8deb0a6a0fbea0de883cc633d4ddf87c657110f59189c474d",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\event-initial-1600.png",
+      "sha256": "81ea78996e32d286df4d2464a27d643d43a8a6a83f0eeafebd4ec234a8871b2e",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\event-interactions-1280.png",
+      "sha256": "ff2a2cc45ab7d53b1a85b2fa1bfd15d35052d8c9d164b408fa11a56795ca3bc3",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\event-interactions-1600.png",
+      "sha256": "2205e739962ea1134a23578e227d8d1593ff9c34ea5eaac8b8b6c071b28a9ade",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\gameover-initial-1280.png",
+      "sha256": "4603967516b603fd77f0eff347c7d2779994984b95aef6db091b4b61166d78ff",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\gameover-initial-1600.png",
+      "sha256": "4679db9792f55a5dadeba52c5fc24d63850edd3595dec2ccd3e86a7941592515",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\gameover-interactions-1280.png",
+      "sha256": "d4429a95a5022ebeff61b75dcaec6b5fef760542c09487d072bdf013fa2b28f5",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\gameover-interactions-1600.png",
+      "sha256": "0ceacbe5adaf4bf006a1b9608664ee6fdec39b618d91532a29e79c4d5dd9e672",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\keepsakes-1280.png",
+      "sha256": "5e23419b271ffcdf0d5c5f0c0844f8d468024e5283f2100eaf7a88c729f67474",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\keepsakes-1600.png",
+      "sha256": "2a1fff6af1847ca594210d0e25e3f15db49cd86ea79ecd7c3bea5e733e96ad02",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\rest-initial-1280.png",
+      "sha256": "a646863fc6a7caf47dada71ad5243193e80f8edf480e9c341b7d9bbf3786027e",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\rest-initial-1600.png",
+      "sha256": "5648de940a91feae41ffb2189688038259c201b99881d70bb25fec97f6973fb5",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\rest-interactions-1280.png",
+      "sha256": "fc4d039e469c080bef6d359f3c68c92ba8c9fb6ffc83f82827ddf37cc0fd6f68",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\rest-interactions-1600.png",
+      "sha256": "2a96a8afd9433a724cefe13c5a37143848f62c64fa90f11116f069e33f6bc067",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\shop-initial-1280.png",
+      "sha256": "7b0ed02b98f1f89bf255912df5ab792fdc1d3a6e3a3b33e61ebc6343a95b48c7",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\shop-initial-1600.png",
+      "sha256": "322743d145a9cfa82ba5afccd40a3771e94593969ecf271380d6ee48a190f9c5",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\shop-interactions-1280.png",
+      "sha256": "6375c8b5261d4c34bb0cdebeea2c889b8df744f931ce3260b0bb769ca4810e27",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\shop-interactions-1600.png",
+      "sha256": "3eb9bfb41b4bd83e4622f162a47657315de82f0d5a8b77a1ec7d908c3f866cb3",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\event-boundary\\initial-1280.png",
+      "sha256": "52c2ff637a1514a7a04c2f973ebbe4537b59adfebde82c982563c8e893463ee9",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\event-boundary\\initial-1600.png",
+      "sha256": "fcfbe1768ac117fcc34647d70e20ead88b0259ed405a2e2a8171df0e7a5f18c1",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\lifecycle\\survivor.png",
+      "sha256": "8186cd181424b15c7c0d90c5bfc8c634f3a2ae2b4e7fef07a6d9e8af42df4e06",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\memorial\\bottom-1280.png",
+      "sha256": "8b23cc659e5f11ad5d2ddb7a58acb060346df34f00904137281e71be6da38849",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\memorial\\bottom-1600.png",
+      "sha256": "485981b0a484a887a2f520ebf9e6b77467e8a351a532a4404107e5e5b968ba91",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\memorial\\initial-1280.png",
+      "sha256": "29408c07934bcccb7e628c2c042f2ccd872a70b181a544594d51e80b54f8c2c3",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\memorial\\initial-1600.png",
+      "sha256": "6d216f236b2e0493c3406c0c4793d6974bcfb977550fe644eecc8bd694c21d15",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\memorial-long\\bottom-1280.png",
+      "sha256": "55fdda90f2f6e00ccad0c3ba7ccb644582c18e53bfc7d55929fd56d5efb1dbc7",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\memorial-long\\bottom-1600.png",
+      "sha256": "204ae2a655c4dac5082d0696e0848847598ed1cb49c7c677ee886a8f7418b56d",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\memorial-long\\initial-1280.png",
+      "sha256": "03ebb0431f713cf5372ee6fc657e86bd4200aa475b46a2820477c8bf4e2f634c",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\memorial-long\\initial-1600.png",
+      "sha256": "4a7594352dab2b3fb2feae81bead6459a69588765882ae4ecf81ed43ecf67ac0",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\boss-0-1280.png",
+      "sha256": "77ea0d9b756b8983de1d8513e21e7d19ceb9aca2a31a43cce82f50431147815e",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\boss-0-1600.png",
+      "sha256": "4b76764d94b05f206bf0b7c37750c5baab32944ff3cbc15bfd91ef68a171100b",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\crowd-0-1280.png",
+      "sha256": "ca52646de75a649bb3a49ed6935b70bc9b4ef3679bc3d1b0cd07f583ea89488b",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\crowd-0-1600.png",
+      "sha256": "a80f2a5ec15c967f24a2b80d504cab106abfb1111e4f6436072e12b12d2414f1",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\crowd-1-1280.png",
+      "sha256": "273f90e0740ae06ef4ea4c88769be0397aa24c5294c2c4f10e85a0b9e0963b55",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\crowd-1-1600.png",
+      "sha256": "64ebb50416012f757942f3ebeae75778868950c17e9ecb85f70de85fbcfaf75e",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\crowd-2-1280.png",
+      "sha256": "11a640cde8b23c6f8610055b57b1b63b8df91796fa183189bbb2ae0aab8360d6",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\crowd-2-1600.png",
+      "sha256": "0b854a46779ff5cda9ebfe3eb80c4947681769fe15ea5dc88857f51d0ece2239",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\crowd-3-1280.png",
+      "sha256": "d84c9b5729ec71e920c17837453bccd5361da696e4f0275971dd8cae3c5a6e76",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\crowd-3-1600.png",
+      "sha256": "28d7d684929d690f8d63df0620136735ec1bb39b4052ce7a2a2b59c5f9df4713",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\crowd-all-1280.png",
+      "sha256": "3b44138e376a7ff338815ac12fd1b805fe419acdb91979239d68712ee32bcfbe",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\crowd-all-1600.png",
+      "sha256": "53e1de5ef33da933600eabc8beb2551a590ede32cceed8392185f06e5999082f",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\crowd-all-long-1280.png",
+      "sha256": "f95bf14bf353a31693d0f35e8c6ee81466da264b30e4c6b55d1d84bb3a290ede",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\crowd-all-long-1600.png",
+      "sha256": "37842a3c31b52cfb96919ffa36cd94155f12a4e7ee9b692785ece046ee129ca9",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\crowd-repeats-1280.png",
+      "sha256": "0525f0564b75667d70b189240d57e2c1cc282c9a846eb78a428f965c2354925a",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\queue\\crowd-repeats-1600.png",
+      "sha256": "173e6183622c45e856b5950abcd24b9844658a27eb1b0d8fbae82f1cd9c462de",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\lifecycle\\survivor.png",
+      "sha256": "8186cd181424b15c7c0d90c5bfc8c634f3a2ae2b4e7fef07a6d9e8af42df4e06",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\boss-0-1280.png",
+      "sha256": "77ea0d9b756b8983de1d8513e21e7d19ceb9aca2a31a43cce82f50431147815e",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\boss-0-1600.png",
+      "sha256": "4b76764d94b05f206bf0b7c37750c5baab32944ff3cbc15bfd91ef68a171100b",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\crowd-0-1280.png",
+      "sha256": "ca52646de75a649bb3a49ed6935b70bc9b4ef3679bc3d1b0cd07f583ea89488b",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\crowd-0-1600.png",
+      "sha256": "a80f2a5ec15c967f24a2b80d504cab106abfb1111e4f6436072e12b12d2414f1",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\crowd-1-1280.png",
+      "sha256": "273f90e0740ae06ef4ea4c88769be0397aa24c5294c2c4f10e85a0b9e0963b55",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\crowd-1-1600.png",
+      "sha256": "64ebb50416012f757942f3ebeae75778868950c17e9ecb85f70de85fbcfaf75e",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\crowd-2-1280.png",
+      "sha256": "11a640cde8b23c6f8610055b57b1b63b8df91796fa183189bbb2ae0aab8360d6",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\crowd-2-1600.png",
+      "sha256": "0b854a46779ff5cda9ebfe3eb80c4947681769fe15ea5dc88857f51d0ece2239",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\crowd-3-1280.png",
+      "sha256": "d84c9b5729ec71e920c17837453bccd5361da696e4f0275971dd8cae3c5a6e76",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\crowd-3-1600.png",
+      "sha256": "28d7d684929d690f8d63df0620136735ec1bb39b4052ce7a2a2b59c5f9df4713",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\crowd-all-1280.png",
+      "sha256": "3b44138e376a7ff338815ac12fd1b805fe419acdb91979239d68712ee32bcfbe",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\crowd-all-1600.png",
+      "sha256": "53e1de5ef33da933600eabc8beb2551a590ede32cceed8392185f06e5999082f",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\crowd-all-long-1280.png",
+      "sha256": "f95bf14bf353a31693d0f35e8c6ee81466da264b30e4c6b55d1d84bb3a290ede",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\crowd-all-long-1600.png",
+      "sha256": "37842a3c31b52cfb96919ffa36cd94155f12a4e7ee9b692785ece046ee129ca9",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\crowd-repeats-1280.png",
+      "sha256": "0525f0564b75667d70b189240d57e2c1cc282c9a846eb78a428f965c2354925a",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    },
+    {
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\initial-expanded-padding\\queue\\crowd-repeats-1600.png",
+      "sha256": "173e6183622c45e856b5950abcd24b9844658a27eb1b0d8fbae82f1cd9c462de",
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c"
+    }
+  ]
+}

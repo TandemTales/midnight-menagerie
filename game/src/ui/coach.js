@@ -216,16 +216,28 @@ export class Coach {
     this.$next = root.querySelector('.coach__next');
     this.$ways = root.querySelector('.coach__ways');
 
-    const on = (n, ev, fn) => { n.addEventListener(ev, fn); this._offs.push(() => n.removeEventListener(ev, fn)); };
+    const on = (n, ev, fn, opts) => { n.addEventListener(ev, fn, opts); this._offs.push(() => n.removeEventListener(ev, fn, opts)); };
     on(this.$next, 'click', () => this._next());
     on(root.querySelector('.coach__skip'), 'click', () => this.dismiss());
     on(window, 'keydown', (e) => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      if (e.key === 'Escape') { e.preventDefault(); this.dismiss(); return; }
+      if (e.metaKey || e.ctrlKey || e.altKey || !this._live) return;
+      if (document.documentElement.classList.contains('mm-modal-open')) return;
+      if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); this.dismiss(); return; }
+      if (e.mmController && e.key === 'ArrowUp' && e.target instanceof Element
+          && this.root.contains(e.target) && e.target.closest('button')) {
+        e.preventDefault(); e.stopImmediatePropagation(); e.target.closest('button').click(); return;
+      }
       /* Enter turns the page ONLY on a step that is waiting for nothing. On a
          step that wants a card played, Enter belongs to `ui/hand.js`. */
-      if (e.key === 'Enter' && !this.$next.hidden) { e.preventDefault(); this._next(); }
-    });
+      if ((e.key === 'Enter' || (e.mmController && e.key === 'ArrowUp')) && !this.$next.hidden
+        && (e.mmController || !(e.target instanceof Element && e.target.closest('button, input, textarea, select, a')))) {
+        e.preventDefault(); e.stopImmediatePropagation(); this._next();
+      } else if (e.target instanceof Element && this.root.contains(e.target)
+        && ['Enter', ' '].includes(e.key)) {
+        // Buttons retain their native click, but their keys cannot play a Trick.
+        e.stopPropagation();
+      }
+    }, true);
     on(window, 'resize', () => this._place());
 
     /* The spotlight follows a live board: the hand re-fans, an enemy dies, the

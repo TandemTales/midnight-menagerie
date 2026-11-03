@@ -1,0 +1,1097 @@
+Midnight Menagerie Enemy Roster
+Complete level roster and 2D animation direction
+A complete design roster for all 17 mansion regions: 119 regular enemies, 51 elites and 17 bosses, totaling 187 distinct named slots. Each level has seven regulars, three elites and one boss. The 29 enemies with existing animations are retained and marked in the roster.
+Levels 1–10 preserve the finished list where compatible with required counts and existing art. Levels 11–17 develop the remaining regions. Familiar families deliberately retained from the source are differentiated by silhouette, haunting routine and motion—not simply recolored. Keep the tone cute and spooky, never predatory.
+For existing animations, reuse the supplied clips unchanged. New animation directions are production proposals. Small casts, bounded props and readable tells keep the designs practical for 2D.
+Enemy behaviors describe proposed design intent. Balance values, card rules and animation production remain implementation work.
+Original MM Enemies document
+26 October 2026
+Roster index
+Level
+Region
+Regular
+Elite
+Boss
+1
+Forgotten Foyer
+7
+3
+1
+2
+Forgotten Nursery
+7
+3
+1
+3
+Sleeping Quarters
+7
+3
+1
+4
+Kitchens and Cellars
+7
+3
+1
+5
+Impossible Greenhouse
+7
+3
+1
+6
+Mansion Graveyard
+7
+3
+1
+7
+Grand Study and Library
+7
+3
+1
+8
+Moonlit Attic and Observatory
+7
+3
+1
+9
+Lampworks
+7
+3
+1
+10
+Ballroom and Velvet Suites
+7
+3
+1
+11
+Crypt and Ossuary
+7
+3
+1
+12
+Withered Hedge Maze
+7
+3
+1
+13
+Secret Passages
+7
+3
+1
+14
+Bathhouse and Rain Wing
+7
+3
+1
+15
+Kennels and Animal Ward
+7
+3
+1
+16
+Moon Courtyard and Pumpkin Grounds
+7
+3
+1
+17
+Heart of the House
+7
+3
+1
+Level 1 Forgotten Foyer
+Regular enemies
+1 R1  Dust Bunny  [Existing animation]
+A fuzzy lint rabbit with loose threads, large ears and warm glowing eyes. Puffs itself up and scatters lint to demand attention.
+2D animation Reuse existing clips unchanged. Asset ID: dust-bunny.
+Signature Soft low rounded rabbit silhouette with upright ears; only lint-bodied foe.
+1 R2  Coatrack Crawler  [Existing animation]
+An ornate coat stand loaded with coats, hat and umbrella; curling hooks and feet. Offers far too many coats and shuffles into the way.
+2D animation Reuse existing clips unchanged. Asset ID: coatrack-crawler.
+Signature Tall branching hatrack silhouette and dangling outerwear.
+1 R3  Lost Luggage  [Existing animation]
+Strapped travel suitcase with tags, little feet, toothlike lid and a red fabric tongue. Rattles its lid and spits out a forgotten handkerchief; never eats visitors.
+2D animation Reuse existing clips unchanged. Asset ID: lost-luggage.
+Signature Compact handled rectangle with straps and feet; preserve existing mouth shapes.
+1 R4  Red Carpet Runner  [Existing animation]
+Face-free red-and-gold tasselled carpet that ripples and rolls. Insists on arranging a grand entrance by rippling beneath the scene.
+2D animation Reuse existing clips unchanged. Asset ID: red-carpet-runner.
+Signature Long low ribbonlike floor silhouette, no head or limbs.
+1 R5  Door Greeter  [Existing animation]
+A carved wooden door whose brass knocker and ornament form a face. Opens and closes with exaggerated courtesy, briefly blocking the way.
+2D animation Reuse existing clips unchanged. Asset ID: door-greeter.
+Signature Upright wooden slab and knocker face; not the umbrella stand in the old description.
+1 R6  Hall Mirror
+A narrow freestanding antique mirror with one small reflection offset inside the glass. Its reflection waves before the visitor does, then awkwardly tries to catch up.
+2D animation Idle glass glint; tell reflection lifts hand; action one pose leads then follows; resolve bashful tilt.
+Signature Slender mirror with one lagging reflection; Grand Mirror is a wide divided composition.
+1 R7  Portrait Greeter
+A horizontal oval portrait of a rosy-cheeked former host, set in a squat gilt frame. Changes a painted greeting into an overformal salute while remaining inside the frame.
+2D animation Idle blink; tell eyebrows lift; action painted hand gestures; resolve proud pose.
+Signature Painted torso in oval frame, not a reflected whole-room glass surface.
+Elite enemies
+1 E1  Unwelcome Guest
+A tall impeccably dressed silhouette beneath a broad hat, with slightly oversized gloves and drooping luggage tag. Has waited so long that he cannot remember whom he came to visit; repeatedly presents the wrong invitation.
+2D animation Idle coat sway; tell invitation rises; action long polite bow; resolve embarrassed shrug.
+Signature Narrow faceless guest with paper invitation; comically awkward rather than ominous.
+1 E2  The Grand Mirror
+A broad gilded three-pane floor mirror; each pane holds one fixed reflection silhouette at a different pose. Three reflections disagree over which gesture comes next, suggesting alternating distractions.
+2D animation Idle three glints; tell center pane lights; action pose swaps across panes; resolve synchronized bow.
+Signature Wide three-window fan and timed reflection sequence, not a larger Hall Mirror copy.
+1 E3  The Foyer Chandelier
+A low antique chandelier with a broad crown of candles and three oversized crystal drops. Swings gently to ring its own crystals as though announcing an arrival.
+2D animation Idle chain sway; tell candles brighten; action shallow pendulum arc and crystal tinkle; resolve settle.
+Signature Wide suspended crown, ringing crystals; no falling hazard or violent poltergeist.
+Boss
+1 B1  The Butler  [Existing animation]
+Tall formal servant with gloves, towel and tray; a blue spectral flame forms his head. Insists on perfect foyer etiquette, presenting the tray, summoning a courteous flourish and blocking departures with a bow.
+2D animation Reuse existing clips unchanged. Asset ID: butler.
+Signature Tall blue-flame formal servant; use actual head design rather than inventing a hidden human face.
+Level 2 Forgotten Nursery
+Regular enemies
+2 R1  Button Baby  [Existing animation]
+Small rag doll with button eyes, stitched mouth, purple yarn hair and a bow. Tilts its head, waves and makes an exaggerated request to be picked for play.
+2D animation Reuse existing clips unchanged. Asset ID: button-baby.
+Signature Upright small purple-haired rag doll, not a rocking horse.
+2 R2  Patchwork Soldier  [Existing animation]
+Stitched toy soldier wearing a red hat, with a wooden sword and star shield. Marches a ceremonial patrol and performs an over-serious toy salute; no injury depiction.
+2D animation Reuse existing clips unchanged. Asset ID: patchwork-soldier.
+Signature Red cap, wooden toy sword and star shield; plush soldier, not tin rifleman.
+2 R3  Jack in the Box  [Existing animation]
+Smiling stitched jester on a spring inside a patterned crank box. Cranks up a clearly signaled, gentle surprise and bobs to demand applause.
+2D animation Reuse existing clips unchanged. Asset ID: jack-in-the-box.
+Signature Square base with tall spring curve; no untelegraphed jump scare.
+2 R4  Blanket Blob  [Existing animation]
+A shy large-eyed creature peeking from a crocheted purple patchwork blanket. Peeks out, hides again and nudges the blanket into a cozy shelter.
+2D animation Reuse existing clips unchanged. Asset ID: blanket-blob.
+Signature Small rounded crochet mound with one face; distinct from low many-footed Creeper and multiheaded Hydra.
+2 R5  Crib Curtains
+Two small nursery drapes hanging from a short brass rod, patterned with tiny stitched moons. Part to reveal nobody, then close as if a bedtime show has ended.
+2D animation Idle hem sway; tell tiebacks lift; action two cloth panels part; resolve close.
+Signature Paired overhead drapes; no standalone shrouded body or wrapping around children.
+2 R6  Porcelain Doll
+A neat old doll in a bell-shaped dress, with painted cheeks and folded hands. Quietly swaps between three polite poses while pretending to remain an ornament.
+2D animation Idle still; tell eye glance; action masked pose swap; resolve innocent smile.
+Signature Glossy upright ceramic figure, unlike Button Baby’s soft stitched rag body.
+2 R7  Imaginary Friend
+A small translucent outline drawn in rounded crayon strokes, with one oversized waved hand. Redraws a missing feature and invents a silly rule for the next game.
+2D animation Idle line shimmer; tell finger doodle; action single outline stroke appears; resolve erase.
+Signature Flat colored scribble silhouette; no solid doll or fully rendered ghost child.
+Elite enemies
+2 E1  The Patchwork Giant  [Existing animation]
+Bulky assemblage of stuffed toys, patches, buttons and plush faces. Attempts one enormous group hug toward its own toys and tumbles into a soft jostle.
+2D animation Reuse existing clips unchanged. Asset ID: patchwork-giant.
+Signature Broad plush assemblage; retain each visible stuffed face, distinct from single small ragdoll.
+2 E2  The Toy Chest  [Existing animation]
+Ornate chest with expressive front eyes, plush contents and small clawlike feet. Pops open to insist everyone tidy the toys, then rearranges them incorrectly.
+2D animation Reuse existing clips unchanged. Asset ID: toy-chest.
+Signature Heavy eyed chest with toy contents; preserve eyes and clawlike feet, never portray biting.
+2 E3  The Grand Music Box
+An ornate wide music box opening onto a miniature stage with three simple performer silhouettes. Repeats the finale until every toy has taken a bow.
+2D animation Idle crank turn; tell lid opens; action three fixed dancers slide across stage; resolve bow and close.
+Signature Wide opening stage with miniature chorus, not a single ballerina or flying box.
+Boss
+2 B1  The Governess  [Existing animation]
+Spectral Victorian governess or doll with layered dark dress, sewing props and lavender smoke. Fusses over bedtime and toy placement, arranging everything with prim gestures rather than striking.
+2D animation Reuse existing clips unchanged. Asset ID: governess.
+Signature Layered violet dress and sewing motif; existing supernatural caretaker identity preserved.
+Level 3 Sleeping Quarters
+Regular enemies
+3 R1  Wardrobe Guest  [Existing animation]
+Narrow wardrobe opening to reveal purple eyes and a slender shadow guest. Peeks out as if trying to choose an outfit, then shyly closes the door.
+2D animation Reuse existing clips unchanged. Asset ID: wardrobe-guest.
+Signature Narrow single compartment and one slender guest; elite Wardrobe is broad and many-compartment.
+3 R2  Rocking Chair
+An empty low wooden rocker with a padded seat and gently curved runners. Rocks itself forward to reserve a favorite spot.
+2D animation Idle rocking; tell runner lift; action short slide; resolve rock back.
+Signature Low curved furniture silhouette and pendulum rocking, not a broad haunted bed.
+3 R3  Nightstand Poltergeist
+A compact bedside table with a pair of spectacles, one book and a tiny alarm clock. Rearranges the bedtime essentials into the least helpful order.
+2D animation Idle drawer twitch; tell glasses lift; action three props swap; resolve drawer closes.
+Signature Small square furniture and precise object swap, not wide writing desk or toy chest.
+3 R4  Blanket Creeper  [Existing animation]
+Low patterned blanket mound with many pale clawlike feet around its hem. Shuffles along as a stubborn moving blanket fort; existing feet remain but never grab or scratch visitors.
+2D animation Reuse existing clips unchanged. Asset ID: blanket-creeper.
+Signature Long low hem and many feet; no single peeking face or multiple plush heads.
+3 R5  Slipper Skitter  [Existing animation]
+Soft purple and pink slippers with bows, huge toe-eyes and pompomlike legs. Scurries to the wrong bedside and nervously doubles back.
+2D animation Reuse existing clips unchanged. Asset ID: slipper-skitter.
+Signature Paired low soft slippers with toe-eyes; frantic little scuttle instead of ballroom steps.
+3 R6  Bedsheet Apparition
+A plain white bedsheet floats upright over an invisible round form, with a gently scalloped hem. Practices a very small boo, then flutters apologetically.
+2D animation Idle bob; tell sheet puffs; action short flutter; resolve sink.
+Signature Tall simple white sheet silhouette, no feet, crochet, lace or stuffed heads.
+3 R7  Sleepwalking Ghost
+A round-faced translucent sleeper in striped nightwear and a floppy cap, eyes closed. Sleepwalks a careful half-step and snores a tiny visible cloud.
+2D animation Idle breathing; tell cap droops; action one drowsy step; resolve sleepy sway.
+Signature Soft humanoid nightclothes and snore motion; distinct from sheet and furniture foes.
+Elite enemies
+3 E1  The Blanket Hydra  [Existing animation]
+Patchwork mound with plush rabbit, bear and dinosaurlike heads. Its heads disagree about bedtime and take turns peeking and yawning.
+2D animation Reuse existing clips unchanged. Asset ID: blanket-hydra.
+Signature Three different plush-head silhouettes, not a small blanket face or a low-footed fort.
+3 E2  The Wardrobe  [Existing animation]
+Broad many-compartment cabinet containing glowing eyes and extending shadow arms. Presents an absurd number of outfits; hands fuss with sleeves rather than seize visitors.
+2D animation Reuse existing clips unchanged. Asset ID: the-wardrobe.
+Signature Wide segmented cabinet with several eye pairs and arms; not a larger single Wardrobe Guest.
+3 E3  The Bedside Vigil
+Three gentle spectral caretakers gathered around a small empty cot: one with a candle, one with a folded sheet, one watching the clock. Over-coordinates a bedtime routine and keeps waking the room with courteous checks.
+2D animation Idle shared sway; tell candle lifts; action three sequential gestures; resolve simultaneous shush.
+Signature Fixed triangular group and tiny cot, staged as one sprite cluster; no deathbed imagery.
+Boss
+3 B1  The Canopy Bed
+A broad four-poster bed with rounded finials, plump cushions and a tasseled canopy. Builds a cozy stage for an impossible bedtime, politely lowering its drapes and bouncing the pillows.
+2D animation Idle tassel sway; tell cushions rise; action two curtain panels close and mattress bobs; resolve curtains part.
+Signature Wide four-post architecture and soft mattress bounce; does not sprout teeth, limbs or animate an entire room.
+Level 4 Kitchens and Cellars
+Regular enemies
+4 R1  Dough Blob  [Existing animation]
+Soft pale dough mass with huge glossy eyes and smaller dough faces. Puffs up as if overproofing, then slumps into a floury wobble.
+2D animation Reuse existing clips unchanged. Asset ID: dough-blob.
+Signature Pale soft dough silhouette with stretchy folds, no candy coating.
+4 R2  Candy Clump  [Existing animation]
+A small sticky creature covered in colorful sweets, with large eyes and a gummy mouth. Drops and retrieves sticky sweets while trying to hold itself together.
+2D animation Reuse existing clips unchanged. Asset ID: candy-clump.
+Signature Small irregular multicolor candy cluster; differs from Sugar Golem’s blocky cube body.
+4 R3  Jam Jar  [Existing animation]
+Red jam jar with a gingham cover, lid, tag, expressive eyes and jelly limbs. Wobbles its lid and spills a little jelly to make a sticky nuisance.
+2D animation Reuse existing clips unchanged. Asset ID: jam-jar.
+Signature Glass cylinder, gingham cap and red translucent limbs.
+4 R4  Pantry Mimic  [Existing animation]
+Decorative floral pantry tin with a hinged toothlike lid, cloth tongue and little limbs. Rattles and pops its lid to demand refilling, never bites or swallows visitors.
+2D animation Reuse existing clips unchanged. Asset ID: pantry-mimic.
+Signature Upright floral tin, unlike Lost Luggage’s horizontal strapped travel case.
+4 R5  Kitchen Poltergeist
+Three cooking tools hover around an empty workspace: whisk, wooden spoon and folded towel. Whisks an invisible recipe so vigorously that the towel keeps escaping.
+2D animation Idle tools float; tell whisk lifts; action short mixing loop; resolve towel catches.
+Signature Open triangular utensil cluster; avoid knife-point presentation or a body made of food.
+4 R6  Spectral Scullion
+A small translucent kitchen servant in rolled sleeves, balancing three mismatched dishes. Insists on washing already clean dishes and rearranges the stack mid-bow.
+2D animation Idle stack wobble; tell plate lifts; action three-plate exchange; resolve proud nod.
+Signature Tiny staff silhouette with tall plate stack, unlike large pastry chef.
+4 R7  Hanging Pots
+Three copper pots hang at uneven lengths from one short ceiling rack. Clinks an accidental kitchen rhythm while pretending nothing moved.
+2D animation Idle sway; tell one pot tilts; action staggered short swings; resolve final tiny clink.
+Signature Wide hanging row with hollow copper shapes; not a rolling pot or food creature.
+Elite enemies
+4 E1  The Sugar Golem  [Existing animation]
+Stocky candy construct with sugar-cube fists and an icing face. Stacks and restacks its own sugar blocks in a solemn confectionery demonstration.
+2D animation Reuse existing clips unchanged. Asset ID: sugar-golem.
+Signature Large stepped white cube silhouette and blocky gestures, unlike sticky small Candy Clump.
+4 E2  The Oven Maw  [Existing animation]
+Cast-iron oven with glowing orange grill mouth, dial eyes and short feet. Huffs a warm cloud, opens for inspection and insists the timer has not finished.
+2D animation Reuse existing clips unchanged. Asset ID: oven-maw.
+Signature Heavy squat iron appliance and warm grill light; preserve mouth, no engulfing animation meaning.
+4 E3  The Cellar Steward
+A lantern-carrying spectral servant in waistcoat and apron, with a narrow inventory ledger. Counts bottles, discovers an extra and starts over with great dignity.
+2D animation Idle ledger scan; tell pencil taps; action three bottle silhouettes reorder; resolve resigned nod.
+Signature Lean ledger-bearing human silhouette and bottled inventory ritual; not another appliance.
+Boss
+4 B1  The Confectioner  [Existing animation]
+Elaborate spectral pastry chef with cream-and-candy hat, sweet-making props and pink magic. Conducts an elaborate dessert demonstration, dusting and decorating rather than threatening to cook or eat anyone.
+2D animation Reuse existing clips unchanged. Asset ID: confectioner.
+Signature Large decorated hat and pink confectionery flourish; preserves actual stylized chef instead of a new flour-only silhouette.
+Level 5 Impossible Greenhouse
+Regular enemies
+5 R1  Creeping Ivy  [Existing animation]
+Compact leaf-and-vine tangle with curling tendrils and warm eyes. Curling stems try to neaten the surrounding pots, then coil shyly back.
+2D animation Reuse existing clips unchanged. Asset ID: creeping-ivy.
+Signature Low compact eyed foliage tangle, not a hanging curtain or animal topiary.
+5 R2  Walking Planter
+A broad round ceramic planter glides on a skirt of exposed decorative roots. Repositions itself to steal the best patch of light.
+2D animation Idle leaves nod; tell roots lift; action short scoot; resolve satisfied settle.
+Signature Large smooth ceramic belly and short root skirt, distinct from loose leafy Ivy.
+5 R3  Garden Shears
+Oversized brass-handled pruning shears hover with a loop of ribbon caught at one handle. Trims a stray ribbon with exaggerated precision, never aims its blades at a character.
+2D animation Idle suspended bob; tell handles spread; action one snip away from visitor; resolve close.
+Signature Open crossed-tool silhouette and one clear pivot; no lunging blades.
+5 R4  Topiary Hound
+A carefully clipped green hedge shaped like a short-legged dog, with a squared muzzle and leafy tail. Stands a formal garden guard, then politely offers a clipped-leaf paw.
+2D animation Idle tail shake; tell head tilt; action paw lift; resolve stiff sit.
+Signature Low blocky canine outline and trained paw gesture; no hunting or biting.
+5 R5  Topiary Hare
+An elegant narrow rabbit-shaped shrub with two exceptionally tall ears. Darts one hop, then freezes as a flawless garden ornament.
+2D animation Idle ear twitch; tell crouch; action single small hop; resolve freeze.
+Signature Tall ears and compact springing body, distinct from horizontal hound.
+5 R6  Garden Statue
+A small rounded stone gardener holding a watering can, with a broad hat and cheerful face. Changes its watering pose when attention shifts, as if practicing for a portrait.
+2D animation Idle still; tell hat tilts; action two fixed pose swap; resolve innocent look.
+Signature Upright worker statue with watering can; not the graveyard’s crouched gargoyle.
+5 R7  Fountain Spirit
+A small translucent water figure rising above a low scalloped basin, with a rounded head and flowing sleeve. Pours an impossible cup of water and lets it flow upward instead.
+2D animation Idle rippling base; tell silhouette gathers; action one curved ribbon rises; resolve collapse to basin.
+Signature Single fluid figure with one water ribbon; elite fountain uses architectural tiers instead.
+Elite enemies
+5 E1  The Compost Colossus  [Existing animation]
+Bulky mulch humanoid with a root beard, mushrooms, pots and garden tools. Shakes loose a harmless shower of leaves while proudly tending its own sprouting shoulders.
+2D animation Reuse existing clips unchanged. Asset ID: compost-colossus.
+Signature Heavy earthy block silhouette with root beard and pottery; no decay gore.
+5 E2  The Ancient Topiary  [Existing animation]
+An ornate sculpted foliage beast with curls, branches, flowers and glowing eyes. Holds a grand ceremonial pose, then rustles its elaborate curls to show off.
+2D animation Reuse existing clips unchanged. Asset ID: ancient-topiary.
+Signature Broad ornate fixed foliage beast; preserve actual form, no costly stag-to-bear-to-horse morphing.
+5 E3  The Midnight Fountain
+A three-tier decorative fountain with climbing leaves and a small stone bird on its rim. Reverses its flow and politely rearranges the reflected moon into the wrong basin.
+2D animation Idle tier glimmer; tell top bowl lights; action three short upward-water ribbon loops; resolve tiny ripple.
+Signature Tiered architectural column with repeating upward ribbons; no extra spirit humanoids or moving statue crowd.
+Boss
+5 B1  The Carnivorous Conservatory  [Existing animation]
+A walking glass greenhouse with root feet, a central toothy mouth and flytrap blooms. Huffs humid air, rattles its panes and fusses over its plants. Despite the retained name and teeth, it never eats, hunts or encloses visitors.
+2D animation Reuse existing clips unchanged. Asset ID: carnivorous-conservatory.
+Signature Wide glasshouse silhouette with root feet and flower mouths; existing art and clips remain mandatory.
+Level 6 Mansion Graveyard
+Regular enemies
+6 R1  Headstone Walker
+A weathered gravestone sliding or hopping slowly across the ground while dirt shifts beneath it. Politely nudges its own plot marker into the visitor’s path, suggesting a brief obstruction.
+2D animation Idle lean; tell dirt puff; action short hop; resolve settle.
+Signature Low broad stone silhouette; moves its marker, not its engraved occupant.
+6 R2  Epitaph Spirit
+Pale ghost emerging directly from engraved writing on a tombstone, with letters still floating through its body. Spells a remembered name in floating letters, briefly distracting attention.
+2D animation Idle letter drift; tell two glyphs glow; action ghost rises; resolve letters settle.
+Signature Narrow typographic apparition; the lettering, not a walking stone, is its body.
+6 R3  Mourning Candle
+Tall black funeral candle drifting above the ground with wax flowing upward and a blue spectral flame. Patiently relights itself whenever the evening becomes too quiet.
+2D animation Idle flame loop; tell wick dip; action wax curls upward; resolve small glow.
+Signature Single thin candle with reverse wax motion, not an architectural light fixture.
+6 R4  Funeral Veil
+Long black mourning veil floating as if worn by an invisible figure, occasionally forming the outline of a head and shoulders. Practices an excessively formal bow, brushing a soft curtain of lace across the encounter.
+2D animation Idle hem sway; tell bow; action lace fan; resolve upright.
+Signature Broad triangular lace silhouette; never constricts or resembles a wrapped body.
+6 R5  Gargoyle
+Small cemetery statue that changes posture whenever nobody is watching it directly. A squat stone ornament pretends it has not moved, then cheekily changes its perch.
+2D animation Idle still; tell blink; action two-pose shuffle; resolve frozen grin.
+Signature Compact crouched statue and sheepish freeze, unlike the greenhouse’s upright gardener.
+6 R6  Memorial Wreath
+A low circular wreath of faded silk flowers with an oversized remembrance ribbon. Re-ties its bow until it covers its own dedication, suggesting a brief concealment nuisance.
+2D animation Idle petal twitch; tell ribbon loops rise; action bow ties; resolve satisfied bounce.
+Signature Hollow floral ring with bow action, no stone body or mournful humanoid.
+6 R7  Sandglass Sexton
+A squat hourglass in a dark wooden cradle; pale sand flows upward. Counts down the wrong way to prolong a respectful moment of silence.
+2D animation Idle sand loop; tell frame tilts; action half-turn; resolve gentle settle.
+Signature Transparent waist and moving sand; no clock hands or skeletal anatomy.
+Elite enemies
+6 E1  The Mourning Angel
+Large weathered angel ornament, round-faced and solemn, with folded stone wings. Opens its wings to shelter smaller apparitions, suggesting a temporary protective stance.
+2D animation Idle still; tell head inclines; action two wing panels unfold; resolve stone shrug.
+Signature Wide upper-body fan with slow protection gestures; not a jumping gargoyle.
+6 E2  The Mausoleum
+Compact ornate tomb facade with one open doorway and warm lights receding inside. Invites everyone to take the very long scenic route indoors.
+2D animation Idle candle flicker; tell door cracks; action three-layer interior parallax; resolve close.
+Signature Heavy building facade; depth is a fixed three-plane illusion, not a simulated cemetery.
+6 E3  The Cemetery Gate
+Two wrought-iron leaves on squat stone posts, with an oversized swinging padlock. Closes for the evening far too early and politely holds the line.
+2D animation Idle lock swing; tell latch lifts; action gate leaves pivot; resolve reopen.
+Signature Open ironwork barrier; no grasping hands, chains around people, or angry face.
+Boss
+6 B1  The Widow of the Grounds
+A dignified spectral mourner in black formal dress; a broad veiled hat softens her silhouette. Hosts a quiet remembrance that keeps restarting whenever a flower is out of place. She lights candles and gathers gentle rain, never strikes or pursues.
+2D animation Idle veil sway; tell flower lift; action three candle glows or small rain overlay; resolve grateful bow.
+Signature Single flowing mourner with floral and rain motifs; sorrowful but not frightening.
+Level 7 Grand Study and Library
+Regular enemies
+7 R1  Rolling Ladder
+Large wooden library ladder racing along brass rails under invisible control, stopping and changing direction abruptly. Insists on reshelving the visitor, rolling across the usable space.
+2D animation Idle rung creak; tell wheel pivot; action short rail slide; resolve brake.
+Signature Tall open diagonal lattice; strong lateral movement.
+7 R2  Loose Pages
+Three oversized old pages orbit an unseen center, each bearing one fixed line of faint writing; they align into a fussy correction without morphing into new silhouettes. Rearranges a sentence into a fussy correction, suggesting a temporary nuisance.
+2D animation Idle three-page orbit; tell pages align; action fan out; resolve orbit.
+Signature Flat pale paper fan, not closed books or liquid ink.
+7 R3  Studying Ghost
+Deep leather reading chair that glides through the room while a ghost reader sitting on it turns pages. Raises a finger for quiet, then goes back to a book held upside down.
+2D animation Idle page turn; tell glasses lift; action shush; resolve embarrassed page flip.
+Signature Seated reader integrated with low chair, unlike standing staff.
+7 R4  Globe
+Antique globe spinning by itself while continents shift position and tiny lights move across its surface. Spins the wrong continent forward and proposes a detour.
+2D animation Idle slow spin; tell meridian tilt; action map layer shifts; resolve click.
+Signature Round sphere in crescent support; one rotating map layer.
+7 R5  Bookmark Ribbon
+One wide silk bookmark floats like a streamer, curling into a neat loop beside a book without wrapping around arbitrary scenery. Marks the wrong place with a neat ribbon loop, suggesting a delayed action.
+2D animation Idle tip sway; tell curl; action one loop flick using fixed ribbon poses; resolve untie.
+Signature Single flat ribbon with a tasselled tip and one loop gesture, not a large cloth body.
+7 R6  Writing Desk
+Large desk whose drawers, blotter, papers, ink bottles, and correspondence all move under a single unseen presence. Reorders its correspondence into an unhelpfully perfect queue.
+2D animation Idle pen bob; tell drawer opens; action three envelopes exchange; resolve drawer shuts.
+Signature Low horizontal furniture; stationery sorting instead of catalogue storage.
+7 R7  Library Clock
+Tall clock whose hands reverse, accelerate, and stop while its chimes cause nearby books to react. Demands one more minute of quiet reading and repeats its chime.
+2D animation Idle pendulum; tell hand pauses; action hand steps backward; resolve chime wobble.
+Signature Tall narrow pendulum clock; domestic minutes rather than celestial cycles.
+Elite enemies
+7 E1  The Living Index
+A broad catalogue cabinet with staggered drawers and cream index cards. Files every visitor under the wrong heading, repeatedly changing its order.
+2D animation Idle label twitch; tell one drawer opens; action three drawer/card pairs cycle; resolve drawers settle.
+Signature Wide grid geometry with mechanical filing waves, not a single writing desk.
+7 E2  The Atlas Room
+Oversized open atlas on an angled stand, with two map spreads visible. Offers an impressive detour on a page that folds back to the starting point.
+2D animation Idle page edge lift; tell map glows; action page wipe to one alternate flat vista; resolve shut halfway.
+Signature Broad open-book silhouette and folded geography; no objects physically travel into a fully built scene.
+7 E3  The Black Ink Manuscript
+A narrow handwritten book on a tall lectern, with one hovering ink ribbon. Corrects the visitor’s intentions with a pompous flourish, suggesting a one-turn instruction nuisance.
+2D animation Idle nib trace; tell line gathers; action calligraphy curl; resolve blot dries.
+Signature Tall lectern and liquid line; unlike the Atlas’s broad map window and loose-page fan.
+Boss
+7 B1  The Head Librarian
+A compact spectral librarian with round spectacles, a ledger and neatly arranged sleeves. Shushes, checks the catalogue and directs books into perfect order. Their sternness becomes comic when a single page refuses to stay put.
+2D animation Idle ledger glance; tell raised finger; action three book silhouettes return to a small shelf strip; resolve spectacles slip.
+Signature Seated-height, compact authority and precise finger gestures; scenery represented by a short shelf strip.
+Level 8 Moonlit Attic and Observatory
+Regular enemies
+8 R1  Telescope Eye
+Antique brass telescope that turns and tracks the player by itself, with a faint blinking reflection deep inside the lens. Peers too closely, placing a conspicuous observing glint on its chosen subject.
+2D animation Idle tube sway; tell lens gleam; action gentle extend; resolve retract.
+Signature Long horizontal brass tube, not a freestanding mirror.
+8 R2  Astrolabe
+Brass astronomical instrument spinning under invisible control while its rings align into impossible patterns. Aligns its rings to announce a comically inaccurate prediction.
+2D animation Idle ring rock; tell pointers align; action rings rotate; resolve soft click.
+Signature Open circular brass rings; no sphere or planet collection.
+8 R3  Tripod Camera
+Old box camera on wooden legs that repositions itself and flashes without anyone operating it. Requests a portrait, then refuses to stop counting down.
+2D animation Idle bellows breathe; tell shutter lifts; action soft flash overlay; resolve little print.
+Signature Three-legged box silhouette; no startling flash or rapid strobe.
+8 R4  Attic Trunk
+Large travel trunk sliding across the floor while its lid opens to reveal changing contents or impossible darkness. Reveals an absurdly small forgotten memento rather than its expected contents.
+2D animation Idle lid wobble; tell clasp opens; action lid rises and one object floats; resolve close.
+Signature Wide floor chest with three fixed memento swaps; no teeth or creature inside.
+8 R5  Spectral Assistant
+Faint translucent observatory attendant carrying charts, lenses, and notebooks while mostly ignoring the player. Consults an upside-down chart and mislabels the visitor as a constellation.
+2D animation Idle chart scan; tell point; action stamp gesture; resolve puzzled head tilt.
+Signature Small chart-bearing assistant, not a commanding elite or boss.
+8 R6  Moonbeam Figure
+Human silhouette visible only inside a column of moonlight, disappearing whenever it leaves the beam. Attempts to follow the visitor but can move only inside its own light.
+2D animation Idle translucent sway; tell beam narrows; action sideways lean; resolve re-center.
+Signature One pale silhouette confined to a vertical beam, no extra independent figures.
+8 R7  Contrary Weather Vane
+A brass rooster and arrow balanced on a short roof finial, with N and S tags. Points confidently toward the wrong direction, then spins to correct itself too late.
+2D animation Idle arrow tremble; tell rooster leans; action quarter-turn plate swap; resolve wobble.
+Signature Crossed directional silhouette; angular swiveling rather than lens tracking or clock time.
+Elite enemies
+8 E1  The Moon Lens
+Huge round lens in a suspended horseshoe-shaped brass frame; pale reflected clouds cross the glass. Magnifies one harmless detail until it becomes an enormous distraction.
+2D animation Idle suspended sway; tell lens cloud clears; action soft magnified overlay; resolve blur.
+Signature One clear circular disc; unlike the telescope’s narrow tube, its action is magnification.
+8 E2  The Celestial Clock
+A broad astronomical clock with three oversized moon-phase discs and short brass hands. Announces the wrong night and makes its moon discs disagree.
+2D animation Idle disc tick; tell all hands align; action discs step out of sync; resolve chime.
+Signature Wide multi-disc face and lunar phase puzzle; not the library’s tall pendulum clock.
+8 E3  The Suspended Planetarium
+A low domed brass projector with star-shaped cutouts and one crescent shutter. Projects drifting star shapes over useful room markings, mischievously obscuring them until its crescent shutter closes.
+2D animation Idle dotted glow; tell shutter lifts; action fixed star overlay drifts; resolve shutter lowers.
+Signature Low dome silhouette and star projection, not another ring instrument or lens.
+Boss
+8 B1  The Watcher in the Rafters
+An enormous soft-edged shadow tucked along a short rafter arch, with two round curious eyes and long folded shadow limbs. Peeks from different openings as though hoping not to disturb anyone, shifting attention with telescopes and moonlight rather than lunging.
+2D animation Idle eye blink; tell eyes glance toward next opening; action masked shadow slide between three fixed sockets; resolve bashful retreat.
+Signature Wide overhead rafter silhouette; limbs behave like loose shadows, never spider fangs or predatory legs.
+Level 9 Lampworks
+Regular enemies
+9 R1  Wall Sconce
+Antique wall lamp that floats free from the wall while its flame bends toward targets. Swivels its pool of light to make the wrong thing look important.
+2D animation Idle flame bend; tell bracket swivel; action warm spotlight sweep; resolve straighten.
+Signature Bracket-mounted side silhouette; one local beam rather than roomwide switching.
+9 R2  Gaslight Ghost
+Tall translucent figure visible only inside the glow of old gas lamps, fading whenever the light dims. Appears briefly to admire its reflection in the lamp glow, then forgets why it came.
+2D animation Idle glow pulse; tell silhouette gathers; action dignified gesture; resolve fade.
+Signature Soft figure made visible by a fixed nearby glow, not soot marks or empty clothing.
+9 R3  Lantern Bearer
+Empty old coat and gloved hands carrying a floating lantern, with no visible person inside the clothing. Offers a politely misleading route by lifting its lantern in the wrong direction.
+2D animation Idle coat sway; tell lantern lift; action point; resolve apologetic shrug.
+Signature Empty coat with solid gloves and a handheld lamp; body and light remain distinct.
+9 R4  Fuse Box
+Old electrical cabinet whose switches flip, wires twitch, and sparks jump between open contacts. Flips its switches in a mischievous sequence, suggesting a short interruption.
+2D animation Idle meter twitch; tell latch opens; action two switches flip; resolve indicator glow.
+Signature Small rectangular electrical cabinet, not the elite’s broad control console.
+9 R5  Gas Valve
+A brass pipe valve turns itself and releases one soft question-mark puff of ghostly vapor; no changing faces or hands. Puffs a tiny question-mark cloud and then whistles to itself.
+2D animation Idle pointer wobble; tell wheel quarter-turn; action one question-mark steam sprite expands and fades; resolve rewind.
+Signature Compact brass wheel and elbow pipe; no flame bursts toward the player.
+9 R6  Soot Shadow
+Humanlike silhouette made from smoke and soot, visible mainly where it stains nearby walls. Leaves an exaggerated charcoal silhouette where the visitor was standing.
+2D animation Idle edge drift; tell hand sketch; action stain stencil appears; resolve dust puff.
+Signature Flat matte wall mark, distinguished from translucent luminous ghosts.
+9 R7  Light Switch Shadow
+A shadowy hand repeatedly appearing beside wall switches before vanishing into the plaster. Sneaks in to flick one switch, then withdraws before being blamed.
+2D animation Idle switch plate; tell shadow fingertip; action flick; resolve hand retract.
+Signature Tiny wall plate and hand silhouette, not a free-moving humanoid.
+Elite enemies
+9 E1  The Main Switchboard
+Broad wall console with three large levers, two meters and an ordered line of indicator bulbs. Conducts an overcomplicated lights-on inspection, briefly prioritizing one circuit over another.
+2D animation Idle meter bob; tell selected bulb glows; action lever flips and three indicators chase; resolve click.
+Signature Wide electrical control surface; differs from the small Fuse Box through ordered circuits, not merely scale.
+9 E2  The Gas Manifold
+Low broad brass pipe manifold with three valves, glass reservoirs and one central gauge. Puffs a dignified steam fan while insisting every old lamp is perfectly serviced.
+2D animation Idle gauge rock; tell valves turn; action three soft vapor puffs; resolve gauges settle.
+Signature Horizontal pipework with timed pressure puffs, not electrical switching.
+9 E3  The Glassworks Rack
+Tall tilted frame holding three large lamp-glass shapes: globe, chimney and fluted shade. Rearranges its glassware into a prismatic distraction, then carefully shelves it again.
+2D animation Idle tiny glass sway; tell three pieces lift; action fan into fixed arc; resolve return.
+Signature Triangular rack and clear hanging glass; use three props, not an expensive particle cloud.
+Boss
+9 B1  The Lamplighter
+A spectral maintenance worker in a long soft coat and cap, carrying an old lighting pole. Performs one last round of lighting every lamp, then notices one behind him has gone out. His pole is a service tool, never a spear.
+2D animation Idle coat sway; tell pole rises; action three lamp halos ignite in sequence; resolve shadow catches up.
+Signature Tall diagonal lighting pole and following shadow; patient maintenance ritual rather than hostile wielding.
+Level 10 Ballroom and Velvet Suites
+Regular enemies
+10 R1  Masquerade Mask
+Floating ornate ballroom mask with trailing ribbons and a crisp side profile. Coyly hides behind its own ribbon before peeking from the wrong side.
+2D animation Idle ribbon sway; tell tilt; action side peek; resolve stately float.
+Signature Single narrow half-mask with trailing ribbon, not the elite’s feathered full face.
+10 R2  Waltzing Shoes
+A pair of elegant formal shoes dancing by themselves in synchronized side stepping motions. Continues a dance step after the music stops, suggesting a rhythmic nuisance.
+2D animation Idle heel tap; tell toe lift; action three-step shuffle; resolve polite heel click.
+Signature Two glossy pointed shoes; upright formal dance, not scuttling bedroom slippers.
+10 R3  Candelabra
+Tall brass candelabra gliding across the floor with blue flames bending and flaring as it moves. Bows its branches and makes its flames dance in a formal sequence, insisting everyone match the party rhythm.
+2D animation Idle flame sway; tell branches bow; action three flames dip in sequence; resolve proud straighten.
+Signature Wide branching brass stand, contrasting the graveyard’s single slender candle.
+10 R4  Serving Tray
+Floating silver tray carrying glasses and covered dishes, tilted by unseen hands. Offers an empty glass with elaborate courtesy and expects a thank-you.
+2D animation Idle level float; tell cloche lifts; action tray tilts; resolve graceful retreat.
+Signature Flat silver oval with one dome and glass; not kitchen orbiting tools.
+10 R5  Ghost Guest
+Refined translucent party guest in old formalwear, drifting with a drink in hand. Tries to tell the same anecdote again, pausing for a laugh that never comes.
+2D animation Idle goblet swirl; tell raised finger; action small speech puff; resolve bemused bow.
+Signature Short round party guest, not imposing host or tall shadow silhouette.
+10 R6  Violin Poltergeist
+Violin and bow moving together under invisible control in quick musical gestures. Plays one melodramatic wrong note to interrupt the room.
+2D animation Idle bow hover; tell bow draws back; action short bow stroke; resolve string wobble.
+Signature Asymmetric violin and diagonal bow, with no visible performer.
+10 R7  Top Hat Shade
+A neat shadow figure defined mostly by a top hat, shoulders, and gloved hands. Tips its hat but briefly leaves its shadow behind.
+2D animation Idle hat bob; tell tip; action silhouette offset; resolve reunite.
+Signature Compact hat-and-shoulder cutout; exaggerated politeness rather than looming menace.
+Elite enemies
+10 E1  The Grand Masque
+A broad full-face festival mask with an oversized crescent of feathers and layered jewel drops. Performs three grand expressions in a rigid ceremonial order, making the room follow its mood.
+2D animation Idle plume bounce; tell center jewel glows; action fixed expression plate changes and feather fan; resolve curtain-like ribbons settle.
+Signature Wide feather fan and formal expression sequence, unlike regular half-mask’s shy lateral peeks.
+10 E2  The Eternal Dance
+Two translucent ballroom dancers joined in one clear crescent pose, one coat and one bell-shaped skirt. Carries on the same elegant waltz, inviting everyone to keep its measured rhythm.
+2D animation Idle shared sway; tell held bow; action short three-step side loop; resolve pause together.
+Signature Paired connected figures; no full spin, rear view or independent crowd animation.
+10 E3  The Velvet Host
+A round-shouldered faceless figure in rich velvet, balancing a tall goblet and folded napkin. Offers impeccable hospitality in the wrong order and repeatedly asks everyone to remain seated.
+2D animation Idle sleeve sway; tell napkin unfolds; action trayless presentation gesture; resolve satisfied bow.
+Signature Broad velvet torso and goblet silhouette; formal service, not the boss’s conducting.
+Boss
+10 B1  The Master of Revels
+A supernatural host in burgundy formalwear with high collar, long sash and short conductor’s baton; a smiling porcelain-like half-face. Conducts the party’s last dance, then enthusiastically calls for an encore. Every gesture is showmanship rather than a threat.
+2D animation Idle baton count; tell deep bow; action three broad conducting poses with ribbon follow-through; resolve delighted applause.
+Signature Crimson vertical conductor silhouette, contrasting the elite Host’s broad velvet service pose.
+Level 11 Crypt and Ossuary
+Regular enemies
+11 R1  Floating Coffin
+One upright hexagonal coffin lid, plum lacquer, brass handles and a softly glowing seam; never a mouth. A fussy usher, it politely blocks the wrong aisle. Intent idea: brief protection.
+2D animation Idle: hover. Tell: handles lift. Action: pivot broadside, trace a pale shield. Resolve: handles bow.
+Signature A single solid shield silhouette; no coffin occupant, portal or wheeled furniture.
+11 R2  Funeral Urn
+A squat lilac memorial urn with curled handles and an oversized, slightly crooked lid. An interrupted snoozer puffs out one annoyed spectral sigh, then tucks it back inside. Intent idea: weaken an upcoming effect.
+2D animation Idle: lid trembles. Tell: lid tilts. Action: emit one curling puff. Resolve: puff retracts; lid settles.
+Signature Round, closed vessel; no emerging humanoid, face or boiling food.
+11 R3  Bone Chimes
+Five clean, rounded, stylized ivory bones suspended from a small crescent bracket; no skull, flesh or anatomical assembly. They insist on finishing their tiny bedtime tune. One bone rings before being touched. Intent idea: a delayed repeat.
+2D animation Idle: gentle sway. Tell: one bone glows. Action: sequential clacks and note dots. Resolve: strings straighten.
+Signature Small hanging comb silhouette, dominated by sound rather than a skeletal creature.
+11 R4  Mourning Fan
+An open, pearl-edged black pleated fan, hovering upright with a short ivory handle. An invisible mourner fans away sighs with exaggerated disapproval; its breeze blows its own tassel the wrong way. Intent idea: soften a strong effect.
+2D animation Idle: slow tilt. Tell: folds compress. Action: two brisk sweeps, crescent draft. Resolve: snap elegantly open.
+Signature Broad crescent with rigid folding ribs, not another floating veil or shroud.
+11 R5  Censer Swinger
+A pierced bronze incense sphere hanging beneath a triangular chain yoke, violet light visible through its holes. It perfumes visitors who never asked, leaving one neat smoke ring hanging sideways. Intent idea: obscure the next intent briefly.
+2D animation Idle: pendulum sway. Tell: holes brighten. Action: short swing and ring puff. Resolve: ring shrinks into sphere.
+Signature Compact metal pendulum; fragrance, not flame or a vapor person, supplies its personality.
+11 R6  Mortuary Measure
+An ivory folding measuring rule bent into a crooked zigzag, with tiny brass joint caps. An unseen tailor measures everyone's patience, extending beyond its own last mark. Intent idea: prepare a larger next effect.
+2D animation Idle: joint taps. Tell: markings glow. Action: unfold three segments; luminous extra mark appears. Resolve: concertina shut.
+Signature Angular articulated ruler; no arm, crawling anatomy, weapon or humanoid body.
+11 R7  Bier Trestle
+A low violet-padded wooden trestle, two broad folding supports and brass corner caps; nothing rests on it. It keeps offering a seat, then politely forgetting how tall seats are. Intent idea: alternate a sturdy and vulnerable stance.
+2D animation Idle: cushion dimples. Tell: hinges glow. Action: supports fold; cushion floats unchanged. Resolve: legs unfold beneath it.
+Signature Low geometric support and impossible stationary cushion, not a bed, chair or coffin cart.
+Elite enemies
+11 E1  The Coffin Bearers
+Two short translucent porters share one shallow, closed ceremonial casket. Broad capelets and mismatched tall hats make a single low, horizontal sprite group. They keep courteously disagreeing over which end should lead; the casket continues level while both bow. Intent idea: alternating support and interruption.
+2D animation Idle: synchronized bob. Tell: hats tip opposite ways. Action: casket glides one body-width as porters briefly lag behind. Resolve: both catch up and bow. Keep the casket rigid.
+Signature A comic two-person carrying ritual, not another moving lid or coffin full of surprises.
+11 E2  The Epitaph Press
+A squat cast-iron embossing press with a broad open throat, oversized hooked lever and one small stack of blank memorial ribbons. The overparticular machine labels every visitor 'PLEASE WAIT'; the lettering lifts away before the ribbon leaves the bed. Intent idea: apply a brief delay.
+2D animation Idle: lever gives tiny impatient ticks. Tell: platen lights violet. Action: one downward stamp releases a single floating label. Resolve: ribbon slides back; lever rises. Use one label effect.
+Signature Heavy lever-and-platen silhouette; not a cabinet, writing desk, barrel press or autonomous pile of paper.
+11 E3  The Mourning Standard
+A broad, diamond-ended black processional banner hangs from a rigid bronze crossbar and spearless pole. A silver border frames two embroidered shoeprints. It solemnly rehearses a procession nobody attends; the prints march upward through the fabric and reappear at its hem. Intent idea: several small delayed pulses.
+2D animation Idle: tassels sway. Tell: silver border glows. Action: two footprint sprites climb on a masked loop. Resolve: prints return to their original stitched positions. Pole and banner remain rigid.
+Signature A ceremonial heraldic object with animated embroidery, not a floating shroud, human outline or visible crowd.
+Boss
+11 B1  The Undertaker
+A tall translucent funeral director: bent stovepipe hat, round spectacles, swallowtail coat and oversized white gloves. A measuring ribbon hangs like a watch chain; violet light outlines his kindly, distracted profile. He mistakes visitors for guests awaiting a perfectly organized rest and gently insists they take a number. Intent idea: alternate protection and postponement.
+2D animation Idle: inspect cuffs. Tell: raise a numbered token. Action: spread hands; three violet markers align into a barrier. Resolve: markers bow and fade; he checks an empty pocket. One rig and three identical markers; no room-wide furniture sequence.
+Signature His stoop, bent hat and fussy poses distinguish him from lantern-and-key servants and the Butler.
+Level 12 Withered Hedge Maze
+Regular enemies
+12 R1  Wrong-Way Sign
+A forked wooden signpost with three unequal arrow boards and a single faded lilac trail ribbon. It confidently gives contradictory directions; its shadow points somewhere none of its arrows do. Intent idea: misdirect a planned effect.
+2D animation Idle: ribbon twitch. Tell: shadow arrow glows. Action: boards pivot one at a time. Resolve: shadow smugly turns last.
+Signature Asymmetrical branching silhouette and independent shadow, not a garden gate or carved statue.
+12 R2  Boundary Rope
+Two squat white stone boundary posts supporting one thick, moss-green garden cord in a broad U. An invisible steward insists visitors walk around a boundary that politely sags upward. Intent idea: briefly obstruct an approach.
+2D animation Idle: cord bobs. Tell: post caps glow. Action: U reverses into an arch. Resolve: impossible arch droops normally.
+Signature Paired low posts with one broad curve; not a barred gate, moving vine or whipping leash.
+12 R3  Lawn Roller
+A heavy striped iron lawn roller under a long bent push handle, a single brown leaf stuck to its drum. It smooths an imaginary path; the leaf remains motionless while the drum turns beneath it. Intent idea: build steady protection.
+2D animation Idle: handle wags. Tell: stripe glows. Action: roll briefly; a flat spectral strip unfurls. Resolve: strip curls back inside.
+Signature One low cylinder and a tall diagonal handle; no cart load or walking plant.
+12 R4  Chalk-Line Reel
+A squat triangular gardener's reel, brass winding knob and short bright blue chalk cord. It redraws boundaries just as visitors understand them; the loose cord holds a perfect unsupported right angle. Intent idea: change a simple restriction.
+2D animation Idle: knob ticks backward. Tell: cord brightens. Action: extend a small luminous corner. Resolve: corner reels into housing.
+Signature Compact spool plus angular local line; not writing, a map page or animated root.
+12 R5  Corner Hedge
+One waist-high, squared brown hedge corner on a small soil island; clipped branches make a clear blocky L. It sulks when bypassed, turning its missing corner the other way while its shadow refuses to follow. Intent idea: switch between two defensive positions.
+2D animation Idle: two leaves tremble. Tell: corner glows. Action: crossfade two quarter-turn poses. Resolve: delayed shadow catches up.
+Signature Geometric maze segment, never an animal topiary or thorn creature.
+12 R6  Whispering Wind Sock
+A faded green conical fabric wind sock on a crooked forked pole, its narrow tail tied in a little bow. It whispers a helpful shortcut, but inflates toward the wind instead of away. Intent idea: foreshadow a misleading repeat.
+2D animation Idle: tail droops. Tell: pale breath gathers. Action: cone inflates backward and gives one soft puff. Resolve: collapses with a nod.
+Signature Long tapering horizontal cone, unlike curtains, ribbon swarms or human-shaped cloth.
+12 R7  Boot Scraper
+A low cast-iron estate boot scraper with two broad bristle brushes flanking an ornate central blade; rounded edges, no cutting action. It scrubs away a spectral footprint that keeps politely reappearing. Intent idea: remove one small benefit.
+2D animation Idle: bristles shiver. Tell: footprint gleams above it. Action: brushes tilt inward and erase print. Resolve: print returns faintly.
+Signature Small wide comb silhouette; the footprint is a local effect, not a separate invisible walker.
+Elite enemies
+12 E1  The Rotting Gazebo
+A compact, lopsided octagonal gazebo with a green patinated roof, four visible posts and one empty suspended swing seat. Moss and dry leaves soften the abandoned structure. Its unseen host offers a break that somehow never begins: the seat swings forward while its shadow swings backward. Intent idea: shelter fellow haunts, then lose that protection while resetting.
+2D animation Idle: roof finial trembles. Tell: seat pauses unnaturally high. Action: one broad swing, opposing oval shadow. Resolve: seat centers; two leaves drift down. Keep roof and posts fixed.
+Signature An open roofed shelter with pendulum seating, not a fountain, portal, cabinet or miniature inhabited house.
+12 E2  The Croquet Umpire
+A tall freestanding croquet scoreboard with a stepped crown, chunky wooden number drums and two crossed mallets fixed beneath it. No face or body is attached. It declares every route out of bounds, then secretly changes its own score. Two tiny ghostly applause marks appear whenever it cheats. Intent idea: a predictable count followed by a penalty.
+2D animation Idle: one drum twitches. Tell: drums align. Action: three drums flip sequentially; a small striped ball rolls through its empty base. Resolve: the first drum quietly changes again. Use one ball sprite.
+Signature Vertical sporting score apparatus; no nursery toy creature or repeatedly animated croquet set.
+12 E3  The Lost Compass
+An oversized open pocket compass resting on its rim, a broad oval lid behind a round brass bowl and a long blue needle hovering just above it. It takes pride in helping travelers, though its needle points inward at itself and its shadow points away. Intent idea: announce one intent, then visibly switch to a different one.
+2D animation Idle: shallow rocking. Tell: needle stands upright. Action: needle pivots outside the bowl and draws one short hooked direction trail. Resolve: trail retracts; needle returns. No landscape changes.
+Signature Open oval-and-circle profile; directions, never time, moon phases, astronomy or a changing atlas scene.
+Boss
+12 B1  The Gardener of Rot
+A spectral estate gardener with a drooping broad hat, patched coat and wooden clogs fading into dry leaves. A mushroom grows from his hatband, never his skin. His blunt planting dibber points downward. Fond of the old maze, he repairs the wrong paths and composts yesterday’s directions. Intent idea: preparation becomes renewal, with a readable interruption opportunity.
+2D animation Idle: inspect a dry leaf. Tell: leaf glows green. Action: raise one palm; three leaves circle and become fresh leaf shapes. Resolve: they fade brown and settle. One rig, paired leaf sprites and local glow; no transforming garden.
+Signature A wistful, muddled gardener, without decay wounds, aggressive tools, body vines or topiary transformations.
+Level 13 Secret Passages
+Regular enemies
+13 R1  Peephole Watcher
+A small brass peephole set in a narrow diamond of paneled wood, its sliding cover shaped like a drooping eyelid. An unseen snoop checks whether anyone noticed it; the reflected glint looks away before the cover closes. Intent idea: reveal an upcoming choice.
+2D animation Idle: cover quivers. Tell: glint brightens. Action: cover slides; glint darts sideways. Resolve: embarrassed snap shut.
+Signature Tiny aperture and cover, not a fleshy eye, mirror or telescope.
+13 R2  Servant Bell
+One brass bell on a curled steel spring, mounted above a single blank enamel plaque with a taut wire rising behind it. It summons a servant who never arrives; its ringing shadow continues after the metal stops. Intent idea: call a small support effect.
+2D animation Idle: wire twitches. Tell: spring tightens. Action: bell rings twice. Resolve: metal stills; shadow rings once more.
+Signature A single spring-bell silhouette, not a multi-bell control panel or musical instrument swarm.
+13 R3  Floor Hatch
+A shallow square trapdoor in a short brass-edged floor frame, with an enormous flat iron ring handle. It plays peekaboo with a darkness that remains visible when the lid closes. Intent idea: briefly hide a small effect.
+2D animation Idle: ring lifts. Tell: edge glows. Action: lid rises; one round shadow peeks over lip. Resolve: lid shuts; shadow slides beneath frame.
+Signature Low horizontal hinged geometry; no hallway vista, creature mouth or upright door.
+13 R4  Listening Tube
+A slender S-curved brass speaking tube with a flared ear-shaped funnel above and a smaller downward horn below. It repeats a confidential whisper from the wrong end; a tiny light travels backward through its metal. Intent idea: echo one weak effect.
+2D animation Idle: funnel tilts. Tell: small horn glows. Action: backward light ripple; one comma-shaped whisper puff. Resolve: funnel shushes itself downward.
+Signature Open curved tube, no mouth apparition, pipe swarm or steam-driven gauge.
+13 R5  Loose Brick
+A single oversized red brick hovering in a rough square of old cream mortar, with three chalky white fingerprints on one edge. It taps out a secret knock, then pretends it never moved. Its mortar outline stays suspended when it leaves. Intent idea: a small delayed surprise.
+2D animation Idle: dust trembles. Tell: fingerprints brighten. Action: brick slides forward, taps twice. Resolve: retreats slightly off-center.
+Signature Blunt horizontal masonry block and empty outline; no face, limbs or stone statue.
+13 R6  Squeaky Hinge
+A large open butterfly hinge, two mismatched brass leaves and a long capped pin, hovering at a comic slant. It loudly requests silence, pulling out its own pin while somehow staying together. Intent idea: interrupt a prepared effect.
+2D animation Idle: leaves tremble. Tell: pin glows. Action: pin lifts; leaves clap once without contact. Resolve: pin drops back upside down.
+Signature Flat double-winged hardware, not a complete door or a hand reaching from a wall.
+13 R7  Vent Grille
+A short rectangular iron air grille with five broad louvers and a cobweb tied like a tiny bow in one corner. It holds its breath to avoid discovery, then sneezes out a perfectly square dust puff. Intent idea: briefly obscure, then expose itself.
+2D animation Idle: cobweb flutters inward. Tell: louvers pinch closed. Action: open in sequence; square puff escapes. Resolve: louvers straighten sheepishly.
+Signature Low slatted rectangle and geometric dust; no humanoid drain shadow or vapor creature.
+Elite enemies
+13 E1  The Silent Winch
+A broad wooden cable drum held between two iron cheeks, a large offset hand crank and one endless loop of pale rope disappearing into its own center. It draws up something that never arrives; one knotted bow passes again before the drum completes a turn. Intent idea: wind up a stronger effect that can be interrupted.
+2D animation Idle: crank inches backward. Tell: rope pulls taut. Action: one deliberate turn; duplicate bow passes along the loop. Resolve: crank releases a quarter-turn and rope relaxes. Use a short scrolling rope texture.
+Signature Horizontal drum and closed rope circuit; not a plumb bob, cage, cart or open portal.
+13 E2  The Skeleton Lock
+An oversized brass mortise lock seen in side cutaway, its rectangular backplate supporting three chunky tumblers and a large empty keyhole. The name refers only to a skeleton key; there are no bones. Its proud inner mechanism locks and unlocks itself without anyone asking; the keyhole slides to avoid a nonexistent key. Intent idea: alternate two clearly signaled restrictions.
+2D animation Idle: tumblers tick. Tell: keyhole brightens. Action: three tumblers hop; keyhole plate slides sideways. Resolve: latch returns, keyhole slowly recenters. No door or room beyond it.
+Signature Exposed lockwork, not another cabinet, barred gate or crowd of keys.
+13 E3  The Folding Partition
+Three narrow plaster-and-lath panels joined by exposed vertical brass hinges. Their uneven tops and visible wooden ribs form a tall, crooked zigzag; no doorway is cut into them. They keep shortening an unused shortcut. A blue seam travels straight across all three panels even while they fold in opposite directions. Intent idea: temporary obstruction followed by an exposed opening.
+2D animation Idle: hinge dust trembles. Tell: seam brightens. Action: crossfade between open and concertina-folded poses while the seam stays level. Resolve: panels unfold with one embarrassed creak. Two fixed poses; no moving camera.
+Signature Folding internal wall fabric, not a staircase, freestanding door, domestic screen or miniature room.
+Boss
+13 B1  The Man in the Walls
+A flat midnight-blue figure lives between two offset wallpaper strips. A long profile nose, soft hat and oversized mitten-like hands keep him recognizable and bashful; no stretched flesh or exposed anatomy. The mansion’s shy eavesdropper insists nobody saw him, even while his shadow waves hello. Intent idea: concealed preparation alternates with a visible interruption opportunity.
+2D animation Idle: peek around paper. Tell: strips ripple outward. Action: silhouette slides halfway out and gestures “shh.” Resolve: hand retracts; delayed shadow waves. One silhouette rig, two paper layers and one shadow; no room or camera changes.
+Signature A wall-bound peekaboo performer, not a free-standing shadow guest or many-part architectural guardian.
+Level 14 Bathhouse and Rain Wing
+A kindly bathhouse keeps repeating its comfort rituals. Rain misbehaves in little measurable ways; nothing scalds, floods, traps, or drowns. Use fixed droplets, cropped steam loops, and planar rig motion rather than simulated water.
+Regular enemies
+14 R1  Towel Poltergeist
+Three thick square towels hover in a stepped stack; one embroidered corner makes their orientation unmistakable. A fussy folder forever correcting untidy corners; could temporarily tuck away one available option.
+2D animation Idle: bob. Tell: top corner lifts. Action: two hinged folds close. Resolve: stack squares itself.
+Signature Compact folding geometry, not a sheet-bodied ghost or flowing blanket.
+14 R2  Drain Shade
+A flat black silhouette peeks from an oversized oval drain plate, stopping at a rounded shoulder. Bashfully borrows things left near its hiding place; suggests briefly removing an active support effect.
+2D animation Idle: peek. Tell: grate tilts. Action: silhouette contracts through a fixed mask. Resolve: grate settles.
+Signature A floor-bound disappearing cutout, never a reaching arm or full smoke person.
+14 R3  Scrub Brush
+An oversized long-handled bath brush balances diagonally on its broad oval bristles, without face or limbs. Polishes away even perfectly useful marks; could erase a recently placed modifier.
+2D animation Idle: bristles flex. Tell: handle leans back. Action: short polishing arc. Resolve: single sparkle pops.
+Signature Rigid diagonal lever and scrub rhythm, unlike floating utensil clusters.
+14 R4  Soap-Dish Skater
+A broad scalloped dish carries one rectangular soap bar, which slides independently along its short rim. Keeps offering the soap just out of convenient reach; could shift which option becomes available first.
+2D animation Idle: bar rocks. Tell: dish tips. Action: bar slides end-to-end. Resolve: dish levels.
+Signature Low crescent silhouette with one sliding block; neither blob nor soap creature.
+14 R5  Tile Quartet
+Four large ceramic diamonds hover as one staggered cluster; raised ridges keep their pattern readable without color. An obsessive pattern-maker rerouting every sensible arrangement; suggests swapping two upcoming cues.
+2D animation Idle: tiny staggered bob. Tell: tiles separate. Action: two exchange on fixed paths. Resolve: cluster clicks together.
+Signature Four solid geometric pieces, not a wall section or portal.
+14 R6  Rain Chain
+Three oversized copper rain cups hang from a short hooked chain, their open profiles stacked vertically. Politely returns the rain upstairs; could pass a small helpful effect backward through the opposing lineup.
+2D animation Idle: slight sway. Tell: bottom cup tips. Action: one bead hops upward. Resolve: cups straighten.
+Signature Vertical cup-to-cup relay; no ringing, orbiting swarm, or free-flowing water.
+14 R7  Bath Thermometer
+A paddle-shaped wooden bath thermometer floats upright; its broad inset column visibly expands and contracts. Never finds the room quite comfortable enough; could alternate between two clearly announced preparation states.
+2D animation Idle: gentle tilt. Tell: column grows. Action: paddle nods decisively. Resolve: column shrinks.
+Signature One tall solid paddle and rising bar, not a spinning gauge or clock.
+Elite enemies
+14 E1  The Grand Bath
+A deep claw-foot tub with a high curled back and three oversized bath bubbles held above its rim. The interior is a flat opaque ellipse, never a rendered pool. Insists every visitor deserves a leisurely soak; could postpone an opposing cue while building a generous protective buffer.
+2D animation Idle: tub rocks. Tell: bubbles rise together. Action: three bubbles expand into a soft screen. Resolve: they pop in sequence; tub settles.
+Signature Broad curled basin silhouette; no second walking-tub regular.
+14 E2  The Breathing Radiator
+A squat cast-iron radiator with four broad scalloped fins and two huge loop feet. The fins move as one accordion strip; only two warm-air curls appear. A contented old warmer that sighs whenever anyone rushes; suggests a predictable comfort pulse that resets a minor nuisance on its side.
+2D animation Idle: slow fin compression. Tell: feet lift together. Action: two curls rise during a long sigh. Resolve: feet settle and fins relax.
+Signature Horizontal ribbed silhouette, not the Lampworks' branching gas manifold.
+14 E3  The Rain Collector
+An enormous flared rain funnel balances above one squat measuring jar on a narrow pedestal. Three embossed water-level bands are readable shapes, not tiny numerals. Proudly saves every imaginary shower, then returns it at the least convenient moment; could store a limited number of incoming nuisances before repeating them.
+2D animation Idle: funnel wobbles. Tell: jar's flat fill mask reaches its top band. Action: three beads rise through the funnel. Resolve: fill mask lowers.
+Signature Top-heavy funnel silhouette and counted storage, not a fountain or storm creature.
+Boss
+14 B1  The Bathhouse Matron
+A welcoming spectral matron with a broad bell-shaped apron, puffed sleeves, high folded bath cap, and two floating towel squares. Her smiling profile stays simple; one fixed mask softens her hem. She remembers everybody's preferred comfort except when they wanted to leave. Her fussing could alternate between tidying away options and restoring helpers; a conspicuous satisfied pause suggests an interruption opportunity. She never confines or scalds anyone.
+2D animation Idle: approving nod. Tell: both towels lift. Action: open-palmed conducting gesture and one cropped steam puff. Resolve: towels rest; she waits expectantly.
+Signature Rounded welcoming silhouette and deliberate pauses, not another severe key-bearing governess.
+Level 15 Kennels and Animal Ward
+The boarding ward's harmless care accessories have become overenthusiastic hosts. No ordinary animal is an opponent or a captive inside a sprite. Mischief comes from grooming, measuring, training cues, and endless offers to play—not suffering, punishment, invasive treatment, or forced restraint.
+Regular enemies
+15 R1  Water Bowl Poltergeist
+A heavy oval bowl hovers above its broad rubber foot; one flat water ellipse rises intact. Offers a fresh drink during every important moment; could interrupt one cue with an unnecessary refresh.
+2D animation Idle: tiny rock. Tell: ellipse lifts. Action: ellipse slides sideways like a coaster. Resolve: it returns.
+Signature Low metal oval and impossible rigid water; no liquid creature.
+15 R2  Grooming Mitt
+An empty padded grooming mitt floats thumb-up; three rubber nubs form a blunt scalloped edge. Cannot resist tidying one last speck of imaginary fluff; could brush away a small beneficial effect.
+2D animation Idle: thumb wiggles. Tell: palm tilts in-plane. Action: wiping sweep. Resolve: one fluff mote falls.
+Signature Soft mitten silhouette, not a grasping spectral hand; never grips bodies.
+15 R3  Reward Clicker
+A teardrop-shaped training clicker hovers vertically, its broad button and blunt metal tongue clearly separated. Congratulates everyone a beat too early; could prematurely trigger a helper's announced preparation.
+2D animation Idle: tiny bounce. Tell: button rises. Action: button depresses and tongue flexes. Resolve: two fixed sound arcs fade.
+Signature Solid teardrop and one crisp click, unlike dangling chimes.
+15 R4  Fussing Fan
+A four-bladed grooming fan sits on a curved neck and triangular base; blades rotate in-plane. Keeps correcting a nonexistent bad hair day; could push a prepared nuisance back onto its owner.
+2D animation Idle: blades tick. Tell: neck leans. Action: blades accelerate with one airflow ribbon. Resolve: neck springs upright.
+Signature Open pinwheel above a low base; no spotlight or watching eye.
+15 R5  Treat Puzzle
+A thick wooden enrichment board holds three sliding covers, with one star-shaped treat visible beneath. Proudly changes the answer after explaining its puzzle; could conceal which of two cues is genuine.
+2D animation Idle: covers twitch. Tell: middle cover lifts slightly. Action: two covers slide. Resolve: treat peeks from one opening.
+Signature Low rectangular slider puzzle, not a chest or food creature.
+15 R6  Scent Tin
+A round scent-training tin floats on edge; its crescent lid exposes three large scent holes. Mistakes every visitor for a familiar fragrance; could mark a choice for an extra follow-up cue.
+2D animation Idle: lid rattles. Tell: lid slides halfway. Action: one curled scent line traces a loop. Resolve: lid shuts.
+Signature Thin disc profile; one drawn scent line, not smoke anatomy.
+15 R7  Pace Cone
+A squat training cone balances on a square rubber base, bearing one raised paw-shaped badge. Moves the start of playtime whenever everyone is ready; could redirect the next cue toward a decoy.
+2D animation Idle: tip wobbles. Tell: one corner lifts. Action: sideways hop. Resolve: base flattens.
+Signature Single broad triangle and jaunty hop; no barrier or animal silhouette.
+Elite enemies
+15 E1  The Tag Collector
+A broad zigzag display rail carries three oversized loose identity tags: round, bone-shaped, and diamond. Tags slide along short pegs; no collar, animal, or leash is attached. Delighted to remember everyone, but assigns the wrong places in line; could exchange two announced opposing cues.
+2D animation Idle: tags sway. Tell: tags rise. Action: two trade positions on short paths. Resolve: all rehang with a pleased jingle.
+Signature Wide zigzag and three contrasting shapes, not a coatrack or wall of names.
+15 E2  The Fetch Return
+A broad U-shaped wooden ball-return track sits on stubby feet. One stitched fabric ball rests between its open raised ends; no animal occupies it. An indefatigable playmate believes every completed activity deserves another go; could recycle one resolved helper cue rather than introducing a new threat.
+2D animation Idle: ball rocks. Tell: track end tilts. Action: ball follows a fixed U-path. Resolve: opposite end bounces welcomingly.
+Signature Open U silhouette and single rolling prop, not a toy chest swarm or room-sized course.
+15 E3  The Portion Balance
+A wide feeding balance has a thick central post, two broad pans, and a sliding counterweight. Three treat tokens remain grouped as one reusable sprite. Generous to a fault, it keeps correcting unequal portions; could redistribute a limited protective benefit among helpers rather than generate more.
+2D animation Idle: beam teeters. Tell: counterweight slides. Action: treat cluster transfers between pans. Resolve: beam pauses emphatically horizontal.
+Signature Wide balanced T silhouette and equalizing gesture; no examining, weighing, or restraining animals.
+Boss
+15 B1  The Kennelmaster
+A broad, calm spectral caretaker in a knee-length ward coat, with rolled sleeves, an oversized round treat pouch, and two simple playthings on his belt. His boots fade through one soft ground mask. Delighted by company, he has scheduled far too much play and fuss. Open gestures could coordinate grooming, reward, and play cues; a clear empty-handed pause offers a chance to break the routine. No animal is commanded to fight, confined, examined, or distressed.
+2D animation Idle: reassuring nod. Tell: lifts pouch. Action: one broad invitation coordinates helpers. Resolve: folds hands and waits.
+Signature Square coat and circular pouch contrast with the Matron's bell-shaped apron and cap.
+Level 16 Moon Courtyard and Pumpkin Grounds
+A moonlit estate harvest festival continues without its guests. Decorations, judging rituals and seasonal tools make cheerful little mistakes. Reserve the ceremonial scarecrow silhouette for the boss; other encounters should sort, sift, award, measure or welcome rather than behave like crop creatures.
+Regular enemies
+16 R1  Pumpkin Lantern
+A squat carved pumpkin hovering just above its curled stem-shadow, with a small, warmly lopsided smile. Winks an inviting patch of light onto the wrong place; suggests distracting the visitor from a fellow haunt's next cue.
+2D animation Idle: gentle bob. Tell: lid tilts. Action: one glow-mask expands from the carving. Resolve: lid settles and light contracts.
+Signature A single floating invitation; never a walking pumpkin or miniature cart.
+16 R2  Moon Dial
+A low, tilted stone dial with a crescent-shaped gnomon and three inset moon marks. Borrows a patch of moon-shadow for nearby haunts; suggests brief cover from the visitor, not another clock's time reversal.
+2D animation Idle: faint glyph shimmer. Tell: crescent tips sideways. Action: a small shadow wedge sweeps outward. Resolve: crescent and shadow return.
+Signature Low stone profile and redirected shade, not spinning celestial machinery.
+16 R3  Hay Bale Poltergeist
+A compact rectangular hay bale with two conspicuously tidy twine bands and no face or limbs. Reties its own packing whenever disturbed; suggests rebuilding a small protective layer rather than lunging at anyone.
+2D animation Idle: tiny straw shiver. Tell: bands loosen. Action: bands tighten while three straw flecks return. Resolve: bale gives a satisfied settling bounce.
+Signature A self-packing block, not a straw person or blanket creature.
+16 R4  Harvest Sieve
+A broad wooden sieve suspended at a readable slant, its mesh holding three oversized golden seeds. Sifts upward, keeping the festival's 'best bits'; suggests removing a nuisance from a fellow haunt.
+2D animation Idle: shallow rocking. Tell: seeds gather centrally. Action: mesh flashes and three flecks rise. Resolve: seeds settle into their original positions.
+Signature One shallow mesh oval; the supernatural act is reverse sifting.
+16 R5  Prize Rosette
+An oversized pleated prize ribbon floating upright, with a bright blank center and two short tails. Insists a nearby nuisance deserves first prize; suggests briefly bolstering one fellow haunt while drawing the visitor's attention.
+2D animation Idle: tails flutter. Tell: pleats open slightly. Action: center flashes one star-shaped seal. Resolve: pleats close and tails fall still.
+Signature A compact award badge, not a mask, ghost guest or streamer swarm.
+16 R6  Seed Scoop
+A long-handled wooden measure balanced impossibly on its narrow tip, holding one pale, oversized seed. Plants its one seed in empty air, convinced spring is here; suggests a small, visibly announced buildup.
+2D animation Idle: careful balancing. Tell: bowl inclines. Action: seed lifts above one faint root-shaped glow. Resolve: glow fades and seed returns.
+Signature A narrow leverlike silhouette planting air, not another portion-balancing scale.
+16 R7  Seed Rattle
+A ridged tin seed shaker with a short handle, a tied ribbon, and no opening mouth. Shakes the festival's count-in before anyone is ready; suggests nudging the rhythm of an announced effect.
+2D animation Idle: ribbon droops. Tell: handle rises. Action: two crisp shakes release tiny sound rings. Resolve: shaker tilts back and ribbon settles.
+Signature A closed upright cylinder; sound cues distinguish it from dispensing tools.
+Elite enemies
+16 E1  The Great Pumpkin Cart
+A broad two-wheeled harvest wagon with three clearly separated gourds, one shallow basket and a curved wooden rail. No face, arms or giant glowing pumpkin dominates it. Re-sorts the harvest into an order it considers perfect; suggests exchanging which fellow haunt receives the next protective effect.
+2D animation Idle: wheel rocks a fraction. Tell: basket tips. Action: three attached gourds lift and exchange preset slots. Resolve: basket levels and gourds settle with staggered bounces.
+Signature Horizontal inventory choreography, not the regular lantern's floating light invitation.
+16 E2  The Cider Press
+A squat slatted cider barrel beneath one tall screw and a broad T-handle. Its little collecting cup stays visibly attached to the base; no surrounding workshop is needed. Patiently presses the same impossible drop twice, saving a second serving for a fellow haunt; suggests banking enemy-side recovery.
+2D animation Idle: handle sways. Tell: screw descends one short increment. Action: one amber drop enters the cup, then rises back. Resolve: screw unwinds and the cup's glow remains briefly.
+Signature Vertical rotary compression, unlike the crypt's squat lever-and-stamp press.
+16 E3  The Generous Cornucopia
+A large curled wicker horn resting on its side, with three fixed harvest shapes near the rim and one loose ribbon at its narrow tip. Offers fellow haunts another helping from its empty basket; suggests renewing their spent blessings without spawning food creatures.
+2D animation Idle: wicker gently flexes. Tell: rim tips up. Action: three flat golden offering-shapes follow the same short arc outward and fade. Resolve: rim lowers and the ribbon unwinds.
+Signature An unmistakable curved horn whose excess is hospitality, not appetite.
+Boss
+16 B1  The Harvest Effigy
+A grand festival figure built from straw, wooden crossbars and broad fan-shaped sleeves. A plain wooden moon mask replaces a conventional face; small pumpkins, ribbons and two unlit lantern ornaments decorate its waist. Keep the whole silhouette fixed and puppetlike. Conducts one last harvest welcome, awarding its fellow haunts the brightest patch of moonlight. It suggests ceremonial enemy-side protection followed by generous, readable openings, rather than striking or frightening the visitor.
+2D animation Idle: shallow crossbar sway. Tell: sleeve lifts and mask inclines. Action: both sleeves fan outward as three ribbon accents trace a short welcoming arc. Resolve: sleeves fold, ornaments settle and mask bows.
+Signature The region's only scarecrow-shaped presence; no lesser effigy repeats its silhouette.
+Level 17 Heart of the House
+The mansion's memories and protective instincts become visible through small acts of welcome, repair and reassurance. Its mistake is fussing too much, not cruelty. The final region feels like a home learning that guests set their own pace. Keep every encounter a bounded sprite, never a whole room simulation.
+Regular enemies
+17 R1  Nameplate
+One broad horizontal brass plaque, its oversized engraved letter-shapes softly luminous and deliberately unreadable at sprite scale. Insists the visitor has arrived under the wrong name; suggests briefly muddling a choice through mistaken identity, not transferring roles.
+2D animation Idle: slight hover. Tell: letters brighten separately. Action: three letter layers swap into a new order. Resolve: brass catches one insistent glint.
+Signature One mistaken household label, not the animal ward's tag-swapping display.
+17 R2  House Pulse
+A palm-sized open knot of bent wood, copper wire and folded wallpaper surrounding a steady blue glow. Steadies the other haunts just as the visitor gains momentum; suggests modest enemy-side recovery with a conspicuous, interruptible pulse.
+2D animation Idle: slow contraction. Tell: glow gathers centrally. Action: one soft ring expands while three outer pieces separate slightly. Resolve: pieces return and glow steadies.
+Signature Compact abstract heartbeat, never a transforming version of The Keeper.
+17 R3  Welcome Cushion
+A single plump wedge-shaped cushion with piped edges and one button; an invisible elbow occasionally dimples it. Fluffs itself at the visitor's busiest moment, insisting it is time to rest; suggests a brief, clearly signaled timing nuisance.
+2D animation Idle: button sinks gently. Tell: corners rise. Action: cushion compresses and releases one small puff. Resolve: elbow dimple returns.
+Signature One soft wedge, with no chair, bed, face or blanket swarm.
+17 R4  Darning Hoop
+A suspended wooden embroidery hoop displaying a simple stitched house; one blunt needle remains tethered to the fabric. Mends a tiny gap in its embroidered home; suggests restoring a fellow haunt's protection just when the visitor has loosened it.
+2D animation Idle: loose thread sways. Tell: a stitch glows. Action: needle crosses one short seam and thread tightens. Resolve: repaired stitch dims.
+Signature A fixed circular craft frame; the needle never points toward a character.
+17 R5  Draft Stopper
+A long, plain stuffed fabric cylinder with square end tabs, resting low against the floor without animal features. Scoots toward any troublesome breeze; suggests damping a passing effect rather than grabbing or restraining anyone.
+2D animation Idle: one end lifts. Tell: fabric bunches centrally. Action: two segments compress and slide a short distance. Resolve: cylinder straightens.
+Signature A practical low fabric bar, never a snake or reaching blanket.
+17 R6  Plumb Bob
+A polished brass teardrop on one taut thread, suspended beside a tiny bracket without a larger wall panel. Corrects a visitor's carefully altered intention because the house considers it crooked; suggests restoring an enemy cue to its usual direction.
+2D animation Idle: slight pendulum swing. Tell: thread holds an impossible diagonal. Action: bob snaps gently upright with one glint. Resolve: a smaller swing resumes.
+Signature One hanging teardrop; no pulley machinery, clockwork or viewing aperture.
+17 R7  Floorboard Knocker
+A short freestanding oak floorboard, slightly bowed, with a worn knot and two rounded nail heads. Answers hurried footsteps with a reassuring double knock; suggests a clearly announced interruption rather than a physical trip.
+2D animation Idle: one edge flexes. Tell: board arches. Action: its ends tap twice, each releasing a small sound ring. Resolve: board lies flat.
+Signature A low rigid plank whose voice is a knock, not a shadow occupant.
+Elite enemies
+17 E1  The Keeper's Hands
+Two oversized white-gloved hands joined by a short, soft blue shadow-ribbon. Their open palms and rounded fingers read as helpful household gestures, with no arms emerging from doorways. Smooths an invisible wrinkle, then politely presents the newly tidy space; suggests rearranging fellow haunts' protection without holding or trapping the visitor.
+2D animation Idle: fingers relax. Tell: palms turn upward. Action: hands make one synchronized smoothing pass across their own ribbon. Resolve: fingers open and return to their original spread.
+Signature Paired palm gestures, not the Ward's equipment or a grasping single hand.
+17 E2  The Inner Stair
+Four broad wooden steps on one visible diagonal support, with a curled banister end and warm light beneath each tread. No doors, walking figures or miniature rooms appear. Offers a fellow haunt the same comfortable next step twice; suggests repeating its small nuisance while delaying the visitor's hurried sequence.
+2D animation Idle: under-step lights breathe. Tell: top tread lifts. Action: four tread layers rise sequentially, making one compact traveling ripple. Resolve: layers reseat from bottom to top.
+Signature A fixed stair silhouette with four offsets, never an unfolding maze.
+17 E3  The Waiting Hearth
+A compact, low fireplace with a broad mantel and three amber embers hovering above an empty grate. Rounded stonework and a folded hearth cloth make it welcoming rather than furnace-like. Keeps warmth ready for fellow haunts, even when the visitor would prefer their routine to finish; suggests storing enemy-side comfort for later.
+2D animation Idle: embers bob. Tell: mantel glow gathers inward. Action: three embers align briefly above the grate and release one warm halo. Resolve: halo fades and embers spread.
+Signature A stationary promise of welcome, not another boiler, lamp or burning creature.
+Boss
+17 B1  The Keeper
+A low, broad guardian assembled from banister beams, padded upholstery, closed decorative door panels and a quilted mantle. Two warm window-eyes sit beneath a roof-ridge brow; blue light glows through the seams. Its comforting shape stays fixed throughout the encounter. The mansion shelters its own haunts too insistently, then learns to respect its guest's pace. It suggests enemy-side shelter phases followed by clear openings, never imprisonment or a predatory attack.
+2D animation Idle: torso breathes. Tell: brow lowers and mantle lifts. Action: one padded forelimb extends while a short quilt awning opens over its own body. Resolve: awning folds and the guardian steps back slightly.
+Signature A soft architectural guardian, not a humanoid servant, transforming collage or simulated room.
+Changes to the completed levels
+Changes below resolve exact counts, verified animation identities and avoidable repetition. Unselected source concepts are documented here; their absence does not mean an asset was deleted.
+Level 1 Forgotten Foyer
+Dust Bunny reinstated as mandatory animated regular. Luggage Trolley moved out of the seven-slot active roster; its luggage motif is already represented by Lost Luggage. No animation was removed.
+Door Greeter corrected from an umbrella stand to the existing carved door. Other finished foyer identities retained.
+Level 2 Forgotten Nursery
+Button Baby corrected from rocking horse to animated ragdoll; Blanket Blob corrected from ballerina to animated blanket creature; Patchwork Soldier corrected from rifle-bearing tin soldier to plush sword-and-shield toy.
+The Patchwork Giant reinstated in the elite roster. The Dollhouse is not selected in the three elite slots; no existing animation discarded.
+Level 3 Sleeping Quarters
+Grand Wardrobe renamed to its mandatory animated identity The Wardrobe; source alias grandWardrobe remains an asset key, not another enemy.
+Blanket Hydra normalized to exact animated display name The Blanket Hydra. Remaining source roster retained; blanket variants differentiated without discarding assets.
+Level 4 Kitchens and Cellars
+Reinstated mandatory Dough Blob, Candy Clump, Jam Jar and Pantry Mimic as four regulars. Kept source Kitchen Poltergeist, Spectral Scullion and Hanging Pots to reach seven; Boiling Pot not selected.
+Reinstated mandatory Sugar Golem and Oven Maw; kept source Cellar Steward for third elite. Hungry Dumbwaiter not selected. All original animated food characters take precedence over the source’s avoid-food-monsters prose.
+Level 5 Impossible Greenhouse
+Creeping Ivy replaces source Vine Curtain slot; curtainlike curling can inform its haunt, not create a second animated identity.
+The Compost Colossus and The Ancient Topiary fill the two mandatory animated elite slots; Midnight Fountain retained third. Grand Topiary is mapped to Ancient Topiary, not another shape-changing enemy.
+Living Conservatory corrected to mandatory animated name The Carnivorous Conservatory and actual glasshouse mouth/root depiction. Non-predatory behavior preserves cute tone without discarding animation.
+Level 6 Mansion Graveyard
+Added Memorial Wreath and Sandglass Sexton to fill the two missing regular slots. Both are new proposed identities with no existing animation; their ring and hourglass silhouettes avoid the source graveyard’s other objects.
+Normalized source lowercase gargoyle to Gargoyle; identity retained.
+Level 7 Grand Study and Library
+Whispering Books removed as a separate enemy slot to reach seven regulars; its quiet murmur may remain noncombat ambience. No dedicated animation exists for it in the inspected inventory.
+Restricted Cabinet not selected because opening storage furniture is already prominent; The Librarian’s Desk is consolidated into regular Writing Desk behavior. Neither removed elite has a dedicated animation in the inspected inventory.
+Level 8 Moonlit Attic and Observatory
+Added Contrary Weather Vane as the seventh regular and The Suspended Planetarium as the third elite. Both are new proposed identities with no existing animation.
+The Watcher in the Rafters retains its source identity but uses curious eyes, clearly signaled peeking and fixed shadow sockets instead of predatory spider presentation. No existing animation is replaced.
+Level 9 Lampworks
+Blue Flame and Electric Arc are not separate enemy slots; their visual motifs can remain effects in gas lamps and electrical fixtures, yielding seven regulars. Neither has a dedicated animation in the inspected inventory.
+Level 10 Ballroom and Velvet Suites
+The Ballroom Chandelier is not selected as the fourth elite because The Foyer Chandelier already fills that identity. No dedicated Ballroom Chandelier animation exists in the inspected inventory.
+Final feasibility pass: Loose Pages uses three fixed oversized pages; Bookmark Ribbon uses one wide ribbon and a single loop gesture; Gas Valve uses one question-mark vapor sprite. The Suspended Planetarium now obscures useful markings with drifting stars rather than repeating the Spectral Assistant's visitor-constellation joke. These are unanimated source staging refinements / a proposed new elite; no mandatory clips changed.
+Design decisions for the remaining levels
+Level 11 Crypt and Ossuary
+Kept the funerary setting and The Undertaker while replacing repeated candles, carts, cloth and extra coffins with ceremonial tools and craft objects. Mourning Standard avoids another balance scale. No frightening occupant emerges from a coffin.
+Level 12 Withered Hedge Maze
+Kept The Rotting Gazebo and The Gardener of Rot. Navigation, surveying and estate games replace repeated topiary animals, fountains and garden lanterns. Hedges and effects remain bounded sprites rather than a moving maze.
+Level 13 Secret Passages
+Kept peephole, bell, hatch and listening-tube identities plus The Man in the Walls. Local service mechanisms replace reaching limbs, repeated portals and miniature-room effects. Inner Stair remains exclusive to level 17.
+Level 14 Bathhouse and Rain Wing
+Kept the bathhouse rituals and Matron; Grand Bath absorbs Walking Tub. Removed repeated mirrors, empty garments, valves and feet. Water and steam use fixed, readable shapes; nothing scalds, floods, confines or drowns.
+Level 15 Kennels and Animal Ward
+The opponents are overenthusiastic care accessories, never ordinary animals or distressed occupants. Grooming, play, scent and hospitality replace restraint and invasive treatment. Tag Collector, Fetch Return and Portion Balance are explicit redesigns of the source elite concepts.
+Level 16 Moon Courtyard and Pumpkin Grounds
+Preserved Pumpkin Lantern, Moon Dial, Hay Bale Poltergeist, Great Pumpkin Cart and Harvest Effigy. Reserved the scarecrow silhouette for the boss. Judging, sifting and harvest machinery replace repeated scarecrows, gates and lanterns; the smaller Harvest Cart is not a second slot.
+Level 17 Heart of the House
+Preserved Nameplate, House Pulse, Keeper’s Hands, Inner Stair and The Keeper. Repair and reassurance replace more portraits, mirrors, doors and chairs. Waiting Hearth replaces the multi-prop Perfect Sanctuary; every encounter remains a bounded, manageable sprite.
+Existing animation preservation register
+All 29 animated identities are retained once. Keep their 118 source sheets, 118 packed WebP frame atlases and metadata unchanged. Every identity has idle, attack, hurt and defeat states; The Butler and The Governess also have cast. These filename labels stay unchanged. Haunt descriptions are staging proposals, not proof of newly produced motion.
+Source aliases identify existing files, not additional enemies. Slots use level number followed by R for regular, E for elite or B for boss.
+Slot
+Enemy identity
+Enemy ID
+Source key
+1 R1
+Dust Bunny
+dust-bunny
+dustBunny
+1 R2
+Coatrack Crawler
+coatrack-crawler
+coatrackCrawler
+1 R3
+Lost Luggage
+lost-luggage
+suitcase
+1 R4
+Red Carpet Runner
+red-carpet-runner
+rug
+1 R5
+Door Greeter
+door-greeter
+doorGreeter
+1 B1
+The Butler
+butler
+butler
+2 R1
+Button Baby
+button-baby
+buttonBaby
+2 R2
+Patchwork Soldier
+patchwork-soldier
+patchworkSoldier
+2 R3
+Jack in the Box
+jack-in-the-box
+jackInTheBox
+2 R4
+Blanket Blob
+blanket-blob
+blanketBlob
+2 E1
+The Patchwork Giant
+patchwork-giant
+patchworkGiant
+2 E2
+The Toy Chest
+toy-chest
+toyChest
+2 B1
+The Governess
+governess
+governess
+3 R4
+Blanket Creeper
+blanket-creeper
+blanketCreeper
+3 R5
+Slipper Skitter
+slipper-skitter
+slipperSkitter
+3 R1
+Wardrobe Guest
+wardrobe-guest
+wardrobeGuest
+3 E1
+The Blanket Hydra
+blanket-hydra
+blanketHydra
+3 E2
+The Wardrobe
+the-wardrobe
+grandWardrobe
+4 R1
+Dough Blob
+dough-blob
+doughBlob
+4 R2
+Candy Clump
+candy-clump
+candyClump
+4 R3
+Jam Jar
+jam-jar
+jamJar
+4 R4
+Pantry Mimic
+pantry-mimic
+pantryMimic
+4 E1
+The Sugar Golem
+sugar-golem
+sugarGolem
+4 E2
+The Oven Maw
+oven-maw
+ovenMaw
+4 B1
+The Confectioner
+confectioner
+confectioner
+5 R1
+Creeping Ivy
+creeping-ivy
+creepingIvy
+5 E1
+The Compost Colossus
+compost-colossus
+compostColossus
+5 E2
+The Ancient Topiary
+ancient-topiary
+ancientTopiary
+5 B1
+The Carnivorous Conservatory
+carnivorous-conservatory
+conservatory
+Verified asset locations
+Project root C:\Users\Josh\OneDrive\Desktop\Tandem Tales\Midnight Menagerie
+Built atlas game/assets/sprites/enemy-clips/<enemy-id>/<state>.webp
+State metadata game/assets/sprites/enemy-clips/<enemy-id>/index.json
+Source sheet animations/sprites/enemies/animations/SS_<source-key>_<state>.png
+Master manifest game/assets/sprites/index.json under enemyClips
+These WebP files are packed frame atlases, not standalone animated WebPs. The 22 other painted enemy stills have no dedicated animation clips. The 16 companions are not enemy slots. New motion directions are proposals, not completed animations.
+

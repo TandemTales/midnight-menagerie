@@ -1,0 +1,39 @@
+{
+  "removedOwner": "e3",
+  "alreadyVisibleOwner": {
+    "id": "e0",
+    "before": {
+      "labels": 1,
+      "captions": 1
+    },
+    "after": {
+      "labels": 0,
+      "captions": 0,
+      "queued": 0
+    }
+  },
+  "before": {
+    "queued": 1,
+    "live": 0,
+    "ownerPresent": true
+  },
+  "after": {
+    "orphanFrames": 0,
+    "frames": 168,
+    "queued": 0,
+    "ownerPresent": false,
+    "visibleOwners": [
+      "e0",
+      "e1",
+      "e2"
+    ]
+  },
+  "survivor": {
+    "owner": "player",
+    "text": "+2 Dexterity",
+    "duration": 1.0326795296952551
+  },
+  "drained": true,
+  "errors": [],
+  "fxOverride": null
+}

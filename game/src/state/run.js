@@ -232,6 +232,27 @@ const HEART = RUN_REGIONS[RUN_REGIONS.length - 1];
 const ENTRY_STEP = -1;
 
 /**
+ * THE DEMO: the Foyer, then two more wings the party chooses, and out.
+ *
+ * Only the wings that are painted. Twelve of the seventeen have no enemy art yet,
+ * and a stranger's first look at the game should not be grey stand-ins. The build
+ * decides this, not the save: `tools/package_release.py --demo` bakes it into
+ * release.json and the shell passes it on, so every machine in a party agrees.
+ * `#demo=1` gives the same thing in a browser tab, for tests.
+ */
+export const DEMO_WINGS = Object.freeze({
+  wings: 3,
+  pool: Object.freeze(['foyer', 'nursery', 'sleeping-quarters', 'kitchens-cellars', 'greenhouse']),
+});
+
+export function isDemoBuild() {
+  if (typeof window === 'undefined') return false;
+  if (window.__MM_HOST__?.demo) return true;
+  try { return new URLSearchParams(window.location.hash.slice(1)).get('demo') === '1'; }
+  catch { return false; }
+}
+
+/**
  * Every wing the party could begin in.
  *
  * Not the Heart: it is the ending, and beginning there is beginning at the end.
@@ -257,6 +278,7 @@ export function entryOffer() {
  * undo it. `markWingCleared` is the writer.
  */
 export function canChooseEntry() {
+  if (isDemoBuild()) return false;      // every demo starts at the front door
   const cleared = Save.data.blueprint?.cleared;
   return Array.isArray(cleared) && cleared.includes(RUN_REGIONS[0]);
 }
@@ -341,14 +363,15 @@ export function openExitsFor(seed, region) {
  * @param {string[]} visited every wing walked this expedition, `from` included
  * @param {number} step      `regionIndex` of `from`
  * @param {number} wings     how long tonight's expedition is
+ * @param {string[]|null} pool  only these wings, and no Heart: the demo
  * @returns {{to:string, why:string, manifested:boolean}[]}
  */
-export function wingOffer(seed, from, visited, step, wings = EXPEDITION_WINGS) {
+export function wingOffer(seed, from, visited, step, wings = EXPEDITION_WINGS, pool = null) {
   const seen = new Set(visited);
   /* THE HEART IS THE ENDING, so the last crossing is not a choice. Offering it
      alongside two ordinary wings would let a player skip half the expedition;
      offering ordinary wings alongside it would let them refuse to finish. */
-  if (step + 1 >= wings - 1) {
+  if (!pool && step + 1 >= wings - 1) {
     return [{ to: HEART, why: exitReason(from, HEART)
       || 'a stair that was not there on the way in', manifested: !exitReason(from, HEART) }];
   }
@@ -387,6 +410,7 @@ export function wingOffer(seed, from, visited, step, wings = EXPEDITION_WINGS) {
   const out = [];
   for (const to of RUN_REGIONS) {
     if (to === HEART || to === from || seen.has(to)) continue;
+    if (pool && !pool.includes(to)) continue;
     const ordinary = open.has(to);
     /* The manifested phrase is drawn in RUN_REGIONS order from an rng seeded on
        (seed, step, from), so a fork names the same door every time it is asked
@@ -510,6 +534,13 @@ export class Run {
    */
   constructor(cfg = {}) {
     this.version = 1;
+    this.storyMemory = !!Save.data.narrative.sanctuary;
+    /* Which map generator this expedition uses. A co-op roster fixes it, because
+       `mapStyle()` reads each machine's own storage and two styles draw two
+       different wings from one seed. Undefined means this machine's default. */
+    this.mapStyle = cfg.mapStyle;
+    /** The wire this save belongs to, once a session attaches. See `net/session.js`. */
+    this.netInfo = null;
     this.seed = Number.isFinite(+cfg.seed) ? (+cfg.seed >>> 0) : (hashSeed(String(cfg.seed ?? Date.now())));
     this.hauntLevel = Math.max(0, Number(cfg.hauntLevel ?? cfg.haunt ?? 0) || 0);
 
@@ -555,7 +586,8 @@ export class Run {
      * are decided one door at a time. Anything that used to ask
      * `route.length` for the FIRST question asks this.
      */
-    this.wings = Math.max(2, Math.min((cfg.wings ?? EXPEDITION_WINGS) | 0, RUN_REGIONS.length));
+    this.demo = isDemoBuild();
+    this.wings = Math.max(2, Math.min((cfg.wings ?? (this.demo ? DEMO_WINGS.wings : EXPEDITION_WINGS)) | 0, RUN_REGIONS.length));
     /**
      * The wings this expedition has actually crossed, in order, starting at the
      * front door. It GROWS — `advanceRegion` pushes whichever way on the party
@@ -627,7 +659,7 @@ export class Run {
      *
      * The fork names a Companion for every way on (`_assignHeld`), and the
      * wing the party walks into frees exactly that one — at its Rescue room
-     * or at its boss, whichever comes first, and never a second. See `heldIn`.
+     * only after its own boss is defeated. See `heldIn`.
      */
     this.held = null;
     this.rescued = (Save.data?.companionsRescued || []).slice();
@@ -660,6 +692,7 @@ export class Run {
     this.killedBy = null;
 
     this.stats = {
+      combatWins: 0, // Saved across zones; recovery snacks drop on wins 2, 4, 6...
       scuffles: 0, bigScares: 0, curiosities: 0, safeRooms: 0, shops: 0,
       treasures: 0, cardsPlayed: 0, damageDealt: 0, turns: 0,
       // `depth` = deepest room reached, counted across every wing. This used to
@@ -788,7 +821,7 @@ export class Run {
    * fight they fell in. Reading only the local Kid here would end the run for
    * both players the moment one of them went down.
    */
-  get alive() { return this.kids.some(k => k.courage > 0) && this.result !== 'defeat'; }
+  get alive() { return this.kids.some(k => k.courage > 0 && !k.gone) && this.result !== 'defeat'; }
   /** Is the LOCAL Kid still standing? The HUD asks this, not `alive`. */
   get localAlive() { return this.courage > 0; }
   get companionName() { return COMPANIONS.find(c => c.slug === this.companion)?.name || this.companion; }
@@ -1248,6 +1281,7 @@ export class Run {
          maps for the same seed. Solo the two lists are identical. */
       rescued: this.freedRoster,
       companionsFreed: this.companionsFreed.slice(),
+      style: this.mapStyle,
     });
     this.currentNodeId = null;
     this.visitedIds = [];
@@ -1276,6 +1310,8 @@ export class Run {
   /** The node's effective type — Unsurveyed resolved. */
   effectiveType(node) {
     if (!node) return null;
+    // Saved maps can still contain the retired side-room rescue type.
+    if (node.type === NodeType.RESCUE || node.revealed === NodeType.RESCUE) return NodeType.CURIOSITY;
     if (node.type !== NodeType.UNKNOWN) return node.type;
     return node.revealed || (node.revealed = this._unknownAs(node));
   }
@@ -1293,13 +1329,70 @@ export class Run {
    *
    * A fallen Kid does not vote. They are still on the expedition — the party
    * carries them — but the route is a decision made by whoever can walk it,
-   * and leaving a dead seat in the tally would stall the fork forever.
+   * and leaving a dead seat in the tally would stall the fork forever. The same
+   * goes for a seat whose player has left (`dropSeat`).
    */
   voters() {
     const out = [];
-    for (let i = 0; i < this.kids.length; i++) if (this.kids[i].courage > 0) out.push(i);
+    for (let i = 0; i < this.kids.length; i++) {
+      if (this.kids[i].courage > 0 && !this.kids[i].gone) out.push(i);
+    }
     return out.length ? out : [0];
   }
+
+  /**
+   * A seat's player has left, and the party has chosen to play on.
+   *
+   * Applied in log order on every client, like any other input. The Kid stays on
+   * the roster with their deck, Courage and any reward still waiting, so they can
+   * come back (`returnSeat`); meanwhile no fight, ballot or turn waits for them.
+   * A ballot that was only waiting for this seat closes here.
+   */
+  dropSeat(seat) {
+    const n = seat | 0;
+    const k = this.kids[n];
+    if (!k || k.gone) return null;
+    k.gone = true;
+    bus.emit('run:seatGone', { seat: n, run: this });
+    const e = this.combat;
+    if (e && !e.over) {
+      this.pendingCombat?.actions.push(['g', n]);
+      const ended = e.absentSeat(n);
+      this.save();
+      return ended;
+    }
+    this.save();
+    if (this.pendingWing) {
+      if (Object.keys(this.pendingWing.votes).length && !this.wingVotesPending().length) {
+        return this.resolveWingVote();
+      }
+      return null;
+    }
+    const book = this.pendingVote;
+    if (book && book.nodeId === (this.currentNodeId || null)
+      && Object.keys(book.votes).length && !this.votesPending().length) {
+      return this.resolveVote();
+    }
+    return null;
+  }
+
+  /** They climbed back in. A fight already under way keeps them down; the next one deals them in. */
+  returnSeat(seat) {
+    const n = seat | 0;
+    const k = this.kids[n];
+    if (!k || !k.gone) return null;
+    k.gone = false;
+    bus.emit('run:seatBack', { seat: n, run: this });
+    this.save();
+    return k;
+  }
+
+  /**
+   * The open ballot, as the table holds it, for a player climbing back in. A save
+   * drops it on purpose (`_voteBook`), which is right alone and wrong here: the
+   * others have voted, and will not vote again.
+   */
+  adoptBallot(book) { this.pendingVote = book || null; }
 
   /** Seats that have not voted yet at the fork the party is standing on. */
   votesPending() {
@@ -1363,8 +1456,13 @@ export class Run {
        It stays deterministic. `legalNextIds()` reads committed map state that
        every client shares, and the resolve is triggered by the first
        `map.vote` in LOG order, which `session._pump` makes the same everywhere
-       — not by whichever client's player happened to click first. */
-    const forced = this.legalNextIds().length <= 1;
+       — not by whichever client's player happened to click first.
+
+       AT ONE SCREEN ONLY. Over a wire everybody finishes a room in their own
+       time, so the first player to reach the only door would haul a friend out
+       of the shelf or the reward they were still reading. A vote there means
+       "I am ready to walk", which nobody else can say for them. */
+    const forced = this.legalNextIds().length <= 1 && !this.session?.remote;
     if (this.votesPending().length && !forced) return null;  // someone to hear from
     return this.resolveVote();
   }
@@ -1631,7 +1729,40 @@ export class Run {
        (fx/transition.js 'doorway') -- and the room is already standing in its
        own perspective when they open (scenes/combat.js sets it instant). */
     const door = ROOM_SCENES.has(scene) && !Save.settings?.reduceMotion;
-    return ctx.scenes.go(scene, params, door ? { transition: 'doorway' } : {});
+    const opts = door ? { transition: 'doorway' } : {};
+    /* `SceneManager.go` DROPS a navigation while another is in flight. Alone that
+       cannot matter: a player does not click a door mid-transition. Over a wire
+       the door is opened by somebody else's vote, whenever it lands, and a dropped
+       one leaves this player on the map with a fight running behind it. */
+    if (this.session?.remote && ctx.scenes.busy) {
+      return new Promise((resolve) => {
+        const retry = () => {
+          if (ctx.scenes.busy) { setTimeout(retry, 60); return; }
+          resolve(ctx.scenes.go(scene, params, opts));
+        };
+        retry();
+      });
+    }
+    return ctx.scenes.go(scene, params, opts);
+  }
+
+  /**
+   * May a combat input from the wire be applied yet?
+   *
+   * The scene starts the fight, after its door and any boss's entrance, so a
+   * faster machine's first Trick can reach a client whose engine has not dealt a
+   * hand yet, or that has not walked in at all. `applyInput` would find no card
+   * and drop it, and the boards are different from then on. The input waits.
+   *
+   * A fight already over here lets it through, to land as the no-op it is: a
+   * player can press End in the moment before they hear the last blow.
+   */
+  readyForCombatInput(msg) {
+    if (this.pendingCombat?.nodeId === msg.node) {
+      const e = this.combat;
+      return !!e && (e.over || (e.started && e.turn >= (msg.turn | 0)));
+    }
+    return !!this.result || this.visitedIds.includes(msg.node);
   }
 
   // ══ combat ═══════════════════════════════════════════════════════════════
@@ -1704,8 +1835,13 @@ export class Run {
 
     // One seat per Kid, each with their OWN deck and Keepsakes. Solo builds a
     // one-element array and the engine treats it exactly as it always did.
-    const seats = this.kids.map(k => ({
+    /* A replay deals who was there when the fight OPENED. Somebody who left partway
+       through is in the record as an action, and leaving them out here as well would
+       replay a different fight from its first draw. */
+    const openedWithout = opts.replay ? this.pendingCombat?.goneOnEntry : null;
+    const seats = this.kids.map((k, seat) => ({
       name: this.kidNameOf(k), companion: k.companion, kid: k.kid,
+      absent: openedWithout ? !!openedWithout[seat] : !!k.gone,
       maxHp: k.maxCourage, hp: k.courage,
       energyMax: k.energyMax, drawPerTurn: 5,
       deck: this.deckViewsOf(k).map(c => ({ def: c.def, upgraded: c.upgraded })),
@@ -1860,6 +1996,10 @@ export class Run {
         encounter: m.encounter || null,
         histLen: Number.isInteger(m.histLen) ? m.histLen : this.encounterHistory.length - 1,
         courageOnEntry: this.courage,
+        /* Every Kid's, by seat. `courageOnEntry` is only the local Kid's, and a
+           player rejoining on another seat rebuilds the whole table from this. */
+        partyOnEntry: this.kids.map(k => k.courage),
+        goneOnEntry: this.kids.map(k => !!k.gone),
         actions: [],
         choices: [],
         damage: 0,
@@ -1945,7 +2085,10 @@ export class Run {
     offs.push(engine.on('turn:end', (ev) => {
       const pc = this.pendingCombat;
       if (!pc || !ev || ev.side !== 'player') return;
-      pc.actions.push(['e']);
+      /* This fires once PER SEAT. In a party the seat has to be in the record:
+         a bare 'e' replays as "the whole table ends", so the second seat's entry
+         would end the following turn. Solo keeps the old one-element shape. */
+      pc.actions.push(engine.players.length > 1 ? ['e', ev.seat | 0] : ['e']);
       this._combatSave();                     // turn boundary: flush for real
     }));
 
@@ -1998,6 +2141,24 @@ export class Run {
     ].join('~');
   }
 
+  /**
+   * The same promise for everything a fight does not cover: every Kid's Courage,
+   * purse, deck, Keepsakes and Snacks, the wing and the room. `session` compares
+   * these on walking into a room, so a shop or reward that split two clients is
+   * reported at the next door instead of in the middle of the next fight.
+   */
+  _partyDigest() {
+    return [
+      this.region, this.currentNodeId || '-', this.cluesFound,
+      this.kids.map(k => [
+        k.courage, k.maxCourage, k.lostThings,
+        k.deck.map(c => `${c.id}${c.upgraded ? '+' : ''}`).join('|'),
+        k.keepsakes.map(r => r.id).join('|'),
+        k.snacks.map(s => s.id).join('|'),
+      ].join(':')).join(';'),
+    ].join('~');
+  }
+
   _combatSaveSoon() {
     if (this._saveTimer) return;
     this._saveTimer = setTimeout(() => { this._saveTimer = null; this._combatSave(); }, 120);
@@ -2043,6 +2204,11 @@ export class Run {
     this.clearOffers();
     this.currentNodeId = pc.nodeId;
     this.courage = Math.max(1, Math.min(this.maxCourage, pc.courageOnEntry ?? this.courage));
+    if (Array.isArray(pc.partyOnEntry)) {
+      this.kids.forEach((k, i) => {
+        if (pc.partyOnEntry[i] != null) k.courage = Math.max(1, Math.min(k.maxCourage, pc.partyOnEntry[i]));
+      });
+    }
 
     const build = () => this._buildCombat(
       CONTENT, node, pc.type, { histLen: pc.histLen, replay: true },
@@ -2063,6 +2229,9 @@ export class Run {
       engine = null;
     }
 
+    /* A restart is fine alone and fatal on a wire: everybody else is still in the
+       fight this client just threw away. Say so; the caller tells the player. */
+    if (!engine && this.session?.remote) return 'failed';
     if (!engine) { engine = this._freshCombat(pc, node); mode = 'restart'; }
 
     this._beginCombat(engine, node, pc.type, { resumed: true, mode });
@@ -2109,7 +2278,8 @@ export class Run {
       await engine.startCombat();
       for (const a of (pc.actions || [])) {
         if (engine.over) return false;
-        if (a[0] === 'e') { await engine.endTurn(); continue; }
+        if (a[0] === 'e') { await engine.endTurn(a[1] == null ? null : engine.players[a[1]]); continue; }
+        if (a[0] === 'g') { await engine.absentSeat(a[1] | 0); continue; }
         if (a[0] === 's') {
           const snack = SNACKS.find(s => s.id === a[1]);
           if (!snack) return false;
@@ -2144,6 +2314,7 @@ export class Run {
     const scenes = this.ctx && this.ctx.scenes;
     if (!scenes || tries > 40) return;                 // ~2.5s, then give up quietly
     if (this.combat !== engine) return;                // something else took over
+    if (scenes.currentName === 'narrative' && scenes.current.params.next.name === 'combat') return;
     if (scenes.currentName === 'combat' && scenes.current && scenes.current.engine === engine) {
       if (mode === 'replay') setTimeout(() => this._auditResumedCombat(engine, params), 700);
       return;
@@ -2184,6 +2355,7 @@ export class Run {
     const scene = scenes && scenes.current;
     const pc = this.pendingCombat;
     if (!pc || !scene || this.combat !== engine) return;
+    if (this.session?.remote) return;       // a restart would leave the rest of the party behind
     if (scenes.currentName !== 'combat' || scene.engine !== engine) return;
     if (!engine.started || engine.over || !engine.piles.hand.length) return;
 
@@ -2237,6 +2409,7 @@ export class Run {
       return;
     }
 
+    this.stats.combatWins++;
     if (type === NodeType.SCUFFLE) this.stats.scuffles++;
     else if (type === NodeType.BIG_SCARE) this.stats.bigScares++;
 
@@ -2244,6 +2417,7 @@ export class Run {
     // The fight is won, so the room is done with even though the reward screen
     // has not been answered yet. Quitting on the reward screen resumes there.
     this._markCleared(node ? node.id : this.currentNodeId);
+    if (type === NodeType.BOSS) this.defeatedBoss = { region: this.region, nodeId: node?.id };
     this._prepareReward(node, type, { navigate: false });
     this.save();
   }
@@ -2278,6 +2452,7 @@ export class Run {
       clues: clue,
       taken: [],
       encounter: this.combatMeta?.name || null,
+      snack: this._rollRewardSnack(node, this.local),
     };
     /**
      * EVERY Kid drafts their own three, from their OWN Companion's pool and off
@@ -2316,6 +2491,7 @@ export class Run {
         cards: this.rollCardReward(kRng, { count: 3, eliteBonus, forKid: k })
           .map(def => ({ id: def.id, rarity: def.rarity })),
         keepsake: kKeep ? kKeep.id : null,
+        snack: this._rollRewardSnack(node, k),
         taken: [],
       };
     }
@@ -2323,6 +2499,13 @@ export class Run {
     bus.emit('run:reward', { reward: this.pendingReward, node, type });
     this.save();
     return navigate ? this._goto('reward', { node: node?.id, region: this.region }) : this.pendingReward;
+  }
+
+  /** A separate stream keeps the existing card/keepsake rolls unchanged. */
+  _rollRewardSnack(node, kid) {
+    if (!this.stats.combatWins || this.stats.combatWins % 2 !== 0) return null;
+    const pool = SNACKS.filter(s => s.effect.heal || s.effect.energy || s.effect.block || s.effect.cleanse);
+    return pool[this.fork(`snack:${node?.id || 'x'}:seat${kid.seat}`).int(pool.length)].id;
   }
 
   /** A treasure room: one Keepsake, no fight. */
@@ -2440,6 +2623,11 @@ export class Run {
     if (r.lostThings) this.addLostThings(r.lostThings, { raw: true });
     if (r.keepsake) this.addKeepsake(r.keepsake);
     if (r.clues) this.addClues(r.clues);
+    if (r.snack) {
+      const snack = SNACKS.find(s => s.id === r.snack);
+      // A full satchel still gets recovery: eat a Gummy Bat here instead.
+      if (snack && !this.addSnack({ ...snack })) this.heal(12);
+    }
     if (r.keepsake && this.flags.maxHpOnMilestone && r.kind === 'bigScare') {
       this.addMaxCourage(this.flags.maxHpOnMilestone);
     }
@@ -2644,15 +2832,6 @@ export class Run {
   // ══ Curiosities ══════════════════════════════════════════════════════════
   _prepareEvent(node, type) {
     const rng = this.fork(`event:${node.id}`);
-    if (type === NodeType.RESCUE) {
-      const authored = node.payload?.companion || this.meta.companion;
-      this.pendingEvent = {
-        rescue: true, nodeId: node.id, resolved: null, resolvedBy: {}, pendingBy: {},
-        companion: this._heldTarget(node.id, authored),
-      };
-      this.save();
-      return this.pendingEvent;
-    }
     const def = rollEvent(rng, this.region, { depth: node.row, seen: this.seenEvents });
     // `resolvedBy` is per seat: the room is shared and each Kid answers it for
     // themselves. `resolved` stays as the solo spelling and as seat 0's answer.
@@ -2830,93 +3009,33 @@ export class Run {
       && !!companionDef(s));
   }
 
-  /**
-   * Which Companion a Rescue room should actually free. The authored one when
-   * they are still missing; otherwise a deterministic pick from whoever is.
-   *
-   * The authored table (`state/mapgen.js REGIONS`) points four wings at starter
-   * Companions — Foyer/marmalade, crypt/bones, kitchens-cellars/taffy,
-   * pumpkin-grounds/pipkin — so following it literally spends Wing 1's rescue on
-   * somebody who is already home. Substituting here rather than in mapgen keeps
-   * the map agent's table intact and makes the decision at the moment the run
-   * knows who is actually missing. Reported to the map owner too.
-   *
-   * Deterministic: the choice comes from the run seed via `fork`, so a seed
-   * still reproduces the run exactly.
-   */
+  /** A zone only holds its own missing Companion. No cross-zone substitutes. */
   rescueTargetFor(nodeId, authored) {
-    const pool = this.missingCompanions();
-    if (authored && pool.includes(authored)) return authored;
-    if (!pool.length) return authored || null;   // everyone is already free
-    // Prefer somebody whose own wing this is; the house should feel like it
-    // keeps its animals where they belong.
-    const local = pool.filter(s => COMPANIONS.find(c => c.slug === s)?.region === this.region);
-    const from = local.length ? local : pool;
-    return from[this.fork(`rescue:${nodeId}`).int(from.length)];
+    return this.heldIn(this.region);
   }
 
-  /**
-   * The Companion a wing holds for THIS run, or null when nobody is left.
-   *
-   * Its own Companion while they are still in the house — the chapter's
-   * table in `regionMeta` — and otherwise a pick from whoever is, seeded by
-   * the wing so it answers the same on every client. Marmalade is the
-   * Foyer's own and starts at home, so the Foyer always holds somebody else.
-   * `taken` keeps two doors at one fork from naming the same Companion.
-   * The Heart holds nobody.
-   */
   heldIn(regionId, taken = []) {
     if (!regionId || regionId === HEART) return null;
-    const native = regionMeta(regionId)?.companion || null;
-    const pool = this.missingCompanions().filter(s => !taken.includes(s));
-    if (native && pool.includes(native)) return native;
-    if (!pool.length) return null;
-    return pool[this.fork(`held:${regionId}`).int(pool.length)];
+    return COMPANIONS.find(c => c.region === regionId
+      && this.missingCompanions().includes(c.slug) && !taken.includes(c.slug))?.slug || null;
   }
 
-  /**
-   * Stamp every option at a fork with who that wing holds: `option.held`.
-   *
-   * Wings whose own Companion is still missing claim them first, then the
-   * rest take DISTINCT substitutes in offer order. A pure function of the
-   * offer, the seed and the roster — so every client stamps the same names,
-   * and `advanceRegion` can re-derive the winner's after the vote has
-   * nulled the fork.
-   */
   _assignHeld(options) {
-    const missing = new Set(this.missingCompanions());
-    const taken = [];
-    for (const o of options) {
-      const native = o.to === HEART ? null : (regionMeta(o.to)?.companion || null);
-      o.held = native && missing.has(native) ? native : undefined;
-      if (o.held) taken.push(o.held);
-    }
-    for (const o of options) {
-      if (o.held !== undefined) continue;
-      o.held = this.heldIn(o.to, taken);
-      if (o.held) taken.push(o.held);
-    }
+    for (const o of options) o.held = this.heldIn(o.to);
     return options;
   }
 
-  /**
-   * Who a Rescue — the room or the boss — frees in the wing the party is in.
-   *
-   * The Companion `held` promised while they are still missing, and NOBODY
-   * once they are free: a wing gives up one Companion, not one per door.
-   * When the wing holds nobody (everyone is home), or on a run saved before
-   * `held` existed, the old substitution answers as it always did.
-   */
   _heldTarget(tag, authored) {
-    if (this.held && this.held.region === this.region && this.held.companion) {
-      const h = this.held.companion;
-      return this.freedRoster.includes(h) ? null : h;
-    }
-    return this.rescueTargetFor(tag, authored);
+    return this.heldIn(this.region);
   }
 
   /** Free a Companion. The point of the whole exercise. */
   rescueCompanion(slug) {
+    const boss = this.currentNode;
+    if (!boss || this.effectiveType(boss) !== NodeType.BOSS
+      || !this.visitedIds.includes(boss.id) || this.pendingCombat || this.combat
+      || this.defeatedBoss?.region !== this.region || this.defeatedBoss?.nodeId !== boss.id
+      || COMPANIONS.find(c => c.slug === slug)?.region !== this.region) return false;
     /* The party's view moves whether or not YOUR save does, so the next
        decision in this run cannot pick the same Companion again on one machine
        and not on another. */
@@ -2940,16 +3059,15 @@ export class Run {
   // ══ region ladder / ending ═══════════════════════════════════════════════
   /** Boss down. Either the next wing opens, or the expedition is over. */
   completeRegion() {
+    const boss = this.currentNode;
+    if (!boss || this.effectiveType(boss) !== NodeType.BOSS
+      || !this.visitedIds.includes(boss.id) || this.pendingCombat || this.combat
+      || this.defeatedBoss?.region !== this.region || this.defeatedBoss?.nodeId !== boss.id) return false;
     const meta = this.meta;
     // Lifetime record, before anything can end the run: clearing the Foyer is
     // what unlocks choosing where the next expedition starts.
     this.markWingCleared(this.region);
-    /* ONE Companion per wing: the one the fork promised. This asked for a
-       fresh substitute here, so a wing whose Rescue room had already freed
-       its Companion freed a SECOND, random one at the boss — on seed 42,
-       Mossbit in the Foyer's Rescue room and then Drizzle at the Butler.
-       `rescueCompanion` is called even for a Companion already in YOUR
-       save, because the party's roster has to move on every machine. */
+    // The zone's own missing pet is freed only after this boss's victory.
     const freed = this._heldTarget(`boss:${this.region}`, meta.companion);
     if (freed) this.rescueCompanion(freed);
     if (this.isLastRegion) return this.end(true, null);
@@ -2974,7 +3092,7 @@ export class Run {
    */
   wingOptions() {
     if (this.pendingWing) return this.pendingWing.options;
-    return wingOffer(this.seed, this.region, this.route, this.regionIndex, this.wings);
+    return wingOffer(this.seed, this.region, this.route, this.regionIndex, this.wings, this.demo ? DEMO_WINGS.pool : null);
   }
 
   /**
@@ -3010,6 +3128,7 @@ export class Run {
         companion: this.companion,
         rescued: this.freedRoster,       // what `_buildMap` reads, or it previews a different wing
         companionsFreed: this.companionsFreed.slice(),
+        style: this.mapStyle,
       });
       out = {
         rows: m.rows,
@@ -3075,7 +3194,7 @@ export class Run {
   }
 
   openWingFork() {
-    const options = this._assignHeld(wingOffer(this.seed, this.region, this.route, this.regionIndex, this.wings));
+    const options = this._assignHeld(wingOffer(this.seed, this.region, this.route, this.regionIndex, this.wings, this.demo ? DEMO_WINGS.pool : null));
     this.pendingWing = { from: this.region, step: this.regionIndex, options, votes: {} };
     this.save();
     bus.emit('run:wings', { from: this.region, options, run: this });
@@ -3115,7 +3234,7 @@ export class Run {
     this.save();
     bus.emit('wing:vote', { seat: n, region: slug, run: this,
                             pending: this.wingVotesPending().slice() });
-    const forced = fork.options.length <= 1;
+    const forced = fork.options.length <= 1 && !this.session?.remote;   // see `voteNode`
     if (this.wingVotesPending().length && !forced) return null;
     return this.resolveWingVote();
   }
@@ -3297,6 +3416,11 @@ export class Run {
    */
   snapshot() {
     return {
+      storyMemory: this.storyMemory,
+      mapStyle: this.mapStyle || null,
+      /* Where a co-op expedition can be climbed back into. Continue reads this
+         and goes to the Treehouse rather than resuming a wired run on its own. */
+      net: this.session?.netInfo?.() || this.netInfo || null,
       version: this.version,
       seed: this.seed, companion: this.companion, kid: this.kid,
       hauntLevel: this.hauntLevel, backpack: this.backpack.slice(),
@@ -3350,6 +3474,7 @@ export class Run {
       localSeat: this.localSeat,
 
       pendingReward: this.pendingReward,
+      defeatedBoss: this.defeatedBoss || null,
       pendingEvent: this.pendingEvent,
       pendingShop: this.pendingShop || null,
       pendingCombat: this.pendingCombat,
@@ -3384,6 +3509,7 @@ export class Run {
       pity: k.pity, removalPrice: k.removalPrice,
       pendingReward: k.pendingReward || null,
       roomDone: k.roomDone || null,
+      gone: !!k.gone,
     };
   }
 
@@ -3414,6 +3540,7 @@ export class Run {
     k.removalPrice = saved.removalPrice ?? k.removalPrice;
     k.pendingReward = saved.pendingReward || null;
     k.roomDone = saved.roomDone || null;
+    k.gone = !!saved.gone;
     return k;
   }
 
@@ -3477,7 +3604,10 @@ export class Run {
     const run = new Run({
       companion: saved.companion, kid: saved.kid, seed: saved.seed,
       hauntLevel: saved.hauntLevel, backpack: packed,
+      mapStyle: saved.mapStyle || undefined,
     });
+    run.storyMemory = saved.storyMemory === true;
+    run.netInfo = saved.net || null;
     UID = Math.max(UID, saved.uidSeq || 0);
 
     // A co-op save carries every Kid. A solo save (and every save written
@@ -3558,16 +3688,8 @@ export class Run {
     run.freedRoster = Array.isArray(saved.freedRoster)
       ? saved.freedRoster.slice()
       : [...new Set([...run.freedRoster, ...run.rescued, ...run.companionsFreed])];
-    /* The wing's promise. A save from before it existed is given one now —
-       and if this wing's own Companion was already freed tonight, that IS
-       who it held, so its boss does not go on to free a second. */
-    if (saved.held && saved.held.region === run.region) {
-      run.held = { region: saved.held.region, companion: saved.held.companion ?? null };
-    } else {
-      const native = run.region === HEART ? null : (regionMeta(run.region)?.companion || null);
-      run.held = { region: run.region,
-        companion: native && run.companionsFreed.includes(native) ? native : run.heldIn(run.region) };
-    }
+    // Retire old promises that placed another zone's pet here.
+    run.held = { region: run.region, companion: run.heldIn(run.region) };
     if (run.pendingWing) run._assignHeld(run.pendingWing.options);
     run.cluesFound = saved.cluesFound || 0;
     run.seenEvents = (saved.seenEvents || []).slice();
@@ -3579,6 +3701,12 @@ export class Run {
     run.pendingEvent = saved.pendingEvent || null;
     run.pendingShop = saved.pendingShop || null;
     run.pendingCombat = saved.pendingCombat || null;
+    run.defeatedBoss = saved.defeatedBoss || null;
+    // Earlier builds saved a won boss fight as its pending reward.
+    if (!run.defeatedBoss && !run.pendingCombat && run.pendingReward?.kind === 'boss'
+      && run.currentNode?.type === NodeType.BOSS && run.visitedIds.includes(run.currentNodeId)) {
+      run.defeatedBoss = { region: run.region, nodeId: run.currentNodeId };
+    }
     run._roomDone = !!saved.roomDone;
     run._curiosityHealUsed = !!saved.curiosityHealUsed;
     run.stats = { ...run.stats, ...(saved.stats || {}) };
@@ -3588,6 +3716,13 @@ export class Run {
     }
     delete run.stats.floor;
     run.startedAt = saved.startedAt || run.startedAt;
+
+    // Retired rescue rooms become normal mysteries, including saves inside one.
+    for (const node of run.map.nodes) {
+      if (node.type === NodeType.RESCUE) node.type = NodeType.CURIOSITY;
+      if (node.revealed === NodeType.RESCUE) node.revealed = NodeType.CURIOSITY;
+    }
+    if (run.pendingEvent?.rescue) run._prepareEvent(run.currentNode || run.map.nodes[0], NodeType.CURIOSITY);
 
     // An unfinished fight must never be resumable as a cleared room, whatever
     // an older save claimed.
@@ -3691,6 +3826,7 @@ export function installRunLayer() {
       // Where tonight starts. `new Run` validates it and falls back to the
       // front door, so a stale or hostile slug cannot strand a run.
       startRegion: p?.startRegion,
+      mapStyle: p?.mapStyle,
       // A co-op expedition comes in through the SAME seam as a solo one, so
       // there is no second start path to keep in step. `kids` is an array of
       // { companion, kid, name, backpack }; absent means a party of one.

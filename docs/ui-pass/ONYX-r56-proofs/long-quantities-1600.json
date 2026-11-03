@@ -1,0 +1,2426 @@
+{
+  "expected": 109,
+  "copiesEach": 12,
+  "longest": {
+    "text": "\n        2\n        Every Bone Knows the Way Home\n        \u00d712\n      ",
+    "title": "Every Bone Knows the Way Home",
+    "quantityText": "\u00d712",
+    "name": {
+      "left": 1159.15625,
+      "right": 1421.546875,
+      "top": 2640.65625,
+      "bottom": 2688.78125,
+      "width": 262.390625,
+      "height": 48.125
+    },
+    "quantity": {
+      "left": 1431.546875,
+      "right": 1468.390625,
+      "top": 2651.21875,
+      "bottom": 2678.21875,
+      "width": 36.84375,
+      "height": 27
+    },
+    "clear": true
+  },
+  "tricks": [
+    {
+      "text": "\n        1\n        Anatomy Is Optional\n        \u00d712\n      ",
+      "title": "Anatomy Is Optional",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1389.09375,
+        "top": 528.5,
+        "bottom": 552.5625,
+        "width": 229.9375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 527.03125,
+        "bottom": 554.03125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Backyard Cache\n        \u00d712\n      ",
+      "title": "Backyard Cache",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1338.078125,
+        "top": 594.5,
+        "bottom": 618.5625,
+        "width": 178.921875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 593.03125,
+        "bottom": 620.03125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        X\n        Bad Luck\n        \u00d712\n      ",
+      "title": "Bad Luck",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1258.65625,
+        "top": 660.5,
+        "bottom": 684.5625,
+        "width": 99.5,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 659.03125,
+        "bottom": 686.03125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        3\n        Best Dog in the House\n        \u00d712\n      ",
+      "title": "Best Dog in the House",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1402.28125,
+        "top": 726.5,
+        "bottom": 750.5625,
+        "width": 243.125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 725.03125,
+        "bottom": 752.03125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        3\n        Big Swing\n        \u00d712\n      ",
+      "title": "Big Swing",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1264.96875,
+        "top": 792.5,
+        "bottom": 816.5625,
+        "width": 105.8125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 791.03125,
+        "bottom": 818.03125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Bite\n        \u00d712\n      ",
+      "title": "Bite",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1202.703125,
+        "top": 858.5,
+        "bottom": 882.5625,
+        "width": 43.546875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 857.03125,
+        "bottom": 884.03125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Bone A Fide Missile\n        \u00d712\n      ",
+      "title": "Bone A Fide Missile",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1365.125,
+        "top": 924.5,
+        "bottom": 948.5625,
+        "width": 205.96875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 923.03125,
+        "bottom": 950.03125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Bone Toss\n        \u00d712\n      ",
+      "title": "Bone Toss",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1267.921875,
+        "top": 990.5,
+        "bottom": 1014.5625,
+        "width": 108.765625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 989.03125,
+        "bottom": 1016.03125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Boomerang Bone\n        \u00d712\n      ",
+      "title": "Boomerang Bone",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1349.15625,
+        "top": 1056.5,
+        "bottom": 1080.5625,
+        "width": 190,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1055.03125,
+        "bottom": 1082.03125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Borrowed Courage\n        \u00d712\n      ",
+      "title": "Borrowed Courage",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1374.359375,
+        "top": 1122.5,
+        "bottom": 1146.5625,
+        "width": 215.203125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1121.03125,
+        "bottom": 1148.03125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Built Wrong, Still Works\n        \u00d712\n      ",
+      "title": "Built Wrong, Still Works",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1421.546875,
+        "top": 1180.53125,
+        "bottom": 1228.65625,
+        "width": 262.390625,
+        "height": 48.125
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1191.09375,
+        "bottom": 1218.09375,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Buried Bite\n        \u00d712\n      ",
+      "title": "Buried Bite",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1281.6875,
+        "top": 1262.625,
+        "bottom": 1286.6875,
+        "width": 122.53125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1261.15625,
+        "bottom": 1288.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Bury It\n        \u00d712\n      ",
+      "title": "Bury It",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1236.546875,
+        "top": 1328.625,
+        "bottom": 1352.6875,
+        "width": 77.390625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1327.15625,
+        "bottom": 1354.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Bury the Evidence\n        \u00d712\n      ",
+      "title": "Bury the Evidence",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1359.984375,
+        "top": 1394.625,
+        "bottom": 1418.6875,
+        "width": 200.828125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1393.15625,
+        "bottom": 1420.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Call That Back\n        \u00d712\n      ",
+      "title": "Call That Back",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1324.984375,
+        "top": 1460.625,
+        "bottom": 1484.6875,
+        "width": 165.828125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1459.15625,
+        "bottom": 1486.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Can\u2019t Reach It\n        \u00d712\n      ",
+      "title": "Can\u2019t Reach It",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1318.125,
+        "top": 1526.625,
+        "bottom": 1550.6875,
+        "width": 158.96875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1525.15625,
+        "bottom": 1552.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        X\n        Candle Burn\n        \u00d712\n      ",
+      "title": "Candle Burn",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1301.296875,
+        "top": 1592.625,
+        "bottom": 1616.6875,
+        "width": 142.140625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1591.15625,
+        "bottom": 1618.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Caramel Sticky\n        \u00d712\n      ",
+      "title": "Caramel Sticky",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1329.125,
+        "top": 1658.625,
+        "bottom": 1682.6875,
+        "width": 169.96875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1657.15625,
+        "bottom": 1684.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Clatter Pounce\n        \u00d712\n      ",
+      "title": "Clatter Pounce",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1334.546875,
+        "top": 1724.625,
+        "bottom": 1748.6875,
+        "width": 175.390625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1723.15625,
+        "bottom": 1750.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        X\n        Clingy Shadow\n        \u00d712\n      ",
+      "title": "Clingy Shadow",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1327.828125,
+        "top": 1790.625,
+        "bottom": 1814.6875,
+        "width": 168.671875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1789.15625,
+        "bottom": 1816.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Clumsy Swing\n        \u00d712\n      ",
+      "title": "Clumsy Swing",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1310.6875,
+        "top": 1856.625,
+        "bottom": 1880.6875,
+        "width": 151.53125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1855.15625,
+        "bottom": 1882.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        X\n        Creaky Floorboard\n        \u00d712\n      ",
+      "title": "Creaky Floorboard",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1378.5625,
+        "top": 1922.625,
+        "bottom": 1946.6875,
+        "width": 219.40625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1921.15625,
+        "bottom": 1948.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Dig Here\n        \u00d712\n      ",
+      "title": "Dig Here",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1254.515625,
+        "top": 1988.625,
+        "bottom": 2012.6875,
+        "width": 95.359375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 1987.15625,
+        "bottom": 2014.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Dig Like Crazy\n        \u00d712\n      ",
+      "title": "Dig Like Crazy",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1318.484375,
+        "top": 2054.625,
+        "bottom": 2078.6875,
+        "width": 159.328125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2053.15625,
+        "bottom": 2080.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Dig to the Basement\n        \u00d712\n      ",
+      "title": "Dig to the Basement",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1382.234375,
+        "top": 2120.625,
+        "bottom": 2144.6875,
+        "width": 223.078125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2119.15625,
+        "bottom": 2146.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Dig Up a Fight\n        \u00d712\n      ",
+      "title": "Dig Up a Fight",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1313.15625,
+        "top": 2186.625,
+        "bottom": 2210.6875,
+        "width": 154,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2185.15625,
+        "bottom": 2212.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Digging Claws\n        \u00d712\n      ",
+      "title": "Digging Claws",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1320,
+        "top": 2252.625,
+        "bottom": 2276.6875,
+        "width": 160.84375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2251.15625,
+        "bottom": 2278.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        3\n        Dogpile of One\n        \u00d712\n      ",
+      "title": "Dogpile of One",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1327.4375,
+        "top": 2318.625,
+        "bottom": 2342.6875,
+        "width": 168.28125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2317.15625,
+        "bottom": 2344.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Dug Up Dinner\n        \u00d712\n      ",
+      "title": "Dug Up Dinner",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1320.78125,
+        "top": 2384.625,
+        "bottom": 2408.6875,
+        "width": 161.625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2383.15625,
+        "bottom": 2410.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Dust Off\n        \u00d712\n      ",
+      "title": "Dust Off",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1255.453125,
+        "top": 2450.625,
+        "bottom": 2474.6875,
+        "width": 96.296875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2449.15625,
+        "bottom": 2476.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Emergency Reassembly\n        \u00d712\n      ",
+      "title": "Emergency Reassembly",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1407.734375,
+        "top": 2516.625,
+        "bottom": 2540.6875,
+        "width": 248.578125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2515.15625,
+        "bottom": 2542.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        4\n        Every Bone at Once\n        \u00d712\n      ",
+      "title": "Every Bone at Once",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1374.1875,
+        "top": 2582.625,
+        "bottom": 2606.6875,
+        "width": 215.03125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2581.15625,
+        "bottom": 2608.15625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Every Bone Knows the Way Home\n        \u00d712\n      ",
+      "title": "Every Bone Knows the Way Home",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1421.546875,
+        "top": 2640.65625,
+        "bottom": 2688.78125,
+        "width": 262.390625,
+        "height": 48.125
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2651.21875,
+        "bottom": 2678.21875,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Excavation Frenzy\n        \u00d712\n      ",
+      "title": "Excavation Frenzy",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1364.046875,
+        "top": 2722.75,
+        "bottom": 2746.8125,
+        "width": 204.890625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2721.28125,
+        "bottom": 2748.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Fall Apart on Purpose\n        \u00d712\n      ",
+      "title": "Fall Apart on Purpose",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1402.625,
+        "top": 2788.75,
+        "bottom": 2812.8125,
+        "width": 243.46875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2787.28125,
+        "bottom": 2814.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Favorite Toy\n        \u00d712\n      ",
+      "title": "Favorite Toy",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1297.484375,
+        "top": 2854.75,
+        "bottom": 2878.8125,
+        "width": 138.328125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2853.28125,
+        "bottom": 2880.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Fetch the Moon\n        \u00d712\n      ",
+      "title": "Fetch the Moon",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1336.65625,
+        "top": 2920.75,
+        "bottom": 2944.8125,
+        "width": 177.5,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2919.28125,
+        "bottom": 2946.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Fetch!\n        \u00d712\n      ",
+      "title": "Fetch!",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1227.78125,
+        "top": 2986.75,
+        "bottom": 3010.8125,
+        "width": 68.625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 2985.28125,
+        "bottom": 3012.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Flop Over\n        \u00d712\n      ",
+      "title": "Flop Over",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1268.421875,
+        "top": 3052.75,
+        "bottom": 3076.8125,
+        "width": 109.265625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3051.28125,
+        "bottom": 3078.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Flying Femur\n        \u00d712\n      ",
+      "title": "Flying Femur",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1302.234375,
+        "top": 3118.75,
+        "bottom": 3142.8125,
+        "width": 143.078125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3117.28125,
+        "bottom": 3144.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Full Body Tackle\n        \u00d712\n      ",
+      "title": "Full Body Tackle",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1346.203125,
+        "top": 3184.75,
+        "bottom": 3208.8125,
+        "width": 187.046875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3183.28125,
+        "bottom": 3210.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        X\n        Gloom\n        \u00d712\n      ",
+      "title": "Gloom",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1234.796875,
+        "top": 3250.75,
+        "bottom": 3274.8125,
+        "width": 75.640625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3249.28125,
+        "bottom": 3276.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Go Get It!\n        \u00d712\n      ",
+      "title": "Go Get It!",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1266.703125,
+        "top": 3316.75,
+        "bottom": 3340.8125,
+        "width": 107.546875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3315.28125,
+        "bottom": 3342.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Good as New\n        \u00d712\n      ",
+      "title": "Good as New",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1301.46875,
+        "top": 3382.75,
+        "bottom": 3406.8125,
+        "width": 142.3125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3381.28125,
+        "bottom": 3408.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Good Boy!\n        \u00d712\n      ",
+      "title": "Good Boy!",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1273.65625,
+        "top": 3448.75,
+        "bottom": 3472.8125,
+        "width": 114.5,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3447.28125,
+        "bottom": 3474.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Good Dog\n        \u00d712\n      ",
+      "title": "Good Dog",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1273.796875,
+        "top": 3514.75,
+        "bottom": 3538.8125,
+        "width": 114.640625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3513.28125,
+        "bottom": 3540.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Headless Rush\n        \u00d712\n      ",
+      "title": "Headless Rush",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1315.734375,
+        "top": 3580.75,
+        "bottom": 3604.8125,
+        "width": 156.578125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3579.28125,
+        "bottom": 3606.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        X\n        Heavy Heart\n        \u00d712\n      ",
+      "title": "Heavy Heart",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1295.46875,
+        "top": 3646.75,
+        "bottom": 3670.8125,
+        "width": 136.3125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3645.28125,
+        "bottom": 3672.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Heel!\n        \u00d712\n      ",
+      "title": "Heel!",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1214.71875,
+        "top": 3712.75,
+        "bottom": 3736.8125,
+        "width": 55.5625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3711.28125,
+        "bottom": 3738.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        3\n        Jawbone Jamboree\n        \u00d712\n      ",
+      "title": "Jawbone Jamboree",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1356.28125,
+        "top": 3778.75,
+        "bottom": 3802.8125,
+        "width": 197.125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3777.28125,
+        "bottom": 3804.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Jingle Collar\n        \u00d712\n      ",
+      "title": "Jingle Collar",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1310.078125,
+        "top": 3844.75,
+        "bottom": 3868.8125,
+        "width": 150.921875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3843.28125,
+        "bottom": 3870.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Leave It!\n        \u00d712\n      ",
+      "title": "Leave It!",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1249,
+        "top": 3910.75,
+        "bottom": 3934.8125,
+        "width": 89.84375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3909.28125,
+        "bottom": 3936.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        X\n        Lost Mitten\n        \u00d712\n      ",
+      "title": "Lost Mitten",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1291.484375,
+        "top": 3976.75,
+        "bottom": 4000.8125,
+        "width": 132.328125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 3975.28125,
+        "bottom": 4002.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Lucky Penny\n        \u00d712\n      ",
+      "title": "Lucky Penny",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1298.234375,
+        "top": 4042.75,
+        "bottom": 4066.8125,
+        "width": 139.078125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4041.28125,
+        "bottom": 4068.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Missing Piece Missile\n        \u00d712\n      ",
+      "title": "Missing Piece Missile",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1385.5625,
+        "top": 4108.75,
+        "bottom": 4132.8125,
+        "width": 226.40625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4107.28125,
+        "bottom": 4134.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Never Really Lost\n        \u00d712\n      ",
+      "title": "Never Really Lost",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1356.65625,
+        "top": 4174.75,
+        "bottom": 4198.8125,
+        "width": 197.5,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4173.28125,
+        "bottom": 4200.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        X\n        Night Terror\n        \u00d712\n      ",
+      "title": "Night Terror",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1308.109375,
+        "top": 4240.75,
+        "bottom": 4264.8125,
+        "width": 148.953125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4239.28125,
+        "bottom": 4266.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        No, the Other Bone\n        \u00d712\n      ",
+      "title": "No, the Other Bone",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1373.75,
+        "top": 4306.75,
+        "bottom": 4330.8125,
+        "width": 214.59375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4305.28125,
+        "bottom": 4332.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Off Leash\n        \u00d712\n      ",
+      "title": "Off Leash",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1264.796875,
+        "top": 4372.75,
+        "bottom": 4396.8125,
+        "width": 105.640625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4371.28125,
+        "bottom": 4398.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        One More Throw\n        \u00d712\n      ",
+      "title": "One More Throw",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1345.546875,
+        "top": 4438.75,
+        "bottom": 4462.8125,
+        "width": 186.390625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4437.28125,
+        "bottom": 4464.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Perfect Fetch\n        \u00d712\n      ",
+      "title": "Perfect Fetch",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1312.609375,
+        "top": 4504.75,
+        "bottom": 4528.8125,
+        "width": 153.453125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4503.28125,
+        "bottom": 4530.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Pile of Me\n        \u00d712\n      ",
+      "title": "Pile of Me",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1268.015625,
+        "top": 4570.75,
+        "bottom": 4594.8125,
+        "width": 108.859375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4569.28125,
+        "bottom": 4596.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Play Dead\n        \u00d712\n      ",
+      "title": "Play Dead",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1268.28125,
+        "top": 4636.75,
+        "bottom": 4660.8125,
+        "width": 109.125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4635.28125,
+        "bottom": 4662.28125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Put Yourself Back Together\n        \u00d712\n      ",
+      "title": "Put Yourself Back Together",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1421.546875,
+        "top": 4694.78125,
+        "bottom": 4742.90625,
+        "width": 262.390625,
+        "height": 48.125
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4705.34375,
+        "bottom": 4732.34375,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Quick Look\n        \u00d712\n      ",
+      "title": "Quick Look",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1286.28125,
+        "top": 4776.875,
+        "bottom": 4800.9375,
+        "width": 127.125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4775.40625,
+        "bottom": 4802.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Rattletrap\n        \u00d712\n      ",
+      "title": "Rattletrap",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1281.75,
+        "top": 4842.875,
+        "bottom": 4866.9375,
+        "width": 122.59375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4841.40625,
+        "bottom": 4868.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Reassemble\n        \u00d712\n      ",
+      "title": "Reassemble",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1280.796875,
+        "top": 4908.875,
+        "bottom": 4932.9375,
+        "width": 121.640625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4907.40625,
+        "bottom": 4934.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Rebuild from Scratch\n        \u00d712\n      ",
+      "title": "Rebuild from Scratch",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1401.125,
+        "top": 4974.875,
+        "bottom": 4998.9375,
+        "width": 241.96875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 4973.40625,
+        "bottom": 5000.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        X\n        Regret\n        \u00d712\n      ",
+      "title": "Regret",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1235.578125,
+        "top": 5040.875,
+        "bottom": 5064.9375,
+        "width": 76.421875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5039.40625,
+        "bottom": 5066.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Rib Rattle\n        \u00d712\n      ",
+      "title": "Rib Rattle",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1270.34375,
+        "top": 5106.875,
+        "bottom": 5130.9375,
+        "width": 111.1875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5105.40625,
+        "bottom": 5132.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Roll Over\n        \u00d712\n      ",
+      "title": "Roll Over",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1270.0625,
+        "top": 5172.875,
+        "bottom": 5196.9375,
+        "width": 110.90625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5171.40625,
+        "bottom": 5198.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Run in Circles\n        \u00d712\n      ",
+      "title": "Run in Circles",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1317.546875,
+        "top": 5238.875,
+        "bottom": 5262.9375,
+        "width": 158.390625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5237.40625,
+        "bottom": 5264.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Scattershot Skeleton\n        \u00d712\n      ",
+      "title": "Scattershot Skeleton",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1402.40625,
+        "top": 5304.875,
+        "bottom": 5328.9375,
+        "width": 243.25,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5303.40625,
+        "bottom": 5330.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Scent Memory\n        \u00d712\n      ",
+      "title": "Scent Memory",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1316.125,
+        "top": 5370.875,
+        "bottom": 5394.9375,
+        "width": 156.96875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5369.40625,
+        "bottom": 5396.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Scent Trail\n        \u00d712\n      ",
+      "title": "Scent Trail",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1286.015625,
+        "top": 5436.875,
+        "bottom": 5460.9375,
+        "width": 126.859375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5435.40625,
+        "bottom": 5462.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        X\n        Scrape\n        \u00d712\n      ",
+      "title": "Scrape",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1233.40625,
+        "top": 5502.875,
+        "bottom": 5526.9375,
+        "width": 74.25,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5501.40625,
+        "bottom": 5528.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Second Wind\n        \u00d712\n      ",
+      "title": "Second Wind",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1304.09375,
+        "top": 5568.875,
+        "bottom": 5592.9375,
+        "width": 144.9375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5567.40625,
+        "bottom": 5594.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Secret Stash\n        \u00d712\n      ",
+      "title": "Secret Stash",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1297.390625,
+        "top": 5634.875,
+        "bottom": 5658.9375,
+        "width": 138.234375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5633.40625,
+        "bottom": 5660.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Shake Dry\n        \u00d712\n      ",
+      "title": "Shake Dry",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1269.453125,
+        "top": 5700.875,
+        "bottom": 5724.9375,
+        "width": 110.296875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5699.40625,
+        "bottom": 5726.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Shake Everything Off\n        \u00d712\n      ",
+      "title": "Shake Everything Off",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1398.796875,
+        "top": 5766.875,
+        "bottom": 5790.9375,
+        "width": 239.640625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5765.40625,
+        "bottom": 5792.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Shake It Loose\n        \u00d712\n      ",
+      "title": "Shake It Loose",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1317.953125,
+        "top": 5832.875,
+        "bottom": 5856.9375,
+        "width": 158.796875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5831.40625,
+        "bottom": 5858.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Shake, Boy!\n        \u00d712\n      ",
+      "title": "Shake, Boy!",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1279.59375,
+        "top": 5898.875,
+        "bottom": 5922.9375,
+        "width": 120.4375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5897.40625,
+        "bottom": 5924.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Sit Pretty\n        \u00d712\n      ",
+      "title": "Sit Pretty",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1269.328125,
+        "top": 5964.875,
+        "bottom": 5988.9375,
+        "width": 110.171875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 5963.40625,
+        "bottom": 5990.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Sit, Stay\n        \u00d712\n      ",
+      "title": "Sit, Stay",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1244.3125,
+        "top": 6030.875,
+        "bottom": 6054.9375,
+        "width": 85.15625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6029.40625,
+        "bottom": 6056.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Skeleton Key\n        \u00d712\n      ",
+      "title": "Skeleton Key",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1303.390625,
+        "top": 6096.875,
+        "bottom": 6120.9375,
+        "width": 144.234375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6095.40625,
+        "bottom": 6122.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Skeleton Stampede\n        \u00d712\n      ",
+      "title": "Skeleton Stampede",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1365.875,
+        "top": 6162.875,
+        "bottom": 6186.9375,
+        "width": 206.71875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6161.40625,
+        "bottom": 6188.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Skull Boop\n        \u00d712\n      ",
+      "title": "Skull Boop",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1280.453125,
+        "top": 6228.875,
+        "bottom": 6252.9375,
+        "width": 121.296875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6227.40625,
+        "bottom": 6254.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Smell Something?\n        \u00d712\n      ",
+      "title": "Smell Something?",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1354.390625,
+        "top": 6294.875,
+        "bottom": 6318.9375,
+        "width": 195.234375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6293.40625,
+        "bottom": 6320.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Sniff Around\n        \u00d712\n      ",
+      "title": "Sniff Around",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1307,
+        "top": 6360.875,
+        "bottom": 6384.9375,
+        "width": 147.84375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6359.40625,
+        "bottom": 6386.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Spare Bone\n        \u00d712\n      ",
+      "title": "Spare Bone",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1278.96875,
+        "top": 6426.875,
+        "bottom": 6450.9375,
+        "width": 119.8125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6425.40625,
+        "bottom": 6452.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Spare Parts\n        \u00d712\n      ",
+      "title": "Spare Parts",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1282.46875,
+        "top": 6492.875,
+        "bottom": 6516.9375,
+        "width": 123.3125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6491.40625,
+        "bottom": 6518.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Spare Parts Everywhere\n        \u00d712\n      ",
+      "title": "Spare Parts Everywhere",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1418,
+        "top": 6558.875,
+        "bottom": 6582.9375,
+        "width": 258.84375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6557.40625,
+        "bottom": 6584.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        X\n        Spooked\n        \u00d712\n      ",
+      "title": "Spooked",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1252.453125,
+        "top": 6624.875,
+        "bottom": 6648.9375,
+        "width": 93.296875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6623.40625,
+        "bottom": 6650.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        0\n        Stash Under the Rug\n        \u00d712\n      ",
+      "title": "Stash Under the Rug",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1386.71875,
+        "top": 6690.875,
+        "bottom": 6714.9375,
+        "width": 227.5625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6689.40625,
+        "bottom": 6716.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Sticky\n        \u00d712\n      ",
+      "title": "Sticky",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1229.28125,
+        "top": 6756.875,
+        "bottom": 6780.9375,
+        "width": 70.125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6755.40625,
+        "bottom": 6782.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Sticky Fur\n        \u00d712\n      ",
+      "title": "Sticky Fur",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1273.390625,
+        "top": 6822.875,
+        "bottom": 6846.9375,
+        "width": 114.234375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6821.40625,
+        "bottom": 6848.40625,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Tail Going A Mile A Minute\n        \u00d712\n      ",
+      "title": "Tail Going A Mile A Minute",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1421.546875,
+        "top": 6880.90625,
+        "bottom": 6929.03125,
+        "width": 262.390625,
+        "height": 48.125
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6891.46875,
+        "bottom": 6918.46875,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Tailbone Thump\n        \u00d712\n      ",
+      "title": "Tailbone Thump",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1332.09375,
+        "top": 6963,
+        "bottom": 6987.0625,
+        "width": 172.9375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 6961.53125,
+        "bottom": 6988.53125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        X\n        Take Me Apart\n        \u00d712\n      ",
+      "title": "Take Me Apart",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1311.375,
+        "top": 7029,
+        "bottom": 7053.0625,
+        "width": 152.21875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 7027.53125,
+        "bottom": 7054.53125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Tighten the Collar\n        \u00d712\n      ",
+      "title": "Tighten the Collar",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1375.6875,
+        "top": 7095,
+        "bottom": 7119.0625,
+        "width": 216.53125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 7093.53125,
+        "bottom": 7120.53125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Torchlight\n        \u00d712\n      ",
+      "title": "Torchlight",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1287.125,
+        "top": 7161,
+        "bottom": 7185.0625,
+        "width": 127.96875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 7159.53125,
+        "bottom": 7186.53125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Toss and Chase\n        \u00d712\n      ",
+      "title": "Toss and Chase",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1326.71875,
+        "top": 7227,
+        "bottom": 7251.0625,
+        "width": 167.5625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 7225.53125,
+        "bottom": 7252.53125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Treasure Yard\n        \u00d712\n      ",
+      "title": "Treasure Yard",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1316.21875,
+        "top": 7293,
+        "bottom": 7317.0625,
+        "width": 157.0625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 7291.53125,
+        "bottom": 7318.53125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Treat Stash\n        \u00d712\n      ",
+      "title": "Treat Stash",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1285.984375,
+        "top": 7359,
+        "bottom": 7383.0625,
+        "width": 126.828125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 7357.53125,
+        "bottom": 7384.53125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        2\n        Under the Couch\n        \u00d712\n      ",
+      "title": "Under the Couch",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1352.421875,
+        "top": 7425,
+        "bottom": 7449.0625,
+        "width": 193.265625,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 7423.53125,
+        "bottom": 7450.53125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Wet Dog Shake\n        \u00d712\n      ",
+      "title": "Wet Dog Shake",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1322.75,
+        "top": 7491,
+        "bottom": 7515.0625,
+        "width": 163.59375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 7489.53125,
+        "bottom": 7516.53125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Who Buried That?\n        \u00d712\n      ",
+      "title": "Who Buried That?",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1354.25,
+        "top": 7557,
+        "bottom": 7581.0625,
+        "width": 195.09375,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 7555.53125,
+        "bottom": 7582.53125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        X\n        Wrong Side\n        \u00d712\n      ",
+      "title": "Wrong Side",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1285.984375,
+        "top": 7623,
+        "bottom": 7647.0625,
+        "width": 126.828125,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 7621.53125,
+        "bottom": 7648.53125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    },
+    {
+      "text": "\n        1\n        Yard Map\n        \u00d712\n      ",
+      "title": "Yard Map",
+      "quantityText": "\u00d712",
+      "name": {
+        "left": 1159.15625,
+        "right": 1260.453125,
+        "top": 7689,
+        "bottom": 7713.0625,
+        "width": 101.296875,
+        "height": 24.0625
+      },
+      "quantity": {
+        "left": 1431.546875,
+        "right": 1468.390625,
+        "top": 7687.53125,
+        "bottom": 7714.53125,
+        "width": 36.84375,
+        "height": 27
+      },
+      "clear": true
+    }
+  ]
+}

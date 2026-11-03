@@ -1,0 +1,8 @@
+{
+  "action": "Generate separate Spectral Scullion sprite using built-in imagegen",
+  "target": "animations\\sprites\\enemies\\spectralScullion.png",
+  "outcome": "denied",
+  "reason": "HTTP400 image_generation_user_error moderation_blocked; moderation_stage output; categories other; no image payload returned",
+  "request_id": "c49ad1f6-4178-418a-b8ec-ea7bb5ccec89",
+  "retry": "Not retried. Continued independent sprites."
+}

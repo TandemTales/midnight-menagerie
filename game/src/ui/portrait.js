@@ -1,3 +1,5 @@
+import { BASE_ANIMATION_RATE } from '../core/motion.js';
+const PARALLAX_EASE = 1 - Math.pow(1 - .075, BASE_ANIMATION_RATE);
 /**
  * Shared companion / kid portrait + ornament kit.
  * OWNER: frontend agent.
@@ -16,7 +18,7 @@ import { COMPANIONS, KIDS } from '../data/schema.js';
 import { Save } from '../core/save.js';
 import { petImg, petPhoto, warmFaces, petKey } from './petart.js';
 
-// The pet photographs are generated in ui/petart.js. Re-exported here so scenes
+// The pet photographs are loaded by ui/petart.js. Re-exported here so scenes
 // keep importing all their art from one place. The Kids are NOT generated —
 // they are authored paintings, loaded by `kidImg` further down this file.
 export { petImg, petPhoto, warmFaces, petKey };
@@ -362,8 +364,8 @@ class ParallaxManager {
     const tick = () => {
       this.raf = requestAnimationFrame(tick);
       if (_reduceMotion) return;
-      this.cx += (this.tx - this.cx) * 0.075;
-      this.cy += (this.ty - this.cy) * 0.075;
+      this.cx += (this.tx - this.cx) * PARALLAX_EASE;
+      this.cy += (this.ty - this.cy) * PARALLAX_EASE;
       if (Math.abs(this.cx - this.tx) < 0.0008 && Math.abs(this.cy - this.ty) < 0.0008) {
         this.cx = this.tx; this.cy = this.ty;
       }

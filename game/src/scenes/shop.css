@@ -241,7 +241,7 @@
   background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 50%, transparent), color-mix(in srgb, var(--kit-candle) 18%, transparent) 42%, color-mix(in srgb, var(--kit-candle) 4%, transparent) 72%, transparent);
   mix-blend-mode: screen;
 }
-.rm:not(.is-still) .sh-keeper__light { animation: kit-flicker 5.2s ease-in-out infinite; }
+.rm:not(.is-still) .sh-keeper__light { animation: kit-flicker calc(5.2s * var(--anim-scale)) ease-in-out infinite; }
 /* the glass: the niche's opening, and the painting that fills it */
 .sh-keeper__glass, .sh-keeper .sh-moth {
   position: absolute;
@@ -288,11 +288,11 @@
 }
 .sh-moth__name .kit-plate__name {
   font-family: var(--font-display); font-weight: 700;
-  font-size: max(13px, calc(var(--plate-h) * .36)); letter-spacing: .1em; text-transform: uppercase;
+  --reading-size: max(13px, calc(var(--plate-h) * .36)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .1em; text-transform: uppercase;
   white-space: nowrap; color: var(--kit-name);
 }
 .sh-moth__name .kit-plate__epithet {
-  font-size: max(12px, calc(var(--plate-h) * .27)); white-space: nowrap;
+  --reading-size: max(12px, calc(var(--plate-h) * .27)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); white-space: nowrap;
   color: color-mix(in oklab, var(--kit-name) 72%, var(--kit-text-mid));
 }
 /* ── the shelf's two ends ───────────────────────────────────────────────────
@@ -578,7 +578,7 @@
 .sh-row__txt em {
   display: block; font-style: normal;
   margin-top: 1px;
-  font-size: clamp(13px, .86vw, 14px); color: var(--kit-text); line-height: 1.22;
+  --reading-size: clamp(13px, .86vw, 14px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--kit-text); line-height: 1.22;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 
@@ -611,7 +611,7 @@
   width: auto; height: auto; margin-left: 8px; padding: 0;
   background: none; border-radius: 0; filter: none;
   font-family: var(--font-body); font-weight: 600; font-style: italic;
-  font-size: max(12px, calc(var(--price-h) * .4)); letter-spacing: 0; text-transform: none;
+  --reading-size: max(12px, calc(var(--price-h) * .4)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: 0; text-transform: none;
 }
 .sh-buy.is-poor .sh-buy__price, .sh-buy.is-sold .sh-buy__price, .sh-buy.is-blocked .sh-buy__price { padding-right: calc(var(--price-h) * .5); }
 .sh-buy.is-poor { filter: saturate(.7); }
@@ -623,7 +623,7 @@
 .sh-buy.is-sold .sh-buy__state { color: var(--kit-text-lo); }
 .sh-buy.is-blocked { filter: saturate(.4) brightness(.85); }
 .sh-buy.is-blocked .sh-buy__state { color: var(--kit-text-mid); font-weight: 400; text-shadow: 0 1px 0 rgba(0, 0, 0, .9); }
-.sh-buy.is-refused { animation: sh-refuse 260ms var(--ease-out); }
+.sh-buy.is-refused { animation: sh-refuse calc(260ms * var(--anim-scale)) var(--ease-out); }
 @keyframes sh-refuse {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); } 60% { transform: translateX(4px); }
@@ -675,7 +675,7 @@
   margin: 0; padding: 0 clamp(4px, .6vw, 12px);
   text-align: center; text-wrap: balance;
   font-family: var(--font-body); font-style: italic; font-weight: 600;
-  font-size: clamp(15px, 1.18vw, 19px); line-height: 1.24;
+  --reading-size: clamp(15px, 1.18vw, 19px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.24;
   color: var(--kit-lav-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 18px color-mix(in srgb, var(--kit-violet) 45%, transparent);
 }
@@ -738,7 +738,7 @@
     radial-gradient(circle at 38% 28%, color-mix(in oklab, var(--kit-enamel) 46%, white) 0%, transparent 34%),
     radial-gradient(closest-side, color-mix(in oklab, var(--kit-enamel) 72%, var(--kit-violet)) 0%, color-mix(in oklab, var(--kit-enamel) 62%, black) 64%, transparent 69%);
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .85));
-  font-family: var(--font-num); font-weight: 700; font-size: calc(var(--ring) * .35); line-height: 1;
+  font-family: var(--font-num); font-weight: 700; --reading-size: calc(var(--ring) * .35); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
   color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 10px color-mix(in srgb, var(--kit-candle) 32%, transparent);
@@ -764,7 +764,7 @@
 
 /* the shop gives its height to the shelf: its plaque and its way out are drawn a step smaller */
 .scene--shop .kit-titleblock--compact { --cart-h: clamp(86px, 10.2vh, 106px); }
-.scene--shop .kit-titleblock--compact .kit-cartouche__title { font-size: clamp(25px, 2.1vw, 34px); }
+.scene--shop .kit-titleblock--compact .kit-cartouche__title { --reading-size: clamp(25px, 2.1vw, 34px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .scene--shop .kit-titleblock--compact .kit-cartouche__sub { font-size: max(12.5px, var(--fs-sm)); }
 .scene--shop .rm-go { --plate-h: clamp(40px, 4.7vh, 46px); }
 .scene--shop .rm-foot { padding-bottom: clamp(10px, 1.3vh, 14px); }
@@ -784,8 +784,8 @@
 
 @media (max-width: 1400px) {
   .sh-floor { grid-template-columns: minmax(0, 1.12fr) minmax(0, .92fr) minmax(0, 1.12fr); column-gap: 18px; }
-  .sh-moth__you dt { letter-spacing: 0; font-size: 12px; }
-  .sh-moth__line { font-size: 16.5px; }
+  .sh-moth__you dt { letter-spacing: 0; --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+  .sh-moth__line { --reading-size: 16.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 }
 
 /* ── narrow: the counter stacks under the frames and the board scrolls ───── */
@@ -801,8 +801,8 @@
 @media (max-height: 860px) {
   .scene--shop .rm-head { padding-top: 2px; }
   .scene--shop .kit-titleblock--compact { --cart-h: 80px; }
-  .scene--shop .kit-titleblock--compact .kit-cartouche__title { font-size: 23px; }
-  .scene--shop .kit-titleblock__note { margin-top: -2px; font-size: 12px; }
+  .scene--shop .kit-titleblock--compact .kit-cartouche__title { --reading-size: 23px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+  .scene--shop .kit-titleblock__note { margin-top: -2px; --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
   .scene--shop .kit-titleblock > .kit-ribbon { margin-top: calc(var(--cart-h) * -.22); }
   .scene--shop .rm-body { padding-top: 2px; }
   /* the cabinet's rail ribbon keeps clear of the plaque's note above it, and
@@ -818,8 +818,8 @@
     padding: 20px 18px 14px 16px;
   }
   .scene--shop .sh-row { --row-price-h: 26px; padding-block: 2px 3px; }
-  .scene--shop .sh-row__txt b { font-size: 15px; }
-  .scene--shop .sh-row__txt em { font-size: 13px; line-height: 1.18; }
+  .scene--shop .sh-row__txt b { --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+  .scene--shop .sh-row__txt em { --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.18; }
   .scene--shop .sh-row__sig.kit-hw-well { --well: 42px; }
   .scene--shop .sh-keeper { --moth-plate: 34px; }
   .scene--shop .sh-moth__say { row-gap: 6px; }
@@ -881,7 +881,7 @@
 }
 /* the figure, engraved: dark in the brass, a bright lip under each stroke */
 .sh-buy .kit-price__value {
-  font-size: max(17px, calc(var(--price-h) * .6));
+  --reading-size: max(17px, calc(var(--price-h) * .6)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   padding-top: 1px;
   color: #26170a;
   text-shadow: 0 1px 0 rgba(255, 238, 196, .55), 0 -1px 0 rgba(20, 10, 2, .45);
@@ -899,11 +899,11 @@
   border-image: url("../../assets/ui/kit/cartouche-lit.webp") 18 34 18 34 fill / calc((var(--tag) - 6px) * 18 / 64) calc((var(--tag) - 6px) * 34 / 64) stretch;
   background: none;
   filter: drop-shadow(0 1px 1px rgba(30, 16, 4, .7));
-  font-size: 13.5px; letter-spacing: .16em;
+  --reading-size: 13.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .16em;
   color: #fff1d2;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 9px color-mix(in srgb, var(--kit-lav-hi) 45%, transparent);
 }
-@media (min-height: 861px) { .sh-buy .kit-price__buy { font-size: 14.5px; } }
+@media (min-height: 861px) { .sh-buy .kit-price__buy { --reading-size: 14.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); } }
 /* not BUY: the word says why, on the same enamel, the enamel unlit */
 .sh-buy.is-poor .sh-buy__state,
 .sh-buy.is-sold .sh-buy__state,
@@ -913,7 +913,7 @@
   padding: 1px calc(var(--tag) * .4) 0;
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc((var(--tag) - 6px) * 18 / 64) calc((var(--tag) - 6px) * 34 / 64) stretch;
   filter: drop-shadow(0 1px 1px rgba(30, 16, 4, .7));
-  font-size: 13.5px; white-space: nowrap;
+  --reading-size: 13.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); white-space: nowrap;
 }
 .sh-buy.is-poor .sh-buy__price, .sh-buy.is-sold .sh-buy__price, .sh-buy.is-blocked .sh-buy__price { padding-right: 0; }
 /* too poor: the engraved figure struck through in a dark madder, and the
@@ -921,19 +921,19 @@
 .sh-buy.is-poor .sh-buy__price b { color: #6e130c; text-decoration-color: #6e130c; text-decoration-thickness: 2px; text-shadow: 0 1px 0 rgba(255, 220, 190, .45); }
 .sh-buy.is-poor .sh-buy__state { color: var(--threat-200); }
 .sh-buy.is-poor .kit-price__coin { filter: drop-shadow(0 1px 0 rgba(255, 236, 190, .3)) grayscale(.6) brightness(.72); }
-.sh-buy.is-sold .sh-buy__state { font-family: var(--font-display); font-style: normal; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: 12.5px; color: var(--kit-text-mid); }
+.sh-buy.is-sold .sh-buy__state { font-family: var(--font-display); font-style: normal; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--kit-text-mid); }
 .sh-buy.is-blocked .sh-buy__state { color: var(--kit-text); }
 
 /* ── the small print on the shop, read at the Deck's 1280 ──
    Grenze's italic reads a size under its em, so every italic line a player
    is meant to read stands at 12.5px or more now; the card face's own type
    line (ui/card.*, round 27's) is not this sheet's. */
-.scene--shop .sh-h.kit-heading--ribbon.kit-heading--inline > em { font-size: max(12.5px, calc(var(--rib-h) * .5)); }
+.scene--shop .sh-h.kit-heading--ribbon.kit-heading--inline > em { --reading-size: max(12.5px, calc(var(--rib-h) * .5)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .sh-service .sh-service__h > em { font-size: max(12px, calc(11 * var(--u))); }
-.sh-moth__name .kit-plate__epithet { font-size: max(12px, calc(var(--plate-h) * .28)); }
-.sh-card__own { font-size: 13px; }
+.sh-moth__name .kit-plate__epithet { --reading-size: max(12px, calc(var(--plate-h) * .28)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+.sh-card__own { --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .scene--shop .kit-titleblock--compact .kit-cartouche__sub { font-size: max(13px, var(--fs-sm)); }
-@media (max-width: 1400px) { .sh-moth__you dt { font-size: 12px; } }
+@media (max-width: 1400px) { .sh-moth__you dt { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); } }
 
 /* ROUND 33 GRAFT -- the market's two small lines, UPRIGHT (all three judges:
    "about 9px italic"): Grenze's italic reads a size under its em, so the
@@ -942,7 +942,7 @@
   font-style: normal; font-size: max(14px, var(--fs-sm)); letter-spacing: .01em;
   color: var(--kit-text);
 }
-.sh-moth__name .kit-plate__epithet { font-style: normal; font-size: max(13px, calc(var(--plate-h) * .3)); color: var(--kit-text); }
+.sh-moth__name .kit-plate__epithet { font-style: normal; --reading-size: max(13px, calc(var(--plate-h) * .3)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--kit-text); }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    ROUND 36 — THE STALL, NOT THE STORE
@@ -972,7 +972,7 @@
     #1d0f2a;
   background-blend-mode: normal, overlay, normal, normal;
   opacity: 0;
-  transition: opacity 260ms var(--ease-out);
+  transition: opacity calc(260ms * var(--anim-scale)) var(--ease-out);
 }
 .sh-drape.is-painted { opacity: 1; }
 .rm.is-still .sh-drape { transition: none; }
@@ -1033,7 +1033,7 @@
 .sh-buy .kit-price__buy {
   max-width: 0; padding-inline: 0; margin-left: 0;
   opacity: 0; overflow: hidden;
-  transition: max-width 140ms var(--ease-out), opacity 140ms var(--ease-out), margin 140ms var(--ease-out), padding 140ms var(--ease-out);
+  transition: max-width calc(140ms * var(--anim-scale)) var(--ease-out), opacity calc(140ms * var(--anim-scale)) var(--ease-out), margin calc(140ms * var(--anim-scale)) var(--ease-out), padding calc(140ms * var(--anim-scale)) var(--ease-out);
 }
 /* the one lit press point: the item under the pointer, or in focus */
 /* (graft: the ONE ware in hand -- shop.js _hold -- not hover or focus-within,
@@ -1112,7 +1112,7 @@
   min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   padding: 3px 0 0 calc(var(--vw) * .06);
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: clamp(13.5px, .95vw, 15px); line-height: 1; letter-spacing: .06em;
+  --reading-size: clamp(13.5px, .95vw, 15px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1; letter-spacing: .06em;
   color: var(--kit-gold-hi);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 rgba(255, 214, 150, .28), 0 0 8px color-mix(in srgb, var(--kit-candle) 22%, transparent);
 }
@@ -1165,7 +1165,7 @@
 }
 /* the counter's plates keep their descriptions to the lines they had as rows:
    the middle counter gives the sides a little width */
-.sh-row.sh-pressable .sh-row__txt em { font-size: clamp(12.5px, .84vw, 14px); line-height: 1.18; }
+.sh-row.sh-pressable .sh-row__txt em { --reading-size: clamp(12.5px, .84vw, 14px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.18; }
 @media (max-width: 1400px) {
   .sh-floor { grid-template-columns: minmax(0, 1.14fr) minmax(0, .9fr) minmax(0, 1.14fr); }
 }
@@ -1236,7 +1236,7 @@
 .sh-counter--moth .sh-service--plaque .sh-service__h {
   position: static; height: auto; display: flex; align-items: baseline; gap: .55em;
   padding: 0; border: 0; border-image: none; filter: none;
-  font-size: clamp(14px, 1.05vw, 16px); letter-spacing: .06em; text-transform: uppercase;
+  --reading-size: clamp(14px, 1.05vw, 16px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .06em; text-transform: uppercase;
 }
 .sh-counter--moth .sh-service--plaque .sh-service__h > em {
   position: static; transform: none; width: auto; padding: 0;
@@ -1248,7 +1248,7 @@
 .sh-counter--moth .sh-service--plaque .sh-service__rules::before { content: none; }
 .sh-counter--moth .sh-remove__blurb {
   text-align: left; text-wrap: pretty;
-  font-size: clamp(12.5px, .86vw, 14px); line-height: 1.18;
+  --reading-size: clamp(12.5px, .86vw, 14px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.18;
 }
 .sh-counter--moth .sh-remove__blurb b { display: inline; margin: 0 0 0 .25em; }
 .sh-counter--moth .sh-service--plaque .sh-remove > .sh-buy { margin: 0; --price-h: var(--shelf-price-h, 30px); }
@@ -1292,7 +1292,7 @@
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 7px 12px stretch;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
-  font-size: clamp(12.5px, .86vw, 14px); line-height: 1.08; letter-spacing: .04em;
+  --reading-size: clamp(12.5px, .86vw, 14px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.08; letter-spacing: .04em;
 }
 /* its price on a brass tag, hung from the plate on its twine */
 .sh-side .sh-row.sh-pressable > .sh-buy {
@@ -1306,16 +1306,16 @@
 .sh-side .sh-row.sh-pressable .sh-row__txt em {
   order: 5; display: block;
   margin: 6px 0 0; padding: 0 1px;
-  font-size: clamp(12.5px, .84vw, 14px); line-height: 1.17;
+  --reading-size: clamp(12.5px, .84vw, 14px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.17;
   text-wrap: balance;
 }
 .sh-side .sh-row.sh-pressable.is-in-hand { filter: brightness(1.12) drop-shadow(0 0 8px color-mix(in srgb, var(--kit-candle) 30%, transparent)); }
 @media (max-height: 860px) {
   .sh-side .sh-list { padding-top: 12px; row-gap: 6px; }
   .sh-side .sh-row.sh-pressable { --vw: 46px; }
-  .scene--shop .sh-side .sh-row__txt b { font-size: 12.5px; }
-  .scene--shop .sh-side .sh-row__txt em { font-size: 12.5px; line-height: 1.15; }
-  .sh-counter--moth .sh-moth__line { font-size: 14.5px; line-height: 1.2; }
+  .scene--shop .sh-side .sh-row__txt b { --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+  .scene--shop .sh-side .sh-row__txt em { --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.15; }
+  .sh-counter--moth .sh-moth__line { --reading-size: 14.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.2; }
   .sh-counter--moth .sh-moth__you { --ring: 38px; }
   .sh-counter--moth .sh-moth__plaque { --carve: 13px; padding-block: 2px; }
 }
@@ -1408,11 +1408,99 @@
      plates still stand whole in the narrow ones */
   .sh-side .sh-list { --ware-min: 96px; column-gap: 7px; }
   .scene--shop .sh-side > .sh-counter.kit-panel:is(.sh-counter--keeps, .sh-counter--snacks) { padding-inline: 9px; }
-  .scene--shop .sh-side .sh-row.sh-pressable .sh-row__txt b { font-size: 12px; letter-spacing: .02em; }
+  .scene--shop .sh-side .sh-row.sh-pressable .sh-row__txt b { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .02em; }
   .sh-side .sh-row.sh-pressable .sh-row__txt em,
-  .sh-side .sh-row.sh-pressable:is(.is-in-hand, :hover, :focus-within) .sh-row__txt em { font-size: 12px; line-height: 1.05; }
+  .sh-side .sh-row.sh-pressable:is(.is-in-hand, :hover, :focus-within) .sh-row__txt em { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.05; }
 }
 @media (max-height: 860px) {
   .sh-side .sh-row.sh-pressable { --vw: 64px; }
-  .scene--shop .sh-side .sh-row.sh-pressable .sh-row__txt em { font-size: 12px; line-height: 1.05; }
+  .scene--shop .sh-side .sh-row.sh-pressable .sh-row__txt em { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.05; }
+}
+
+/* Round 48: glass on walnut, descriptions on the merchant's tied slips. */
+.sh-side > .sh-counter:is(.sh-counter--keeps,.sh-counter--snacks) { background: radial-gradient(ellipse at 7% 25%, color-mix(in srgb, var(--kit-candle) 24%, transparent), transparent 68%), repeating-linear-gradient(93deg, transparent 0 29px, color-mix(in srgb, var(--kit-gold-lo) 17%, transparent) 31px 33px), var(--kit-void); }
+.sh-side .sh-row.sh-pressable::before,
+.sh-side .sh-row.sh-pressable:first-child::before,
+.sh-side .sh-row.sh-pressable:last-child::before { width: calc(100% + 13px); height: 26px; margin: -3px -6px 0; border-radius: 0; background: linear-gradient(180deg, var(--kit-gold) 0, var(--kit-gold-lo) 25%, var(--kit-paper-ink) 34%, var(--kit-gold-lo) 55%, var(--kit-paper-ink)), url("../../assets/ui/kit/cloth.webp") center / cover; box-shadow: inset 0 1px 0 var(--kit-gold-hi), 0 8px 9px var(--kit-void); }
+.sh-side .sh-row .sh-row__sig.sh-vessel { filter: drop-shadow(0 6px 2px var(--kit-void)) drop-shadow(-4px 0 8px color-mix(in srgb, var(--kit-candle) 20%, transparent)); }
+.sh-side .sh-row.sh-pressable .sh-row__txt em,
+.sh-side .sh-row.sh-pressable:is(.is-in-hand,:hover,:focus-within) .sh-row__txt em { position: relative; margin-top: 10px; padding: 9px 7px 10px; color: var(--kit-paper-ink); background: url("../../assets/ui/kit/paper.webp") center / 170px, var(--kit-parchment); background-blend-mode: multiply; border: 1px solid var(--kit-gold-lo); box-shadow: 2px 4px 5px var(--kit-void); font-style: normal; font-weight: 600; line-height: 1.2; text-shadow: none; }
+.sh-side .sh-row.sh-pressable .sh-row__txt em::before { content: ''; position: absolute; left: 50%; top: -11px; height: 12px; width: 2px; background: var(--kit-gold); box-shadow: 1px 0 1px var(--kit-void); }
+.sh-side .sh-row:nth-child(odd) .sh-row__txt em { rotate: -.8deg; }
+.sh-side .sh-row:nth-child(even) .sh-row__txt em { rotate: .8deg; }
+.sh-drape { background: url("../../assets/ui/kit/curtain.webp") center / 100% 100% no-repeat; }
+
+/* Long object names remain whole inside their attached plate. */
+.scene--shop .sh-side .sh-row.sh-pressable .sh-row__txt b { box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%; white-space: normal; overflow: visible; overflow-wrap: anywhere; text-overflow: clip; line-height: 1.18; padding: 6px 9px 7px; }
+
+.scene--shop .sh-side .sh-row.sh-pressable .sh-row__txt b { font-family: var(--font-body); text-transform: none; letter-spacing: 0; padding-inline: 5px; overflow-wrap: normal; hyphens: auto; }
+
+/* Round 49 RUBY: a deeper cabinet gives all five cards a complete reading area. */
+.sh-floor { flex: none; grid-template-rows: auto auto; padding-bottom: 44px; }
+.scene--shop .sh-counter--cards { min-height: 510px; }
+.scene--shop .sh-cards { --face-w: calc((100cqw - 4 * var(--gap) - 2 * var(--frame-pad)) / 5); --face-h: calc(var(--face-w) * 500 / 224); min-height: calc(var(--face-h) + 68px); }
+.scene--shop .sh-card .mm-card { height: calc(500 * var(--u)); }
+.scene--shop .sh-card .mm-card[data-uid] .mm-card__rules { top: calc(168 * var(--u)); bottom: calc(20 * var(--u)); justify-content: center; }
+.scene--shop .sh-side .sh-row.sh-pressable .sh-row__txt b { hyphens: none; word-break: normal; overflow-wrap: normal; padding: 10px 9px; min-height: 2.5em; }
+.scene--shop .sh-side .sh-row.sh-pressable .sh-row__txt em { padding: 13px 10px; line-height: 1.3; }
+.scene--shop .sh-side > .sh-counter { padding-bottom: 28px; }
+
+.scene--shop .sh-counter--cards { min-height: 0; }
+.scene--shop .sh-cards { container-type: inline-size; min-height: 0; flex: none; align-items: flex-start; padding-top: 35px; }
+.scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid] .mm-card__banner { bottom: calc(347 * var(--u)); }
+
+.scene--shop .sh-moth__you { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; }
+.scene--shop .sh-moth__you dt { white-space: normal; line-height: 1.2; }
+.scene--shop .sh-row.sh-pressable .sh-row__txt em { background-color: var(--kit-parchment); background-blend-mode: soft-light; }
+
+
+/* Round 50 GARNET: a travelling theatre cabinet, two shelves of full cards. */
+.scene--shop .sh-counter--cards { --moth-h: 360px; --keeper-w: 176px; --keeper-x: 24px; padding-inline: 18px; padding-bottom: 32px; }
+.scene--shop .sh-drape { inset: 6px; opacity: 1; border-radius: 0; background: url("../../assets/ui/r50-garnet/velvet-v1.webp") center / 100% 100% no-repeat; }
+.scene--shop .sh-pelmet { display: none; }
+.scene--shop .sh-cards { --gap: 28px; --face-w: min(260px, calc((100cqw - 56px) / 3)); --face-h: calc(var(--face-w) * 360 / 224); display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); justify-items: center; align-items: start; column-gap: 28px; row-gap: 65px; padding: 36px 30px 26px 218px; margin: 0; width: 100%; box-sizing: border-box; }
+.scene--shop .sh-card { width: var(--face-w); }
+.scene--shop .sh-card .mm-card { height: calc(360 * var(--u)); }
+.scene--shop .sh-card .mm-card[data-uid] .mm-card__rules { top: calc(168 * var(--u)); bottom: calc(20 * var(--u)); }
+.scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid] .mm-card__banner { bottom: calc(207 * var(--u)); }
+.scene--shop .sh-card::before { content: ''; position: absolute; z-index: -1; left: -20px; right: -20px; height: 46px; top: calc(var(--face-h) - 4px); background: url("../../assets/ui/r50-garnet/walnut-lip-v1.webp") center / 100% 100% no-repeat; box-shadow: 0 12px 9px -5px var(--kit-void); }
+.scene--shop .sh-card:nth-child(n+4) { translate: 36px 0; }
+.scene--shop .sh-counter--cards .sh-keeper { top: 126px; bottom: auto; }
+.scene--shop .sh-keeper::after { content: ''; position: absolute; left: -26px; right: -26px; bottom: -38px; height: 40px; background: url("../../assets/ui/r50-garnet/walnut-lip-v1.webp") center / 100% 100% no-repeat; z-index: -1; }
+.scene--shop .sh-ledge { bottom: 8px; }
+.scene--shop .sh-still--l, .scene--shop .sh-still--m { bottom: 25px; }
+.scene--shop .sh-counter--moth .sh-moth__plaque { padding-block: 10px; }
+.scene--shop .sh-side > .sh-counter { background: url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") center / cover; }
+@media (max-width: 1400px) {
+ .scene--shop .sh-counter--cards { --moth-h: 320px; --keeper-w: 156px; --keeper-x: 18px; }
+ .scene--shop .sh-cards { padding-left: 190px; padding-right: 18px; column-gap: 22px; --face-w: min(252px, calc((100cqw - 44px) / 3)); }
+ .scene--shop .sh-card:nth-child(n+4) { translate: 24px 0; }
+}
+
+/* The upper shelf continues behind the merchant and across all three cards. */
+.scene--shop .sh-cards::before { content: ''; position: absolute; z-index: -1; left: 0; right: 0; top: calc(36px + var(--face-h) - 4px); height: 48px; background: url("../../assets/ui/r50-garnet/walnut-lip-v1.webp") center / 100% 100% no-repeat; box-shadow: 0 11px 9px -5px var(--kit-void); pointer-events: none; }
+
+/* A small shared contact shadow seats each existing price cartouche. */
+.scene--shop .sh-card .sh-buy { filter: drop-shadow(0 3px 2px var(--kit-void)); }
+
+
+/* Dark engraved type sits within the merchant's existing brass ribbon. */
+.scene--shop .sh-h--cards.kit-heading { color: var(--kit-paper-ink); -webkit-text-fill-color: currentColor; -webkit-text-stroke: 0; text-shadow: 0 1px 0 color-mix(in srgb,var(--kit-gold-hi) 65%,transparent); }
+
+/* Seat the existing shelf ends at their uprights without stretching new ornaments. */
+.scene--shop .sh-cards::before { box-shadow: inset 0 2px 1px var(--kit-gold-lo),0 7px 6px -3px var(--kit-void); }
+
+/* Worn corners and local shelf-facing rim light are limited to shop merchandise. */
+.scene--shop .sh-card .mm-card[data-rarity] .mm-card__frame {
+ background: radial-gradient(ellipse at 4% 8%,color-mix(in srgb,var(--frame-hi) 80%,transparent),transparent 31%),radial-gradient(ellipse at 96% 91%,color-mix(in srgb,var(--frame-hi) 55%,transparent),transparent 24%),url("../../assets/ui/kit/grain.webp") 17px 11px / 143px 167px,linear-gradient(153deg,var(--frame) 6%,var(--frame-lo) 33%,var(--frame) 64%,var(--frame-deep) 84%,var(--frame-lo));
+ background-blend-mode: normal,normal,overlay,normal;
+ box-shadow: inset 0 0 0 calc(1 * var(--u)) var(--frame-deep),inset calc(2 * var(--u)) calc(3 * var(--u)) calc(3 * var(--u)) color-mix(in srgb,var(--frame-hi) 33%,transparent),0 calc(4 * var(--u)) calc(10 * var(--u)) var(--kit-void);
+}
+.scene--shop .sh-cards::before { background: url("../../assets/ui/r53-fluorite/rail-left-v1.webp") left top / 53px 48px no-repeat,url("../../assets/ui/r53-fluorite/rail-right-v1.webp") right top / 53px 48px no-repeat,url("../../assets/ui/r55-iolite/rail-wood.webp") center / 154px 48px repeat-x; background-color: var(--kit-paper-ink); }
+
+/* Round56 ONYX: local rim planes and rubbed disks only on merchandise. */
+.scene--shop .sh-card .mm-card[data-rarity] .mm-card__frame {
+ background: radial-gradient(ellipse at 8% 5%,var(--frame-hi),transparent 23%),radial-gradient(ellipse at 96% 89%,color-mix(in srgb,var(--frame-hi) 68%,transparent),transparent 19%),url("../../assets/ui/kit/grain.webp") 31px 6px / 76px 119px,linear-gradient(139deg,var(--frame) 9%,var(--frame-lo) 27%,var(--frame-deep) 41%,var(--frame) 60%,var(--frame-lo) 78%,var(--frame-deep));
+ background-blend-mode: normal,normal,soft-light,normal;
+ box-shadow: inset calc(1 * var(--u)) calc(1 * var(--u)) 0 var(--frame-hi),inset calc(-3 * var(--u)) calc(-4 * var(--u)) calc(2 * var(--u)) var(--frame-deep),inset calc(3 * var(--u)) calc(3 * var(--u)) calc(1 * var(--u)) var(--frame-lo),0 calc(4 * var(--u)) calc(10 * var(--u)) var(--kit-void);
 }

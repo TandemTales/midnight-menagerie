@@ -1,0 +1,159 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 48,
+   "cols": 8,
+   "rows": 6,
+   "fw": 400,
+   "fh": 314,
+   "anchor": [
+    199.68,
+    268.53
+   ],
+   "source": "SS_grandWardrobe_attack.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    189.8,
+    186.0,
+    188.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -8.8,
+   "dehalo": false,
+   "warm": 23.0,
+   "dewhite": true,
+   "dip": 0.492,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.982,
+   "scale": 0.6359,
+   "unit": 201.59,
+   "loop": false,
+   "fps": 35.56,
+   "hold": false,
+   "sha1": "a908a65b818f1ba9"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 25,
+   "cols": 9,
+   "rows": 3,
+   "fw": 400,
+   "fh": 246,
+   "anchor": [
+    201.53,
+    237.99
+   ],
+   "source": "SS_grandWardrobe_defeat.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    186.8,
+    181.9,
+    182.4
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -7.3,
+   "dehalo": false,
+   "warm": 33.0,
+   "dewhite": false,
+   "dip": 0.675,
+   "untail": false,
+   "deblack": false,
+   "defeatCut": 24,
+   "endIoU": 0.278,
+   "scale": 0.7463,
+   "unit": 236.57,
+   "loop": false,
+   "fps": 40.0,
+   "hold": true,
+   "sha1": "08cbd438ef0e8297"
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 48,
+   "cols": 8,
+   "rows": 6,
+   "fw": 400,
+   "fh": 288,
+   "anchor": [
+    189.3,
+    284.4
+   ],
+   "source": "SS_grandWardrobe_hurt.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    183.8,
+    177.4,
+    179.1
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -3.7,
+   "dehalo": false,
+   "warm": 26.0,
+   "dewhite": false,
+   "dip": 0.483,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.995,
+   "scale": 0.885,
+   "unit": 280.53,
+   "loop": false,
+   "fps": 35.56,
+   "hold": false,
+   "sha1": "366686dd38212e1e"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 48,
+   "cols": 8,
+   "rows": 6,
+   "fw": 400,
+   "fh": 292,
+   "anchor": [
+    196.51,
+    290.0
+   ],
+   "source": "SS_grandWardrobe_idle.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    185.5,
+    180.7,
+    183.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -7.9,
+   "dehalo": false,
+   "warm": 46.0,
+   "dewhite": false,
+   "dip": 0.673,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.996,
+   "scale": 0.9091,
+   "unit": 288.18,
+   "loop": true,
+   "fps": 11.85,
+   "hold": false,
+   "sha1": "d7eda271ab9e934f"
+  }
+ },
+ "scale": 1.0,
+ "unit": 317.0
+}

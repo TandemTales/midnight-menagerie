@@ -1,0 +1,3 @@
+measured-check.js -text
+*.bin -text
+initial-harness.py.txt -text

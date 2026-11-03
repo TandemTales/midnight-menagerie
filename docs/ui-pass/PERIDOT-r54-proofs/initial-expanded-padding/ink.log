@@ -1,0 +1,15 @@
+1280 status visible 93 outside 0 failures 0
+1280 buff visible 96 outside 0 failures 0
+1280 debuff visible 98 outside 0 failures 0
+1280 counter visible 94 outside 0 failures 0
+1280 blocked visible 103 outside 0 failures 0
+1600 status visible 69 outside 0 failures 0
+1600 buff visible 72 outside 0 failures 0
+1600 debuff visible 65 outside 0 failures 0
+1600 counter visible 71 outside 0 failures 0
+1600 blocked visible 64 outside 0 failures 0
+Traceback (most recent call last):
+  File "D:\UILOOP\r54-20261029\b\tests\ui-r54-peridot\ribbon-ink.py", line 61, in <module>
+    assert all(r["styles"]["filter"]=="none" and r["styles"]["willChange"]=="auto" and "velvet-cartouche-v1.webp" in r["styles"]["backing"] for r in rows)
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

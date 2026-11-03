@@ -1,0 +1,490 @@
+{
+  "judge": 1,
+  "inspected": {
+    "references": 4,
+    "captures": 40,
+    "order": [
+      "OBSIDIAN",
+      "MOONSTONE",
+      "SPINEL",
+      "ZIRCON"
+    ],
+    "references_first": true,
+    "capture_order": [
+      "rest.png",
+      "rest-1280.png",
+      "event.png",
+      "event-1280.png",
+      "gameover.png",
+      "gameover-1280.png",
+      "shop.png",
+      "shop-1280.png",
+      "combat-floaters.png",
+      "combat-floaters-1280.png"
+    ]
+  },
+  "method": "Independent blind pixel inspection using view_image. Read only the supplied input and its two rubrics, then inspected all four reference PNGs before all forty candidate PNGs in the exact supplied candidate and within-candidate order. Scores combine both sizes conservatively and are holistic relative to the painted references, not relative to the weakest candidate. Ignored standalone preview banners and unchanged combat room, actor and hand artwork; the combat background dimension concerns how the evaluated overlays sit against their ground and is held constant. Enlarged text and scrolling are intentional; visible continuation was not treated as inaccessibility. No browser, source inspection, identity inference or interaction testing.",
+  "candidates": {
+    "OBSIDIAN": {
+      "system_overall": 7.3,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 7.8,
+            "palette": 8.3,
+            "typography": 7.1,
+            "material": 7.5,
+            "background": 7.6,
+            "composition": 7.8,
+            "readability": 8,
+            "coherence": 7.7
+          },
+          "overall": 7.7,
+          "fits_between_samples": false,
+          "worst_problem": "The right-hand outcome badges look like beveled rectangular application widgets against the painted choice frames.",
+          "size_notes": {
+            "1600x900": "Fort portrait and candle shelf make a strong left focal group; three clear choices sit above a flat purple scrolling strip.",
+            "1280x800": "Readable choice hierarchy survives, but the last visible explanatory line sits very close to the flat bottom strip."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.3,
+            "typography": 7.3,
+            "material": 7.8,
+            "background": 7.8,
+            "composition": 7.5,
+            "readability": 8,
+            "coherence": 7.7
+          },
+          "overall": 7.8,
+          "fits_between_samples": false,
+          "worst_problem": "The full-width Story Register strip severs the parchment from its support and reads as a page overlay.",
+          "size_notes": {
+            "1600x900": "Parchment, illuminated initial and numbered seals are convincing; the board disappears behind a rail far wider than itself.",
+            "1280x800": "Two options are legible above a clearly signaled continuation, but the horizontal overlay again spans unrelated room dressing."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 7.7,
+            "palette": 8.1,
+            "typography": 6.9,
+            "material": 7.2,
+            "background": 7.1,
+            "composition": 6.2,
+            "readability": 6.6,
+            "coherence": 6.6
+          },
+          "overall": 6.5,
+          "fits_between_samples": false,
+          "worst_problem": "The oversized central memorial card loses its lower rules and base behind the record strip, weakening its presentation as a complete featured object.",
+          "size_notes": {
+            "1600x900": "Portrait captions crowd the central shelf and the central card becomes a crop beneath a crowded progress heading.",
+            "1280x800": "The central card remains incomplete in the visible presentation; portrait subtitles crowd one another, and the left progress area runs directly into the record rail."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.4,
+            "typography": 7.3,
+            "material": 8.2,
+            "background": 8.2,
+            "composition": 8.2,
+            "readability": 8.2,
+            "coherence": 8
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "The flat Shop Shelves strip at the bottom does not share the depth of the painted merchandise shelf above it.",
+          "size_notes": {
+            "1600x900": "Well-staged merchant portrait, hanging price tags and complete cards establish a coherent shop; the outlined title and flat rail feel applied afterward.",
+            "1280x800": "All three merchandise cards and tags remain clear; the lower rail is especially detached from the shelf structure."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 7.5,
+            "palette": 7.8,
+            "typography": 6.8,
+            "material": 7,
+            "background": 7.5,
+            "composition": 6.9,
+            "readability": 6.5,
+            "coherence": 6.9
+          },
+          "overall": 6.9,
+          "fits_between_samples": false,
+          "worst_problem": "The condition groups have no local owner headings, so ownership relies on their positions around the actors.",
+          "size_notes": {
+            "1600x900": "The three left-side conditions span a wide horizontal band while the enemy conditions form a separate stack; the generic How to play rectangle breaks the ornament system.",
+            "1280x800": "The conditions are clear as individual labels, but ownership remains implicit and the left stack is detached from the player portrait."
+          }
+        }
+      }
+    },
+    "MOONSTONE": {
+      "system_overall": 8,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.4,
+            "typography": 7.7,
+            "material": 7.8,
+            "background": 7.6,
+            "composition": 8,
+            "readability": 8.1,
+            "coherence": 8
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "The black rectangular Fort Choices label pasted over the bottom molding interrupts the otherwise physical board edge.",
+          "size_notes": {
+            "1600x900": "The softer lavender heading and solid molding improve the board, while rectangular benefit badges still feel synthetic.",
+            "1280x800": "Three choices remain readable; the molding belongs to the board, but its black label and beveled benefit boxes use competing surfaces."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.2,
+            "palette": 8.4,
+            "typography": 7.9,
+            "material": 8.1,
+            "background": 7.8,
+            "composition": 8.2,
+            "readability": 8.3,
+            "coherence": 8.1
+          },
+          "overall": 8.2,
+          "fits_between_samples": false,
+          "worst_problem": "The Story Register label is a stark black rectangle on a bright molding rather than a crafted part of the parchment stand.",
+          "size_notes": {
+            "1600x900": "The narrower bottom molding now belongs to the reading board, and two full options are visible with a clear continuation cue.",
+            "1280x800": "The board has a convincing lower edge and legible narrative; the dark square label remains conspicuous against the carved support."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.3,
+            "typography": 7.6,
+            "material": 8,
+            "background": 7.5,
+            "composition": 8,
+            "readability": 8,
+            "coherence": 7.9
+          },
+          "overall": 7.9,
+          "fits_between_samples": false,
+          "worst_problem": "The cabinet's From Your Final Deck caption meets the outer record rail and loses its lower presentation boundary.",
+          "size_notes": {
+            "1600x900": "The complete memorial card has a genuine cabinet and the two portraits have separate captions; the crowded base weakens the cabinet's finish.",
+            "1280x800": "The full card remains readable and proportional, but its base caption is partly masked by the record rail; the left record uses a clear scrolling continuation."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.4,
+            "typography": 7.8,
+            "material": 8.3,
+            "background": 8.2,
+            "composition": 8.3,
+            "readability": 8.3,
+            "coherence": 8.2
+          },
+          "overall": 8.2,
+          "fits_between_samples": false,
+          "worst_problem": "The black Shop Shelves label on the bottom molding is too flat and square beside the painted curtain and price tags.",
+          "size_notes": {
+            "1600x900": "Soft lavender title and dimensional molding suit the overall palette; the merchandise display remains strong.",
+            "1280x800": "The molding forms a clear lower boundary, although its black label looks pasted on and sits close to Mr. Moth's caption."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 7.9,
+            "palette": 8,
+            "typography": 7.4,
+            "material": 7.3,
+            "background": 7.5,
+            "composition": 7.9,
+            "readability": 7.9,
+            "coherence": 7.7
+          },
+          "overall": 7.7,
+          "fits_between_samples": false,
+          "worst_problem": "The owner headings are much quieter than their condition labels, leaving the labels visually dominant over their grouping.",
+          "size_notes": {
+            "1600x900": "Both owner cartouches sit above their respective condition groups and clear the actors and crest; the How to play control is now coherent.",
+            "1280x800": "The left group wraps into two rows under its owner heading; ownership is visible, though the small owner cartouche needs more hierarchy."
+          }
+        }
+      }
+    },
+    "SPINEL": {
+      "system_overall": 8.25,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.3,
+            "palette": 8.4,
+            "typography": 7.8,
+            "material": 8,
+            "background": 7.6,
+            "composition": 8.2,
+            "readability": 8.2,
+            "coherence": 8.2
+          },
+          "overall": 8.2,
+          "fits_between_samples": false,
+          "worst_problem": "The benefit cartouches in the right-hand choices still have smooth black gloss that contrasts with the textured painted frames.",
+          "size_notes": {
+            "1600x900": "Ornate outcome cartouches and an integrated carved rail create one coherent choice board; the large lavender heading is clear but still flat.",
+            "1280x800": "The three choice blocks retain their hierarchy; the carved rail gives the scrolling area a physical edge, with no need to reduce text."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.5,
+            "palette": 8.4,
+            "typography": 7.9,
+            "material": 8.4,
+            "background": 7.9,
+            "composition": 8.5,
+            "readability": 8.1,
+            "coherence": 8.5
+          },
+          "overall": 8.5,
+          "fits_between_samples": false,
+          "worst_problem": "The parchment's clipped second choice at the lower rail ends abruptly without the inset shadow expected where paper passes behind wood.",
+          "size_notes": {
+            "1600x900": "The visible pedestal, side supports and board-sized rail make the reading surface a complete staged object; the narrative remains comfortable to read.",
+            "1280x800": "The pedestal remains fully visible and the rail explicitly marks more content; the partially visible second option needs a more convincing recessed cutoff treatment."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.4,
+            "palette": 8.4,
+            "typography": 7.4,
+            "material": 8.4,
+            "background": 7.8,
+            "composition": 8,
+            "readability": 7.8,
+            "coherence": 8.2
+          },
+          "overall": 8.2,
+          "fits_between_samples": false,
+          "worst_problem": "The How Far plaque over the memorial card splits the progress sentence into disconnected columns and competes with the featured card.",
+          "size_notes": {
+            "1600x900": "The cabinet has the strongest painted light, carved columns and supporting shelf; the complete card is well presented, but the progress plaque has a fractured reading order.",
+            "1280x800": "The card and its full main caption are visible; the right-hand Sit Pretty quantity crowds its title, and the large progress plaque still divides related words."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.4,
+            "palette": 8.4,
+            "typography": 7.8,
+            "material": 8.3,
+            "background": 8.2,
+            "composition": 8.4,
+            "readability": 8.3,
+            "coherence": 8.3
+          },
+          "overall": 8.3,
+          "fits_between_samples": false,
+          "worst_problem": "The long Shop Shelves rail repeats a stretched ornamental strip whose thin bright outline feels less painted than the merchandise shelf.",
+          "size_notes": {
+            "1600x900": "The rail's carved motif and shaped ends belong to the framing system; the merchant, cards and price tags remain well staged.",
+            "1280x800": "The integrated rail maintains a clear boundary beneath all three cards; its repeated fine ornament becomes visually busy against the price shelf."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8,
+            "typography": 7.7,
+            "material": 7.4,
+            "background": 7.5,
+            "composition": 8.2,
+            "readability": 8.3,
+            "coherence": 8
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "The cyan and red condition text has a soft glowing edge that looks less engraved than the surrounding gold cartouches.",
+          "size_notes": {
+            "1600x900": "Uppercase owner labels clearly bind the condition groups, with separation from actors, shield crest and resource bars.",
+            "1280x800": "Both groups form clear vertical stacks with readable local owner headings; the left heading is close to the top divider and would benefit from a little breathing room."
+          }
+        }
+      }
+    },
+    "ZIRCON": {
+      "system_overall": 7.9,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.4,
+            "typography": 7.8,
+            "material": 8,
+            "background": 7.6,
+            "composition": 8.1,
+            "readability": 8.2,
+            "coherence": 8.1
+          },
+          "overall": 8.1,
+          "fits_between_samples": false,
+          "worst_problem": "The bottom Fort Choices rail ends in a hard rectangular wood crop, unlike the sculpted terminations elsewhere on the board.",
+          "size_notes": {
+            "1600x900": "Outcome badges now share the cartouche language and the rail has painted wood color, but the straight cropped rail edges weaken its attachment.",
+            "1280x800": "The choices remain clear; the lavender label sits directly on bright wood striations and could use a quieter inset nameplate."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.4,
+            "typography": 7.9,
+            "material": 8,
+            "background": 7.8,
+            "composition": 8,
+            "readability": 8.2,
+            "coherence": 8
+          },
+          "overall": 8.1,
+          "fits_between_samples": false,
+          "worst_problem": "The story board has no visible pedestal or feet, so its heavy lower wood rail appears suspended in front of the room.",
+          "size_notes": {
+            "1600x900": "The story rail is correctly board-sized and both options read well, but the entire reading surface lacks a convincing floor connection.",
+            "1280x800": "The parchment and two options are legible; the rectangular rail's side cuts and unsupported base still look composited."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.2,
+            "palette": 8.5,
+            "typography": 7.5,
+            "material": 8.1,
+            "background": 7.7,
+            "composition": 8.4,
+            "readability": 8.2,
+            "coherence": 8.2
+          },
+          "overall": 8.3,
+          "fits_between_samples": false,
+          "worst_problem": "The central cabinet sits inside a visible rectangular purple backing that separates it from the room instead of integrating its silhouette and light.",
+          "size_notes": {
+            "1600x900": "The featured card, its caption and explanation are complete; progress is sensibly separated into the left column, and portrait captions have ample separation.",
+            "1280x800": "The complete card and explanation remain visible; How Far wraps awkwardly in its progress plaque, but the overall division between portraits, progress and memorial is clear."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.2,
+            "palette": 8.4,
+            "typography": 7.8,
+            "material": 8.2,
+            "background": 8.2,
+            "composition": 8.2,
+            "readability": 8.3,
+            "coherence": 8.2
+          },
+          "overall": 8.2,
+          "fits_between_samples": false,
+          "worst_problem": "The Shop Shelves rail is a straight cut piece of striped wood whose hard ends do not join the ornate side frame.",
+          "size_notes": {
+            "1600x900": "The painted purple-gold rail fits the palette but is less resolved as a physical join than the shelf supporting the cards.",
+            "1280x800": "The full display is readable; the rail's bright striations compete a little with its lavender label and its end joints remain visibly abrupt."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 7.9,
+            "palette": 8,
+            "typography": 7.3,
+            "material": 7.3,
+            "background": 7.5,
+            "composition": 6.8,
+            "readability": 6.8,
+            "coherence": 7
+          },
+          "overall": 7.1,
+          "fits_between_samples": false,
+          "worst_problem": "At 1280x800 the Maya Chen & Bones owner label is displaced below and to the right of its conditions, close to the enemy crest instead of identifying the left stack.",
+          "size_notes": {
+            "1600x900": "The player conditions wrap into a compact block, but the enemy owner label is offset to the left of its condition stack near the crest.",
+            "1280x800": "The displaced player owner heading makes grouping ambiguous despite legible condition text; the enemy group is clearer, and the utility cartouche is visually coherent."
+          }
+        }
+      }
+    }
+  },
+  "ranking": {
+    "rest": [
+      "SPINEL",
+      "ZIRCON",
+      "MOONSTONE",
+      "OBSIDIAN"
+    ],
+    "event": [
+      "SPINEL",
+      "MOONSTONE",
+      "ZIRCON",
+      "OBSIDIAN"
+    ],
+    "gameover": [
+      "ZIRCON",
+      "SPINEL",
+      "MOONSTONE",
+      "OBSIDIAN"
+    ],
+    "shop": [
+      "SPINEL",
+      "MOONSTONE",
+      "ZIRCON",
+      "OBSIDIAN"
+    ],
+    "combat-floaters": [
+      "SPINEL",
+      "MOONSTONE",
+      "ZIRCON",
+      "OBSIDIAN"
+    ]
+  },
+  "winner": "SPINEL",
+  "winner_fixes": [
+    "Gameover: move the How Far progress plaque into the left record column, keeping its numeric count and Wings Explored phrase together; give location and wing a separate second line so the central cabinet belongs wholly to the memorial.",
+    "Gameover at 1280x800: reserve a distinct right-aligned quantity column inside every Final Tricks cartouche so Sit Pretty and its x3 count cannot crowd one another; expand the item height or reflow the title rather than reducing type.",
+    "Rest, event, gameover and shop: give the large lavender headings subtle painted bevel, irregular highlight and darker engraved edges; the present solid letters do not reach the references' materially worked lettering.",
+    "Combat: sharpen condition lettering and reduce its blurred cyan/red halo while retaining size and contrast; keep the clearly local uppercase owner plaques and add breathing room beneath the top divider at 1280x800.",
+    "Event: inset the parchment beneath its lower carved rail with a narrow contact shadow and a clear recessed opening, so partially visible option rows read as paper continuing behind a physical boundary.",
+    "Rest: texture the black outcome cartouches and light them consistently with the choice frames; reduce the uniform glossy gradient while retaining all benefit and cost text.",
+    "Shop and record rails: replace the visibly stretched fine ornament with a carved center section and proportionate end pieces that join the vertical frame; preserve the labeled continuation cues.",
+    "Gameover: finish the cabinet-to-rail junction so the From Your Final Deck plaque and explanatory text have a distinct physical separation from the record scrolling edge.",
+    "Rest and gameover: add restrained local illumination and material variation to the broad repeated purple information panels so they feel like painted upholstered boards rather than repeated textured rectangles."
+  ],
+  "grafts": [
+    {
+      "from": "ZIRCON",
+      "screen": "gameover",
+      "idea": "Place progress below the portraits in the left column and reserve the center cabinet for the featured card, caption and short explanation; retain SPINEL's richer painted cabinet lighting."
+    },
+    {
+      "from": "MOONSTONE",
+      "screen": "gameover",
+      "idea": "Use the orderly stacked How Far, count-plus-Wings-Explored, and location hierarchy when reflowing the progress plaque; it reads more naturally than SPINEL's split columns."
+    },
+    {
+      "from": "ZIRCON",
+      "screen": "rest",
+      "idea": "Borrow the rail's restrained purple wood color and broad painted grain, but retain shaped ends and frame joins rather than its hard rectangular crop."
+    }
+  ]
+}

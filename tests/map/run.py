@@ -19,7 +19,7 @@ guards against was invisible to a unit test:
 
 Exit code 0 only when every assertion passes.  Needs the dev server on 8777.
 """
-import asyncio, sys, argparse, json
+import asyncio, sys, argparse, json, os
 
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -52,15 +52,16 @@ MODEL = r"""(() => {
   return m ? { visited: m.visited.size, currentId: m.currentId, path: m.path.slice() } : null;
 })()"""
 
-GRAPH = r"""(async () => {
+GRAPH = r"""(async (style) => {
   const mg = await import('/game/src/state/mapgen.js');
   const { NodeType } = await import('/game/src/data/schema.js');
   const regions = ['foyer','nursery','greenhouse','graveyard','lampworks','hedge-maze'];
   const seeds = [1,7,42,1337];
   let out = 0, n = 0, single = 0, cross = 0, isolated = 0, unreachable = 0;
+  let walked = 0, fights = 0, walks = 0, gap3 = 0;
   const sigs = new Set();
   for (const r of regions) for (const s of seeds) {
-    const m = mg.generateRegionMap(r, s, { hauntLevel: 0, companion: null, rescued: [] });
+    const m = mg.generateRegionMap(r, s, { hauntLevel: 0, companion: null, rescued: [], style });
     const byId = new Map(m.nodes.map(x => [x.id, x]));
     const lastWalk = m.rows - 2;
     for (const x of m.nodes) {
@@ -75,10 +76,29 @@ GRAPH = r"""(async () => {
       if (m.startIds.includes(x.id) || x.id === m.bossId) continue;
       if (!fwd.has(x.id)) unreachable++;
     }
-    // true geometric crossings on the laid-out sheet
+    // true geometric crossings on the laid-out sheet.  A FLOORPLAN leg is a
+    // polyline through its door (or along its hallway), in sheet px; a secret
+    // way is the Kids' crayon across the plan and is allowed to cross.
     const segs = [];
-    for (const x of m.nodes) for (const id of x.next) {
-      const b = byId.get(id); if (b) segs.push([x.x, x.y, b.x, b.y, x.id, b.id]);
+    for (const e of m.edges) {
+      if (e.kind === 'secret') continue;
+      // Mansion routes may meet at shared hall junctions. The failure is a
+      // corridor route leaving circulation, rather than two routes meeting.
+      if (m.plan?.v >= 3) {
+        for(let i=0;i+1<e.via.length;i++) {
+          const a=e.via[i],b=e.via[i+1],steps=Math.max(1,Math.ceil(Math.hypot(a[0]-b[0],a[1]-b[1])/10));
+          for(let j=0;j<=steps;j++) {
+            const x=a[0]+(b[0]-a[0])*j/steps,y=a[1]+(b[1]-a[1])*j/steps;
+            if(!m.plan.halls.some(h=>x>=h.x0-.01&&x<=h.x1+.01&&y>=h.y0-.01&&y<=h.y1+.01))cross++;
+          }
+        }
+        continue;
+      }
+      const a = byId.get(e.from), b = byId.get(e.to);
+      if (!a || !b) continue;
+      const via = (e.via || []).map(([px, py]) => [px / (m.plan?.sheet.w || 2030), py / (m.plan?.sheet.h || 1010)]);
+      const pts = [[a.x, a.y], ...via, [b.x, b.y]];
+      for (let i = 0; i + 1 < pts.length; i++) segs.push([...pts[i], ...pts[i + 1], e.from, e.to]);
     }
     const o = (ax,ay,bx,by,cx,cy) => {
       const v = (by-ay)*(cx-bx) - (bx-ax)*(cy-by);
@@ -90,14 +110,33 @@ GRAPH = r"""(async () => {
       if (o(A[0],A[1],A[2],A[3],B[0],B[1]) !== o(A[0],A[1],A[2],A[3],B[2],B[3]) &&
           o(B[0],B[1],B[2],B[3],A[0],A[1]) !== o(B[0],B[1],B[2],B[3],A[2],A[3])) cross++;
     }
+    // the fights: about every other room on a walked route, and never three
+    // quiet rooms in a row (designer, 2026-10-27)
+    if (m.plan) {
+      let rs = s * 977 + 13;
+      const R = () => (rs = (rs * 1103515245 + 12345) % 2147483648) / 2147483648;
+      const FIGHT = new Set([NodeType.SCUFFLE, NodeType.BIG_SCARE]);
+      for (let w = 0; w < 60; w++) {
+        let opts = m.startIds.slice(), run = 0, worst = 0;
+        for (;;) {
+          const x = byId.get(opts[Math.floor(R() * opts.length)]);
+          if (x.type === NodeType.BOSS) break;
+          walked++; if (FIGHT.has(x.type)) { fights++; run = 0; } else { run++; worst = Math.max(worst, run); }
+          opts = x.next;
+        }
+        walks++; if (worst >= 3) gap3++;
+      }
+    }
     const comp = {};
     for (const x of m.nodes) comp[x.type] = (comp[x.type]||0)+1;
     sigs.add(JSON.stringify(Object.keys(comp).sort().map(t=>t+':'+comp[t])));
   }
   return { meanBranch: +(out/n).toFixed(3), singleExitPct: +(single/n*100).toFixed(1),
            crossings: cross, isolated, unreachable,
-           distinctCompositions: sigs.size, maps: regions.length*seeds.length };
-})()"""
+           distinctCompositions: sigs.size, maps: regions.length*seeds.length,
+           fightShare: walked ? +(fights / walked).toFixed(3) : null,
+           gap3Pct: walks ? +(gap3 / walks * 100).toFixed(1) : null };
+})"""   # a function, not a call: page.evaluate passes it the style
 
 
 class Suite:
@@ -123,14 +162,15 @@ async def main(a):
     S = Suite()
     errors = []
     async with async_playwright() as p:
-        browser = await p.chromium.launch(args=[
+        browser = await p.chromium.launch(channel=os.environ.get('PLAYWRIGHT_CHANNEL'), args=[
             "--use-gl=angle", "--enable-unsafe-swiftshader",
             "--font-render-hinting=none", "--disable-lcd-text",
             "--autoplay-policy=no-user-gesture-required"])
         page = await (await browser.new_context(
             viewport={"width": 1600, "height": 900},
             reduced_motion="no-preference")).new_page()
-        page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+        page.on("pageerror", lambda e: errors.append(str(e)))
+        page.on("console", lambda m: errors.append(m.text + " @ " + m.location.get("url", "")) if m.type == "error" and not m.location.get("url", "").endswith("/favicon.ico") else None)
         page.on("pageerror", lambda e: errors.append("PAGEERROR " + str(e)))
 
         await page.goto(BASE + "#scene=map&seed=42&region=foyer", wait_until="load", timeout=45000)
@@ -174,6 +214,8 @@ async def main(a):
         el = await page.query_selector(".map-node.is-legal")
         S.check("a legal room exists to click", el is not None)
         if el:
+            await el.focus()
+            await page.evaluate("() => { const s=MM.ctx.scenes.current; s._lookAt(s.model.byId.get(s._focusId),0); }")
             nid = await el.get_attribute("data-id")
             box = await el.bounding_box()
             await page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
@@ -226,7 +268,7 @@ async def main(a):
           const { bus } = await import('/game/src/core/bus.js');
           bus.emit('run:start', { companion: 'marmalade', kid: 'maya', seed: 42 });
           const r = window.MM.ctx.run;
-          await r._goto('map', { region: r.region, seed: r.seed });
+          await r._goto('map', { region: r.region, seed: r.seed, narrativeBypass: true });
         }""")
         await page.wait_for_selector(".map-screen.is-drawn", timeout=20000)
         await page.wait_for_timeout(400)
@@ -272,7 +314,7 @@ async def main(a):
         print(f"  (scene manager busy after the room click: {was_busy})")
         await page.evaluate("""async () => {
           const r = window.MM.ctx.run;
-          await r._goto('map', { region: r.region, seed: r.seed });
+          await r._goto('map', { region: r.region, seed: r.seed, narrativeBypass: true });
         }""")
         await page.wait_for_selector(".map-screen.is-drawn", timeout=20000)
         await page.wait_for_timeout(400)
@@ -292,26 +334,44 @@ async def main(a):
         vp = await (await page.query_selector(".map-viewport")).bounding_box()
         z0 = (await page.evaluate(PROBE))["zoom"]
         await page.mouse.move(vp["x"] + vp["width"] / 2, vp["y"] + vp["height"] / 2)
+        await page.keyboard.down("Control")
         await page.mouse.wheel(0, -400)
+        await page.keyboard.up("Control")
         await page.wait_for_timeout(220)
         z1 = (await page.evaluate(PROBE))["zoom"]
         factor = z1 / z0 if z0 else 0
         S.check("a wheel notch nudges the zoom rather than jumping it",
                 1.10 <= factor <= 1.32, f"factor={factor:.3f} per deltaY=400 notch")
 
-        # ── 6. the route graph, over 24 generated maps ──────────────────────
-        g = await page.evaluate(GRAPH)
-        S.check("no edge ever crosses another, on any seed", g["crossings"] == 0,
-                f"crossings={g['crossings']} over {g['maps']} maps")
-        S.check("no room is stranded without an exit", g["isolated"] == 0)
-        S.check("every room is reachable from the door", g["unreachable"] == 0)
-        S.check("rooms average well over one exit", g["meanBranch"] >= 1.75,
-                f"mean={g['meanBranch']} exits per non-terminal room")
-        S.check("single-exit rooms are capped near a fifth", g["singleExitPct"] <= 20.5,
-                f"singleExit={g['singleExitPct']}%")
-        S.check("no two generated maps share a node composition",
-                g["distinctCompositions"] == g["maps"],
-                f"{g['distinctCompositions']} distinct of {g['maps']}")
+        # ── 6. the route graph, over 24 generated maps, for BOTH map styles ──
+        # The floorplan (default since 2026-10-27) and the classic lattice it
+        # replaced, which is kept whole behind mapgen.js MAP_STYLES.
+        #
+        # The floorplan's branching floor is lower, and that is geometry, not
+        # tuning: its rooms are stacks that share walls, a column of m rooms
+        # beside one of n can share at most m + n - 1 doors without one
+        # crossing another, and the wing has to close from five rooms to three
+        # at the boss's door.  Measured 1.74 exits a room and 29% single-exit
+        # over 510 sheets (the lattice reaches 20% by skipping rows freely,
+        # which a building cannot do without a hallway in the way).
+        for style, branch, single in (("plan", 1.65, 33.0), ("classic", 1.75, 20.5)):
+            g = await page.evaluate(GRAPH, style)
+            S.check(f"[{style}] routes stay in circulation (classic routes do not cross)", g["crossings"] == 0,
+                    f"crossings={g['crossings']} over {g['maps']} maps")
+            S.check(f"[{style}] no room is stranded without an exit", g["isolated"] == 0)
+            S.check(f"[{style}] every room is reachable from the door", g["unreachable"] == 0)
+            S.check(f"[{style}] rooms average well over one exit", g["meanBranch"] >= branch,
+                    f"mean={g['meanBranch']} exits per non-terminal room")
+            S.check(f"[{style}] single-exit rooms are capped", g["singleExitPct"] <= single,
+                    f"singleExit={g['singleExitPct']}%")
+            S.check(f"[{style}] no two generated maps share a node composition",
+                    g["distinctCompositions"] == g["maps"],
+                    f"{g['distinctCompositions']} distinct of {g['maps']}")
+            if style == "plan":
+                S.check("[plan] about every other room on a route is a fight",
+                        0.45 <= g["fightShare"] <= 0.58, f"fightShare={g['fightShare']}")
+                S.check("[plan] almost no route goes three rooms without a fight",
+                        g["gap3Pct"] <= 4.0, f"gap3={g['gap3Pct']}% of walks")
 
         S.check("the map scene throws nothing", not errors, "; ".join(errors[:3]))
         await browser.close()

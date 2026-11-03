@@ -1,0 +1,41 @@
+{
+  "basis": "Baseline gameover.css final .go-shrine overrides; tokens reading-floor16, reading-ratio0.75, reading-lift8; type-scale1. Values compared against measured current DOM fonts.",
+  "rows": [
+    {
+      "width": 1280,
+      "baselineFromCSSFormula": {
+        "go-tri__h": 17.375,
+        "go-reach__n": 27.200000000000003,
+        "go-reach__unit": 17.375,
+        "go-reach__where": 18.5,
+        "go-reach__wing": 17.375
+      },
+      "currentMeasured": {
+        "go-tri__h": 17.375,
+        "go-reach__n": 40.0,
+        "go-reach__unit": 17.375,
+        "go-reach__where": 18.5,
+        "go-reach__wing": 17.375
+      },
+      "noReduction": true
+    },
+    {
+      "width": 1600,
+      "baselineFromCSSFormula": {
+        "go-tri__h": 17.375,
+        "go-reach__n": 32,
+        "go-reach__unit": 17.375,
+        "go-reach__where": 18.5,
+        "go-reach__wing": 17.375
+      },
+      "currentMeasured": {
+        "go-tri__h": 18.32,
+        "go-reach__n": 67.2,
+        "go-reach__unit": 18.32,
+        "go-reach__where": 20.0,
+        "go-reach__wing": 18.32
+      },
+      "noReduction": true
+    }
+  ]
+}

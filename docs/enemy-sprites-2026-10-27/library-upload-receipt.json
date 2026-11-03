@@ -1,0 +1,21 @@
+{
+  "operation": "create_library_file",
+  "status": "succeeded",
+  "path": "/MM-enemy-sprite-batches-levels-01-10.zip",
+  "file_id": "file_000000008d2481f5882e575f2a2ef32e",
+  "library_file_id": "libfile_48dd4a412e3c819197d53d94ff3d3352",
+  "file_name": "MM-enemy-sprite-batches-levels-01-10.zip",
+  "current_version_number": 0,
+  "restored_from_version_number": null,
+  "xattrs": [
+    {
+      "name": "user.library-file-version",
+      "value": "0"
+    }
+  ],
+  "directory_id": "libdir_c4bbe26f407c81919787ed8a41453d2d",
+  "mime_type": "application/zip",
+  "library_artifact_type": "other",
+  "file_size_bytes": 38802680,
+  "external_connectors_accessed": false
+}

@@ -1,0 +1,24 @@
+REGION 05 IMPOSSIBLE GREENHOUSE COMPLETE
+4 existing +7 new =11/11 covered. 0 pending, 0 blocked.
+New: Walking Planter, Garden Shears, Topiary Hound, Topiary Hare, Garden Statue, Fountain Spirit, The Midnight Fountain.
+All seven generated individually with built-in image_gen, with true transparent alpha. Originals and complete prompts retained under per-ID filenames. Source size: six 256-square regulars, one 512-square elite; runtime WebPs made via isolated existing build_enemy_still.
+Full generated images and final-size region-05-contact.jpg visually reviewed for style, full silhouettes, distinct identity, anatomy and features. All14 finals pass decode, alpha and hashes.
+Existing Potling and Topiary Beast inspected for style only, neither relabeled nor changed. All367 initial baseline enemy files SHA-256 verified unchanged. No game code, gameplay data, registry, animation or unrelated sprite changes.
+No tool denial or cancellation occurred in this batch. The unrelated root Spectral Scullion denial was respected; that sprite was not attempted.
+Results for root merge: region-05-results.json
+Technical evidence: region-05-validation.json
+Exact new final files:
+animations\sprites\enemies\walkingPlanter.png
+game\assets\sprites\enemies\walking-planter.webp
+animations\sprites\enemies\gardenShears.png
+game\assets\sprites\enemies\garden-shears.webp
+animations\sprites\enemies\topiaryHound.png
+game\assets\sprites\enemies\topiary-hound.webp
+animations\sprites\enemies\topiaryHare.png
+game\assets\sprites\enemies\topiary-hare.webp
+animations\sprites\enemies\gardenStatue.png
+game\assets\sprites\enemies\garden-statue.webp
+animations\sprites\enemies\fountainSpirit.png
+game\assets\sprites\enemies\fountain-spirit.webp
+animations\sprites\enemies\midnightFountain.png
+game\assets\sprites\enemies\midnight-fountain.webp

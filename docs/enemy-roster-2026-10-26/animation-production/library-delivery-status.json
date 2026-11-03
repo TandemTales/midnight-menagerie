@@ -1,0 +1,45 @@
+{
+  "updated_utc": "2026-10-27T00:22:39.958001+00:00",
+  "status": "saved_library_local_metadata_unsupported",
+  "library_file_ids": [
+    "libfile_0f955f4c44008191abd0a54b1a7f7b6c",
+    "libfile_bb1fbd5ab6788191882a6de7e3d796f8"
+  ],
+  "attempts": [
+    {
+      "route": "current Library skill prepared-upload helper",
+      "result": "DNS failure during hosted-app service discovery",
+      "uploads_created": false
+    },
+    {
+      "route": "same current helper with authorized network execution",
+      "result": "Library prepare_uploads is not available",
+      "uploads_created": false
+    },
+    {
+      "route": "Skill-documented ordered direct-create fallback after prepared capability unavailable",
+      "result": "Both files created successfully",
+      "uploads_created": true
+    }
+  ],
+  "local_metadata": "Required helper attempted on both original files with complete returned xattrs; both failed: AttributeError, os.setxattr unavailable on Windows. Authoritative identity retained in library-direct-create-receipt.json; no native xattr persistence claimed.",
+  "retry": "No further create needed; later updates must replace the returned IDs, not create duplicates.",
+  "files": [
+    {
+      "path": "review-reels/first-three-enemies-left-30fps.mp4",
+      "bytes": 468089,
+      "library_file_id": "libfile_0f955f4c44008191abd0a54b1a7f7b6c",
+      "file_id": "file_00000000ead481fd8b686056442b1f0b",
+      "library_path": "/first-three-enemies-left-30fps.mp4",
+      "version": 0
+    },
+    {
+      "path": "review-reels/batch-03-left-30fps.mp4",
+      "bytes": 374381,
+      "library_file_id": "libfile_bb1fbd5ab6788191882a6de7e3d796f8",
+      "file_id": "file_00000000e27482308a3098a873916c04",
+      "library_path": "/batch-03-left-30fps.mp4",
+      "version": 0
+    }
+  ]
+}

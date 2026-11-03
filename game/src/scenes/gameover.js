@@ -1,3 +1,5 @@
+import { boardScrollCue } from './r49-board-scroll.js';
+import { presentationMs } from '../core/motion.js';
 /**
  * Expedition Over — the two ends of a run.
  *
@@ -35,6 +37,7 @@ import { Save } from '../core/save.js';
 import { RNG, hashSeed } from '../core/rng.js';
 import { COMPANIONS, KIDS, TERMS, REGION_ORDER, NodeType } from '../data/schema.js';
 import { regionMeta, blueprintPlan, MASTER } from '../state/mapgen.js';
+import { isDemoBuild } from '../state/run.js';
 import {
   ensureCss, fontsReady, companionPortrait, kidPortrait, petPortrait,
   el, rovingFocus, setReduceMotion, reduceMotion, formatSeed,
@@ -182,6 +185,9 @@ export class GameOverScene extends Scene {
     paintBackdrop(board, 'gameover', () => !this._dead);
 
     this._wire();
+    this._offs.push(boardScrollCue(root, wrap, 'record'));
+    this._offs.push(boardScrollCue(root, root.querySelector('.go-block--deck'), 'Tricks', root.querySelector('.go-ledger')));
+    this._offs.push(boardScrollCue(root, root.querySelector('.go-block--keep'), 'Keepsakes', root.querySelector('.go-ledger')));
     await fontsReady();
     this._hangPictures();
     if (typeof ResizeObserver === 'function') {
@@ -200,9 +206,9 @@ export class GameOverScene extends Scene {
     root.classList.add('is-live');
     if (!reduceMotion()) {
       root.classList.add('is-entering');
-      this._timers.push(setTimeout(() => root.classList.remove('is-entering'), 3200));
+      this._timers.push(setTimeout(() => root.classList.remove('is-entering'), presentationMs(3200)));
       // the candle burns just long enough to be noticed, then dies
-      if (!this.won) this._timers.push(setTimeout(() => this._snuff(), 1350));
+      if (!this.won) this._timers.push(setTimeout(() => this._snuff(), presentationMs(1350)));
     } else if (!this.won) {
       this._snuff();
     }
@@ -231,14 +237,9 @@ export class GameOverScene extends Scene {
     const meta = regionMeta(regionId);
 
     const mocked = !run;
-    /* Two numbers, not one. The run layer split the old ambiguous "floor":
-       `depth` is how many rooms deep the expedition got (the number the
-       Clubhouse records as its best), and `wing` is the position on tonight's
-       ROUTE that the map prints as "Wing N of M". The `floor` param carries
-       `depth` now, so this
-       screen prints it as ROOMS DEEP and prints `wing` as the wing — labelling
-       either with the other's word is how the Clubhouse ended up boasting
-       "Deepest floor 5" about a run Game Over called "Floor 1". */
+    /* depth is a map-position score (regionIndex * this map's rows + row),
+       not a count of rooms entered. Keep the legacy field for summary callers;
+       the visible reach display uses the supported wingsThisRun count below. */
     const floor = Number(hash('floor', run?.depth)) || (mocked ? meta.index * 4 + rng.int(4) : meta.index);
     const wing  = Number(hash('wing', run?.wing)) || meta.index;
 
@@ -270,13 +271,14 @@ export class GameOverScene extends Scene {
     const freedThisRun = Array.isArray(run?.companionsFreed) ? run.companionsFreed.slice()
       : (mocked && result === 'victory' ? [companion] : []);
     const cluesFound = Number(run?.stats?.clues) || (mocked ? rng.int(3) : 0);
-    const petHome = !!(run?.petRescued ?? (result === 'victory' && rng.chance(0.35)));
+    const petHome = Save.data.petsRescued.includes(kid);
 
     return {
       result, seed: seedRaw, rng, mocked,
       companion, kid, regionId, meta, floor, wing,
       scuffles, bigScares, curiosity, safeRooms, cardsPlay, damage, gold,
       hp, maxHp, turns, wingsMapped, wingsThisRun, freedThisRun, cluesFound, petHome,
+      storyMemory: !!run?.storyMemory,
       haunt: Number(run?.hauntLevel ?? Save?.data?.hauntLevel ?? 0) || 0,
       killedBy: run?.killedBy || KILLERS[regionId] || 'the house',
       deck: Array.isArray(run?.deck) ? run.deck : null,          // filled by _hydrateCards
@@ -340,19 +342,21 @@ export class GameOverScene extends Scene {
     const [kicker, title, lede] = endedTheHouse
       ? ['The Heart of the House',
          'The door opens outward.',
-         `The Keeper does not fall over. It comes apart &mdash; doors, blankets,
-            brass keys, picture frames, and a lot of soft blue light going out slowly.
-            ${esc(first)} and ${esc(c.name)} walk through a door the house spent a very long time
-            making sure nobody could open, and the house lets them.`]
+         `The Keeper has let go of the locks. The gate opens both ways.
+            Warm beds and water remain for visitors, and nobody has to stay.`]
+      : this.won && isDemoBuild()
+      ? [`Wing ${s.wing} &middot; ${esc(region)}`,
+         'That is the end of the demo.',
+         `${esc(first)} and ${esc(c.name)} reach the open way together. The house has twelve more
+            wings. Wishlist Midnight Menagerie on Steam to walk them.`]
       : this.won
       ? [`Wing ${s.wing} &middot; ${esc(region)}`,
-         'You got one out.',
-         `${esc(c.name)} walked through the front door on ${esc(first)}&rsquo;s shoulder
-            and did not look back at the house once.`]
+         'You made it out.',
+         `${esc(first)} and ${esc(c.name)} reach the open way together.`]
       : [`Wing ${s.wing} &middot; ${esc(region)}`,
          'The candle goes out.',
-         `${esc(first)} gets out. ${esc(s.killedBy.replace(/^the /, 'The '))} keeps the room,
-            and everything still in the backpack stays where it fell.`];
+         `${esc(first)} and ${esc(c.name)} get out. ${esc(s.killedBy.replace(/^the /, 'The '))} keeps the room.
+            Your recorded discoveries stay with you.`];
 
     const head = el('header', 'go-head kit-titleblock kit-titleblock--compact');
     // The Heart's lede is three sentences; it gets the full-height plaque and
@@ -385,7 +389,7 @@ export class GameOverScene extends Scene {
     kid.appendChild(kidPic);
     kid.appendChild(el('figcaption', 'go-portrait__plate go-who__txt kit-plate',
       `<b class="kit-plate__name">${esc(k.name)}</b>`
-      + `<span class="kit-plate__epithet">with ${esc(c.name)} &middot; ${TERMS.ascension} ${s.haunt}</span>`));
+      + `<span class="kit-plate__epithet"><span>with ${esc(c.name)}</span><span>${TERMS.ascension} ${s.haunt}</span></span>`));
     stage.appendChild(kid);
 
     // The candle: the board's own painted one. It burns just long enough to be
@@ -414,7 +418,7 @@ export class GameOverScene extends Scene {
     plate.appendChild(el('figcaption', 'go-plate__cap go-portrait__plate kit-plate',
       this.won
         ? `<b class="kit-plate__name">${esc(c.name)}</b><span class="kit-plate__epithet">${esc(c.title)} &mdash; out</span>`
-        : `<b class="kit-plate__name">${esc(c.name)}</b><span class="kit-plate__epithet">went back in with you</span>`));
+        : `<b class="kit-plate__name">${esc(c.name)}</b><span class="kit-plate__epithet">ready for another expedition</span>`));
     stage.appendChild(plate);
     beat.appendChild(stage);
 
@@ -430,8 +434,8 @@ export class GameOverScene extends Scene {
       found.push(`${plural(s.freedThisRun.length, 'Companion')} freed &mdash; ` +
         s.freedThisRun.map((sl) => esc(COMPANION_BY_SLUG[sl]?.name ?? sl)).join(', '));
     }
-    found.push(`${plural(s.wingsThisRun, 'wing')} of the house crossed`);
-    if (s.cluesFound) found.push(`${plural(s.cluesFound, 'clue')} for the board`);
+    found.push(`${plural(s.wingsThisRun, 'wing')} of the house explored`);
+    if (s.cluesFound) found.push(`${plural(s.cluesFound, 'Clue')} found this expedition`);
     if (s.bigScares) found.push(`${plural(s.bigScares, 'Big Scare')} survived`);
     stanzas.appendChild(this._stanza('found', 'What you found', found, 'star'));
 
@@ -442,31 +446,31 @@ export class GameOverScene extends Scene {
           `The route stays drawn. The house cannot un-draw it.`,
         ]
       : [
-          `Every ${TERMS.card} you had built up &mdash; <b class="go-num" data-deck-count>&hellip;</b>`,
+          `This expedition's ${TERMS.card}s &mdash; <b class="go-num" data-deck-count>&hellip;</b>`,
           // The count arrives later (`_hydrateKeepsakes`), so the noun has to be
           // patched with it — printed flat this read "1 Keepsakes".
-          `<b class="go-num" data-relic-count>&hellip;</b> <span data-relic-noun>${TERMS.relic}s</span>, left on the floor`,
-          `<b class="go-num">${s.gold}</b> ${TERMS.gold}, scattered behind you`,
-          `Every ${TERMS.potion} and every piece of Gear`,
+          `<b class="go-num" data-relic-count>&hellip;</b> <span data-relic-noun>${TERMS.relic}s</span> from this expedition`,
+          `<b class="go-num">${s.gold}</b> ${TERMS.gold} from this expedition`,
+          `${TERMS.potion}s and Gear uses. Gear can be packed again.`,
         ];
-    const lostPanel = this._stanza('lost', this.won ? 'What it cost' : 'What you lost', lost, 'shield');
+    const lostPanel = this._stanza('lost', this.won ? 'What it cost' : 'What resets', lost, 'shield');
     // ...and how far the survey got before it did: the blueprint band is drawn
     // along the foot of this panel.
     lostPanel.appendChild(this._buildBlueprint());
     stanzas.appendChild(lostPanel);
 
     const petLine = s.petHome
-      ? `<b>${esc(k.pet)}</b> came home. ${esc(first)} has not put ${esc(k.pet)} down since.`
-      : this.won
-        ? `<b>${esc(k.pet)}</b> is still in there. But ${esc(c.name)} knows which door,
-           and ${esc(first)} is already re-packing the backpack.`
-        : `<b>${esc(k.pet)}</b> is still in there. ${esc(first)} does not say anything on the walk back.
-           ${esc(cap(pr.s))} ${pr.plural ? 'are' : 'is'} working out what to bring next time.`;
+      ? s.storyMemory
+        ? `<b>${esc(k.pet)}</b> is home. This earlier-night expedition has not changed that. The open House welcomes visits.`
+        : `<b>${esc(k.pet)}</b> is home with ${esc(first)}. The open House welcomes visits.`
+      : Save.data.narrative.pets[k.slug] === 'found'
+        ? `<b>${esc(k.pet)}</b> is safe in the quiet animal room. ${esc(first)} found ${esc(k.pet)}; that reunion is kept. The way home is the next step.`
+        : `<b>${esc(k.pet)}</b> is still missing. ${esc(first)} can keep searching on another expedition. There is no pet-loss timer.`;
     const pet = el('div', `go-stanza go-stanza--pet${s.petHome ? ' is-home' : ''}`);
     pet.innerHTML =
-      `<h2 class="go-sh kit-heading">${s.petHome ? 'The pet you reached' : 'The pet you did not reach'}</h2>` +
+      `<h2 class="go-sh kit-heading">${s.petHome ? 'Home' : 'The search'}</h2>` +
       `<div class="go-pet">
-         <span class="go-pet__snap kit-frame kit-frame--over"></span>
+         <span class="go-pet__snap"></span>
          <p class="go-pet__text">${petLine}</p>
        </div>`;
     /* The brass collar tag with a species glyph on it was a symbol standing in
@@ -477,7 +481,7 @@ export class GameOverScene extends Scene {
     stanzas.appendChild(pet);
 
     beat.appendChild(stanzas);
-    // The blueprint band is how far "8 rooms deep" is: it is drawn under that
+    // The blueprint band sits under the supported wings-explored
     // number in the ledger (_buildLedger), not in this column.
     return beat;
   }
@@ -560,7 +564,7 @@ export class GameOverScene extends Scene {
         <span class="go-lbl">Seed</span>
         <span class="go-seed__row"><code class="go-seed__val">${formatSeed(s.seed)}</code>
         <button type="button" class="go-seed__copy kit-plate">Copy</button></span>
-        <span class="go-seed__hint">Run this house again, exactly as it was.</span>
+        <span class="go-seed__hint">Use this seed to start another expedition.</span>
       </div>`);
     led.appendChild(head);
 
@@ -577,7 +581,7 @@ export class GameOverScene extends Scene {
       stat(`${TERMS.combat}s won`, s.scuffles, nodeSymbol(NodeType.SCUFFLE, 20)) +
       stat(`${TERMS.elite}s`, s.bigScares, nodeSymbol(NodeType.BIG_SCARE, 20)) +
       stat('Curiosities', s.curiosity, nodeSymbol(NodeType.CURIOSITY, 20)) +
-      stat(`${TERMS.rest}s`, s.safeRooms, nodeSymbol(NodeType.SAFE, 20)) +
+      stat('Naps taken', s.safeRooms, nodeSymbol(NodeType.SAFE, 20)) +
       stat(`${TERMS.card}s played`, s.cardsPlay, G.card) +
       stat('Damage dealt', s.damage, G.strike) +
       stat(TERMS.gold, s.gold, G.button) +
@@ -592,7 +596,7 @@ export class GameOverScene extends Scene {
     this._deckHost = deck.querySelector('.go-tricks');
     this._deckTotal = deck.querySelector('[data-deck-total]');
 
-    /* --- keepsakes: what came out with you ------------------------------- */
+    /* --- keepsakes carried when this expedition ended -------------------- */
     const keep = el('div', 'go-block go-block--keep');
     keep.innerHTML =
       `<h2 class="go-h kit-heading kit-heading--inline">${TERMS.relic}s <em class="go-h__n" data-keep-total></em></h2>` +
@@ -642,14 +646,14 @@ export class GameOverScene extends Scene {
     const altar = el('div', 'go-altar');
     const reach = el('div', 'go-reach go-tri', `
       <span class="go-tri__h">How far</span>
-      <b class="go-reach__n">${s.floor}</b>
-      <span class="go-reach__unit">${word(s.floor, 'room')} deep</span>
+      <b class="go-reach__n">${s.wingsThisRun}</b>
+      <span class="go-reach__unit">${word(s.wingsThisRun, 'wing')} explored</span>
       <i class="go-tri__rule" aria-hidden="true"></i>
       <span class="go-reach__where">${esc(region)}</span>
       <span class="go-reach__wing">Wing ${s.wing}</span>`);
     reach.setAttribute('role', 'group');
-    reach.setAttribute('aria-label', `${plural(s.floor, 'room')} deep, in ${region}, wing ${s.wing}`);
-    altar.appendChild(reach);
+    reach.setAttribute('aria-label', `${plural(s.wingsThisRun, 'wing')} explored, in ${region}, wing ${s.wing}`);
+    out.appendChild(reach);
     // Round 26: over each flank of the shelf, on the wall the shelf leaves
     // bare, one of the house's own pictures on its cord (ui/hang.js): the
     // mansion over HOW FAR, and over the line that says why, a portrait of one
@@ -670,7 +674,7 @@ export class GameOverScene extends Scene {
     // A museum piece: the card in its frame on its gilt pedestal, its label on
     // the ribbon over it; what the run made of it is the plate to its right.
     mvp.innerHTML = `<div class="go-mvp"><div class="go-mvp__slot kit-cards"></div></div>
-      <h2 class="go-h go-mvp__h kit-plate"><b class="kit-plate__name">Worked hardest</b><span class="kit-plate__epithet go-h__n" data-mvp-n></span></h2>`;
+      <h2 class="go-h go-mvp__h kit-plate"><b class="kit-plate__name">From your final deck</b><span class="kit-plate__epithet go-h__n" data-mvp-n></span></h2>`;
     this._mvpSlot = mvp.querySelector('.go-mvp__slot');
     this._mvpN = mvp.querySelector('[data-mvp-n]');
     this._mvpBlock = mvp;
@@ -842,11 +846,7 @@ export class GameOverScene extends Scene {
           ? `${pick.n} copies` : String(pick.def.rarity || 'common');
       }
       if (this._mvpNote) {
-        this._mvpNote.innerHTML = this.won
-          ? `Every expedition ends up leaning on one ${TERMS.card}. This run it was
-             <b>${name}</b>, and it held.`
-          : `Every expedition ends up leaning on one ${TERMS.card}. This run it was
-             <b>${name}</b>, right up until it was not enough.`;
+        this._mvpNote.innerHTML = `<b>${name}</b> was in your final deck. You can read its rules here.`;
       }
       this._mvpBlock.hidden = false;
       if (this._mvpSaid) this._mvpSaid.hidden = false;
@@ -888,7 +888,7 @@ export class GameOverScene extends Scene {
       // silently look like a section that failed to load.
       this._keepHost.removeAttribute('role');
       this._keepHost.innerHTML =
-        `<p class="go-keeps__none">Your pockets were empty. Nothing came out with you.</p>`;
+        `<p class="go-keeps__none">You carried no Keepsakes when this expedition ended.</p>`;
     } else {
       this._keepHost.setAttribute('role', 'list');
       // Round 26 ("overpacked at 1280", both judges): each Keepsake is its
@@ -902,7 +902,7 @@ export class GameOverScene extends Scene {
           <em class="go-keep__desc">${esc(r.desc ?? r.text ?? '')}</em>
         </span>`).join('');
     }
-    if (this._keepTotal) this._keepTotal.textContent = list.length ? `${list.length} kept` : 'none kept';
+    if (this._keepTotal) this._keepTotal.textContent = list.length ? `${list.length} carried` : 'none carried';
     // Both lists filled: fold them into two pages, the Tricks open.
     if (this._fold) {
       this._fold.tKeep.querySelector('.go-fold__n').textContent = this._keepTotal?.textContent || '';

@@ -1,0 +1,19 @@
+{
+ "url": "http://localhost:9533/game/index.html#scene=event&seed=7&companion=bones&kid=maya&pics=1",
+ "state": "{\"scene\":\"event\",\"run\":null}",
+ "perf": {
+  "fps": 131,
+  "mem": 30,
+  "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "software": false,
+  "glStd": 52.0,
+  "warmMs": 36303,
+  "settleMs": 213,
+  "band": 47.0
+ },
+ "void": false,
+ "errors": [],
+ "logs": [
+  "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+ ]
+}

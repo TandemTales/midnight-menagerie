@@ -1,0 +1,1 @@
+{"before": {"queued": 1, "live": 0, "expired": [], "delivered": []}, "after": {"queued": 0, "expired": [{"text": "+2 Vulnerable", "duration": 1.0326795296952551, "elapsed": 1.041399999999999}], "delivered": ["+2 Vulnerable"]}, "afterResizeDelaySeconds": 0.12816381454467773, "caption": {"owner": "e3", "name": "Red Carpet Runner", "font": 17, "visible": true}, "errors": []}

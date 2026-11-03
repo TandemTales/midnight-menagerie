@@ -1,0 +1,176 @@
+CURRENT CHECKPOINT — ROLLBACK COMPLETED 2026-10-27T04:36:20.712358+00:00
+155 new still pairs and 50 provisional animation actions across 12 enemies archived recoverably; no active new art remains. Dust Bunny left-facing and 118 legacy clips at 30fps retained. New production paused. See docs/rollbacks/2026-10-27-new-enemy-art/REPORT.txt and restoration-manifest.json. Earlier checkpoints below are historical.
+
+2026-10-27 CLEANUP CHECKPOINT: Dust Bunny runtime reflection fixed; all 118 original clips remain 30fps. New enemy production remains paused. Requested recoverable rollback BLOCKED before any move: PowerShell script execution disabled. 1326 files planned, 0 archived, all generated assets still present. See docs/rollbacks/2026-10-27-new-enemy-art/CHECKPOINT.json and REPORT.txt. Prior production records below remain historical and accurate; no removal has occurred.
+
+TIMING MAINTENANCE COMPLETED; NEW PRODUCTION STILL PAUSED
+2026-10-27T01:03:17.881806+00:00
+29 legacy enemies / 118 existing clips now 30fps. 3379 baseline files unchanged; 29 authorized fps-only metadata changes. Images and new provisional assets unchanged.
+Details: legacy-30fps-2026-10-27/REPORT.txt. Prior production checkpoint follows as dated history.
+
+PAUSED BY USER - NOT COMPLETE
+2026-10-27T00:43:53.598942+00:00
+12 enemies / 50 saved provisional actions; 0 final-approved; 613 usable actions unproduced; 4 Scullion actions dependency-blocked.
+Rocking Chair v3 is saved. Sleepwalking Ghost has key-pose prototypes only and is not counted.
+The last inspection settled successfully; no known operations remain running. No automatic resumption, replacement task, scheduling, or asset cleanup.
+Pause details: PAUSED-CHECKPOINT.json
+
+MIDNIGHT MENAGERIE - CURRENT ANIMATION PRODUCTION CHECKPOINT
+2026-10-27T00:41:10.389052+00:00
+
+SAVED PROVISIONAL: 12 new enemies / 50 actions. FINAL APPROVED: 0.
+UNPRODUCED: 613 usable new actions. BLOCKED DEPENDENCY: 4 Spectral Scullion actions.
+663 usable new actions = saved provisional actions + still-unproduced actions. The four blocked actions are separate.
+Existing 29 animated enemies / 118 actions retained unchanged. Legacy alternates are not counted as new-enemy completion.
+
+CURRENT LOCAL MP4 REVIEW REELS
+docs/enemy-roster-2026-10-26/animation-production/review-reels/batch-03-left-30fps.mp4 — 267 decoded frames / 30 fps / 8.9 s. Verification: review-reels/batch-03-left-30fps.json
+docs/enemy-roster-2026-10-26/animation-production/review-reels/batch-04-left-30fps.mp4 — 267 decoded frames / 30 fps / 8.9 s. Verification: review-reels/batch-04-left-30fps.json
+docs/enemy-roster-2026-10-26/animation-production/review-reels/batch-05-left-30fps.mp4 — 267 decoded frames / 30 fps / 8.9 s. Verification: review-reels/batch-05-left-30fps.json
+docs/enemy-roster-2026-10-26/animation-production/review-reels/batch-06-left-30fps.mp4 — 327 decoded frames / 30 fps / 10.9 s. Verification: review-reels/batch-06-left-30fps.json
+docs/enemy-roster-2026-10-26/animation-production/review-reels/first-three-enemies-left-30fps.mp4 — 267 decoded frames / 30 fps / 8.9 s. Verification: review-reels/first-three-enemies-left-30fps.json
+Each reel uses 200/unit and recorded pivots; actual game stage scale varies. Idle repeats twice, each one-shot plays once, and defeat holds for one review second.
+The earlier first-three-enemies-30fps.mp4 is retained as historical pre-orientation output and is superseded.
+
+SAVED NEW ENEMIES
+hall-mirror — provisional; left_in_inspected_keyposes
+Receipt: representative-v7-left/installed-assets.json
+Validation: representative-v7-left/validation.json
+Original pupils remain biased left. Attack withdraws right, then palm/head translate left with a left-travelling glint. Hurt recoils right; return uses the same left-looking face. Gold frame and source alpha remain unchanged. Review: representative-v7-left/orientation-review.json
+  idle: 60 frames, 30 fps, 2s, loop=True, hold=False, cell=256x384, anchor=[128, 372], unit=360
+  attack: 48 frames, 30 fps, 1.6s, loop=False, hold=False, cell=256x384, anchor=[128, 372], unit=360
+  hurt: 24 frames, 30 fps, 0.8s, loop=False, hold=False, cell=256x384, anchor=[128, 372], unit=360
+  defeat: 45 frames, 30 fps, 1.5s, loop=False, hold=True, cell=256x384, anchor=[128, 372], unit=360
+crib-curtains — provisional; left_in_inspected_keyposes
+Receipt: batch-02/crib-curtains-v3-left/installed-assets.json
+Validation: batch-02/crib-curtains-v3-left/validation.json
+Cloth rests with a left bias; rightward gathering precedes a shared leftward sweep of both panels. Hurt recoils right and defeat folds left. Moon stitching is not reflected. Review: batch-02/crib-curtains-v3-left/orientation-review.json
+  idle: 60 frames, 30 fps, 2s, loop=True, hold=False, cell=384x384, anchor=[192, 348], unit=282.66
+  attack: 48 frames, 30 fps, 1.6s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=282.66
+  hurt: 24 frames, 30 fps, 0.8s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=282.66
+  defeat: 45 frames, 30 fps, 1.5s, loop=False, hold=True, cell=384x384, anchor=[192, 348], unit=282.66
+foyer-chandelier — provisional; left_in_inspected_keyposes
+Receipt: batch-02/foyer-chandelier-v3-left/installed-assets.json
+Validation: batch-02/foyer-chandelier-v3-left/validation.json
+All flame tips lean left; the suspended body rests left of its mounting axis. Anticipation goes right and the main swing goes left; hurt recoils right. The extinguished endpoint retains the left-biased stance. Sub-1% empty-canvas alpha noise removed in derivative only. Review: batch-02/foyer-chandelier-v3-left/orientation-review.json
+  idle: 60 frames, 30 fps, 2s, loop=True, hold=False, cell=384x384, anchor=[192, 348], unit=315.0
+  attack: 48 frames, 30 fps, 1.6s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=315.0
+  hurt: 24 frames, 30 fps, 0.8s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=315.0
+  defeat: 45 frames, 30 fps, 1.5s, loop=False, hold=True, cell=384x384, anchor=[192, 348], unit=315.0
+hanging-pots — provisional; left_in_inspected_keyposes
+Receipt: batch-03/hanging-pots-v4-left/saved-assets.json
+Validation: batch-03/hanging-pots-v4-left/validation.json
+Whole unlettered fixture is reflected so all bowl openings face left. Each staggered strike moves left after a rightward anticipation. Hook/rack remain stable; original source and pot identity are preserved. Review: batch-03/hanging-pots-v4-left/orientation-review.json
+  idle: 60 frames, 30 fps, 2s, loop=True, hold=False, cell=384x384, anchor=[192, 348], unit=232.78
+  attack: 48 frames, 30 fps, 1.6s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=232.78
+  hurt: 24 frames, 30 fps, 0.8s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=232.78
+  defeat: 45 frames, 30 fps, 1.5s, loop=False, hold=True, cell=384x384, anchor=[192, 348], unit=232.78
+garden-shears — provisional; left_in_inspected_keyposes
+Receipt: batch-03/garden-shears-v3-left/saved-assets.json
+Validation: batch-03/garden-shears-v3-left/validation.json
+Ready blades point upper-left; closing action points directly left. Both halves remain connected at the original flower rivet. Recovery returns upper-left and defeat lies closed pointing left. Tool is rotated, not mirrored; handle/ribbon handedness is retained. Review: batch-03/garden-shears-v3-left/orientation-review.json
+  idle: 60 frames, 30 fps, 2s, loop=True, hold=False, cell=384x384, anchor=[192, 348], unit=256.5
+  attack: 48 frames, 30 fps, 1.6s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=256.5
+  hurt: 24 frames, 30 fps, 0.8s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=256.5
+  defeat: 45 frames, 30 fps, 1.5s, loop=False, hold=True, cell=384x384, anchor=[192, 348], unit=256.5
+bedsheet-apparition — provisional; left_in_inspected_keyposes
+Receipt: batch-04/bedsheet-apparition-v2-left/saved-assets.json
+Validation: batch-04/bedsheet-apparition-v2-left/validation.json
+Face-bearing fabric and authentic source eye/mouth holes turn left. Attack inflates the upper cloth, leans left and sends a small breath left; hurt compresses and recoils right; defeat sinks onto its hem. The original unlettered sheet is reflected. Review: batch-04/bedsheet-apparition-v2-left/orientation-review.json
+  idle: 60 frames, 30 fps, 2s, loop=True, hold=False, cell=384x384, anchor=[192, 348], unit=263.25
+  attack: 48 frames, 30 fps, 1.6s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=263.25
+  hurt: 24 frames, 30 fps, 0.8s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=263.25
+  defeat: 45 frames, 30 fps, 1.5s, loop=False, hold=True, cell=384x384, anchor=[192, 348], unit=263.25
+topiary-hare — provisional; left_in_inspected_keyposes
+Receipt: batch-04/topiary-hare-v1-left/saved-assets.json
+Validation: batch-04/topiary-hare-v1-left/validation.json
+Nose and eyes face left throughout inspected poses. Separate ears trail a crouch and leftward hop, hurt recoils right, and defeat bows the head with both foliage ears wilting left. All decoded frames retain a connected opaque body. Unlettered shrub reflected; no held prop. Review: batch-04/topiary-hare-v1-left/orientation-review.json
+  idle: 60 frames, 30 fps, 2s, loop=True, hold=False, cell=384x384, anchor=[192, 348], unit=297.0
+  attack: 48 frames, 30 fps, 1.6s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=297.0
+  hurt: 24 frames, 30 fps, 0.8s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=297.0
+  defeat: 45 frames, 30 fps, 1.5s, loop=False, hold=True, cell=384x384, anchor=[192, 348], unit=297.0
+servant-bell — provisional; left_in_inspected_keyposes
+Receipt: batch-05/servant-bell-v2-left/saved-assets.json
+Validation: batch-05/servant-bell-v2-left/validation.json
+Bell mouth points left. Rightward coil tension precedes two leftward strikes, then the painted shadow gives a delayed echo. Hurt recoils right. Defeat droops the metal and fades the shadow. Rope and plaque pixels remain fixed. Review: batch-05/servant-bell-v2-left/orientation-review.json
+  idle: 60 frames, 30 fps, 2s, loop=True, hold=False, cell=384x384, anchor=[192, 348], unit=308.25
+  attack: 48 frames, 30 fps, 1.6s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=308.25
+  hurt: 24 frames, 30 fps, 0.8s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=308.25
+  defeat: 45 frames, 30 fps, 1.5s, loop=False, hold=True, cell=384x384, anchor=[192, 348], unit=308.25
+masquerade-mask — provisional; left_in_inspected_keyposes
+Receipt: batch-05/masquerade-mask-v2-left/saved-assets.json
+Validation: batch-05/masquerade-mask-v2-left/validation.json
+Intact reflected mask faces left. It withdraws right and peeks left while separate trailing ribbons follow; hurt recoils right, recovery returns to its left profile. Defeat extinguishes eye light, tips downward and sinks. Foreground ribbon still covers the same hidden face region. Review: batch-05/masquerade-mask-v2-left/orientation-review.json
+  idle: 60 frames, 30 fps, 2s, loop=True, hold=False, cell=384x384, anchor=[192, 348], unit=248.25
+  attack: 48 frames, 30 fps, 1.6s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=248.25
+  hurt: 24 frames, 30 fps, 0.8s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=248.25
+  defeat: 45 frames, 30 fps, 1.5s, loop=False, hold=True, cell=384x384, anchor=[192, 348], unit=248.25
+imaginary-friend — provisional; left_in_inspected_keyposes
+Receipt: batch-06/imaginary-friend-v3-left/saved-assets.json
+Validation: batch-06/imaginary-friend-v3-left/validation.json
+Original crayon facial marks turn left within the head and the large hand gestures left. Distinct arc attack and house-outline cast appear to the left of that hand. Hurt recoils right; ready poses match exactly, and defeat progressively erases to a transparent endpoint. Review: batch-06/imaginary-friend-v3-left/orientation-review.json
+  idle: 60 frames, 30 fps, 2s, loop=True, hold=False, cell=384x384, anchor=[192, 348], unit=267.75
+  attack: 48 frames, 30 fps, 1.6s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=267.75
+  hurt: 24 frames, 30 fps, 0.8s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=267.75
+  defeat: 45 frames, 30 fps, 1.5s, loop=False, hold=True, cell=384x384, anchor=[192, 348], unit=267.75
+  cast: 60 frames, 30 fps, 2s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=267.75
+rain-chain — provisional; left_in_inspected_keyposes
+Receipt: batch-06/rain-chain-v5-left/saved-assets.json
+Validation: batch-06/rain-chain-v5-left/validation.json
+All copper cup openings stay tilted upper-left, including the reduced rightward hurt recoil. Attack tips the bottom cup and sends a bead up-left; cast relays one bead upward through three distinct cup tips. The source bead gap is preserved. Top hook stays fixed; recovery returns exactly to ready. Review: batch-06/rain-chain-v5-left/orientation-review.json
+  idle: 60 frames, 30 fps, 2s, loop=True, hold=False, cell=384x384, anchor=[192, 348], unit=285.0
+  attack: 48 frames, 30 fps, 1.6s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=285.0
+  hurt: 24 frames, 30 fps, 0.8s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=285.0
+  defeat: 45 frames, 30 fps, 1.5s, loop=False, hold=True, cell=384x384, anchor=[192, 348], unit=285.0
+  cast: 60 frames, 30 fps, 2s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=285.0
+rocking-chair — provisional; left_in_inspected_keyposes
+Receipt: batch-07/rocking-chair-v3-left/saved-assets.json
+Validation: batch-07/rocking-chair-v3-left/validation.json
+Original seat front and leading runners project left. Attack rocks back right, scoots left, compresses the cushion and returns. Hurt recoils right; defeat tips left. Ground contact is computed before rasterization and verified throughout every clip. Review: batch-07/rocking-chair-v3-left/orientation-review.json
+  idle: 60 frames, 30 fps, 2s, loop=True, hold=False, cell=384x384, anchor=[192, 348], unit=203.25
+  attack: 48 frames, 30 fps, 1.6s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=203.25
+  hurt: 24 frames, 30 fps, 0.8s, loop=False, hold=False, cell=384x384, anchor=[192, 348], unit=203.25
+  defeat: 45 frames, 30 fps, 1.5s, loop=False, hold=True, cell=384x384, anchor=[192, 348], unit=203.25
+
+ASSET PATHS
+Source sheets: animations/sprites/enemies/animations/SS_<source-key>_<state>.png
+Runtime atlases/index: game/assets/sprites/enemy-clips/<id>/
+Exact paths, hashes and sizes are in each receipt and delivery-hash-validation.json.
+Superseded new assets are retained byte-for-byte under revisions/. All original inputs remain intact.
+
+ORIENTATION AUDIT
+All 29 legacy enemies were inspected through eight selected decoded runtime poses each; this is not every-frame/full-speed approval.
+Slipper Skitter and Blanket Hydra are already mirrored by the renderer. Do not double-flip.
+Five legacy identities (21 actions) show left staging in sampled poses. Of the other 24, Oven Maw now has four compatible left-facing alternates; 23 identities (93 actions) still need pose correction/directional derivatives.
+Oven Maw alternate: game/assets/sprites/enemy-clips-left/oven-maw/index.json. Original frame counts, FPS, loop, hold, ping and fade semantics preserved; pivot reflected about the feet. Original files unchanged.
+The alternate directory is not used by the current loader. A separately authorized asset-path integration is needed; no gameplay/registry edit was made.
+Governess has mixed direction across attack/cast, so a blanket flip would not solve it. Text/tag marks and held props also require selective handling for other legacy enemies.
+Full decisions: orientation-audit/orientation-decisions.json. Contacts: orientation-audit/legacy-runtime-1.jpg through -6.jpg.
+
+VALIDATION AND LIMITS
+Enemy-specific 2D source-art articulation, not fully redrawn animation or AI video. Each creature/body/prop needs its own appropriate rig and quality review.
+All new clips remain provisional. Chronological key poses and authored direction curves inspected; all frame timing/order/alpha/bounds/loop/endpoint checks passed. Full-speed intended-size visual approval is pending.
+Browser file URL opening was denied by policy; no browser navigation, alternate route or workaround used. MP4s were rendered and fully decoded locally as authorized review deliverables.
+No game registry, gameplay, balance, publication or deployment edits. Oven Maw alternate is not selected by the live loader.
+
+PRESERVATION
+3408 original files rehashed unchanged; zero changed or missing; checked 2026-10-27T00:41:10.207603+00:00.
+112 current new-asset hashes and 9 legacy-alternate file hashes checked against receipts.
+No purchases, external publishing, credentials, accounts, or sharing-permission changes. Requested Library preview delivery only.
+
+BLOCKERS
+Spectral Scullion base-image dependency: prior moderation denial; no retry. Four actions remain blocked.
+Browser playback: prior URL-policy denial respected. Offline MP4s complete; final temporal visual review pending.
+
+RESUME
+613 usable new actions unproduced; saved actions await final temporal review; legacy pose corrections/integration remain as recorded in orientation-audit/orientation-decisions.json.
+Use enemy-action-matrix.json/.csv and animation-deliveries.json as coverage authorities.
+After each batch: validate individual source/runtime/preview sequences, record orientation evidence, preserve superseded new assets, save with receipt guards, rebuild matrix, rerun check_preservation.py, and run this report generator.
+Do not run the standard prep_sprites.py batch CLI; it changes FPS/frame counts and modifies/deletes registry-linked output.
+
+LIBRARY DELIVERY
+saved_library_local_metadata_unsupported
+Required helper attempted on both original files with complete returned xattrs; both failed: AttributeError, os.setxattr unavailable on Windows. Authoritative identity retained in library-direct-create-receipt.json; no native xattr persistence claimed.
+No further create needed; later updates must replace the returned IDs, not create duplicates.
+review-reels/first-three-enemies-left-30fps.mp4 - 468089 bytes - Library ID: libfile_0f955f4c44008191abd0a54b1a7f7b6c
+review-reels/batch-03-left-30fps.mp4 - 374381 bytes - Library ID: libfile_bb1fbd5ab6788191882a6de7e3d796f8

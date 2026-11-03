@@ -256,8 +256,12 @@ async def main(a):
               "right on a slider changes the value instead of moving focus",
               f"{pre['v']} -> {post['v']}")
         check(post["saved"] is not None, "and the change reaches Save.settings")
-        await page.evaluate("() => window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))")
-        await page.wait_for_timeout(400)
+        # The way out, by pad. This used to dispatch Escape itself, on window, which is
+        # the same place the game sent it and where a Modal could never hear it.
+        await tap(page, 1)                            # B / circle: cancel
+        await page.wait_for_timeout(500)
+        gone = await page.evaluate("() => !document.querySelector('.mm-modal')")
+        check(gone, "and the pad's Cancel closes the panel it is in")
 
         # ══ combat: the pad drives the hand the keyboard already drives ═════
         await page.evaluate(UNINSTALL)

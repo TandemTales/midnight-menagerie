@@ -1,0 +1,120 @@
+{
+  "assigned_roster_entries": 22,
+  "new_validated_sprites": 22,
+  "pending": 0,
+  "blocked": 0,
+  "original_preserved_files_verified": 367,
+  "changed_original_files": [],
+  "final_files": [
+    {
+      "id": "telescope-eye",
+      "source": "animations\\sprites\\enemies\\telescopeEye.png",
+      "runtime": "game\\assets\\sprites\\enemies\\telescope-eye.webp"
+    },
+    {
+      "id": "astrolabe",
+      "source": "animations\\sprites\\enemies\\astrolabe.png",
+      "runtime": "game\\assets\\sprites\\enemies\\astrolabe.webp"
+    },
+    {
+      "id": "tripod-camera",
+      "source": "animations\\sprites\\enemies\\tripodCamera.png",
+      "runtime": "game\\assets\\sprites\\enemies\\tripod-camera.webp"
+    },
+    {
+      "id": "attic-trunk",
+      "source": "animations\\sprites\\enemies\\atticTrunk.png",
+      "runtime": "game\\assets\\sprites\\enemies\\attic-trunk.webp"
+    },
+    {
+      "id": "spectral-assistant",
+      "source": "animations\\sprites\\enemies\\spectralAssistant.png",
+      "runtime": "game\\assets\\sprites\\enemies\\spectral-assistant.webp"
+    },
+    {
+      "id": "moonbeam-figure",
+      "source": "animations\\sprites\\enemies\\moonbeamFigure.png",
+      "runtime": "game\\assets\\sprites\\enemies\\moonbeam-figure.webp"
+    },
+    {
+      "id": "contrary-weather-vane",
+      "source": "animations\\sprites\\enemies\\contraryWeatherVane.png",
+      "runtime": "game\\assets\\sprites\\enemies\\contrary-weather-vane.webp"
+    },
+    {
+      "id": "moon-lens",
+      "source": "animations\\sprites\\enemies\\moonLens.png",
+      "runtime": "game\\assets\\sprites\\enemies\\moon-lens.webp"
+    },
+    {
+      "id": "celestial-clock",
+      "source": "animations\\sprites\\enemies\\celestialClock.png",
+      "runtime": "game\\assets\\sprites\\enemies\\celestial-clock.webp"
+    },
+    {
+      "id": "suspended-planetarium",
+      "source": "animations\\sprites\\enemies\\suspendedPlanetarium.png",
+      "runtime": "game\\assets\\sprites\\enemies\\suspended-planetarium.webp"
+    },
+    {
+      "id": "watcher-in-the-rafters",
+      "source": "animations\\sprites\\enemies\\watcherInTheRafters.png",
+      "runtime": "game\\assets\\sprites\\enemies\\watcher-in-the-rafters.webp"
+    },
+    {
+      "id": "wall-sconce",
+      "source": "animations\\sprites\\enemies\\wallSconce.png",
+      "runtime": "game\\assets\\sprites\\enemies\\wall-sconce.webp"
+    },
+    {
+      "id": "gaslight-ghost",
+      "source": "animations\\sprites\\enemies\\gaslightGhost.png",
+      "runtime": "game\\assets\\sprites\\enemies\\gaslight-ghost.webp"
+    },
+    {
+      "id": "lantern-bearer",
+      "source": "animations\\sprites\\enemies\\lanternBearer.png",
+      "runtime": "game\\assets\\sprites\\enemies\\lantern-bearer.webp"
+    },
+    {
+      "id": "fuse-box",
+      "source": "animations\\sprites\\enemies\\fuseBox.png",
+      "runtime": "game\\assets\\sprites\\enemies\\fuse-box.webp"
+    },
+    {
+      "id": "gas-valve",
+      "source": "animations\\sprites\\enemies\\gasValve.png",
+      "runtime": "game\\assets\\sprites\\enemies\\gas-valve.webp"
+    },
+    {
+      "id": "soot-shadow",
+      "source": "animations\\sprites\\enemies\\sootShadow.png",
+      "runtime": "game\\assets\\sprites\\enemies\\soot-shadow.webp"
+    },
+    {
+      "id": "light-switch-shadow",
+      "source": "animations\\sprites\\enemies\\lightSwitchShadow.png",
+      "runtime": "game\\assets\\sprites\\enemies\\light-switch-shadow.webp"
+    },
+    {
+      "id": "main-switchboard",
+      "source": "animations\\sprites\\enemies\\mainSwitchboard.png",
+      "runtime": "game\\assets\\sprites\\enemies\\main-switchboard.webp"
+    },
+    {
+      "id": "gas-manifold",
+      "source": "animations\\sprites\\enemies\\gasManifold.png",
+      "runtime": "game\\assets\\sprites\\enemies\\gas-manifold.webp"
+    },
+    {
+      "id": "glassworks-rack",
+      "source": "animations\\sprites\\enemies\\glassworksRack.png",
+      "runtime": "game\\assets\\sprites\\enemies\\glassworks-rack.webp"
+    },
+    {
+      "id": "lamplighter",
+      "source": "animations\\sprites\\enemies\\lamplighter.png",
+      "runtime": "game\\assets\\sprites\\enemies\\lamplighter.webp"
+    }
+  ]
+}

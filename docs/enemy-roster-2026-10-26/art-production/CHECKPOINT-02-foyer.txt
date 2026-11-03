@@ -1,0 +1,25 @@
+FOYER BATCH COMPLETE — CHECKPOINT 02
+
+Result: 3 new validated still sprites in this batch. Foyer coverage is 11/11.
+Overall approved roster: 31 existing + 4 new + 152 pending + 0 blocked = 187.
+
+Exact new final files:
+animations/sprites/enemies/portraitGreeter.png — 256x256 RGBA PNG
+animations/sprites/enemies/grandMirror.png — 512x512 RGBA PNG
+animations/sprites/enemies/foyerChandelier.png — 512x512 RGBA PNG
+game/assets/sprites/enemies/portrait-greeter.webp — 238x194 RGBA WebP
+game/assets/sprites/enemies/grand-mirror.webp — 396x451 RGBA WebP
+game/assets/sprites/enemies/foyer-chandelier.webp — 391x468 RGBA WebP
+
+Review: foyer-batch-new-contact.jpg and foyer-complete-contact.jpg.
+Coverage: coverage-manifest.json and coverage-manifest.csv. Stable batch snapshot: foyer-coverage-snapshot.json.
+Technical evidence: foyer-batch-validation.json. Verified SHA-256 for all 367 initial inventory files plus both saved Hall Mirror finals (369 files). No changes found. All 29 mandatory animated identities preserved. Every region still has 7 regular / 3 elite / 1 boss, 187 unique art IDs total.
+New originals and prompts are retained here: portrait-greeter-original.png (rejected for frame touching canvas sides), portrait-greeter-v2-original.png (accepted framing correction), grand-mirror-original.png, foyer-chandelier-original.png, matching -prompt.txt files and binary-safe base64 recovery copies.
+Built-in imagegen only. Images reviewed at full resolution and in the rendered contact sheets. Clean transparent cutouts, complete silhouettes, distinct identities and readable small-size presentation. One original per identity is used; prompt-only and rejected renders are not counted.
+
+Tool notes:
+The local Windows referenced_image_paths request for the portrait framing correction failed before rendering with: 'AbsolutePathBuf deserialized without a base path at line 1 column 947'. The supported recent-image reference (num_last_images_to_include=1) then successfully used the visible portrait. No approval denial or user cancellation occurred during this batch.
+The PREVIOUS batch's single large apply_patch save returned exactly 'aborted by user'. That wording remains recorded in CHECKPOINT.txt; this checkpoint makes no inference whether it represented an intentional cancellation or a technical abort. Any future explicit cancellation or denial must stop that action and be reported. Do not treat it as an ordinary retryable failure.
+Saving: each successful built-in image result returned image_url PNG base64 with no saved path. It was retained in tool state, written in sequential 16000-character chunks with PowerShell WriteAllText/AppendAllText inside this authorized project documentation folder, decoded to PNG, then inspected and converted to new final paths only. The original raw PNG remains available. Never use a giant apply_patch for image data.
+
+Next region: Forgotten Nursery. Missing: R5 Crib Curtains, R7 Imaginary Friend, E3 The Grand Music Box. Continue in the same task under existing authorization. Do not regenerate any existing/new manifest entry or overwrite any art. No game code, gameplay data, registries or animation atlases changed. Finalization scripts are one-shot and refuse existing targets; use the manifest to resume, not inventory.py (which guards its initial baseline).

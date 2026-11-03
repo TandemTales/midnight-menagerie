@@ -1,0 +1,781 @@
+{
+  "rows": [
+    {
+      "scene": "shop",
+      "size": [
+        1280,
+        800
+      ],
+      "targets": [
+        {
+          "text": "\n      56Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      59Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      75Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      87Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      81Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      95Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      131Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      176Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      65Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      48Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      37Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      82Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "wares",
+          "motions": [
+            {
+              "key": "Enter",
+              "before": 0,
+              "after": 375
+            },
+            {
+              "key": "Space",
+              "before": 0,
+              "after": 375
+            }
+          ],
+          "endToTop": true,
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "title": {
+        "font": "25.25px",
+        "filter": "drop-shadow(rgb(59, 37, 96) 0.6px 1px 0px) drop-shadow(rgb(2, 1, 9) 1px 2px 0px)",
+        "color": "rgb(185, 155, 224)",
+        "fill": "rgba(0, 0, 0, 0)"
+      },
+      "paint": {
+        "text": "The Midnight Market",
+        "font": 25.25,
+        "expected": 25.25,
+        "baselineReading": "23px",
+        "background": "conic-gradient(from 28deg at 32% 48%, rgba(0, 0, 0, 0) 0deg, rgba(0, 0, 0, 0) 74deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 75deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 118deg, rgba(0, 0, 0, 0) 119deg, rgba(0, 0, 0, 0) 227deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 228deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 286deg, rgba(0, 0, 0, 0) 287deg), linear-gradient(173deg, color(srgb 0.901961 0.85098 0.964706 / 0.44), rgba(0, 0, 0, 0) 33%, color(srgb 0.231373 0.145098 0.376471 / 0.28) 68%, rgba(0, 0, 0, 0)), url(\"http://localhost:9552/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+        "clip": "text, text, text",
+        "fill": "rgba(0, 0, 0, 0)",
+        "stroke": "0.25px",
+        "visible": true,
+        "ink": {
+          "left": 467.265625,
+          "right": 812.71875,
+          "top": 76.75,
+          "bottom": 110.75
+        }
+      },
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    },
+    {
+      "scene": "shop",
+      "size": [
+        1600,
+        900
+      ],
+      "targets": [
+        {
+          "text": "\n      56Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      59Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      75Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      87Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      81Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      95Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      131Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      176Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      65Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      48Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      37Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      82Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "wares",
+          "motions": [
+            {
+              "key": "Enter",
+              "before": 0,
+              "after": 428
+            },
+            {
+              "key": "Space",
+              "before": 0,
+              "after": 428
+            }
+          ],
+          "endToTop": true,
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "title": {
+        "font": "33.6px",
+        "filter": "drop-shadow(rgb(59, 37, 96) 0.6px 1px 0px) drop-shadow(rgb(2, 1, 9) 1px 2px 0px)",
+        "color": "rgb(185, 155, 224)",
+        "fill": "rgba(0, 0, 0, 0)"
+      },
+      "paint": {
+        "text": "The Midnight Market",
+        "font": 33.6,
+        "expected": 33.6,
+        "baselineReading": "clamp(25px,2.1vw,34px)",
+        "background": "conic-gradient(from 28deg at 32% 48%, rgba(0, 0, 0, 0) 0deg, rgba(0, 0, 0, 0) 74deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 75deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 118deg, rgba(0, 0, 0, 0) 119deg, rgba(0, 0, 0, 0) 227deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 228deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 286deg, rgba(0, 0, 0, 0) 287deg), linear-gradient(173deg, color(srgb 0.901961 0.85098 0.964706 / 0.44), rgba(0, 0, 0, 0) 33%, color(srgb 0.231373 0.145098 0.376471 / 0.28) 68%, rgba(0, 0, 0, 0)), url(\"http://localhost:9552/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+        "clip": "text, text, text",
+        "fill": "rgba(0, 0, 0, 0)",
+        "stroke": "0.25px",
+        "visible": true,
+        "ink": {
+          "left": 570.21875,
+          "right": 1029.78125,
+          "top": 76.234375,
+          "bottom": 121.234375
+        }
+      },
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    },
+    {
+      "scene": "rest",
+      "size": [
+        1280,
+        800
+      ],
+      "targets": [
+        {
+          "text": "1\n        \n        \n          Rest\n          Take a nap while your Companion keeps watch.\n          Courage 46 \u2192 68\n          Recovers up to 22.\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "2\n        \n        \n          Sharpen a Trick\n          Work on one Trick by torchlight until it is better than it was.\n          14 Tricks can be sharpened\n          Permanent, for the rest of the expedition.\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "3\n        \n        \n          Forge a Keepsake\n          The flame strengthens a Keepsake. Its price is some of your maximum Courage.\n          Costs 8 maximum Courage\n          Courage 74 \u2192 66 \u00b7 the Keepsake fires twice\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "4\n        \n        \n          Sit with your Companion\n          Share a quiet moment and see what catches their attention.\n          +1 Clue\n          Spend your fort action to gain a Clue.\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "choices",
+          "motions": [
+            {
+              "key": "Enter",
+              "before": 0,
+              "after": 158
+            },
+            {
+              "key": "Space",
+              "before": 0,
+              "after": 158
+            }
+          ],
+          "endToTop": true,
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "title": {
+        "font": "26px",
+        "filter": "drop-shadow(rgb(59, 37, 96) 0.6px 1px 0px) drop-shadow(rgb(2, 1, 9) 1px 2px 0px)",
+        "color": "rgb(185, 155, 224)",
+        "fill": "rgba(0, 0, 0, 0)"
+      },
+      "paint": {
+        "text": "You Build the Fort",
+        "font": 26,
+        "expected": 26,
+        "baselineReading": "24px",
+        "background": "conic-gradient(from 28deg at 32% 48%, rgba(0, 0, 0, 0) 0deg, rgba(0, 0, 0, 0) 74deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 75deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 118deg, rgba(0, 0, 0, 0) 119deg, rgba(0, 0, 0, 0) 227deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 228deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 286deg, rgba(0, 0, 0, 0) 287deg), linear-gradient(173deg, color(srgb 0.901961 0.85098 0.964706 / 0.44), rgba(0, 0, 0, 0) 33%, color(srgb 0.231373 0.145098 0.376471 / 0.28) 68%, rgba(0, 0, 0, 0)), url(\"http://localhost:9552/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+        "clip": "text, text, text",
+        "fill": "rgba(0, 0, 0, 0)",
+        "stroke": "0.25px",
+        "visible": true,
+        "ink": {
+          "left": 481.3125,
+          "right": 798.65625,
+          "top": 97.796875,
+          "bottom": 132.796875
+        }
+      },
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    },
+    {
+      "scene": "rest",
+      "size": [
+        1600,
+        900
+      ],
+      "targets": [
+        {
+          "text": "1\n        \n        \n          Rest\n          Take a nap while your Companion keeps watch.\n          Courage 46 \u2192 68\n          Recovers up to 22.\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "2\n        \n        \n          Sharpen a Trick\n          Work on one Trick by torchlight until it is better than it was.\n          14 Tricks can be sharpened\n          Permanent, for the rest of the expedition.\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "3\n        \n        \n          Forge a Keepsake\n          The flame strengthens a Keepsake. Its price is some of your maximum Courage.\n          Costs 8 maximum Courage\n          Courage 74 \u2192 66 \u00b7 the Keepsake fires twice\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "4\n        \n        \n          Sit with your Companion\n          Share a quiet moment and see what catches their attention.\n          +1 Clue\n          Spend your fort action to gain a Clue.\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "choices",
+          "motions": [
+            {
+              "key": "Enter",
+              "before": 0,
+              "after": 141
+            },
+            {
+              "key": "Space",
+              "before": 0,
+              "after": 141
+            }
+          ],
+          "endToTop": true,
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "title": {
+        "font": "35.2px",
+        "filter": "drop-shadow(rgb(59, 37, 96) 0.6px 1px 0px) drop-shadow(rgb(2, 1, 9) 1px 2px 0px)",
+        "color": "rgb(185, 155, 224)",
+        "fill": "rgba(0, 0, 0, 0)"
+      },
+      "paint": {
+        "text": "You Build the Fort",
+        "font": 35.2,
+        "expected": 35.2,
+        "baselineReading": "clamp(24px,2.2vw,36px)",
+        "background": "conic-gradient(from 28deg at 32% 48%, rgba(0, 0, 0, 0) 0deg, rgba(0, 0, 0, 0) 74deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 75deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 118deg, rgba(0, 0, 0, 0) 119deg, rgba(0, 0, 0, 0) 227deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 228deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 286deg, rgba(0, 0, 0, 0) 287deg), linear-gradient(173deg, color(srgb 0.901961 0.85098 0.964706 / 0.44), rgba(0, 0, 0, 0) 33%, color(srgb 0.231373 0.145098 0.376471 / 0.28) 68%, rgba(0, 0, 0, 0)), url(\"http://localhost:9552/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+        "clip": "text, text, text",
+        "fill": "rgba(0, 0, 0, 0)",
+        "stroke": "0.25px",
+        "visible": true,
+        "ink": {
+          "left": 585.171875,
+          "right": 1014.796875,
+          "top": 99.359375,
+          "bottom": 146.359375
+        }
+      },
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    },
+    {
+      "scene": "event",
+      "size": [
+        1280,
+        800
+      ],
+      "targets": [
+        {
+          "text": "\n        Gather the loose Buttons.\n        \n          risk13 Courage, or a Curse\n          gain45\u2013130 Buttons\n          \n          \n        \n        \n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n        Go through the collars.\n        \n          costs4 Courage\n          always3 Clues and 30 Buttons\n          \n          \n        \n        \n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n        Ring the bell and ask properly.\n        \n          riskUp to 6 maximum Courage\n          gainA Keepsake; possibly a Clue\n          \n          \n        \n        \n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "story",
+          "motions": [
+            {
+              "key": "Enter",
+              "before": 0,
+              "after": 168
+            },
+            {
+              "key": "Space",
+              "before": 0,
+              "after": 168
+            }
+          ],
+          "endToTop": true,
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "title": {
+        "font": "31.52px",
+        "filter": "drop-shadow(rgb(59, 37, 96) 0.6px 1px 0px) drop-shadow(rgb(2, 1, 9) 1px 2px 0px)",
+        "color": "rgb(185, 155, 224)",
+        "fill": "rgba(0, 0, 0, 0)"
+      },
+      "paint": {
+        "text": "The Lost and Found",
+        "font": 31.52,
+        "expected": 31.52,
+        "baselineReading": "clamp(26px,2.45vw,40px)",
+        "background": "conic-gradient(from 28deg at 32% 48%, rgba(0, 0, 0, 0) 0deg, rgba(0, 0, 0, 0) 74deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 75deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 118deg, rgba(0, 0, 0, 0) 119deg, rgba(0, 0, 0, 0) 227deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 228deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 286deg, rgba(0, 0, 0, 0) 287deg), linear-gradient(173deg, color(srgb 0.901961 0.85098 0.964706 / 0.44), rgba(0, 0, 0, 0) 33%, color(srgb 0.231373 0.145098 0.376471 / 0.28) 68%, rgba(0, 0, 0, 0)), url(\"http://localhost:9552/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+        "clip": "text, text, text",
+        "fill": "rgba(0, 0, 0, 0)",
+        "stroke": "0.25px",
+        "visible": true,
+        "ink": {
+          "left": 438.453125,
+          "right": 841.53125,
+          "top": 103.171875,
+          "bottom": 146.171875
+        }
+      },
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    },
+    {
+      "scene": "event",
+      "size": [
+        1600,
+        900
+      ],
+      "targets": [
+        {
+          "text": "\n        Gather the loose Buttons.\n        \n          risk13 Courage, or a Curse\n          gain45\u2013130 Buttons\n          \n          \n        \n        \n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n        Go through the collars.\n        \n          costs4 Courage\n          always3 Clues and 30 Buttons\n          \n          \n        \n        \n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n        Ring the bell and ask properly.\n        \n          riskUp to 6 maximum Courage\n          gainA Keepsake; possibly a Clue\n          \n          \n        \n        \n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "story",
+          "motions": [
+            {
+              "key": "Enter",
+              "before": 0,
+              "after": 153
+            },
+            {
+              "key": "Space",
+              "before": 0,
+              "after": 153
+            }
+          ],
+          "endToTop": true,
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "title": {
+        "font": "39.2px",
+        "filter": "drop-shadow(rgb(59, 37, 96) 0.6px 1px 0px) drop-shadow(rgb(2, 1, 9) 1px 2px 0px)",
+        "color": "rgb(185, 155, 224)",
+        "fill": "rgba(0, 0, 0, 0)"
+      },
+      "paint": {
+        "text": "The Lost and Found",
+        "font": 39.2,
+        "expected": 39.2,
+        "baselineReading": "clamp(26px,2.45vw,40px)",
+        "background": "conic-gradient(from 28deg at 32% 48%, rgba(0, 0, 0, 0) 0deg, rgba(0, 0, 0, 0) 74deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 75deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 118deg, rgba(0, 0, 0, 0) 119deg, rgba(0, 0, 0, 0) 227deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 228deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 286deg, rgba(0, 0, 0, 0) 287deg), linear-gradient(173deg, color(srgb 0.901961 0.85098 0.964706 / 0.44), rgba(0, 0, 0, 0) 33%, color(srgb 0.231373 0.145098 0.376471 / 0.28) 68%, rgba(0, 0, 0, 0)), url(\"http://localhost:9552/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+        "clip": "text, text, text",
+        "fill": "rgba(0, 0, 0, 0)",
+        "stroke": "0.25px",
+        "visible": true,
+        "ink": {
+          "left": 549.34375,
+          "right": 1050.640625,
+          "top": 104.546875,
+          "bottom": 157.546875
+        }
+      },
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    },
+    {
+      "scene": "gameover",
+      "size": [
+        1280,
+        800
+      ],
+      "targets": [
+        {
+          "text": "Titleput the house down for now",
+          "disabled": false,
+          "hit": true,
+          "font": "18px",
+          "focus": true
+        },
+        {
+          "text": "Go straight back inchoose a Kid and a Companion",
+          "disabled": false,
+          "hit": true,
+          "font": "18px",
+          "focus": true
+        },
+        {
+          "text": "Return to the Clubhousework out what to bring next time",
+          "disabled": false,
+          "hit": true,
+          "font": "18px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "Tricks",
+          "motions": [
+            {
+              "key": "Enter",
+              "before": 0,
+              "after": 116
+            },
+            {
+              "key": "Space",
+              "before": 0,
+              "after": 116
+            }
+          ],
+          "endToTop": true,
+          "hit": true,
+          "keyboardScenePreserved": true
+        },
+        {
+          "label": "record",
+          "motions": [
+            {
+              "key": "Enter",
+              "before": 0,
+              "after": 392
+            },
+            {
+              "key": "Space",
+              "before": 0,
+              "after": 392
+            }
+          ],
+          "endToTop": true,
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "title": {
+        "font": "26.75px",
+        "filter": "drop-shadow(rgb(59, 37, 96) 0.6px 1px 0px) drop-shadow(rgb(2, 1, 9) 1px 2px 0px)",
+        "color": "rgb(185, 155, 224)",
+        "fill": "rgba(0, 0, 0, 0)"
+      },
+      "paint": {
+        "text": "The candle goes out.",
+        "font": 26.75,
+        "expected": 26.75,
+        "baselineReading": "25px",
+        "background": "conic-gradient(from 28deg at 32% 48%, rgba(0, 0, 0, 0) 0deg, rgba(0, 0, 0, 0) 74deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 75deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 118deg, rgba(0, 0, 0, 0) 119deg, rgba(0, 0, 0, 0) 227deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 228deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 286deg, rgba(0, 0, 0, 0) 287deg), linear-gradient(173deg, color(srgb 0.901961 0.85098 0.964706 / 0.44), rgba(0, 0, 0, 0) 33%, color(srgb 0.231373 0.145098 0.376471 / 0.28) 68%, rgba(0, 0, 0, 0)), url(\"http://localhost:9552/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+        "clip": "text, text, text",
+        "fill": "rgba(0, 0, 0, 0)",
+        "stroke": "0.25px",
+        "visible": true,
+        "ink": {
+          "left": 458.15625,
+          "right": 821.828125,
+          "top": 25.328125,
+          "bottom": 61.328125
+        }
+      },
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    },
+    {
+      "scene": "gameover",
+      "size": [
+        1600,
+        900
+      ],
+      "targets": [
+        {
+          "text": "Titleput the house down for now",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "Go straight back inchoose a Kid and a Companion",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "Return to the Clubhousework out what to bring next time",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "Tricks",
+          "motions": [
+            {
+              "key": "Enter",
+              "before": 0,
+              "after": 139
+            },
+            {
+              "key": "Space",
+              "before": 0,
+              "after": 139
+            }
+          ],
+          "endToTop": true,
+          "hit": true,
+          "keyboardScenePreserved": true
+        },
+        {
+          "label": "record",
+          "motions": [
+            {
+              "key": "Enter",
+              "before": 0,
+              "after": 434
+            },
+            {
+              "key": "Space",
+              "before": 0,
+              "after": 434
+            }
+          ],
+          "endToTop": true,
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "title": {
+        "font": "35.2px",
+        "filter": "drop-shadow(rgb(59, 37, 96) 0.6px 1px 0px) drop-shadow(rgb(2, 1, 9) 1px 2px 0px)",
+        "color": "rgb(185, 155, 224)",
+        "fill": "rgba(0, 0, 0, 0)"
+      },
+      "paint": {
+        "text": "The candle goes out.",
+        "font": 35.2,
+        "expected": 35.2,
+        "baselineReading": "clamp(24px,2.2vw,36px)",
+        "background": "conic-gradient(from 28deg at 32% 48%, rgba(0, 0, 0, 0) 0deg, rgba(0, 0, 0, 0) 74deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 75deg, color(srgb 0.901961 0.85098 0.964706 / 0.42) 118deg, rgba(0, 0, 0, 0) 119deg, rgba(0, 0, 0, 0) 227deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 228deg, color(srgb 0.231373 0.145098 0.376471 / 0.34) 286deg, rgba(0, 0, 0, 0) 287deg), linear-gradient(173deg, color(srgb 0.901961 0.85098 0.964706 / 0.44), rgba(0, 0, 0, 0) 33%, color(srgb 0.231373 0.145098 0.376471 / 0.28) 68%, rgba(0, 0, 0, 0)), url(\"http://localhost:9552/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+        "clip": "text, text, text",
+        "fill": "rgba(0, 0, 0, 0)",
+        "stroke": "0.25px",
+        "visible": true,
+        "ink": {
+          "left": 560.71875,
+          "right": 1039.265625,
+          "top": 29.5,
+          "bottom": 76.5
+        }
+      },
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    }
+  ],
+  "errors": []
+}

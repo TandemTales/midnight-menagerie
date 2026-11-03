@@ -1,0 +1,294 @@
+{
+  "round": 54,
+  "status": "complete; selected build validated and applied as working changes",
+  "winner": "PERIDOT",
+  "votes": [
+    "PERIDOT",
+    "PERIDOT"
+  ],
+  "selection": "independent blind image-only votes",
+  "system_scores_descriptive_only": {
+    "judge1": {
+      "AMETRINE": 7.9,
+      "MORGANITE": 8.2,
+      "PERIDOT": 8.4,
+      "KUNZITE": 8.3
+    },
+    "judge2": {
+      "KUNZITE": 8.2,
+      "PERIDOT": 8.5,
+      "MORGANITE": 8.3,
+      "AMETRINE": 8
+    }
+  },
+  "base": "7fc1b303cd84aeaac93c3b16a3620a40becae372",
+  "comparison_captures": "CAPTURES-r54.json",
+  "all_fit_thresholds_met": false,
+  "applied_to_main": true,
+  "main_committed_or_pushed": false,
+  "evidence_root": "D:\\UILOOP\\r54-20261029",
+  "selected_commit": "a5a53eb4d74e966e5acee8a1c8e8bce5858aeca4",
+  "comparison_source": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+  "selected_post_review_repair_required": false,
+  "scope_review": "Six scoped presentation CSS files and three painted derivatives; game JavaScript unchanged. Other changes are tests, evidence and notes.",
+  "derivative_asset_bytes": 52354,
+  "static_checks": {
+    "scene_css_conflicts": 0,
+    "undefined_css_tokens": 0,
+    "seam_sites": 9110,
+    "unchanged_local_Map_false_positives": 4,
+    "syntax": "pass",
+    "endings": "read-only numstat/ignore-cr-at-eol match; own pre-capture guard passed",
+    "whitespace": "pass"
+  },
+  "combat_proofs": {
+    "cases": 16,
+    "delivered": 96,
+    "expired": 96,
+    "frames": 3696,
+    "ordinaryMaxDrainMs": 5270.5,
+    "repeatedDrainMs": [
+      9346.600000023842,
+      4852.800000011921
+    ],
+    "layoutMs": {
+      "p95": 2.199999988079071,
+      "max": 6.5999999940395355,
+      "samples": 243
+    },
+    "frameP95Range": [
+      22.900000005960464,
+      86.5
+    ],
+    "frameMax": 164.80000001192093,
+    "note": "Full fixture includes screenshot pauses; frame intervals are diagnostic harness values, not isolated ordinary game cost. Native ABBA comparison has no screenshots or pauses.",
+    "ink_cases": 10,
+    "max_ink_overflow_px": 0,
+    "idle_and_owner_teardown": "pass",
+    "actual_long_quantity_rows": 109,
+    "copies_each": 12
+  },
+  "runtime_provenance": {
+    "checks": [
+      {
+        "name": "memorial",
+        "exit": 0,
+        "seconds": 26.981,
+        "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+        "reused": true,
+        "evidence": "PERIDOT-r54-proofs/memorial.log"
+      },
+      {
+        "name": "memorial-long",
+        "exit": 0,
+        "seconds": 42.869,
+        "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+        "reused": true,
+        "evidence": "PERIDOT-r54-proofs/memorial-long.log"
+      },
+      {
+        "name": "keepsakes",
+        "exit": 0,
+        "seconds": 23.584,
+        "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+        "reused": true,
+        "evidence": "PERIDOT-r54-proofs/keepsakes.log"
+      },
+      {
+        "name": "event-boundary",
+        "exit": 0,
+        "seconds": 38.377,
+        "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+        "reused": true,
+        "evidence": "PERIDOT-r54-proofs/event-boundary.log"
+      },
+      {
+        "name": "shop-rules",
+        "exit": 0,
+        "seconds": 28.563,
+        "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+        "reused": true,
+        "evidence": "PERIDOT-r54-proofs/shop-rules.log"
+      },
+      {
+        "name": "interactions",
+        "exit": 0,
+        "seconds": 84.282,
+        "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+        "reused": true,
+        "evidence": "PERIDOT-r54-proofs/interactions.log"
+      },
+      {
+        "name": "queue",
+        "exit": 0,
+        "seconds": 158.521,
+        "visual_source_commit": "dd246d80028fb4fed39497cf63edb9cb2d68e215",
+        "evidence": "PERIDOT-r54-proofs/queue.log"
+      },
+      {
+        "name": "ink",
+        "exit": 0,
+        "seconds": 56.454,
+        "visual_source_commit": "dd246d80028fb4fed39497cf63edb9cb2d68e215",
+        "evidence": "PERIDOT-r54-proofs/ink.log"
+      },
+      {
+        "name": "idle",
+        "exit": 0,
+        "seconds": 27.188,
+        "visual_source_commit": "dd246d80028fb4fed39497cf63edb9cb2d68e215",
+        "evidence": "PERIDOT-r54-proofs/idle.log"
+      },
+      {
+        "name": "lifecycle",
+        "exit": 0,
+        "seconds": 26.73,
+        "visual_source_commit": "dd246d80028fb4fed39497cf63edb9cb2d68e215",
+        "evidence": "PERIDOT-r54-proofs/lifecycle.log"
+      }
+    ],
+    "extra": [
+      "memorial-geometry.json",
+      "long-quantities-1280.json",
+      "long-quantities-1600.json",
+      "native-material-timing/proof.json",
+      "condition-pixels/proof.json"
+    ],
+    "boardReuseProof": {
+      "from": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+      "to": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "changedGamePaths": [
+        "game/src/scenes/combat.css"
+      ]
+    },
+    "canonicalSource": "3a49caa56e8a326d63436605e98a0ef1f207b9eb"
+  },
+  "controlled_rendering_validation": {
+    "raw": "PERIDOT-r54-proofs/native-material-timing/proof.json",
+    "selection": {
+      "width": 1600,
+      "kind": "crowd",
+      "mode": "all-long",
+      "frameTimes": {
+        "max": 105.7000000178814,
+        "p95": 60.400000005960464
+      }
+    },
+    "trials": [
+      {
+        "variant": "inherited",
+        "frame_p95_ms": 77.2999999821186,
+        "frame_max_ms": 134.59999999403954,
+        "drain_ms": 2478.2999999821186,
+        "paused_ms": 0,
+        "full_lifetimes": 6
+      },
+      {
+        "variant": "current",
+        "frame_p95_ms": 40.099999994039536,
+        "frame_max_ms": 54.69999998807907,
+        "drain_ms": 2387.7999999821186,
+        "paused_ms": 0,
+        "full_lifetimes": 6
+      },
+      {
+        "variant": "current",
+        "frame_p95_ms": 41.80000001192093,
+        "frame_max_ms": 62.099999994039536,
+        "drain_ms": 2393.800000011921,
+        "paused_ms": 0,
+        "full_lifetimes": 6
+      },
+      {
+        "variant": "inherited",
+        "frame_p95_ms": 40.19999998807907,
+        "frame_max_ms": 65.2999999821186,
+        "drain_ms": 2391.5,
+        "paused_ms": 0,
+        "full_lifetimes": 6
+      }
+    ],
+    "effective_styles_verified_before_and_after": true,
+    "screenshots_or_extra_browser_work_during_measurement": true,
+    "conclusion": "No repeatable current penalty in this bounded geometry-harness comparison; not a universal performance or speedup claim.",
+    "query_free_protocol_satisfied": false,
+    "per_frame_computed_style_queries_present": true,
+    "screenshots_during_measurement": false
+  },
+  "strength_phase_evidence": [
+    {
+      "variant": "inherited",
+      "width": 1280,
+      "color": "rgb(168, 236, 247)",
+      "opacity": "0.673464",
+      "phase": 0.7440836948000312
+    },
+    {
+      "variant": "inherited",
+      "width": 1600,
+      "color": "rgb(168, 236, 247)",
+      "opacity": "0.590899",
+      "phase": 0.7754583846900838
+    },
+    {
+      "variant": "current",
+      "width": 1280,
+      "color": "rgb(168, 236, 247)",
+      "opacity": "0.637958",
+      "phase": 0.7575761025922543
+    },
+    {
+      "variant": "current",
+      "width": 1600,
+      "color": "rgb(168, 236, 247)",
+      "opacity": "0.721032",
+      "phase": 0.7260077417769477
+    }
+  ],
+  "evidence_limitations": [
+    "Original expanded-padding queue/idle failures preserved in initial-expanded-padding; repaired before canonical capture with full affected rerun.",
+    "Failed UTF-8 edit preflight launched an unintended unchanged-source retry; verified owned job tree stopped, partial evidence retained in aborted-unchanged-rerun, explicit pipeline exit checks added.",
+    "Obsolete ink asset basename and native font minimum were corrected without removing functional assertions; failed-native-font-preflight contains no measured trials.",
+    "Unchanged board proof reuses503c853a; selected game differs from it only in combat.css, independently verified.",
+    "Timing protocol erratum: inherited measured CHECK included two getComputedStyle call sites per caption/frame. Prior no-style-query descriptions are withdrawn; raw data remains an instrumented geometry-harness comparison. See TIMING-ERRATUM-r56.md."
+  ],
+  "parent_server_shutdown": "winner-battery/server-shutdown.json",
+  "scope_audit": "SCOPE-AUDIT-r54.json",
+  "assertion_audit": "ASSERTION-AUDIT-r54.json",
+  "applied_files_byte_verified": 86,
+  "main_index_preserved": true,
+  "main_index_sha256": "6f75cb9060c5ed58cb981e6b487beb233e9a17128a9974379c659d651d389129",
+  "browser_gates": [
+    {
+      "gate": "chrome/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "steam-deck/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "gamepad/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "events/check.py",
+      "exit": 0
+    },
+    {
+      "gate": "gameover-keeps/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "seams/proof.py",
+      "exit": 0
+    },
+    {
+      "gate": "combat-scene/seam.py",
+      "exit": 0
+    }
+  ],
+  "validated_captures": "VALIDATED-CAPTURES-r54.json",
+  "next_brief": "BRIEF-r55.md",
+  "timing_protocol_erratum": "TIMING-ERRATUM-r56.md"
+}

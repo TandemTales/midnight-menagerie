@@ -1,0 +1,38 @@
+{
+  "method": "Read-only AST assertion comparison; execution outcomes are recorded separately",
+  "rows": [
+    {
+      "code": "BERYL",
+      "path": "D:\\UILOOP\\r53-20261029\\a\\tests\\ui-r53-beryl\\interactions.py",
+      "sha256": "fb9c5ceee25f96a8559806ae90c3554ad48dadce5fa1f5a3e57234ffa7c79d3f",
+      "baseline_assertions": 12,
+      "current_assertions": 15,
+      "removed_assertions": [
+        "row['title']['filter'] == 'none' and row['title']['fill'] == row['title']['color']"
+      ],
+      "all_original_functional_assertions_preserved": true
+    },
+    {
+      "code": "CITRINE",
+      "path": "D:\\UILOOP\\r53-20261029\\b\\tests\\ui-r53-citrine\\interactions.py",
+      "sha256": "d58379389303bb188606052e4d54ed25b183e9f4089e2a633002bfe30259a648",
+      "baseline_assertions": 12,
+      "current_assertions": 13,
+      "removed_assertions": [
+        "row['title']['filter'] == 'none' and row['title']['fill'] == row['title']['color']"
+      ],
+      "all_original_functional_assertions_preserved": true
+    },
+    {
+      "code": "FLUORITE",
+      "path": "D:\\UILOOP\\r53-20261029\\c\\tests\\ui-r51-spinel\\interactions.py",
+      "sha256": "19e02c64d867a04ffc9d5266b680f9fe961e6ef38c88165ec1ebb9af3f314c34",
+      "baseline_assertions": 12,
+      "current_assertions": 14,
+      "removed_assertions": [
+        "row['title']['filter'] == 'none' and row['title']['fill'] == row['title']['color']"
+      ],
+      "all_original_functional_assertions_preserved": true
+    }
+  ]
+}

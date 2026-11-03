@@ -1,0 +1,238 @@
+{
+  "authorized_utc": "2026-10-27T00:59:15.584261+00:00",
+  "scope": "Original/preexisting enemy animation timing only; user explicitly requested 30 fps. Image/frame data unchanged.",
+  "files": [
+    {
+      "path": "game/assets/sprites/enemy-clips/ancient-topiary/index.json",
+      "before_sha256": "572f0cdeb73ae58ee34e4ab8ce30a8036fc2b94ce5cd94c0bf70cde971519a26",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/ancient-topiary/index.json",
+      "after_sha256": "786132168f6d8729086bf071d0de93f710a65d26c6c5bced8993f972b3be43b0",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/blanket-blob/index.json",
+      "before_sha256": "6a79d27c8ac1008f1137e52d9d18b9ca2c951a086daf194cd00d0e18a25213ae",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/blanket-blob/index.json",
+      "after_sha256": "2298de8b6e3721c8f1f0074c45f03b31ffcb6155049dcb6cd9eb1568b9037abb",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/blanket-creeper/index.json",
+      "before_sha256": "07a589372f3692b14286f7afcb2f40a71943cecd57691aac6c19ed408a74db5b",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/blanket-creeper/index.json",
+      "after_sha256": "f9a7697deb32aab45bcee123b5bf1ef6ad38748b929b91b21d050312b8ea05fb",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/blanket-hydra/index.json",
+      "before_sha256": "06bd2bf5f764c99707ac9eb339de080df9bf785bc393bae02035513478d36933",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/blanket-hydra/index.json",
+      "after_sha256": "3a9ec79ca97e38afab9a724c75e9ac986a75ad117a57d5ec2d75c830921cdf99",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/butler/index.json",
+      "before_sha256": "94a10367b22e056f78be572f01a8a3fe9de71f56a59b274b4954167a42b917be",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/butler/index.json",
+      "after_sha256": "cabd02681a0fc8744e7feef4a4847e71e83a15cbaec0a3d7bb0bb3689d867cab",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 5
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/button-baby/index.json",
+      "before_sha256": "5c748841b4955b798a40b5d97951943cfe11060f42d21b8f294b558bef598acc",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/button-baby/index.json",
+      "after_sha256": "d1404aacb32f29e769dda035cfe77ca95b7075ce125adb2df026808980a1eaaa",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/candy-clump/index.json",
+      "before_sha256": "9b121dd416a6244a373b8b2af9af4552a23a67fda7f16435dafef03b7c0bd4f4",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/candy-clump/index.json",
+      "after_sha256": "6b06ed66d3d97ed8bf3f5d3b2688dbc5cab07d6a5b4937df05f89866461779a2",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/carnivorous-conservatory/index.json",
+      "before_sha256": "cc0b0fbb7fa6ee45f04e1807e40f1a9cfd4e7eaa01bb43a974752babb232d7ef",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/carnivorous-conservatory/index.json",
+      "after_sha256": "e184d1746db1bde54b44044c05852a1c0d0b6f3970a2a22dc73da95c3fb68a5b",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/coatrack-crawler/index.json",
+      "before_sha256": "a9331fe37a9294afa62a19afe25fc7e773c619b5a020e37072f239e784d99c5a",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/coatrack-crawler/index.json",
+      "after_sha256": "ec0a548725c1a2c854ffa71715cd2a1a897b6267e8bd2e2d342bc1f632bf2812",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/compost-colossus/index.json",
+      "before_sha256": "710370a4c29ece587f5f3d4d42512dfe84619a470e5331daafc8b6738dff8c9a",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/compost-colossus/index.json",
+      "after_sha256": "977bb2427db09b67970d7a5dbe814c242b57b712e925ae09bebc7449d23635bf",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/confectioner/index.json",
+      "before_sha256": "37069338949441c3a0e0d6648cadef3c31adb96a80d54dd571c4e746f6b0f804",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/confectioner/index.json",
+      "after_sha256": "e8fb48045de985bffbdf9cf3c38989c0584de9743189d773f39dfd254efcdf22",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/creeping-ivy/index.json",
+      "before_sha256": "74ff478af43fe7b190d3897b4729a9666fc59226ff55eb167a6863df6ca8360d",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/creeping-ivy/index.json",
+      "after_sha256": "032da38f4ec1e1269b89db539f1579ca6ae13204ebd524b95a894d5157aadae5",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/door-greeter/index.json",
+      "before_sha256": "ba9faa7cad5887f32f606b06821d446ad48ded6dfe032b7f8dd54bd984272a0a",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/door-greeter/index.json",
+      "after_sha256": "b045d2dfc0c1d661d1488cf443d62e7a44fc2cf5b22053031edc22c2e22d20f5",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/dough-blob/index.json",
+      "before_sha256": "1ccc8e3ae7a41d15ceb7a170c014545780be995159febdf25aa953826d09f880",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/dough-blob/index.json",
+      "after_sha256": "386144a685d5c19bd7efd27a76b2330062537bdd96c7a84465fe16a17c59619c",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/dust-bunny/index.json",
+      "before_sha256": "b751c337df29b27d2e20588601063f9fc6c37968e05a2e5540b479e2b9bbf480",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/dust-bunny/index.json",
+      "after_sha256": "44039e2fb50a43b013fbb18d91df2ca863805d15f8363029397984334dbb8586",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/governess/index.json",
+      "before_sha256": "c55e7b412251018f84a368da7cbc9e6e5195e9f2c0a3405b46bbd33b01130fe1",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/governess/index.json",
+      "after_sha256": "078b6c5de54502666fc4f9e3031eaa616e356f2202e3ea065ee6264340092c63",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 5
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/jack-in-the-box/index.json",
+      "before_sha256": "2121112cbafd3d5b1ae21eaed6977306843fa3a917e304510cc1c7aa07d94a70",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/jack-in-the-box/index.json",
+      "after_sha256": "b16674bf06119b08d0ed0e8e51eaca48b00ad8b67672badb373eb5ddac4c9981",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/jam-jar/index.json",
+      "before_sha256": "3361de3948b500c81ad20927254f9b18839d2152b81b8d46d2d0dc2c6cf4f045",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/jam-jar/index.json",
+      "after_sha256": "aeae3fe83108f5c04c2cefb3717ea3baf764d2ea3d83166ec3232fc9eead1af5",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/lost-luggage/index.json",
+      "before_sha256": "45e694659f2da5c6740f83eb8872d883d2e6ffcff5b1896e14f2c09ff1afd812",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/lost-luggage/index.json",
+      "after_sha256": "7620cf46e03146abbca56182298145e6c321dcfe69fe9ae0eae1ac132be52d10",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/oven-maw/index.json",
+      "before_sha256": "15ca7c241217646ae5b8ebb4b03c0d40a8c44088e3b877c88ba11bdab597ce50",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/oven-maw/index.json",
+      "after_sha256": "342b56b26fe17caa40d2c5faacb621bdb28d44d59ac7ecf9febcf87fff01239a",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/pantry-mimic/index.json",
+      "before_sha256": "5bdbbf16c7e4bfe227cecb45b8ae49489172216a791e438435256df0e6cb04e1",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/pantry-mimic/index.json",
+      "after_sha256": "1f0398f37705aede7e2f436420e69dd1c07ea87a0e6da7a4eb83a3c5939ec5c2",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/patchwork-giant/index.json",
+      "before_sha256": "fd0482330bab34bf550b136613e4eef3003076259cfa4eb909112631c40f6ae8",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/patchwork-giant/index.json",
+      "after_sha256": "3e90de031360dd3acfcc4bddf9dc380cbfef9f1e8c625497cedef61d4637727e",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/patchwork-soldier/index.json",
+      "before_sha256": "b1ff5db10d6f2398b4daad4d2bc46367e6b646781a8427ad1d71366999b3f654",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/patchwork-soldier/index.json",
+      "after_sha256": "c11e899f2e6521ec21e6e0640ea3cba17e580de70b785fe4e675a87177e67d9c",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/red-carpet-runner/index.json",
+      "before_sha256": "c0cfe4a9b011f7013ff227917706eef24594bb9bc58644b816a1faccdfda4efe",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/red-carpet-runner/index.json",
+      "after_sha256": "dd5200e16fed2ebe4a626fc49c757f8ff8177e82c2bdbd2fc1681f13091a88b4",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/slipper-skitter/index.json",
+      "before_sha256": "6a64e6190cb7bcbb3081cb9013eec675717ca40fa1ab7b3f5b62e070dfc85731",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/slipper-skitter/index.json",
+      "after_sha256": "ecc039011bd76a294428cc631b848c47261167eb649b96b976ebb3366aa1a947",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/sugar-golem/index.json",
+      "before_sha256": "0611dc2dadf4343f98c0d0a52df318c78141ff488954e20a22b9841f0e22da2e",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/sugar-golem/index.json",
+      "after_sha256": "74bb622c4bb06791d76541fe25567cc9bbf3d86035fd04b1d8bb5b5c05173f12",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/the-wardrobe/index.json",
+      "before_sha256": "07df5b9b71e966cb27b5aed571209f5a3511e0a5c8ed8a2d056cf33cdf1020f1",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/the-wardrobe/index.json",
+      "after_sha256": "a98ed2ac3d5bc42456ef2cd71bb0e2ab747b755759a34df4be9473a0cd8c7f0a",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/toy-chest/index.json",
+      "before_sha256": "224612b22eb5601c77e4eddc2088942dc0454b904b067ed9bdd1ad050c1e6c2b",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/toy-chest/index.json",
+      "after_sha256": "9135c06d362075cb8516307ef418d267b2f73225fad1e9b6914da72ee7694634",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/wardrobe-guest/index.json",
+      "before_sha256": "4ebb3f053ddcf3c706bda9ee69fd1f31618a0b26a1ae95c79fe069ead047258d",
+      "backup": "docs/enemy-roster-2026-10-26/animation-production/legacy-30fps-2026-10-27/before/wardrobe-guest/index.json",
+      "after_sha256": "5775ec12a5e9a29253a6f0350733e6e447a824dbb25ad393ecec0e9bfaa34f5f",
+      "change": "clip fps only; all set to 30",
+      "clip_count": 4
+    }
+  ]
+}

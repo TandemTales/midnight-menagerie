@@ -1,0 +1,13 @@
+# Editorial follow-through: surrounding UI copy
+
+28 October 2026. Source changes authorized by the coordinating agent after reviewing the growing actual-run `session.jsonl`. No browser launched and no gameplay state changed. This is a targeted follow-through note, not a new score or a claim that the six-wing audit is complete.
+
+1. **Upgrade wording — `scenes/event.js`.** The recorded `umbrella-upgrade-picker` shows “It comes back stronger and slightly wrong.” An ordinary upgrade has no promised extra flaw. The subtitle now says “Choose a Trick to sharpen. Check the improved version below.” The existing upgrade preview, selected card, action and outcome remain unchanged.
+
+2. **Atlas count — `scenes/atlas.js`.** The recorded `lampworks-route` shows `ROOMS 20` beside `15 rooms deep`, leaving the two quantities unexplained. `state/mapgen.js` exports `ROOMS`, the authored room-name/tag catalog; its naming logic reuses those entries with descriptive variants. I verified all seventeen region catalogs contain twenty entries. The atlas now labels this value **Room types** and derives it from `ROOMS[slug].length`, instead of printing a literal 20. The actual route-depth preview still uses `wingPreview(...).rows`.
+
+3. **Atlas captivity wording — `scenes/atlas.js`.** The existing accessibility correction identifies a wing's native Companion without claiming current captivity when there is no offered route. The visual dossier now does the same: the Companion heading is **Known Companion** outside an offer, while an actual offered route retains **Held here** and its existing `offered.held` assignment. **Guardian** replaces the ambiguous **Kept by** label above the boss name. No choice, route, captive assignment, survey gate, or freed state was changed.
+
+Validation: `node --check` passed for both edited source files. A direct ES-module import verified every `REGION_ORDER` entry has a nonempty `ROOMS` catalog and reported all seventeen counts as 20. The existing offered-versus-native Companion selection expression and route-preview call were retained. Layout and actual displayed text still need the live player's next reload/follow-through check; this note does not claim a visual pass.
+
+The earlier recorded title, rescue, and rest biography claims differ from the now-corrected current source. Likewise, duplicate `wing2-resumed`/`lampworks-first-clue` records while the scene was still `title` do not by themselves establish a game-state failure: the later records reach the Lampworks map with persisted observations and the run intact. Selector/readiness failures should be kept separate from confirmed game defects.

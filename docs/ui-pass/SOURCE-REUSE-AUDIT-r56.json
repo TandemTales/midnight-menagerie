@@ -1,0 +1,22 @@
+[
+  {
+    "code": "TOPAZ",
+    "initial": "fd74a889571ed186e3e73b8cc67c8e5d11c81d8e",
+    "repaired": "b80a575f4c26a16f3125af2e9fd90ae234256f16",
+    "canonical": "b80a575f4c26a16f3125af2e9fd90ae234256f16",
+    "final": "51c26b3621d2b739e5d2a63a97c532d0f943b9db",
+    "actual_patch_sha256": "f2fb90b684da2286c00562117816450b60d4ca0af65574a84dd4ecfd1bfdc5b0",
+    "source_identity_verified": true,
+    "review": "Parent inspected the exact paint-only diff; no dimensions, actions, markup or game logic changed. Subsequent memorial/affected-surface checks are retained separately."
+  },
+  {
+    "code": "ONYX",
+    "initial": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+    "repaired": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+    "canonical": "7269f14a63ac58f8e3556ec208c24048c5839d70",
+    "final": "602e7b359b97e812e5b95f3eb28859996a1759b8",
+    "actual_patch_sha256": "ae82aab2a6fd9870ecbf7f03acfdcaf4e594e5d76a3b3f7d2458e7a4f66e3bb2",
+    "source_identity_verified": true,
+    "review": "Parent inspected the exact paint-only diff; no dimensions, actions, markup or game logic changed. Subsequent memorial/affected-surface checks are retained separately."
+  }
+]

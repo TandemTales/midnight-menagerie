@@ -1,0 +1,110 @@
+{
+  "hall-mirror": {
+    "receipt": "representative-v7-left/installed-assets.json",
+    "status": "rolled_back_archived",
+    "staging": "representative-v7-left",
+    "validation": "representative-v7-left/validation.json",
+    "previous_status": "produced_review_pending",
+    "active": false,
+    "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+  },
+  "crib-curtains": {
+    "receipt": "batch-02/crib-curtains-v3-left/installed-assets.json",
+    "status": "rolled_back_archived",
+    "staging": "batch-02/crib-curtains-v3-left",
+    "validation": "batch-02/crib-curtains-v3-left/validation.json",
+    "previous_status": "produced_review_pending",
+    "active": false,
+    "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+  },
+  "foyer-chandelier": {
+    "receipt": "batch-02/foyer-chandelier-v3-left/installed-assets.json",
+    "status": "rolled_back_archived",
+    "staging": "batch-02/foyer-chandelier-v3-left",
+    "validation": "batch-02/foyer-chandelier-v3-left/validation.json",
+    "previous_status": "produced_review_pending",
+    "active": false,
+    "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+  },
+  "hanging-pots": {
+    "receipt": "batch-03/hanging-pots-v4-left/saved-assets.json",
+    "status": "rolled_back_archived",
+    "staging": "batch-03/hanging-pots-v4-left",
+    "validation": "batch-03/hanging-pots-v4-left/validation.json",
+    "previous_status": "produced_review_pending",
+    "active": false,
+    "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+  },
+  "garden-shears": {
+    "receipt": "batch-03/garden-shears-v3-left/saved-assets.json",
+    "status": "rolled_back_archived",
+    "staging": "batch-03/garden-shears-v3-left",
+    "validation": "batch-03/garden-shears-v3-left/validation.json",
+    "previous_status": "produced_review_pending",
+    "active": false,
+    "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+  },
+  "bedsheet-apparition": {
+    "receipt": "batch-04/bedsheet-apparition-v2-left/saved-assets.json",
+    "status": "rolled_back_archived",
+    "staging": "batch-04/bedsheet-apparition-v2-left",
+    "validation": "batch-04/bedsheet-apparition-v2-left/validation.json",
+    "previous_status": "produced_review_pending",
+    "active": false,
+    "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+  },
+  "topiary-hare": {
+    "receipt": "batch-04/topiary-hare-v1-left/saved-assets.json",
+    "status": "rolled_back_archived",
+    "staging": "batch-04/topiary-hare-v1-left",
+    "validation": "batch-04/topiary-hare-v1-left/validation.json",
+    "previous_status": "produced_review_pending",
+    "active": false,
+    "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+  },
+  "servant-bell": {
+    "receipt": "batch-05/servant-bell-v2-left/saved-assets.json",
+    "status": "rolled_back_archived",
+    "staging": "batch-05/servant-bell-v2-left",
+    "validation": "batch-05/servant-bell-v2-left/validation.json",
+    "previous_status": "produced_review_pending",
+    "active": false,
+    "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+  },
+  "masquerade-mask": {
+    "receipt": "batch-05/masquerade-mask-v2-left/saved-assets.json",
+    "status": "rolled_back_archived",
+    "staging": "batch-05/masquerade-mask-v2-left",
+    "validation": "batch-05/masquerade-mask-v2-left/validation.json",
+    "previous_status": "produced_review_pending",
+    "active": false,
+    "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+  },
+  "imaginary-friend": {
+    "receipt": "batch-06/imaginary-friend-v3-left/saved-assets.json",
+    "status": "rolled_back_archived",
+    "staging": "batch-06/imaginary-friend-v3-left",
+    "validation": "batch-06/imaginary-friend-v3-left/validation.json",
+    "previous_status": "produced_review_pending",
+    "active": false,
+    "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+  },
+  "rain-chain": {
+    "receipt": "batch-06/rain-chain-v5-left/saved-assets.json",
+    "status": "rolled_back_archived",
+    "staging": "batch-06/rain-chain-v5-left",
+    "validation": "batch-06/rain-chain-v5-left/validation.json",
+    "previous_status": "produced_review_pending",
+    "active": false,
+    "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+  },
+  "rocking-chair": {
+    "receipt": "batch-07/rocking-chair-v3-left/saved-assets.json",
+    "status": "rolled_back_archived",
+    "staging": "batch-07/rocking-chair-v3-left",
+    "validation": "batch-07/rocking-chair-v3-left/validation.json",
+    "previous_status": "produced_review_pending",
+    "active": false,
+    "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+  }
+}

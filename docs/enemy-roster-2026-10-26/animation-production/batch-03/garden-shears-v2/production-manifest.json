@@ -1,0 +1,13 @@
+{
+  "enemy": "garden-shears",
+  "source": "docs\\enemy-roster-2026-10-26\\art-production\\garden-shears-original.png",
+  "source_sha256": "ed6200810e7f02623e1916f527479c1009b08bdcdc6f89b421c380663f4495c7",
+  "method": "Authentic front blade/handle/rivet plate and back blade/handle/ribbon rotate independently around the painted flower rivet. Ribbon tips deform locally; no hidden joint geometry is invented. Source alpha noise <=2/255 removed in derivative only.",
+  "actions": {
+    "idle": "Suspended bob, small mechanical jaw play and localized ribbon flutter.",
+    "attack": "Handles spread in anticipation; blades perform one upward snip away from the visitor, ribbon follows, then the shears recover.",
+    "hurt": "Sharp jaw recoil and body deflection, short ribbon flutter, recover.",
+    "defeat": "Blades fold closed; the shears roll and sink gently onto their side, then remain still."
+  },
+  "quality_gate": "Key poses inspected for coherent joints and identity. Full frame checks and full-speed intended-size review pending."
+}

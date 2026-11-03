@@ -1,0 +1,18 @@
+{
+  "enemy": "rocking-chair",
+  "source": "docs\\enemy-roster-2026-10-26\\art-production\\rocking-chair-original.png",
+  "source_sha256": "09ed2e082330094c753ed6841da2bbacdbc25bdd96a51ce3c342fd98feffd463",
+  "method": "Rigid source timber rocks about its runners with explicit floor contact; local upholstery mesh gives separately on impact. Distinct authored runner lift, leftward scoot, recoil and tipped defeat. No generic creature wobble or invented joints.",
+  "actions": {
+    "idle": "Small alternating runner rock with slight cushion give.",
+    "attack": "Lean back and lift the leading runner, scoot left, absorb the landing in the cushion, and rock back to ready.",
+    "hurt": "Sharp rightward jolt, cushion compression and damped counter-rock.",
+    "defeat": "Chair tips onto its left side and stays on the floor with inert upholstery."
+  },
+  "orientation": {
+    "required": "screen-left",
+    "method": "Source seat front and long leading runner project left. Anticipation rocks back right, attack scoots left, hurt recoils right, and the final tip falls left. No mirror or text/handedness change.",
+    "status": "prototype_review_pending"
+  },
+  "quality_gate": "Prototype; no delivered actions yet."
+}

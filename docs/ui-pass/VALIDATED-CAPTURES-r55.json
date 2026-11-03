@@ -1,0 +1,228 @@
+{
+  "round": 55,
+  "winner": "IOLITE",
+  "source_commit": "5a4c985298d63b392712544a0c113cde08bfabaf",
+  "original_blind_images_preserved": true,
+  "captures": [
+    {
+      "screen": "rest",
+      "exit": 0,
+      "provenance": "Unchanged frozen comparison source; exact original image",
+      "sha256": "863f587c483b70422fec5f45197a6cbce3a42b5b75fdf445017426357f5125db",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "perf": {
+        "fps": 145,
+        "mem": 30,
+        "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "software": false,
+        "glStd": 38.94,
+        "warmMs": 27560,
+        "settleMs": 322,
+        "band": 29.8
+      },
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "comparison_evidence_commit": "5a4c985298d63b392712544a0c113cde08bfabaf"
+    },
+    {
+      "screen": "rest-1280",
+      "exit": 0,
+      "provenance": "Unchanged frozen comparison source; exact original image",
+      "sha256": "2648f5c60b6d07a39b6f440a55657b189f3e287f4acefc62e59105fc82a2d6cb",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "perf": {
+        "fps": 140,
+        "mem": 30,
+        "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "software": false,
+        "glStd": 40.01,
+        "warmMs": 20996,
+        "settleMs": 449,
+        "band": 30.3
+      },
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "comparison_evidence_commit": "5a4c985298d63b392712544a0c113cde08bfabaf"
+    },
+    {
+      "screen": "event",
+      "exit": 0,
+      "provenance": "Unchanged frozen comparison source; exact original image",
+      "sha256": "deaafc5e40be2c1a5fbbfdc3935fcfb7684677f9f0dcee6d7807bfd0d4d2c226",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "perf": {
+        "fps": 106,
+        "mem": 30,
+        "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "software": false,
+        "glStd": 51.69,
+        "warmMs": 38886,
+        "settleMs": 209,
+        "band": 46.2
+      },
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "comparison_evidence_commit": "5a4c985298d63b392712544a0c113cde08bfabaf"
+    },
+    {
+      "screen": "event-1280",
+      "exit": 0,
+      "provenance": "Unchanged frozen comparison source; exact original image",
+      "sha256": "97b08de6d8abc272885f6714471561d0c797fa4ef0479321095e016ca254da22",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "perf": {
+        "fps": 133,
+        "mem": 30,
+        "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "software": false,
+        "glStd": 52.57,
+        "warmMs": 30830,
+        "settleMs": 312,
+        "band": 49.5
+      },
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "comparison_evidence_commit": "5a4c985298d63b392712544a0c113cde08bfabaf"
+    },
+    {
+      "screen": "gameover",
+      "exit": 0,
+      "provenance": "Unchanged frozen comparison source; exact original image",
+      "sha256": "e3ddf16df1c9162a7605759907ac76e7dc36c8daac803b0cf9a8e1f44e111104",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "perf": {
+        "fps": 93,
+        "mem": 30,
+        "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "software": false,
+        "glStd": 43.29,
+        "warmMs": 11510,
+        "settleMs": 331,
+        "band": 38.4
+      },
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "comparison_evidence_commit": "5a4c985298d63b392712544a0c113cde08bfabaf"
+    },
+    {
+      "screen": "gameover-1280",
+      "exit": 0,
+      "provenance": "Unchanged frozen comparison source; exact original image",
+      "sha256": "cd32a412d2dcb5064c4b8d6a689226287725657b3578f0f496e53ca3d4b15e20",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "perf": {
+        "fps": 100,
+        "mem": 32,
+        "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "software": false,
+        "glStd": 46.96,
+        "warmMs": 10588,
+        "settleMs": 549,
+        "band": 40.7
+      },
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "comparison_evidence_commit": "5a4c985298d63b392712544a0c113cde08bfabaf"
+    },
+    {
+      "screen": "shop",
+      "exit": 0,
+      "provenance": "Unchanged frozen comparison source; exact original image",
+      "sha256": "65d5a2ce18f382ebcaced12a3e5991cee5fd833c6875b3d13261295448c2c98e",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "perf": {
+        "fps": 127,
+        "mem": 31,
+        "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "software": false,
+        "glStd": 43.03,
+        "warmMs": 30937,
+        "settleMs": 409,
+        "band": 46.4
+      },
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "comparison_evidence_commit": "5a4c985298d63b392712544a0c113cde08bfabaf"
+    },
+    {
+      "screen": "shop-1280",
+      "exit": 0,
+      "provenance": "Unchanged frozen comparison source; exact original image",
+      "sha256": "17d1f0a814301ec4b0d964b9a29aa129e1d1aff616cf0fcd94fa63e263733b1b",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "perf": {
+        "fps": 138,
+        "mem": 31,
+        "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "software": false,
+        "glStd": 46.63,
+        "warmMs": 23623,
+        "settleMs": 418,
+        "band": 49.9
+      },
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "comparison_evidence_commit": "5a4c985298d63b392712544a0c113cde08bfabaf"
+    },
+    {
+      "screen": "combat-floaters",
+      "exit": 0,
+      "provenance": "Unchanged frozen comparison source; exact original image",
+      "sha256": "5cabd33360949ea11d39fd29d727eb2d4e21b43b43fd9b9dfd2795ffd9c2fb34",
+      "dimensions": [
+        1600,
+        900
+      ],
+      "perf": {
+        "fps": 145,
+        "mem": 33,
+        "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "software": false,
+        "glStd": 43.36,
+        "warmMs": 32616,
+        "settleMs": 615,
+        "band": 40.6
+      },
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "comparison_evidence_commit": "5a4c985298d63b392712544a0c113cde08bfabaf"
+    },
+    {
+      "screen": "combat-floaters-1280",
+      "exit": 0,
+      "provenance": "Unchanged frozen comparison source; exact original image",
+      "sha256": "d40f27b58a3f83cb6b4a89a24657ed260e5ab83afa53e2046c8ccbc9b295b86b",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "perf": {
+        "fps": 145,
+        "mem": 33,
+        "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "software": false,
+        "glStd": 44.64,
+        "warmMs": 22654,
+        "settleMs": 633,
+        "band": 42.3
+      },
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "comparison_evidence_commit": "5a4c985298d63b392712544a0c113cde08bfabaf"
+    }
+  ]
+}

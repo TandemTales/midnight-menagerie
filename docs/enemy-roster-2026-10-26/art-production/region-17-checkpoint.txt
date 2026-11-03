@@ -1,0 +1,30 @@
+REGION 17 COMPLETE: 11 new sprites; 0 pending, 0 blocked.
+Built-in image_gen only. One original per approved identity. All original PNGs and prompts retained in this art-production folder.
+Full generated images and final-size region contact sheet visually reviewed. Transparent RGBA, decoding, visible alpha bounds, source canvas and hashes verified.
+Sources: regular 256-square, elite 512-square, boss 1024-square. WebP uses isolated existing build_enemy_still. No code, registry or animation changes.
+Final files:
+animations\sprites\enemies\nameplate.png
+game\assets\sprites\enemies\nameplate.webp
+animations\sprites\enemies\housePulse.png
+game\assets\sprites\enemies\house-pulse.webp
+animations\sprites\enemies\welcomeCushion.png
+game\assets\sprites\enemies\welcome-cushion.webp
+animations\sprites\enemies\darningHoop.png
+game\assets\sprites\enemies\darning-hoop.webp
+animations\sprites\enemies\draftStopper.png
+game\assets\sprites\enemies\draft-stopper.webp
+animations\sprites\enemies\plumbBob.png
+game\assets\sprites\enemies\plumb-bob.webp
+animations\sprites\enemies\floorboardKnocker.png
+game\assets\sprites\enemies\floorboard-knocker.webp
+animations\sprites\enemies\keeperSHands.png
+game\assets\sprites\enemies\keeper-s-hands.webp
+animations\sprites\enemies\innerStair.png
+game\assets\sprites\enemies\inner-stair.webp
+animations\sprites\enemies\waitingHearth.png
+game\assets\sprites\enemies\waiting-hearth.webp
+animations\sprites\enemies\keeper.png
+game\assets\sprites\enemies\keeper.webp
+Review: region-17-contact.jpg
+Machine-readable full entries: region-17-results.json
+No action was canceled or denied in this agent batch. The earlier ancestor Hall Mirror tool outcome remains exactly "aborted by user"; no inference is made about its cause.

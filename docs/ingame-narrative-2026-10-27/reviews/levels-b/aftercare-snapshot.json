@@ -1,0 +1,883 @@
+{
+  "foyer": {
+    "id": "AFTER-foyer",
+    "title": "The little bell",
+    "lines": [
+      "A low bell rings. A water dish tips at the edge of the Butler’s tray.",
+      "A little hatch opens beside the counter. A tiny towel hangs from the Butler’s head."
+    ],
+    "recap": "A little service bell rings. The Butler’s water dish is tipping beside an open hatch.",
+    "choices": [
+      {
+        "id": "AFTER-foyer-dish",
+        "label": "Steady the edge of the dish.",
+        "lines": [
+          "You steady the dish. The Butler catches the tray beneath it without spilling a drop.",
+          {
+            "speaker": "The Butler",
+            "text": "Excellent timing. Animals dislike a breakfast served vertically."
+          },
+          "He sets the water by the hatch. An unseen nose sniffs; the dish slides inside.",
+          "He leaves the towel on his head until the drinking stops."
+        ],
+        "recap": "You steadied the dish. The Butler served water to an animal behind the hatch."
+      },
+      {
+        "id": "AFTER-foyer-hatch",
+        "label": "Point out the waiting hatch.",
+        "lines": [
+          "You point to the hatch. The Butler catches the dish with his free hand and turns the tray.",
+          {
+            "speaker": "The Butler",
+            "text": "The breakfast bell. Supper? The clock is unhelpful. They are fed."
+          },
+          "A nose sniffs at the water. The dish slides inside, and quiet lapping follows.",
+          "The towel stays on his head. For once, something else comes first."
+        ],
+        "recap": "You pointed out the waiting hatch. The Butler caught the dish and served the animal its water."
+      },
+      {
+        "id": "AFTER-foyer-watch",
+        "label": "Give the Butler room.",
+        "lines": [
+          "You leave room beside the tray. The Butler catches the tipping dish without losing a drop.",
+          {
+            "speaker": "The Butler",
+            "text": "The animals’ water. I do remember the important parts."
+          },
+          "He serves it through the hatch. A nose sniffs, and the dish slides inside.",
+          "The tiny towel remains on his head until the drinking stops."
+        ],
+        "recap": "You gave the Butler room. He caught the dish and tended the animal behind the hatch."
+      }
+    ]
+  },
+  "nursery": {
+    "id": "AFTER-nursery",
+    "title": "A busy hat",
+    "lines": [
+      "The Governess reaches toward the soldier’s crooked duster hat.",
+      "The soldier pats its hat, then points the feathers toward a dusty sleeve."
+    ],
+    "recap": "The Governess wants to straighten the hat. The soldier has a job for it.",
+    "choices": [
+      {
+        "id": "AFTER-nursery-sleeve",
+        "label": "Point to the dusty sleeve.",
+        "lines": [
+          "You point to the dust. The Governess lowers her sleeve within the soldier’s reach.",
+          "The crooked hat dusts it beautifully. The soldier pats the hat again.",
+          {
+            "speaker": "The Governess",
+            "text": "Oh. You were busy."
+          },
+          "She leaves the hat alone and offers her other sleeve."
+        ],
+        "recap": "You pointed out the dust. The Governess let the soldier keep its hat and finish its job."
+      },
+      {
+        "id": "AFTER-nursery-space",
+        "label": "Clear a little space on the table.",
+        "lines": [
+          "You slide an empty spool aside. The soldier steps into the space and dusts the Governess’s sleeve.",
+          {
+            "speaker": "The Governess",
+            "text": "I see. You require working room."
+          },
+          "She turns her other sleeve toward it. The hat remains proudly crooked."
+        ],
+        "recap": "You cleared working space. The soldier kept its hat, and the Governess offered both sleeves for dusting."
+      },
+      {
+        "id": "AFTER-nursery-watch",
+        "label": "Watch what the soldier does.",
+        "lines": [
+          "You wait. The soldier ducks beneath the Governess’s hand and dusts her sleeve.",
+          "Her hand stops above the crooked hat.",
+          {
+            "speaker": "The Governess",
+            "text": "Oh. You were busy."
+          },
+          "She offers the other sleeve instead of straightening anything."
+        ],
+        "recap": "You watched. The soldier showed what its hat was for, and the Governess left it alone."
+      }
+    ]
+  },
+  "sleeping-quarters": {
+    "id": "AFTER-sleeping-quarters",
+    "title": "From the inside",
+    "lines": [
+      "A small paw reaches beneath the curtain toward its dangling cord.",
+      "The Beast’s foot blocks the gap. The cord stops just short of the paw."
+    ],
+    "recap": "The occupant is reaching for a curtain cord it cannot quite reach.",
+    "choices": [
+      {
+        "id": "AFTER-sleeping-quarters-cord",
+        "label": "Lower the loose end of the cord.",
+        "lines": [
+          "You lower the loose end. The Beast shifts its foot aside, and the paw takes the cord.",
+          "The curtain opens a little, then closes again.",
+          {
+            "speaker": "The Bedframe Beast",
+            "text": "An excellent hiding place. It works both ways."
+          },
+          "The cord stays within reach on the inside."
+        ],
+        "recap": "You lowered the cord. The Beast cleared the gap, and the occupant can now open or close its own curtain."
+      },
+      {
+        "id": "AFTER-sleeping-quarters-foot",
+        "label": "Show the Beast where its foot is.",
+        "lines": [
+          "You point to the blocked gap. The Beast looks down.",
+          {
+            "speaker": "The Bedframe Beast",
+            "text": "That foot again. Always somewhere."
+          },
+          "It moves the foot and lowers the cord. The paw opens the curtain a little, then closes it.",
+          "The Beast keeps the gap clear and the cord within reach."
+        ],
+        "recap": "You showed the blocked gap. The Beast moved its foot and gave the occupant control of the curtain."
+      },
+      {
+        "id": "AFTER-sleeping-quarters-watch",
+        "label": "Give the little paw room.",
+        "lines": [
+          "You wait clear of the curtain. The paw reaches again.",
+          "The Beast notices, shifts its foot, and lowers the cord into the paw’s reach.",
+          "The curtain opens a little, then closes.",
+          {
+            "speaker": "The Bedframe Beast",
+            "text": "A very good place to choose to hide."
+          }
+        ],
+        "recap": "You gave the occupant room. The Beast cleared the gap and left the cord where the paw could reach it."
+      }
+    ]
+  },
+  "kitchens-cellars": {
+    "id": "AFTER-kitchens-cellars",
+    "title": "One plain spoon",
+    "lines": [
+      "A plain spoon lies beneath the Recipe Board, beside a bowl of soup.",
+      "The Confectioner reaches for its icing bag."
+    ],
+    "recap": "A useful plain spoon is beside the soup. The Confectioner is considering icing it.",
+    "choices": [
+      {
+        "id": "AFTER-kitchens-cellars-spoon",
+        "label": "Put the plain spoon beside the bowl.",
+        "lines": [
+          "You move the spoon beside the bowl. The Confectioner gives the soup one careful stir.",
+          {
+            "speaker": "The Confectioner",
+            "text": "No lumps. No sprinkles. Remarkable."
+          },
+          "It sets the icing bag down and places the plain spoon safely apart from the decorations."
+        ],
+        "recap": "You put the spoon by the soup. The Confectioner used it and decided to keep it plain."
+      },
+      {
+        "id": "AFTER-kitchens-cellars-ask",
+        "label": "Ask, “Can it stir already?”",
+        "lines": [
+          {
+            "speaker": "The Confectioner",
+            "text": "Without improvements? A bold experiment."
+          },
+          "It stirs the soup. The spoon does exactly what a spoon should do.",
+          "The icing bag goes down. The plain spoon goes into its own clean place.",
+          {
+            "speaker": "The Confectioner",
+            "text": "Do not sprinkle the experiment."
+          }
+        ],
+        "recap": "You asked whether the spoon already worked. The Confectioner tested it and kept it plain."
+      },
+      {
+        "id": "AFTER-kitchens-cellars-watch",
+        "label": "Watch the spoon for a moment.",
+        "lines": [
+          "You wait. The Confectioner lifts the spoon with the hand that was reaching for the icing.",
+          "It tries one stir. Then another.",
+          {
+            "speaker": "The Confectioner",
+            "text": "Keep this one. We may need to stir something."
+          },
+          "It leaves the spoon plain and puts the icing aside."
+        ],
+        "recap": "You watched. The Confectioner discovered that the plain spoon worked and left it that way."
+      }
+    ]
+  },
+  "greenhouse": {
+    "id": "AFTER-greenhouse",
+    "title": "The light over there",
+    "lines": [
+      "A seedling leans toward a patch of light beyond the vines. Its pot nudges the nearest vine.",
+      "The Conservatory makes a brighter patch beside the pot. The seedling keeps leaning the other way."
+    ],
+    "recap": "The seedling is reaching for light beyond the vines, despite the brighter light offered beside it.",
+    "choices": [
+      {
+        "id": "AFTER-greenhouse-path",
+        "label": "Point along the seedling’s chosen direction.",
+        "lines": [
+          "You trace the direction of the leaning leaves with one finger.",
+          "The Conservatory’s leaves turn to follow. Its vines uncurl from the little path.",
+          "The pot shuffles into the light it wanted. A new vine reaches after it, then curls aside."
+        ],
+        "recap": "You showed the seedling’s direction. The Conservatory cleared the path, and the seedling moved into its chosen light."
+      },
+      {
+        "id": "AFTER-greenhouse-leaf",
+        "label": "Move a fallen leaf off the little path.",
+        "lines": [
+          "You slide the loose leaf aside. The pot shuffles into that small clear space, still facing the farther light.",
+          "The Conservatory uncurls the next vine, then the next.",
+          "The seedling reaches its chosen patch. The vines leave its path clear."
+        ],
+        "recap": "You cleared a small part of the path. The Conservatory opened the rest, and the seedling reached its chosen light."
+      },
+      {
+        "id": "AFTER-greenhouse-watch",
+        "label": "Give the seedling time.",
+        "lines": [
+          "You wait. The seedling nudges the vine once more, then leans toward the same distant patch.",
+          "At last, the vines uncurl. The pot shuffles into the light it wanted.",
+          "A new leaf reaches after it, then folds aside."
+        ],
+        "recap": "You waited for the seedling. The Conservatory opened its path and left it in its chosen light."
+      }
+    ]
+  },
+  "graveyard": {
+    "id": "AFTER-graveyard",
+    "title": "The part that stays",
+    "lines": [
+      "The Groundskeeper opens a book at WENT HOME. A paw-shaped smudge covers part of the writing.",
+      "His polishing cloth pauses above the smudge."
+    ],
+    "recap": "A familiar pawprint marks the record of an animal who went home. The Groundskeeper is about to polish the page.",
+    "choices": [
+      {
+        "id": "AFTER-graveyard-print",
+        "label": "Point gently to the pawprint.",
+        "lines": [
+          "You point to the little shape. The Groundskeeper lowers his cloth beside it.",
+          {
+            "speaker": "The Groundskeeper of Names",
+            "text": "This one always sat on my writing."
+          },
+          "He dusts around the print and leaves it untouched.",
+          {
+            "speaker": "The Groundskeeper of Names",
+            "text": "That part can stay."
+          }
+        ],
+        "recap": "You pointed to the pawprint. The Groundskeeper remembered its visitor and kept the mark."
+      },
+      {
+        "id": "AFTER-graveyard-listen",
+        "label": "Ask, “What were they like?”",
+        "lines": [
+          {
+            "speaker": "The Groundskeeper of Names",
+            "text": "Very interested in whatever page I needed next."
+          },
+          "His cloth moves away from the pawprint.",
+          {
+            "speaker": "The Groundskeeper of Names",
+            "text": "This one always sat on my writing."
+          },
+          "He leaves the familiar smudge on the record of going home."
+        ],
+        "recap": "You asked about the animal. The Groundskeeper shared a familiar habit and left its pawprint in the book."
+      },
+      {
+        "id": "AFTER-graveyard-watch",
+        "label": "Sit with the quiet moment.",
+        "lines": [
+          "You stay quietly beside the open book. The Groundskeeper looks at the smudge again.",
+          {
+            "speaker": "The Groundskeeper of Names",
+            "text": "This one always sat on my writing."
+          },
+          "He puts down the cloth.",
+          {
+            "speaker": "The Groundskeeper of Names",
+            "text": "That part can stay."
+          }
+        ],
+        "recap": "You shared the quiet moment. The Groundskeeper remembered the animal and kept its pawprint."
+      }
+    ]
+  },
+  "study-library": {
+    "id": "AFTER-study-library",
+    "title": "A place for the replies",
+    "lines": [
+      "Unanswered return requests spill from a drawer. An empty outgoing tray waits on the desk.",
+      "The Archivist opens a tiny drawer and hesitates."
+    ],
+    "recap": "The return requests need an answer. The outgoing tray is empty, and the Archivist is reconsidering where to put them.",
+    "choices": [
+      {
+        "id": "AFTER-study-library-tray",
+        "label": "Bring the outgoing tray within reach.",
+        "lines": [
+          "You slide the outgoing tray closer. The Archivist moves the requests into it.",
+          "They write I WAS WRONG on the tiny drawer, look at the remaining pile, and open a cupboard instead.",
+          {
+            "speaker": "The Archivist",
+            "text": "Room to improve. Quite a lot of room."
+          },
+          "The last requests need a second outgoing tray."
+        ],
+        "recap": "You brought the outgoing tray closer. The Archivist sent the requests onward and made a cupboard for corrections."
+      },
+      {
+        "id": "AFTER-study-library-order",
+        "label": "Set the loose requests together on the desk.",
+        "lines": [
+          "You gather the loose pages into a readable stack. The Archivist checks each request before placing it in the outgoing tray.",
+          {
+            "speaker": "The Archivist",
+            "text": "A small drawer for my mistakes should—"
+          },
+          "They see how much of the stack remains and open a cupboard marked I WAS WRONG.",
+          "The requests fill two outgoing trays."
+        ],
+        "recap": "You gathered the requests. The Archivist checked them, sent them onward, and made a cupboard for corrections."
+      },
+      {
+        "id": "AFTER-study-library-watch",
+        "label": "Wait while the Archivist reads.",
+        "lines": [
+          "You give the Archivist time to read the unanswered requests.",
+          "They write I WAS WRONG on the tiny drawer, then look at the pile.",
+          {
+            "speaker": "The Archivist",
+            "text": "A cupboard."
+          },
+          "The requests move into the outgoing tray. It needs a second tray."
+        ],
+        "recap": "You waited while the Archivist read. The requests went to outgoing trays, and the corrections gained a cupboard."
+      }
+    ]
+  },
+  "attic-observatory": {
+    "id": "AFTER-attic-observatory",
+    "title": "One thing happening now",
+    "lines": [
+      "Warning threads slacken across the rafters. A loose telescope starts to roll along a tilted table.",
+      "An empty stand waits beside the table. The Watcher’s eyes dart between the telescope and a hundred tangled forecasts."
+    ],
+    "recap": "A telescope is starting to roll while the Watcher watches too many possible dangers at once.",
+    "choices": [
+      {
+        "id": "AFTER-attic-observatory-point",
+        "label": "Point out the rolling telescope.",
+        "lines": [
+          "You point. One quick thread catches the telescope before it reaches the edge.",
+          {
+            "speaker": "The Watcher in the Rafters",
+            "text": "That one was happening."
+          },
+          "It keeps that thread in place and loosens the other warnings. The way onward becomes visible."
+        ],
+        "recap": "You pointed out the real movement. The Watcher caught the telescope and cleared the other warning threads from the route."
+      },
+      {
+        "id": "AFTER-attic-observatory-place",
+        "label": "Point to the empty telescope stand.",
+        "lines": [
+          "You show the Watcher the empty telescope stand beside you.",
+          "A quick thread catches the rolling telescope and settles it into the stand.",
+          {
+            "speaker": "The Watcher in the Rafters",
+            "text": "A place to put it. Yes."
+          },
+          "It loosens the other warnings, leaving room to see the way onward."
+        ],
+        "recap": "You showed the empty stand. The Watcher secured the telescope and cleared the warning threads from the route."
+      },
+      {
+        "id": "AFTER-attic-observatory-watch",
+        "label": "Give the Watcher room to act.",
+        "lines": [
+          "You keep clear of the table. The Watcher catches the telescope with one quick thread.",
+          {
+            "speaker": "The Watcher in the Rafters",
+            "text": "That one was happening."
+          },
+          "It keeps that thread and loosens the others. The way onward appears between the warnings."
+        ],
+        "recap": "You left room. The Watcher caught the telescope and cleared the other warnings from the route."
+      }
+    ]
+  },
+  "lampworks": {
+    "id": "AFTER-lampworks",
+    "title": "A useful place to shine",
+    "lines": [
+      "A little lamp swings toward the dark threshold. The Lamplighter reaches after it.",
+      "An empty hook waits beside the way onward."
+    ],
+    "recap": "A lamp is leaning toward the dark threshold, where an empty hook offers a place to shine.",
+    "choices": [
+      {
+        "id": "AFTER-lampworks-hook",
+        "label": "Point out the empty hook.",
+        "lines": [
+          "You point to the hook. The Lamplighter lifts the leaning lamp onto it.",
+          "The beam reveals a small pawprint at the threshold.",
+          {
+            "speaker": "The Lamplighter",
+            "text": "Lighting the way. That is a position."
+          },
+          "The smaller lamp leans toward the door too. The doorway light stays in place."
+        ],
+        "recap": "You showed the hook. The Lamplighter placed a lamp there to light the way onward."
+      },
+      {
+        "id": "AFTER-lampworks-shadow",
+        "label": "Step out of the lamp’s beam.",
+        "lines": [
+          "You move clear of the beam. Its light reaches the threshold, and the lamp leans farther that way.",
+          "The Lamplighter follows its aim and sets it on the waiting hook.",
+          {
+            "speaker": "The Lamplighter",
+            "text": "Oh. You were lighting something."
+          },
+          "The little lamp keeps its useful place by the door."
+        ],
+        "recap": "You cleared the beam. The Lamplighter followed the lamp’s aim and gave it a place by the threshold."
+      },
+      {
+        "id": "AFTER-lampworks-watch",
+        "label": "Watch where the lamp turns.",
+        "lines": [
+          "You wait. The lamp keeps swinging toward the dark way onward.",
+          "The Lamplighter reaches after it, then lifts it onto the hook there.",
+          "The beam finds a small pawprint. A smaller lamp leans after it.",
+          {
+            "speaker": "The Lamplighter",
+            "text": "One at a time. I see the position now."
+          }
+        ],
+        "recap": "You watched the lamp’s direction. The Lamplighter set it by the threshold, where it stayed to light the way."
+      }
+    ]
+  },
+  "ballroom": {
+    "id": "AFTER-ballroom",
+    "title": "One goodbye",
+    "lines": [
+      "A Party Phantom lowers its empty plate and reaches toward its coat.",
+      "The Master raises a baton. A serving tray starts drifting after the guest."
+    ],
+    "recap": "A guest is ready to leave for another hall. The Master is preparing more music and food.",
+    "choices": [
+      {
+        "id": "AFTER-ballroom-coat",
+        "label": "Hold the coat where the guest can reach it.",
+        "lines": [
+          "You hold the coat within reach. The phantom takes it and waves once.",
+          "The Master catches the following tray. Its baton dips before an encore can begin.",
+          "The guest walks into another hall of the House. The Master answers with one small wave."
+        ],
+        "recap": "You offered the coat. The guest left for another hall, and the Master ended the music and service for that visit."
+      },
+      {
+        "id": "AFTER-ballroom-wave",
+        "label": "Return the guest’s goodbye wave.",
+        "lines": [
+          "You give one goodbye wave. The phantom answers, takes its coat, and starts toward the next hall.",
+          "The Master looks at its baton, then sets it down and waves too.",
+          "It stops the serving tray from following. The guest leaves the Ballroom."
+        ],
+        "recap": "You returned the goodbye. The Master joined the farewell and let the guest leave for another hall."
+      },
+      {
+        "id": "AFTER-ballroom-watch",
+        "label": "Leave the guest a clear way out.",
+        "lines": [
+          "You leave space by the doorway. The phantom takes its coat and waves once.",
+          "The Master catches the serving tray before it can follow.",
+          {
+            "speaker": "The Master of Revels",
+            "text": "A tiny farewell flourish?"
+          },
+          "It chooses one wave, puts down the baton, and lets the guest enter the next hall."
+        ],
+        "recap": "You kept the way clear. The Master stopped the encore and let the guest leave for another hall."
+      }
+    ]
+  },
+  "crypt": {
+    "id": "AFTER-crypt",
+    "title": "Room for the curl",
+    "lines": [
+      "A curved spring bounces out of a straight groove between two display bones.",
+      "The Curator reaches to stretch it. Its own ribs make a roomy arch above the curl."
+    ],
+    "recap": "The spring does not fit the straight display. The Curator is considering stretching it.",
+    "choices": [
+      {
+        "id": "AFTER-crypt-arch",
+        "label": "Point from the curl to the Curator’s arched ribs.",
+        "lines": [
+          "You point to the curl, then the arch. The Curator looks down at its own ribs.",
+          {
+            "speaker": "The Bone Curator",
+            "text": "Ah. Room at the ribs. Keep the bend."
+          },
+          "It moves the display bones into an arch. The spring settles beneath them, still curled."
+        ],
+        "recap": "You showed the matching arch. The Curator changed the display so the spring could keep its curl."
+      },
+      {
+        "id": "AFTER-crypt-gap",
+        "label": "Slide one loose display bone a little farther out.",
+        "lines": [
+          "You widen the gap. The spring curls comfortably into the extra room.",
+          "The Curator moves the other display bone to make an arch above it.",
+          {
+            "speaker": "The Bone Curator",
+            "text": "More space. Fewer arguments with springs."
+          },
+          "It leaves the spring curled in the new display."
+        ],
+        "recap": "You widened the gap. The Curator completed an arched display around the spring’s unchanged curl."
+      },
+      {
+        "id": "AFTER-crypt-watch",
+        "label": "Watch how the spring settles.",
+        "lines": [
+          "You wait. The spring bounces beneath the Curator’s arched ribs and settles into its curl.",
+          "The Curator looks from its ribs to the straight groove.",
+          {
+            "speaker": "The Bone Curator",
+            "text": "Ah. Keep the bend."
+          },
+          "It makes the display into an arch, leaving room for the curled spring."
+        ],
+        "recap": "You watched. The Curator learned from its own ribs and changed the display to fit the spring."
+      }
+    ]
+  },
+  "hedge-maze": {
+    "id": "AFTER-hedge-maze",
+    "title": "Two useful things",
+    "lines": [
+      "A mushroom pokes through the Gardener’s glove. The glove cannot close around its fork.",
+      "An empty pot and a broad fallen leaf rest on the bench."
+    ],
+    "recap": "A mushroom has grown through a useful glove. A pot and a patching leaf are nearby.",
+    "choices": [
+      {
+        "id": "AFTER-hedge-maze-pot",
+        "label": "Set the empty pot within reach.",
+        "lines": [
+          "You set the pot beside the glove. The Gardener eases the mushroom into its new home.",
+          "It patches the glove with the fallen leaf and gives the mushroom a little water.",
+          {
+            "speaker": "The Gardener of Rot",
+            "text": "One pot. One glove. Two successes."
+          }
+        ],
+        "recap": "You offered the pot. The Gardener replanted the mushroom, repaired the glove and cared for both."
+      },
+      {
+        "id": "AFTER-hedge-maze-leaf",
+        "label": "Offer the broad leaf as a patch.",
+        "lines": [
+          "You offer the leaf. The Gardener holds it against the hole, considering.",
+          "It moves the mushroom into the pot, patches the glove, and tries the fork again.",
+          {
+            "speaker": "The Gardener of Rot",
+            "text": "This one stays a glove."
+          },
+          "It waters the mushroom in its pot."
+        ],
+        "recap": "You offered a patch. The Gardener kept the useful glove and gave the mushroom a watered pot."
+      },
+      {
+        "id": "AFTER-hedge-maze-watch",
+        "label": "Give the Gardener working room.",
+        "lines": [
+          "You leave the bench clear. The Gardener tries the fork once more, then looks at the empty pot.",
+          "It replants the mushroom and patches the glove with the leaf.",
+          {
+            "speaker": "The Gardener of Rot",
+            "text": "This one stays a glove."
+          },
+          "It waters the mushroom. Both things have a place."
+        ],
+        "recap": "You gave the Gardener room. It repaired the glove and replanted and watered the mushroom."
+      }
+    ]
+  },
+  "secret-passages": {
+    "id": "AFTER-secret-passages",
+    "title": "Just one listener",
+    "lines": [
+      "A resident taps a speaking tube. The taps clatter from every tube in the wall. The resident covers its ears.",
+      "A route switch sits above the resident’s reach."
+    ],
+    "recap": "A resident’s call is being sent everywhere. The switch that selects a destination is too high.",
+    "choices": [
+      {
+        "id": "AFTER-secret-passages-switch",
+        "label": "Point out the unreachable switch.",
+        "lines": [
+          "You point to the switch. The Warden lowers it within the resident’s reach.",
+          "The resident aims it toward the quiet nook and taps again. Only the nook answers: three soft taps.",
+          {
+            "speaker": "The Whisper Warden",
+            "text": "I could repeat that for—oh. You heard."
+          },
+          "The switch stays within reach. The other tubes remain quiet."
+        ],
+        "recap": "You showed the unreachable switch. The resident can now choose a destination, and its call goes only there."
+      },
+      {
+        "id": "AFTER-secret-passages-listen",
+        "label": "Ask the Warden to listen without repeating.",
+        "lines": [
+          "You ask the Warden to listen. In the pause, it notices the resident reaching toward the route switch.",
+          "It lowers the switch. The resident selects the quiet nook and taps three times.",
+          "Three soft taps answer from that nook alone. The Warden keeps its echo to itself."
+        ],
+        "recap": "You asked for a quiet listener. The Warden lowered the switch, and the resident chose the only destination for its call."
+      },
+      {
+        "id": "AFTER-secret-passages-watch",
+        "label": "Wait quietly for the resident.",
+        "lines": [
+          "You stay quiet. The resident points at the high switch, then reaches again.",
+          "The Warden lowers it. The resident chooses the quiet nook and taps.",
+          "Only that nook answers. The Warden starts to echo, catches itself, and waits."
+        ],
+        "recap": "You waited for the resident. It gained control of the route switch, and its call reached only the chosen nook."
+      }
+    ]
+  },
+  "bathhouse": {
+    "id": "AFTER-bathhouse",
+    "title": "Beside the towel",
+    "lines": [
+      "A little Puddle Spirit rests near a dry nook. The Matron holds a warm towel just above it.",
+      "The spirit edges sideways, toward the space beside the towel."
+    ],
+    "recap": "The Puddle Spirit is making space beside the offered towel. The Matron has not put it down yet.",
+    "choices": [
+      {
+        "id": "AFTER-bathhouse-space",
+        "label": "Point to the empty space beside the spirit.",
+        "lines": [
+          "You point to the space. The Matron sets the towel there, within reach.",
+          "The spirit rests beside it and stays there.",
+          {
+            "speaker": "The Drowned Matron",
+            "text": "Beside is also an option."
+          },
+          "Her hand moves away. The towel stays available."
+        ],
+        "recap": "You showed the empty space. The spirit chose to rest beside the towel, and the Matron left it undisturbed."
+      },
+      {
+        "id": "AFTER-bathhouse-offer",
+        "label": "Ask, “Could we leave it within reach?”",
+        "lines": [
+          "The Matron lowers the towel into the nook instead of onto the spirit.",
+          "The spirit settles beside the towel, close enough to reach it.",
+          {
+            "speaker": "The Drowned Matron",
+            "text": "Beside. Yes. I can leave beside alone."
+          },
+          "She draws her hand back."
+        ],
+        "recap": "You asked for an offer within reach. The Matron left the towel beside the spirit and let it rest there."
+      },
+      {
+        "id": "AFTER-bathhouse-watch",
+        "label": "Give the spirit a little space.",
+        "lines": [
+          "You wait clear of the nook. The spirit edges beside the Matron’s hovering towel again.",
+          "She notices and puts the towel down in the space it left.",
+          {
+            "speaker": "The Drowned Matron",
+            "text": "Beside is also an option."
+          },
+          "She keeps her hand out of the spirit’s way."
+        ],
+        "recap": "You gave the spirit space. The Matron put the towel within reach and let the spirit rest beside it."
+      }
+    ]
+  },
+  "kennels": {
+    "id": "AFTER-kennels",
+    "title": "An empty bed",
+    "lines": [
+      "A ward animal noses toward the next hall. Its clean bed is behind it; its water bowl is in the doorway.",
+      "The Kennelmaster holds a folded blanket and looks between the animal and the empty bed."
+    ],
+    "recap": "A ward animal wants to reach the next hall. Its bowl blocks the threshold, while its clean bed waits behind it.",
+    "choices": [
+      {
+        "id": "AFTER-kennels-bowl",
+        "label": "Slide the bowl clear of the threshold.",
+        "lines": [
+          "You slide the bowl aside. The animal noses the clear threshold and steps into the next hall.",
+          "The Kennelmaster lays the blanket on the empty bed.",
+          {
+            "speaker": "The Kennelmaster",
+            "text": "An empty bed is not a failed bed."
+          },
+          "It leaves the fresh water beside the path, where it can still be reached."
+        ],
+        "recap": "You cleared the bowl from the doorway. The ward animal entered the next hall; its clean bed and water remained available."
+      },
+      {
+        "id": "AFTER-kennels-bed",
+        "label": "Help spread the loose corner of the blanket.",
+        "lines": [
+          "You smooth the loose corner on the bed. The Kennelmaster looks at the animal waiting by the bowl.",
+          "It moves the bowl aside. The animal steps into the next hall.",
+          {
+            "speaker": "The Kennelmaster",
+            "text": "An empty bed is not a failed bed."
+          },
+          "The bed stays ready, with water beside the clear path."
+        ],
+        "recap": "You helped ready the bed. The Kennelmaster cleared the bowl, and the animal left for the next hall while care stayed available."
+      },
+      {
+        "id": "AFTER-kennels-watch",
+        "label": "Give the animal a clear space to wait.",
+        "lines": [
+          "You leave room beside the animal. It noses toward the hall once more.",
+          "The Kennelmaster moves the bowl clear. The animal steps through the threshold.",
+          {
+            "speaker": "The Kennelmaster",
+            "text": "An empty bed is not a failed bed."
+          },
+          "It leaves the bed clean and the fresh water beside the path."
+        ],
+        "recap": "You gave the animal room. The Kennelmaster cleared its path to the next hall and kept its bed and water ready."
+      }
+    ]
+  },
+  "pumpkin-grounds": {
+    "id": "AFTER-pumpkin-grounds",
+    "title": "The pond is ready",
+    "lines": [
+      "The King kneels by a marker marked HARVEST DATE. A frog turns toward the pond.",
+      "The King dips its brush, trying to decide what to write about the frog."
+    ],
+    "recap": "The frog is heading toward the pond while the King tries to fit it into a harvest plan.",
+    "choices": [
+      {
+        "id": "AFTER-pumpkin-grounds-direction",
+        "label": "Point the loose marker toward the pond.",
+        "lines": [
+          "You turn the loose marker toward the water. The King looks along it.",
+          "It crosses out HARVEST DATE and writes POND THIS WAY.",
+          "The frog slips into the pond before the paint is dry.",
+          {
+            "speaker": "The Harvest King",
+            "text": "An early success."
+          }
+        ],
+        "recap": "You pointed toward the pond. The King replaced the harvest plan with a direction; the frog reached the water on its own."
+      },
+      {
+        "id": "AFTER-pumpkin-grounds-tell",
+        "label": "Tell the King where the frog is going.",
+        "lines": [
+          "You tell the King the frog is heading for the pond. It looks up just as the frog reaches the water.",
+          {
+            "speaker": "The Harvest King",
+            "text": "Already? I had not finished the—"
+          },
+          "It crosses out HARVEST DATE and writes POND THIS WAY, pointing the marker toward the pond.",
+          "The frog is comfortably ahead of the sign."
+        ],
+        "recap": "You drew attention to the frog’s route. The King replaced its harvest plan with a pond sign after the frog arrived."
+      },
+      {
+        "id": "AFTER-pumpkin-grounds-watch",
+        "label": "Let the frog go at its own pace.",
+        "lines": [
+          "You wait. The frog slips into the pond while the King studies its brush.",
+          {
+            "speaker": "The Harvest King",
+            "text": "Frog? Pumpkin-frog? I cannot finish the label."
+          },
+          "It crosses out HARVEST DATE and writes POND THIS WAY.",
+          {
+            "speaker": "The Harvest King",
+            "text": "An early success."
+          }
+        ],
+        "recap": "You let the frog continue. The King replaced its harvest plan with a direction to the pond."
+      }
+    ]
+  },
+  "heart": {
+    "id": "AFTER-heart",
+    "title": "Room at the threshold",
+    "lines": [
+      "The Keeper’s hands hover near the locks. A loose fold of curtain lies across the way onward.",
+      "No animal is being moved toward the passage. The House waits."
+    ],
+    "recap": "The Keeper is hesitating at the locks. The way onward is still closed, and everyone has room to wait.",
+    "choices": [
+      {
+        "id": "AFTER-heart-clear",
+        "label": "Move the loose curtain away from the threshold.",
+        "lines": [
+          "You draw the loose fold aside, leaving a clear space at the threshold.",
+          "The Keeper lowers its hands. The locks relax, and the way onward opens.",
+          {
+            "speaker": "The Keeper",
+            "text": "I must let them answer."
+          },
+          "Nothing is pushed through the opening."
+        ],
+        "recap": "You cleared the threshold. The Keeper stopped holding the locks, and the passage opened without moving anyone through it."
+      },
+      {
+        "id": "AFTER-heart-wait",
+        "label": "Tell the Keeper, “We can wait here.”",
+        "lines": [
+          "You offer to wait. The Keeper looks at the space before the door.",
+          "Its hands lower. The locks relax, and the passage opens.",
+          {
+            "speaker": "The Keeper",
+            "text": "I must let them answer."
+          },
+          "Nobody is hurried through the opening."
+        ],
+        "recap": "You offered to wait. The Keeper opened the passage and left everyone room to decide what comes next."
+      },
+      {
+        "id": "AFTER-heart-room",
+        "label": "Step back and leave the threshold clear.",
+        "lines": [
+          "You leave space before the door. The Keeper lowers its hands from the locks.",
+          "The House grows quiet. A way onward opens without pulling anyone through.",
+          {
+            "speaker": "The Keeper",
+            "text": "I must let them answer."
+          }
+        ],
+        "recap": "You left space at the threshold. The Keeper stopped holding the passage shut, without pushing anyone through."
+      }
+    ]
+  }
+}

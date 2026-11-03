@@ -1,0 +1,738 @@
+{
+  "baseline": "36c2361ed552c3d5f2ced2771bd55cb0723cc2ca",
+  "sourceCommit": "e58a947fad49e4ecaffdeeac4ff2d99fa90af66f",
+  "canonicalCommand": "python D:/UILOOP/r52-20261029/capture.py D:/UILOOP/r52-20261029/c 9523 TOURMALINE",
+  "sourceCleanBeforeCapture": true,
+  "newBitmapBytes": 0,
+  "sourceHashes": {
+    "game/src/scenes/combat.css": "9276b170758565e977e21eb77c236a25d7cc61b975e55ee1b03a03e340028cd0",
+    "game/src/scenes/event.css": "a4e12b6a3ca7c54fca0598a086c2816e322cee18a39918529ab7306c6a8e98f3",
+    "game/src/scenes/gameover.css": "4784de8f715da895841251a6c7500afc6f0e4656439826e416cbeca842429d9c",
+    "game/src/scenes/gameover.js": "cb349eaba150745fa7e72f649022100f11519e000fce11a90cc6b2297fb57876",
+    "game/src/scenes/rest.css": "b3b1ae3250c6b93ead6dc8e189a6f930ed8512a6571ba96af435fd572d924baa",
+    "game/src/ui/kit.css": "669c788d56fa36f5a2a94b4290a778d757382340b3f99147d8c2d32a7c3a94c5"
+  },
+  "canonical": [
+    {
+      "name": "combat-floaters-1280.png",
+      "path": "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\combat-floaters-1280.png",
+      "sha256": "122eb33983f4967cab20353cb73ac61a79ef6e2256af76715f3426f2229b1d7c",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9523/game/index.html#scene=combat&seed=7&companion=bones&kid=maya&encounter=foyer-boss",
+        "state": "{\"scene\":\"combat\",\"run\":null}",
+        "perf": {
+          "fps": 145,
+          "mem": 33,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 45.4,
+          "warmMs": 23886,
+          "settleMs": 429,
+          "band": 43.6
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      },
+      "inspected": true
+    },
+    {
+      "name": "combat-floaters.png",
+      "path": "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\combat-floaters.png",
+      "sha256": "21600f008b7d6300087cd4aead99207f5760d420d95e34ef9f881c47173ae8ad",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9523/game/index.html#scene=combat&seed=7&companion=bones&kid=maya&encounter=foyer-boss",
+        "state": "{\"scene\":\"combat\",\"run\":null}",
+        "perf": {
+          "fps": 138,
+          "mem": 34,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 43.79,
+          "warmMs": 32885,
+          "settleMs": 712,
+          "band": 41.3
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      },
+      "inspected": true
+    },
+    {
+      "name": "event-1280.png",
+      "path": "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\event-1280.png",
+      "sha256": "7cb2b45b405f6792577efb66658f972f000dc1b91b5f55a49a6ef205a14a2312",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9523/game/index.html#scene=event&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"event\",\"run\":null}",
+        "perf": {
+          "fps": 134,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 52.54,
+          "warmMs": 32855,
+          "settleMs": 413,
+          "band": 50.1
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      },
+      "inspected": true
+    },
+    {
+      "name": "event.png",
+      "path": "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\event.png",
+      "sha256": "4a2a0bfd54211bfe4d5a3b39f2e9cac4ebfa12bd668e4f5b83baa610c7498608",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9523/game/index.html#scene=event&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"event\",\"run\":null}",
+        "perf": {
+          "fps": 128,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 51.75,
+          "warmMs": 38036,
+          "settleMs": 206,
+          "band": 46.8
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      },
+      "inspected": true
+    },
+    {
+      "name": "gameover-1280.png",
+      "path": "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\gameover-1280.png",
+      "sha256": "694281196029b27d7dcba4dcd27ebbee01cbe154f91a67816c8778fb82ac7390",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9523/game/index.html#scene=gameover&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"gameover\",\"run\":null}",
+        "perf": {
+          "fps": 92,
+          "mem": 31,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 47.41,
+          "warmMs": 10977,
+          "settleMs": 424,
+          "band": 40.8
+        },
+        "void": false,
+        "errors": [],
+        "logs": []
+      },
+      "inspected": true
+    },
+    {
+      "name": "gameover.png",
+      "path": "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\gameover.png",
+      "sha256": "7da68f826b95242e63374f8447a55a25bb9eebdcf8fc668ab59a3e45c06f2d12",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9523/game/index.html#scene=gameover&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"gameover\",\"run\":null}",
+        "perf": {
+          "fps": 84,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 43.92,
+          "warmMs": 12112,
+          "settleMs": 330,
+          "band": 40.5
+        },
+        "void": false,
+        "errors": [],
+        "logs": []
+      },
+      "inspected": true
+    },
+    {
+      "name": "rest-1280.png",
+      "path": "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\rest-1280.png",
+      "sha256": "96aabb70746f2cf3208086a90183fd27e129facf1ed5d1ebd46ba0491e782f8a",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9523/game/index.html#scene=rest&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"rest\",\"run\":null}",
+        "perf": {
+          "fps": 143,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 40.32,
+          "warmMs": 23314,
+          "settleMs": 319,
+          "band": 32.0
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      },
+      "inspected": true
+    },
+    {
+      "name": "rest.png",
+      "path": "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\rest.png",
+      "sha256": "1a2867d16ad89507eb1d4611176ea00163acc6fb48cc420399873f9a1c6b9a87",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9523/game/index.html#scene=rest&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"rest\",\"run\":null}",
+        "perf": {
+          "fps": 143,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 39.18,
+          "warmMs": 29572,
+          "settleMs": 210,
+          "band": 31.7
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      },
+      "inspected": true
+    },
+    {
+      "name": "shop-1280.png",
+      "path": "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\shop-1280.png",
+      "sha256": "ac1226820dbf7691feeb3892ce5c3651f768d82dbc82f45484d3e65b9c7d2bed",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9523/game/index.html#scene=shop&seed=7&companion=bones&kid=maya",
+        "state": "{\"scene\":\"shop\",\"run\":null}",
+        "perf": {
+          "fps": 136,
+          "mem": 31,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 48.17,
+          "warmMs": 23710,
+          "settleMs": 319,
+          "band": 50.8
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      },
+      "inspected": true
+    },
+    {
+      "name": "shop.png",
+      "path": "D:\\UILOOP\\r52-20261029\\judging\\TOURMALINE\\shop.png",
+      "sha256": "9d3a1ecf6d75f858a0335ef2795163196ea333ee586c592c3692fb1565865322",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9523/game/index.html#scene=shop&seed=7&companion=bones&kid=maya",
+        "state": "{\"scene\":\"shop\",\"run\":null}",
+        "perf": {
+          "fps": 126,
+          "mem": 31,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 44.33,
+          "warmMs": 29999,
+          "settleMs": 327,
+          "band": 47.2
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      },
+      "inspected": true
+    },
+    {
+      "name": "TOURMALINE-title.png",
+      "path": "D:\\UILOOP\\r52-20261029\\c\\shots\\TOURMALINE-title.png",
+      "sha256": "bdee3910fb1f5e7774f440218dbb3368cd0c5b7ca8427d928f4bb3f986afa371",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9523/game/index.html#scene=title&seed=7&companion=bones&kid=maya",
+        "state": "{\"scene\":\"title\",\"run\":null}",
+        "perf": {
+          "fps": 145,
+          "mem": 29,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 31.26,
+          "warmMs": 10244,
+          "settleMs": 330,
+          "band": 39.1
+        },
+        "void": false,
+        "errors": [],
+        "logs": []
+      },
+      "inspected": true
+    }
+  ],
+  "proofImages": [
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\event-boundary\\initial-1280.png",
+      "sha256": "30f0d1ae38fae46df76c85f0e2e7ee4c7039dcf7891cc3fc72df0559bc5615a0",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\event-boundary\\initial-1600.png",
+      "sha256": "4c8aca48c9bc32180ca606a7f1d8318a39837dcfc9dc2919be22b85e45697308",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\event-initial-1280.png",
+      "sha256": "1e67ad0e6dbfc4fb8757b85a42b20756f6040b1f6b32e6df5cc71b4483477040",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\event-initial-1600.png",
+      "sha256": "0abd60f4b570769f4aae66d01dedfedb7de0ce5c839dc2a67050db04e3462515",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\event-interactions-1280.png",
+      "sha256": "ab68400c127dea610dfd7b83c3d9eae70944a7a525604a905d09bf9ad943ffe9",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\event-interactions-1600.png",
+      "sha256": "74d15633213cf4c00260e617c3307080249faab11af12646a4b02363d60b5eac",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\gameover-initial-1280.png",
+      "sha256": "bfec90124d4d439b0e0467d3c1bec936545fecad7a2d1cd69df3c14e5437fef7",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\gameover-initial-1600.png",
+      "sha256": "17c0331b5487c060c2ea16e8751545e1d08f80f278dc71e0f77d833d1f9c29f0",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\gameover-interactions-1280.png",
+      "sha256": "9a7a86bc587cfd4cd1207d30c0b1a763cd81b37e7ca757c9856322558c33ea0e",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\gameover-interactions-1600.png",
+      "sha256": "d5c25ea686c2239679734d90082de3b3ff94864882d52ff5683dfbb06a77bd7f",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\initial-before-base-clearance\\memorial-geometry-1280.png",
+      "sha256": "738fe6f696aaaf72dc15bd4e983a873e608e6cfbab574e48631ed3c60b1e5c40",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\initial-before-base-clearance\\memorial-geometry-1600.png",
+      "sha256": "c8b1f279f755e6eae234aaacb4a5953760085faa889abcd992dfeec2f4a2b3fd",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\keepsakes-1280.png",
+      "sha256": "749c360692d312ad9461d9160b136e8b432742bcf95a8d82a0de415d522d2603",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\keepsakes-1600.png",
+      "sha256": "96c6c36e4a2b41af4675a6563cbe0c681772ac1055492659aca15b1d5d22edf4",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\lifecycle\\survivor.png",
+      "sha256": "0f60871a494ae14fc3334d80c6de9147b019448e131b0563362c1f30cc04ce2a",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\memorial\\bottom-1280.png",
+      "sha256": "d0d1e8f45eca651a26480cce744e9b875a95a363ae9269a1f85afb7ad88e6fad",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\memorial\\bottom-1600.png",
+      "sha256": "5ae13378e6c263cd502f15cd34418c199db88549b0875233dd9fa08a7c122e22",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\memorial\\initial-1280.png",
+      "sha256": "6cfc7e192c9d8bf6485d1b121fca8f95ce554ea7b203cf8d28e79c444bae4f4d",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\memorial\\initial-1600.png",
+      "sha256": "526c63f8afc05a2a61b9946dd164e8991be8cfeb78cbd3f864869a94153a14fa",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\memorial-geometry-1280.png",
+      "sha256": "b7665f6809e9f248261b594eb300a7b5ef95c91b7e696c63409136232a465f81",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\memorial-geometry-1600.png",
+      "sha256": "ded0ab385c131f387beae51ef96bf76dfcc9a264575b0c62dce62b6b9f144eee",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\memorial-long\\bottom-1280.png",
+      "sha256": "faf10afb23e7e8949c689fe0738bcd9d35fcf7798886a8d4ccddcd1d7ca675df",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\memorial-long\\bottom-1600.png",
+      "sha256": "1f204431c3e3a0376c054ca555e797f6edc956e0d3127891014fddd5cab1050f",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\memorial-long\\initial-1280.png",
+      "sha256": "3abe002312a266b4b0c669b247a4662bdd49be481ce2fcd40d4aad7db975a720",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\memorial-long\\initial-1600.png",
+      "sha256": "4119f48903432727c98bb2f177e8b2ca8c30d740567cf4254832bbe8245073af",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\boss-0-1280.png",
+      "sha256": "76cc5e0d7fa4aa2af0cdb657e67151b9f9e4dce584b377827ed446f47ed31525",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\boss-0-1600.png",
+      "sha256": "7ddb1e641eb092b7bdfee0d22c7b6c00def6d82744f46eb07f2b892553cb105b",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\crowd-0-1280.png",
+      "sha256": "81b2d80d9c074cd36bd2130db05859880ce8c3291112d22839844c8996eb8e06",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\crowd-0-1600.png",
+      "sha256": "47b5b960b6b62e37c0a1394c2a83a26a4c954b54e2330e079cb502df8cda89a7",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\crowd-1-1280.png",
+      "sha256": "e34557c8cf6c76f1d26322199922fe5b541c3ebda7dfbdd4efcb256734ead210",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\crowd-1-1600.png",
+      "sha256": "968917181ccf217f1b298dc2ea3e4c5ac5d4c73d676d141c67cfe63af2c8a19c",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\crowd-2-1280.png",
+      "sha256": "b6fcd7a3e78095b31d8344f2e54ff35daef1730aae8274af88f3c05236b931e6",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\crowd-2-1600.png",
+      "sha256": "a720ded4635cfb8b944607de9035be669d97f6debdd633f273468fb085a836f3",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\crowd-3-1280.png",
+      "sha256": "a5424c9493f6933cf8d89e6eb583c9b687b70f56c5f2293f29aeb26ce7bec871",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\crowd-3-1600.png",
+      "sha256": "0049cebee97715dd443023a34e77120a7e507c7e5fe1f297422ed1cfeccad7f4",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\crowd-all-1280.png",
+      "sha256": "5e14f0d27465ba31fdc47468f71d00715834064878d046d7e33d0edc99ab1b7c",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\crowd-all-1600.png",
+      "sha256": "59e3cc9d4ee3e40e6a8c5647f07e13f990fc74052bc8efb81eb06e71c3722f25",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\crowd-all-long-1280.png",
+      "sha256": "de4c8e93f6698b9dde510834f20fc2335b232ce46664801ed1afd06d0bdf163f",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\crowd-all-long-1600.png",
+      "sha256": "a61ff331ee1f642fce060d9740b4b0479956583f5142f7a992571e9d25fcb195",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\crowd-repeats-1280.png",
+      "sha256": "80f352b4ba5a2a488312effca0544b096df241fc53f7a16a304a242883deaae1",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\crowd-repeats-1600.png",
+      "sha256": "90fc326783af673bc8af80a7ef5f480c9b338a64d4b9295dd30f05b7e8647c08",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\queue\\idle-resize.png",
+      "sha256": "bb75c186dd97fbb1b17d6aacc054536f46dafc14ee9ed77f5dc5ff0b5d58dabc",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\rest-initial-1280.png",
+      "sha256": "ad3ea8058f524c468d7be65d29d5cb4c2e6523666484db9672d6cc00cd713ee9",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\rest-initial-1600.png",
+      "sha256": "b57062567456e1978621350131b4b5166d35ae2b20168873b45f81d3cac524b6",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\rest-interactions-1280.png",
+      "sha256": "292a0c0e650488bcd54e00c0ea37da141b61b7293476b28d98e9021975c7cd22",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\rest-interactions-1600.png",
+      "sha256": "a7ffadd9d5a43ce2825ed98535689a3610bab43feac8896ad93f79f032560bed",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\shop-initial-1280.png",
+      "sha256": "8cbfff74e622b07bb2278fad463e360e53dad6429670371f80d90cc2ca472e40",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\shop-initial-1600.png",
+      "sha256": "6f4cf97e30c74a31ae0f720b363057f0698922b22199773f83ffcc3448293f1b",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\shop-interactions-1280.png",
+      "sha256": "ee606b2263b853d1077516c68a7f3c6ee8290cf1a5797afcbc78f336d3aa23f0",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r52-20261029\\c\\docs\\ui-pass\\TOURMALINE-r52-proofs\\shop-interactions-1600.png",
+      "sha256": "a646e64f676f1a754099c62fd57cf69f084a876d1f1395528225136d276c06a8",
+      "size": [
+        1600,
+        900
+      ]
+    }
+  ],
+  "server": {
+    "pid": 40912,
+    "port": 9523,
+    "verifiedStopped": true,
+    "browserJobsExited": true
+  }
+}

@@ -1,0 +1,2 @@
+boss 0 1280 frames 127 peak 6 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [11, 48]} fail 0 delivered 6 expired 6 drain 2445
+crowd 0 1280 frames 391 peak 2 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [42, 50]} fail 0 delivered 6 expired 6 drain 6160

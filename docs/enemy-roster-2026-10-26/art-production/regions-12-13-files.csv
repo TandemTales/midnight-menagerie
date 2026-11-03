@@ -1,0 +1,23 @@
+﻿level,name,production_id,status,source_path,output_path
+12,Wrong-Way Sign,wrong-way-sign,new,animations\sprites\enemies\wrongWaySign.png,game\assets\sprites\enemies\wrong-way-sign.webp
+12,Boundary Rope,boundary-rope,new,animations\sprites\enemies\boundaryRope.png,game\assets\sprites\enemies\boundary-rope.webp
+12,Lawn Roller,lawn-roller,new,animations\sprites\enemies\lawnRoller.png,game\assets\sprites\enemies\lawn-roller.webp
+12,Chalk-Line Reel,chalk-line-reel,new,animations\sprites\enemies\chalkLineReel.png,game\assets\sprites\enemies\chalk-line-reel.webp
+12,Corner Hedge,corner-hedge,new,animations\sprites\enemies\cornerHedge.png,game\assets\sprites\enemies\corner-hedge.webp
+12,Whispering Wind Sock,whispering-wind-sock,new,animations\sprites\enemies\whisperingWindSock.png,game\assets\sprites\enemies\whispering-wind-sock.webp
+12,Boot Scraper,boot-scraper,new,animations\sprites\enemies\bootScraper.png,game\assets\sprites\enemies\boot-scraper.webp
+12,The Rotting Gazebo,rotting-gazebo,new,animations\sprites\enemies\rottingGazebo.png,game\assets\sprites\enemies\rotting-gazebo.webp
+12,The Croquet Umpire,croquet-umpire,new,animations\sprites\enemies\croquetUmpire.png,game\assets\sprites\enemies\croquet-umpire.webp
+12,The Lost Compass,lost-compass,new,animations\sprites\enemies\lostCompass.png,game\assets\sprites\enemies\lost-compass.webp
+12,The Gardener of Rot,gardener-of-rot,new,animations\sprites\enemies\gardenerOfRot.png,game\assets\sprites\enemies\gardener-of-rot.webp
+13,Peephole Watcher,peephole-watcher,new,animations\sprites\enemies\peepholeWatcher.png,game\assets\sprites\enemies\peephole-watcher.webp
+13,Servant Bell,servant-bell,new,animations\sprites\enemies\servantBell.png,game\assets\sprites\enemies\servant-bell.webp
+13,Floor Hatch,floor-hatch,new,animations\sprites\enemies\floorHatch.png,game\assets\sprites\enemies\floor-hatch.webp
+13,Listening Tube,listening-tube,new,animations\sprites\enemies\listeningTube.png,game\assets\sprites\enemies\listening-tube.webp
+13,Loose Brick,loose-brick,new,animations\sprites\enemies\looseBrick.png,game\assets\sprites\enemies\loose-brick.webp
+13,Squeaky Hinge,squeaky-hinge,new,animations\sprites\enemies\squeakyHinge.png,game\assets\sprites\enemies\squeaky-hinge.webp
+13,Vent Grille,vent-grille,new,animations\sprites\enemies\ventGrille.png,game\assets\sprites\enemies\vent-grille.webp
+13,The Silent Winch,silent-winch,new,animations\sprites\enemies\silentWinch.png,game\assets\sprites\enemies\silent-winch.webp
+13,The Skeleton Lock,skeleton-lock,new,animations\sprites\enemies\skeletonLock.png,game\assets\sprites\enemies\skeleton-lock.webp
+13,The Folding Partition,folding-partition,new,animations\sprites\enemies\foldingPartition.png,game\assets\sprites\enemies\folding-partition.webp
+13,The Man in the Walls,man-in-the-walls,new,animations\sprites\enemies\manInTheWalls.png,game\assets\sprites\enemies\man-in-the-walls.webp

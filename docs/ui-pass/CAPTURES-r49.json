@@ -1,0 +1,590 @@
+{
+  "round": 49,
+  "candidates": {
+    "CITRINE": {
+      "commit": "06678114cd21f033d5bb80a4b26001b2b40e5ffb",
+      "captures": [
+        {
+          "screen": "rest",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\CITRINE\\rest.png",
+          "sha256": "f7c0624fd3a43498c905d7a400ce09ea5c498b22d561bf7ba996e0bbdda7b0cd",
+          "state_sha256": "7e9f562af47e22c98df9124d7c85ed7c7637bec1d3d08b21ed3cd83522484c9a",
+          "fps": 66,
+          "warm_ms": 34830,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "rest-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\CITRINE\\rest-1280.png",
+          "sha256": "1a93dac91faae4ec75ac32da82ce7dc87c3025e9667a32a8241f4d364e14493b",
+          "state_sha256": "e160e6260bcd4a85349d6b31e90907b1d8261b44048c56d71b5277ca01f18319",
+          "fps": 141,
+          "warm_ms": 25303,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "event",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\CITRINE\\event.png",
+          "sha256": "9716bf9be4e9c091da7a8ff6e9abcc2506663ac5331da4bd915708ec022df001",
+          "state_sha256": "8fb8fa20c84d4918aca58c50d167b306841f206474cabc88bd8695a1bd7d4a8c",
+          "fps": 41,
+          "warm_ms": 41957,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "event-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\CITRINE\\event-1280.png",
+          "sha256": "be0f4f9bd8fe341d2d657e829da15340bc57e4010ac479871eec34378e7a8c10",
+          "state_sha256": "da57d29d121dad85f5177ed7eb7389d04abaf643613a9f8dc69d19f0ad0c49f7",
+          "fps": 136,
+          "warm_ms": 93832,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "gameover",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\CITRINE\\gameover.png",
+          "sha256": "124ed7cdb3afe72de77d83f714f82d2988731e8cb27920663aeca0b354062d04",
+          "state_sha256": "a83c1084c1f863b17bb504617bace581316d58d84eb77779dddeb20a60b0b4e3",
+          "fps": 69,
+          "warm_ms": 15699,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "gameover-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\CITRINE\\gameover-1280.png",
+          "sha256": "5f65f9d1d6036845bff625c957c420b7c7f9b7f7011bffb7e734fb6ae1cf8508",
+          "state_sha256": "d712cb6593d1243a2cc25015f68cb1f2d57d5aa592fb90426626c793eee53d61",
+          "fps": 64,
+          "warm_ms": 16188,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "shop",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\CITRINE\\shop.png",
+          "sha256": "c043ba635186b64beeb790979a5a65a14e5002376af0236dfa3d813310d84b97",
+          "state_sha256": "90443a3daff4da89f5771e7a84eaf42844367202e9974c43abec816ceb284f58",
+          "fps": 127,
+          "warm_ms": 62836,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "shop-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\CITRINE\\shop-1280.png",
+          "sha256": "d448c25193cb876007877b450c1d794018a9a20e4a941ecb811cd728322b21dd",
+          "state_sha256": "56ef3e34323d36cf554e9bd2a8605d935b009f8a36cf02436fb61ee68cdd137b",
+          "fps": 127,
+          "warm_ms": 26307,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "combat-floaters",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\CITRINE\\combat-floaters.png",
+          "sha256": "769ac9e4d3faad10142065aaa88c0572cefb2d4aa61860d3c12c3007fad6a28d",
+          "state_sha256": "22981433ee36cc6b1ad2c01b952c458a5bbc2e4d653925507bb5fbea7dbe5030",
+          "fps": 137,
+          "warm_ms": 30826,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "combat-floaters-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\CITRINE\\combat-floaters-1280.png",
+          "sha256": "a503c52b37dba4fe33af2241aa618ef9ecaf3c1457e43a583d2a80e64a2abaca",
+          "state_sha256": "08badddf47fd3a10f7555a5b87ed0586f3910f7b7b9d35ecd3b4fca6eb5d2de7",
+          "fps": 128,
+          "warm_ms": 43248,
+          "void": false,
+          "errors": []
+        }
+      ],
+      "provenance": "byte-identical validated Round48 final manifest; later retakes absent from original batch log"
+    },
+    "LAPIS": {
+      "commit": "505e30a13ec3a68ddd325152f722a6a8c18a53cb",
+      "captures": [
+        {
+          "screen": "rest",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\LAPIS\\rest.png",
+          "sha256": "2ff529267aee730e197a409943d760cdee93ff43e031c4c9cd80a06064acea77",
+          "state_sha256": "cfa5e0b53a9ee189c5ece8fe3f86c33edee7ba6db84332385dce592b00d5a2fa",
+          "fps": 144,
+          "warm_ms": 29314,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "rest-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\LAPIS\\rest-1280.png",
+          "sha256": "5facff2bf67c3a208fcb40440ec2ff2e6899a144810dd219aaac94dc67758ff1",
+          "state_sha256": "5fbf454b833aa2401c7fcc031d241ade8f45f2d6557bb1ac7572098084d26260",
+          "fps": 145,
+          "warm_ms": 25062,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "event",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\LAPIS\\event.png",
+          "sha256": "fb015ccddc68ec25145fc272dece656d6a6ffe8b162e3565105338c91d622b07",
+          "state_sha256": "c3d07cc600c88fa97f95a3e672c0fcabda8e7696f508f893fe450bb9ba1a5648",
+          "fps": 93,
+          "warm_ms": 41828,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "event-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\LAPIS\\event-1280.png",
+          "sha256": "8818211dc0133a302bdeb6edb81e411670e6779b3f7a7677ef0018fefa947e74",
+          "state_sha256": "290b52f2042b0ec6591803663e001f720d41591efc2def32339e58b3a2ddb2f3",
+          "fps": 145,
+          "warm_ms": 57488,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "gameover",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\LAPIS\\gameover.png",
+          "sha256": "65bc3256fcae78adf11277da8b769b61ede29859e363db49a75cd27aab7ab36a",
+          "state_sha256": "3df64ae6661d3519eb6cc1cb12185a6309b5c50b30eac243f184579417140d39",
+          "fps": 40,
+          "warm_ms": 19280,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "gameover-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\LAPIS\\gameover-1280.png",
+          "sha256": "1f9eb713e9afba96c7f726f40bc0eb9a4ad8e100ad7f9f5af30824c95dc299b8",
+          "state_sha256": "5ffab7616da7a9f37c1a1603e1ba1f4fd839c371c6e0957a41ca3e6051adc4e7",
+          "fps": 66,
+          "warm_ms": 19938,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "shop",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\LAPIS\\shop.png",
+          "sha256": "09778905b28859870d372ffab2a42f9cee19fd18a50ee21ae9ae6b7c3e3f1bd3",
+          "state_sha256": "e8f5696525018261ed4a69dae6196b625e3ee8dd232df5241d634ea8b8b1d061",
+          "fps": 145,
+          "warm_ms": 47905,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "shop-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\LAPIS\\shop-1280.png",
+          "sha256": "94776cb88bf0c24bddebc644c5807b0200f87b80f58abbb94fff1b8b15243f0c",
+          "state_sha256": "2ce957cdc1de693ad7eacdb49fe7370a7b177e69c3fa0066cc9204a5d019a0c6",
+          "fps": 145,
+          "warm_ms": 26263,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "combat-floaters",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\LAPIS\\combat-floaters.png",
+          "sha256": "eec3b6e74e2d2e938076c914a1ec537c27f0a2a30f0a8e7a56d75f584852aa34",
+          "state_sha256": "0ce46b8df0423a1c8624e74f1c249cb6a75318ce522526401d6f1cfe87ed3f25",
+          "fps": 136,
+          "warm_ms": 41948,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "combat-floaters-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\LAPIS\\combat-floaters-1280.png",
+          "sha256": "d628bce146d18b6e221f99a25855a80c8980b645ea491b8ae6947cb83c7a93fb",
+          "state_sha256": "ad02e42c670b529049bb60a8fb7c23c25f53646e975c80aa8ca257554f04eee5",
+          "fps": 145,
+          "warm_ms": 32988,
+          "void": false,
+          "errors": []
+        }
+      ],
+      "provenance": "complete ten-image batch plus documented targeted retakes"
+    },
+    "RUBY": {
+      "commit": "71cebe3f6cb79550445d3329e565768f83f1326b",
+      "captures": [
+        {
+          "screen": "rest",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\RUBY\\rest.png",
+          "sha256": "c11c1f2201440e7017cbfb085646573f647d256cf5b655f62817e2da64bf6c04",
+          "state_sha256": "0f70b3057551d2030c849af2db5b2eaf3e9f15239b7a7e2917d922bbc7727c5d",
+          "fps": 128,
+          "warm_ms": 91075,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "rest-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\RUBY\\rest-1280.png",
+          "sha256": "033eac6be8dae7628e8d52afe1dcb956b4d4cc9748aacd8385a033959a1aaaf4",
+          "state_sha256": "155020e354d5d193c2f189261d5d659e8f416961dd9a97652b6bb46335712c41",
+          "fps": 143,
+          "warm_ms": 36886,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "event",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\RUBY\\event.png",
+          "sha256": "97c4c278ea9fa5cf5f83367b57c1ba4b06dfd149e9af3479dbaae04578ed958b",
+          "state_sha256": "38dc4c335350d38c7c7865fdfad72488cf1ace2cc87b2c4c3ce830fbce9702ec",
+          "fps": 109,
+          "warm_ms": 38815,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "event-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\RUBY\\event-1280.png",
+          "sha256": "2590a47d76187353cdefaa350066be07de5fcc26f6a1553a31612d89f7385266",
+          "state_sha256": "683eb0d342ae0206abc5373033a16a3ae61ca2016385056cca9e69ea28235bfe",
+          "fps": 126,
+          "warm_ms": 35804,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "gameover",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\RUBY\\gameover.png",
+          "sha256": "551a47b602fde3546cae2e420658eff07f0a6db1621136097202b17611a55e67",
+          "state_sha256": "216053a1912af28fcad054e797de8cbc6036e087b7552cb8a45c684188231a7c",
+          "fps": 59,
+          "warm_ms": 14657,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "gameover-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\RUBY\\gameover-1280.png",
+          "sha256": "c4bc10ee5fce7a6d0b007ae3065871d2a4fd6507e7c671f385a928bf28cf20e2",
+          "state_sha256": "d2ba32f8cc365331a042f1dad98333efe72a13a72ce58700135452e05093e4cf",
+          "fps": 52,
+          "warm_ms": 20300,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "shop",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\RUBY\\shop.png",
+          "sha256": "16db62c06d9659036751475c3c4c691b8901e316e5f971d1452d1519eef6174d",
+          "state_sha256": "c31620feef3f51ba38e051ffbd751a9e6d6acfafe0ae80930f2ebe637595812b",
+          "fps": 113,
+          "warm_ms": 45162,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "shop-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\RUBY\\shop-1280.png",
+          "sha256": "36492ff1a5c146d0f0f61154b86840049f0566ad21d8b283a535604b5ab0477c",
+          "state_sha256": "f5f70ccc4dd150e50697fafa5b65498984ef340196f170ea505bbb7244b88641",
+          "fps": 106,
+          "warm_ms": 40677,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "combat-floaters",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\RUBY\\combat-floaters.png",
+          "sha256": "a7a145a8e063a90acbebe620d5098d21629c3820d6b7ceab2a6fb2539d9aff3d",
+          "state_sha256": "ec30b55c56e3219a0c00bcb92dec98b38aaa82ddcbfbcd26002bd860e74e8f66",
+          "fps": 136,
+          "warm_ms": 38757,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "combat-floaters-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\RUBY\\combat-floaters-1280.png",
+          "sha256": "29360d878caaad7ba914a72fb3ce75f5edcef76c07126cbbb7cf0af7bde8c3b8",
+          "state_sha256": "93e99aff8c6c742a498c37d1c36135a4b5dbc2cde2669c8e9c92ce46fb8f51f6",
+          "fps": 146,
+          "warm_ms": 33834,
+          "void": false,
+          "errors": []
+        }
+      ],
+      "provenance": "complete ten-image batch plus documented targeted retakes"
+    },
+    "OPAL": {
+      "commit": "07993748843bf7440c056f90ba873745c67a80ac",
+      "captures": [
+        {
+          "screen": "rest",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\OPAL\\rest.png",
+          "sha256": "39c16c93ce8789fa99f5b48d0835c52cb809a6c3e7718a30605a25c3ea01ab78",
+          "state_sha256": "d8295bd4dee48184bd30eabeda7d617dff7f4c23d61dd81d4142f0fb22212373",
+          "fps": 141,
+          "warm_ms": 26442,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "rest-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\OPAL\\rest-1280.png",
+          "sha256": "0b5c01c02f23c7beb43dc9c1566eb486c9057b6676ac4da14f3fed11603d9001",
+          "state_sha256": "e286024775c2ca8ed0cef19abc7530e2dee388f3872b33551887d47f9dbf9784",
+          "fps": 139,
+          "warm_ms": 21060,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "event",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\OPAL\\event.png",
+          "sha256": "0844368dc2933e50e0e65fd6e405433a0165ec2126f4b6ff0535bf2fce39914d",
+          "state_sha256": "d7c98d195ccfd89cd430a4d6a702ef9c9bb8bd7644e19568b5923c6ac7d00626",
+          "fps": 50,
+          "warm_ms": 63845,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "event-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\OPAL\\event-1280.png",
+          "sha256": "10e21758e9e80893365519c5d4b0623dd3c7e51faf83c6720405c1838d30cdca",
+          "state_sha256": "2fe062faf9d7a5a4a26bb99003da8a7ea66c0299bc6c5bdaab51163507f6d6fd",
+          "fps": 145,
+          "warm_ms": 46416,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "gameover",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\OPAL\\gameover.png",
+          "sha256": "29c0f317bcff0c79581ad5391755a92e86bcd27229a8b19170344c8b5ab04b78",
+          "state_sha256": "1a87e131125a74c638a5d78ca1312b48eb2e37ef8df9387896501b0aa86b9cad",
+          "fps": 64,
+          "warm_ms": 24208,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "gameover-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\OPAL\\gameover-1280.png",
+          "sha256": "92edcbd66e83ac7de7da3553ae5558338968b6d1f7ff5d76843e1012d0442aec",
+          "state_sha256": "3b53bd2eef595d0526f3862d70f5e97ea3425a69caa0c368aa90e7456c921877",
+          "fps": 59,
+          "warm_ms": 24436,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "shop",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\OPAL\\shop.png",
+          "sha256": "ea65822e2570aa2be1d18b612fbd01e6dd3ab6c0d60e7b2d12160fb07acb5a31",
+          "state_sha256": "ac6d3bf6905586aff453705730c266bc5148f0ef1211fde824f6fcd900c02015",
+          "fps": 128,
+          "warm_ms": 30370,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "shop-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\OPAL\\shop-1280.png",
+          "sha256": "8ae35565070a57feabed821984ed2e2d288cefda10dace874e8e41ba1855574b",
+          "state_sha256": "b71015dea5b4fe14aec06cdbb223b3b57dc119ba622bbc29e38c8e8f72d40552",
+          "fps": 134,
+          "warm_ms": 24551,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "combat-floaters",
+          "size": [
+            1600,
+            900
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\OPAL\\combat-floaters.png",
+          "sha256": "af786f48502e0b74c67359e1152aa834a63c3817bf990c04d930070df641d8bb",
+          "state_sha256": "f81a77659b04fc807e7028fd0000bdf4c7f318f6bb6af86ee2d3e44e1214c906",
+          "fps": 139,
+          "warm_ms": 32787,
+          "void": false,
+          "errors": []
+        },
+        {
+          "screen": "combat-floaters-1280",
+          "size": [
+            1280,
+            800
+          ],
+          "image": "D:\\UILOOP\\r49-20261029\\judging\\OPAL\\combat-floaters-1280.png",
+          "sha256": "a6180631f77c4f934cf78a21ac05dcc2231b14d121c1e932c5965b08a1c4808a",
+          "state_sha256": "754c75fd856ee0611e8ac52f183fe5cbe64ed82ae4f6cfbc05a8f12b32c9f91b",
+          "fps": 75,
+          "warm_ms": 48573,
+          "void": false,
+          "errors": []
+        }
+      ],
+      "provenance": "complete ten-image batch plus documented targeted retakes"
+    }
+  },
+  "failures": []
+}

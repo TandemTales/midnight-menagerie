@@ -1,0 +1,60 @@
+{
+  "created_utc": "2026-10-26T22:30:15.867396+00:00",
+  "enemy": "hall-mirror",
+  "states": [
+    "idle",
+    "attack",
+    "hurt",
+    "defeat"
+  ],
+  "method": "source-art-layered-rig",
+  "validation": "representative-v3/validation.json",
+  "files": [
+    {
+      "path": "animations/sprites/enemies/animations/SS_hallMirror_idle.png",
+      "sha256": "f07754eb44efa68277e26dce079bdcdf936bc35edb66552a9c3f5e45356bdf00",
+      "bytes": 5781895
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/idle.webp",
+      "sha256": "bdef39ca33e939d53538e7d737a4b5ae4f8c182bf24186a3343b2d03ac7367fb",
+      "bytes": 890136
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hallMirror_attack.png",
+      "sha256": "8017f294c953c984a021edb09e3adab15a1b936db966612160f413d76d4e3ea6",
+      "bytes": 5177089
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/attack.webp",
+      "sha256": "c0c800cfe67fb4f7d0141485cb5b8ef4d8e564346c9c8045a2fa2da5f1c940ea",
+      "bytes": 902074
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hallMirror_hurt.png",
+      "sha256": "b7d39a1af9fdf1825cc24931efe6632818d5c20c168cf7a4c26ce52412112b8f",
+      "bytes": 2821866
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/hurt.webp",
+      "sha256": "eb5205bc5a135eccf04e05bff40dd6061e58b391f3628d0d963bea925334c4eb",
+      "bytes": 536444
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hallMirror_defeat.png",
+      "sha256": "77a108f184dcec22cb7a6dd4b11c78ba1671da0c436be93b346aced740665648",
+      "bytes": 4152724
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/defeat.webp",
+      "sha256": "2ec8afbf1e47aa375ac86e0676201413126a4c55ef7d65b82f491aed766328d7",
+      "bytes": 743048
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hall-mirror/index.json",
+      "sha256": "0613f98eb3a55f7e71a81fe783f81964ad113b8de2bb2184e6a691a75548a3ad",
+      "bytes": 2273
+    }
+  ],
+  "complete": true
+}

@@ -1,0 +1,132 @@
+{
+  "enemy": "garden-shears",
+  "technical_passed": true,
+  "errors": [],
+  "clips": {
+    "idle": {
+      "frames": 60,
+      "fps": 30,
+      "duration_seconds": 2.0,
+      "unique_visible_frames": 59,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 0.30702228753914756,
+      "max_adjacent_premultiplied_MAE": 0.30611427988621676,
+      "preview_frames": 60,
+      "preview_duration_ms": 2000,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "loop_boundary": true
+      },
+      "passed": true
+    },
+    "attack": {
+      "frames": 48,
+      "fps": 30,
+      "duration_seconds": 1.6,
+      "unique_visible_frames": 47,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 0.0,
+      "max_adjacent_premultiplied_MAE": 7.124856042134736,
+      "preview_frames": 48,
+      "preview_duration_ms": 1600,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "returns_exactly_to_first_pose": true
+      },
+      "passed": true
+    },
+    "hurt": {
+      "frames": 24,
+      "fps": 30,
+      "duration_seconds": 0.8,
+      "unique_visible_frames": 23,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 0.0,
+      "max_adjacent_premultiplied_MAE": 6.4433742681100235,
+      "preview_frames": 24,
+      "preview_duration_ms": 800,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "returns_exactly_to_first_pose": true
+      },
+      "passed": true
+    },
+    "defeat": {
+      "frames": 45,
+      "fps": 30,
+      "duration_seconds": 1.5,
+      "unique_visible_frames": 45,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 16.36572413226358,
+      "max_adjacent_premultiplied_MAE": 5.405050213716129,
+      "preview_frames": 45,
+      "preview_duration_ms": 1500,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "nonlooping_final_hold": true,
+        "closed_shears_lie_on_side": true,
+        "settles_downward": true
+      },
+      "passed": true
+    }
+  },
+  "method": "Authentic front blade/handle/rivet plate and back blade/handle/ribbon rotate independently around the painted flower rivet. Ribbon tips deform locally; no hidden joint geometry is invented. Source alpha noise <=2/255 removed in derivative only.",
+  "visual_gate": "Chronological contacts inspected separately; full-speed intended-size visual review pending. Browser URL-policy denial respected; no browser attempt or alternate surface used.",
+  "integration": "No game registry or gameplay test performed.",
+  "orientation_review": {
+    "enemy": "garden-shears",
+    "created_utc": "2026-10-26T23:46:39.585842+00:00",
+    "status": "left_in_inspected_keyposes",
+    "required": "screen-left",
+    "evidence": "Ready blades point upper-left; closing action points directly left. Both halves remain connected at the original flower rivet. Recovery returns upper-left and defeat lies closed pointing left. Tool is rotated, not mirrored; handle/ribbon handedness is retained.",
+    "contacts": [
+      "idle-contact.jpg",
+      "attack-contact.jpg",
+      "hurt-contact.jpg",
+      "defeat-contact.jpg"
+    ],
+    "limits": "Decoded chronological key poses and authored motion curves reviewed. Full-speed intended-size playback and every intervening pose are not independently visually approved; no browser or game runtime test.",
+    "text_handedness": "No legible text reversed. Only the unlettered non-handed pots fixture is reflected; other props retain source handedness."
+  },
+  "orientation_full_speed_passed": false
+}

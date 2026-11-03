@@ -113,13 +113,21 @@
   --num-feat: lining-nums tabular-nums;
 
   --type-scale: 1;
+  /* Nonlinear lift: tiny labels grow most; large headings keep their scale. */
+  --reading-floor: calc(16px * var(--type-scale));
+  --reading-lift: calc(8px * var(--type-scale));
+  --reading-ratio: .75;
+  --card-reading-floor: 14;
+  --card-reading-cap: 17;
+  --bp-room-type: 24px;
+  --bp-detail-type: 18px;
 
-  --fs-xs:  calc(clamp(10px, 0.72vw, 12px) * var(--type-scale));
-  --fs-sm:  calc(clamp(12px, 0.86vw, 14px) * var(--type-scale));
-  --fs-md:  calc(clamp(14px, 1.02vw, 17px) * var(--type-scale));
-  --fs-lg:  calc(clamp(18px, 1.35vw, 23px) * var(--type-scale));
-  --fs-xl:  calc(clamp(24px, 2.1vw, 36px) * var(--type-scale));
-  --fs-2xl: calc(clamp(34px, 3.4vw, 58px) * var(--type-scale));
+  --fs-xs: calc(clamp(16px, 1.1vw, 18px) * var(--type-scale));
+  --fs-sm: calc(clamp(18px, 1.25vw, 20px) * var(--type-scale));
+  --fs-md: calc(clamp(20px, 1.4vw, 22px) * var(--type-scale));
+  --fs-lg: calc(clamp(22px, 1.6vw, 27px) * var(--type-scale));
+  --fs-xl: calc(clamp(26px, 2.2vw, 38px) * var(--type-scale));
+  --fs-2xl: calc(clamp(36px, 3.5vw, 60px) * var(--type-scale));
   --fs-3xl: calc(clamp(48px, 5.6vw, 96px) * var(--type-scale));
 
   /* --- Space ------------------------------------------------------------- */
@@ -129,7 +137,7 @@
   --radius-sm: 4px; --radius-md: 8px; --radius-lg: 14px; --radius-card: 13px;
 
   /* --- Motion: everything reads from here so feel is tunable in one place */
-  --anim-scale: 1;              /* Save.settings.speed, applied by settings.js */
+  --anim-scale: 1.5;              /* two-thirds speed; settings.js composes the player speed */
   --t-instant: calc(70ms  * var(--anim-scale));
   --t-quick:   calc(130ms * var(--anim-scale));
   --t-base:    calc(220ms * var(--anim-scale));
@@ -148,7 +156,7 @@
   --card-aspect: 0.7179;
 
   /* --- Chrome geometry --------------------------------------------------- */
-  --hud-h: 46px;
+  --hud-h: 60px;
   --tip-max-w: 34ch;     /* in ch so largeText widens instead of clipping */
   --tip-gap: 12px;       /* clearance between tooltip and its anchor */
 
@@ -361,8 +369,10 @@
 :root[data-reduce-motion="1"] *::before,
 :root[data-reduce-motion="1"] *::after {
   animation-duration: 1ms !important;
+  animation-delay: 0ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: 1ms !important;
+  transition-delay: 0ms !important;
   scroll-behavior: auto !important;
 }
 
@@ -391,7 +401,7 @@
 /* Round 40: the smallest a line a player reads may set on screen, at the
    Deck's 1280x800 or anywhere (ui/kit.css, the boards). */
 :root {
-  --kit-type-floor: 12px;
+  --kit-type-floor: 16px;
 }
 
 /* Round 42 graft (LAPIS's): the clipped-corner tag cartouche, 9-sliced from
@@ -402,4 +412,15 @@
 :root {
   --kit-tagplate-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M8 .7H24L31.3 8V24L24 31.3H8L.7 24V8Z' fill='%23927350' stroke='%23170d05' stroke-width='1.4'/%3E%3Cpath d='M9.3 3.8H22.7L28.2 9.3V22.7L22.7 28.2H9.3L3.8 22.7V9.3Z' fill='none' stroke='%23170d05' stroke-opacity='.55' stroke-width='.8'/%3E%3C/svg%3E");
   --kit-tagplate-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%232c1c10'/%3E%3Cstop offset='1' stop-color='%23180e07'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M8 .7H24L31.3 8V24L24 31.3H8L.7 24V8Z' fill='url(%23g)' stroke='%230a0603' stroke-width='1.4'/%3E%3Cpath d='M9.3 3.8H22.7L28.2 9.3V22.7L22.7 28.2H9.3L3.8 22.7V9.3Z' fill='none' stroke='%23c9a35e' stroke-opacity='.85' stroke-width='.9'/%3E%3C/svg%3E");
+}
+
+/* The recovered survey and the children's wax pencils. */
+:root {
+  --bp-ground: #304f58;
+  --bp-floor: #355760;
+  --bp-paper-ink: #e5d9b4;
+  --bp-pencil-yellow: #f4d36c;
+  --bp-pencil-red: #ef947e;
+  --bp-pencil-green: #add4a2;
+  --bp-pencil-white: #f4ead3;
 }

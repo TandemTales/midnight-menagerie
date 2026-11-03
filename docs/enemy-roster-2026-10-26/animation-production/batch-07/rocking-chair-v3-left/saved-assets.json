@@ -1,0 +1,61 @@
+{
+  "created_utc": "2026-10-27T00:40:59.860489+00:00",
+  "enemy": "rocking-chair",
+  "states": [
+    "idle",
+    "attack",
+    "hurt",
+    "defeat"
+  ],
+  "method": "Rigid source timber rocks about its runners with explicit floor contact; local upholstery mesh gives separately on impact. Distinct authored runner lift, leftward scoot, recoil and tipped defeat. No generic creature wobble or invented joints.",
+  "validation": "batch-07/rocking-chair-v3-left/validation.json",
+  "quality_gate": "technical_pass_visual_review_pending",
+  "files": [
+    {
+      "path": "animations/sprites/enemies/animations/SS_rockingChair_idle.png",
+      "sha256": "8ae26ef022cde5f2dfb257925a11b7f01cb0413b42468f2bd97d346793cbbf47",
+      "bytes": 6925743
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rocking-chair/idle.webp",
+      "sha256": "041c7d1109d4b31a1b0291d44f9e7367197b5022dacadf58c3352627d71d8aa7",
+      "bytes": 3389756
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rockingChair_attack.png",
+      "sha256": "80808e57ca50b1bdef92c8ba4e2296f975fffe73406ae4e03151eb91dd984616",
+      "bytes": 5785957
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rocking-chair/attack.webp",
+      "sha256": "72471cb0d88879518b02ce15875c7299a65ed87135d1274720165ca7f72fd311",
+      "bytes": 2797212
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rockingChair_hurt.png",
+      "sha256": "1bde886da2fa7d1f899dee3033e623215c95f3967a16ecc8385be89c45668d72",
+      "bytes": 2906698
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rocking-chair/hurt.webp",
+      "sha256": "50c5c3ec108a892900d384601b63c32c7e80abebc0d084c285d66713be3b31e3",
+      "bytes": 1399188
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rockingChair_defeat.png",
+      "sha256": "bc7785d7c9435190d70079636f73ad0d7c62516141d3e542de77b02beefcfb76",
+      "bytes": 5752440
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rocking-chair/defeat.webp",
+      "sha256": "595755aa1976b79625dbb6e128694289344b624119f8aabc1bb27d57d2905384",
+      "bytes": 2749888
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rocking-chair/index.json",
+      "sha256": "7c887e262c493adf9689a5e5fab69413b4e34707dd93efead6acbfd624db9e46",
+      "bytes": 2652
+    }
+  ],
+  "complete": true
+}

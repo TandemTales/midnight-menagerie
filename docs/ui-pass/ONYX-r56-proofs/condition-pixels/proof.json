@@ -1,0 +1,527 @@
+{
+  "baseline": "035efe6f43bfe09f4eb267e0cc931b009179b283",
+  "rows": [
+    {
+      "variant": "inherited",
+      "width": 1280,
+      "labels": [
+        {
+          "text": "+3 Strength",
+          "owner": "e0",
+          "time": 0.7497999999999984,
+          "duration": 1.0326795296952551,
+          "phase": 0.7260722987520293,
+          "opacity": "0.720862",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 855.2154541015625,
+            "right": 1071.9844970703125,
+            "top": 93.39664459228516,
+            "bottom": 128.203369140625
+          }
+        },
+        {
+          "text": "+2 Vulnerable",
+          "owner": "e0",
+          "time": 0.6294666666666648,
+          "duration": 1.0326795296952551,
+          "phase": 0.6095469587282525,
+          "opacity": "1",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 860.66650390625,
+            "right": 1103.533447265625,
+            "top": 137.95262145996094,
+            "bottom": 171.6473846435547
+          }
+        },
+        {
+          "text": "+4 Bristle",
+          "owner": "e0",
+          "time": 0.5183999999999991,
+          "duration": 1.0326795296952551,
+          "phase": 0.5019950382409337,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 856.5379638671875,
+            "right": 1031.2620849609375,
+            "top": 181.95262145996094,
+            "bottom": 215.6473846435547
+          }
+        },
+        {
+          "text": "+2 Weak",
+          "owner": "player",
+          "time": 0.3980666666666656,
+          "duration": 1.0326795296952551,
+          "phase": 0.38546969821715704,
+          "opacity": "1",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 72.6338119506836,
+            "right": 214.96617889404297,
+            "top": 93.95262145996094,
+            "bottom": 127.64738464355469
+          }
+        },
+        {
+          "text": "+2 Dexterity",
+          "owner": "player",
+          "time": 0.2822666666666627,
+          "duration": 1.0326795296952551,
+          "phase": 0.2733342324989825,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 77.1839370727539,
+            "right": 295.4160842895508,
+            "top": 137.95262145996094,
+            "bottom": 171.6473846435547
+          }
+        },
+        {
+          "text": "+3 Regen",
+          "owner": "player",
+          "time": 0.16659999999999614,
+          "duration": 1.0326795296952551,
+          "phase": 0.16132788073097565,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 73.37449645996094,
+            "right": 229.2255096435547,
+            "top": 181.95262145996094,
+            "bottom": 215.6473846435547
+          }
+        }
+      ],
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\condition-pixels\\inherited-1280.png",
+      "sha256": "400fdc64de31f1035e792daea8ba05052db61da52f323f03894a093eb40be389",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "combatCSS": "fa59ab5b22345b85e59ca8ae794133de1df46945fb3c1f748855d1c760f1edfd"
+    },
+    {
+      "variant": "inherited",
+      "width": 1600,
+      "labels": [
+        {
+          "text": "+3 Strength",
+          "owner": "e0",
+          "time": 0.7776666666666665,
+          "duration": 1.0326795296952551,
+          "phase": 0.7530571143364843,
+          "opacity": "0.64985",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 1062.2491455078125,
+            "right": 1280.9508056640625,
+            "top": 93.24148559570312,
+            "bottom": 128.3585205078125
+          }
+        },
+        {
+          "text": "+2 Vulnerable",
+          "owner": "e0",
+          "time": 0.6665333333333303,
+          "duration": 1.0326795296952551,
+          "phase": 0.6454406368740795,
+          "opacity": "0.933051",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 1067.7344970703125,
+            "right": 1312.46533203125,
+            "top": 137.8233184814453,
+            "bottom": 171.77667236328125
+          }
+        },
+        {
+          "text": "+4 Bristle",
+          "owner": "e0",
+          "time": 0.5508666666666637,
+          "duration": 1.0326795296952551,
+          "phase": 0.5334342851060726,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 1064.5379638671875,
+            "right": 1239.2620849609375,
+            "top": 181.95262145996094,
+            "bottom": 215.6473846435547
+          }
+        },
+        {
+          "text": "+2 Weak",
+          "owner": "player",
+          "time": 0.43513333333333126,
+          "duration": 1.0326795296952551,
+          "phase": 0.42136337636298415,
+          "opacity": "1",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 180.63381958007812,
+            "right": 322.9661865234375,
+            "top": 134.95262145996094,
+            "bottom": 168.6473846435547
+          }
+        },
+        {
+          "text": "+2 Dexterity",
+          "owner": "player",
+          "time": 0.2963333333333333,
+          "duration": 1.0326795296952551,
+          "phase": 0.28695575424137787,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 347.6839294433594,
+            "right": 565.9160766601562,
+            "top": 134.95262145996094,
+            "bottom": 168.6473846435547
+          }
+        },
+        {
+          "text": "+3 Regen",
+          "owner": "player",
+          "time": 0.17593333333332947,
+          "duration": 1.0326795296952551,
+          "phase": 0.1703658572425151,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 591.574462890625,
+            "right": 747.4254760742188,
+            "top": 134.95262145996094,
+            "bottom": 168.6473846435547
+          }
+        }
+      ],
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\condition-pixels\\inherited-1600.png",
+      "sha256": "23453e7f4473dd654517c814860646dd0cc8c3397eb29375f8e08f38d915124b",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "combatCSS": "fa59ab5b22345b85e59ca8ae794133de1df46945fb3c1f748855d1c760f1edfd"
+    },
+    {
+      "variant": "current",
+      "width": 1280,
+      "labels": [
+        {
+          "text": "+3 Strength",
+          "owner": "e0",
+          "time": 0.7592000000000019,
+          "duration": 1.0326795296952551,
+          "phase": 0.7351748322386545,
+          "opacity": "0.696908",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 854.893310546875,
+            "right": 1072.306640625,
+            "top": 93.34492492675781,
+            "bottom": 128.2550811767578
+          }
+        },
+        {
+          "text": "+2 Vulnerable",
+          "owner": "e0",
+          "time": 0.6388000000000028,
+          "duration": 1.0326795296952551,
+          "phase": 0.6185849352397964,
+          "opacity": "1",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 860.66650390625,
+            "right": 1103.533447265625,
+            "top": 137.95262145996094,
+            "bottom": 171.6473846435547
+          }
+        },
+        {
+          "text": "+4 Bristle",
+          "owner": "e0",
+          "time": 0.5183999999999989,
+          "duration": 1.0326795296952551,
+          "phase": 0.5019950382409335,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 856.5379638671875,
+            "right": 1031.2620849609375,
+            "top": 181.95262145996094,
+            "bottom": 215.6473846435547
+          }
+        },
+        {
+          "text": "+2 Weak",
+          "owner": "player",
+          "time": 0.40726666666666755,
+          "duration": 1.0326795296952551,
+          "phase": 0.3943785607785335,
+          "opacity": "1",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 72.6338119506836,
+            "right": 214.96617889404297,
+            "top": 93.95262145996094,
+            "bottom": 127.64738464355469
+          }
+        },
+        {
+          "text": "+2 Dexterity",
+          "owner": "player",
+          "time": 0.29160000000000097,
+          "duration": 1.0326795296952551,
+          "phase": 0.2823722090105267,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 77.1839370727539,
+            "right": 295.4160842895508,
+            "top": 137.95262145996094,
+            "bottom": 171.6473846435547
+          }
+        },
+        {
+          "text": "+3 Regen",
+          "owner": "player",
+          "time": 0.17586666666666861,
+          "duration": 1.0326795296952551,
+          "phase": 0.1703013002674383,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 73.37449645996094,
+            "right": 229.2255096435547,
+            "top": 181.95262145996094,
+            "bottom": 215.6473846435547
+          }
+        }
+      ],
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\condition-pixels\\current-1280.png",
+      "sha256": "32c2aa7ee760bf4eeced4009ae1aaf7dd2448d7bd3c7f2a8c232b4bc24191e3a",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "combatCSS": "88e7b745c731719976fd3f3c5ca7fa8e6903697ca3f809b1b1282dddf1291214"
+    },
+    {
+      "variant": "current",
+      "width": 1600,
+      "labels": [
+        {
+          "text": "+3 Strength",
+          "owner": "e0",
+          "time": 0.7637333333333373,
+          "duration": 1.0326795296952551,
+          "phase": 0.7395647065442614,
+          "opacity": "0.685356",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 1062.7322998046875,
+            "right": 1280.4676513671875,
+            "top": 93.31906127929688,
+            "bottom": 128.28094482421875
+          }
+        },
+        {
+          "text": "+2 Vulnerable",
+          "owner": "e0",
+          "time": 0.6480666666666706,
+          "duration": 1.0326795296952551,
+          "phase": 0.6275583547762545,
+          "opacity": "0.98011",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 1068.3868408203125,
+            "right": 1311.81298828125,
+            "top": 137.91383361816406,
+            "bottom": 171.68617248535156
+          }
+        },
+        {
+          "text": "+4 Bristle",
+          "owner": "e0",
+          "time": 0.5277333333333372,
+          "duration": 1.0326795296952551,
+          "phase": 0.5110330147524779,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 1064.5379638671875,
+            "right": 1239.2620849609375,
+            "top": 181.95262145996094,
+            "bottom": 215.6473846435547
+          }
+        },
+        {
+          "text": "+2 Weak",
+          "owner": "player",
+          "time": 0.41199999999999987,
+          "duration": 1.0326795296952551,
+          "phase": 0.39896210600938464,
+          "opacity": "1",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 180.63381958007812,
+            "right": 322.9661865234375,
+            "top": 134.95262145996094,
+            "bottom": 168.6473846435547
+          }
+        },
+        {
+          "text": "+2 Dexterity",
+          "owner": "player",
+          "time": 0.28693333333333426,
+          "duration": 1.0326795296952551,
+          "phase": 0.27785322075475694,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 347.6839294433594,
+            "right": 565.9160766601562,
+            "top": 134.95262145996094,
+            "bottom": 168.6473846435547
+          }
+        },
+        {
+          "text": "+3 Regen",
+          "owner": "player",
+          "time": 0.17593333333333427,
+          "duration": 1.0326795296952551,
+          "phase": 0.17036585724251976,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 591.574462890625,
+            "right": 747.4254760742188,
+            "top": 134.95262145996094,
+            "bottom": 168.6473846435547
+          }
+        }
+      ],
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\condition-pixels\\current-1600.png",
+      "sha256": "31e4b9f3d385047b1b1399cb8f35c4e3a9418a296abf65a15217ad67ba78ced7",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "combatCSS": "88e7b745c731719976fd3f3c5ca7fa8e6903697ca3f809b1b1282dddf1291214"
+    }
+  ],
+  "errors": [],
+  "note": "Separate pixel work only; excluded from timing distributions. All six labels are frozen at supplied canonical fixture phase; styles include actual upper-right Strength opacity and backing."
+}

@@ -1,0 +1,370 @@
+{
+  "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+  "head": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+  "canonical": [
+    {
+      "screen": "rest",
+      "exit": 0,
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "sha256": "e69c2fdca37cf1876c0c0085d1cb96259a914be73fa31b0ec7e93f4a07c0dc28"
+    },
+    {
+      "screen": "rest-1280",
+      "exit": 0,
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "sha256": "61afac84a33224fdb80a1e3aa04b35400b7f5644a9bcabc9b6e582b6d6cef95a"
+    },
+    {
+      "screen": "event",
+      "exit": 0,
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "sha256": "a051e677117983fafcd862de589909ce0e586be50856bf846326e0ec12e72f79"
+    },
+    {
+      "screen": "event-1280",
+      "exit": 0,
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "sha256": "8157fa78663fe4d960a951864f7aae9e57ed35a5b6a52eb50579bf57fc765502"
+    },
+    {
+      "screen": "gameover",
+      "exit": 0,
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "sha256": "0e9957184f602561c1ff8b13ec6f5e7f3fe010e92370158b7b63d58dbf9da568"
+    },
+    {
+      "screen": "gameover-1280",
+      "exit": 0,
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "sha256": "89f0ea773c461d4542517cac7cc9b835c21db4a16ccb326302284056d18d7669"
+    },
+    {
+      "screen": "shop",
+      "exit": 0,
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "sha256": "0258b3413e7be802015f1bfd41c39b4818f46966c998a63ee3865b15f07030a4"
+    },
+    {
+      "screen": "shop-1280",
+      "exit": 0,
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "sha256": "dfc3efe341ca76bb1dabdb94bc5d89204c7d71655d261aaf34930d9c70ca1197"
+    },
+    {
+      "screen": "combat-floaters",
+      "exit": 0,
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "sha256": "a7fb6fd53c31f3ba070ff43f88f25c09744e861f8c949230a68eafab7d63938f"
+    },
+    {
+      "screen": "combat-floaters-1280",
+      "exit": 0,
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "sha256": "9414b892b01e640ffc7d0733836fb0987a7da67096edeb7286b9f23abcd317a8"
+    }
+  ],
+  "images": [
+    {
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "path": "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\combat-floaters-1280.png",
+      "sha256": "9414b892b01e640ffc7d0733836fb0987a7da67096edeb7286b9f23abcd317a8",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9542/game/index.html#scene=combat&seed=7&companion=bones&kid=maya&encounter=foyer-boss",
+        "state": "{\"scene\":\"combat\",\"run\":null}",
+        "perf": {
+          "fps": 145,
+          "mem": 33,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 44.78,
+          "warmMs": 24215,
+          "settleMs": 553,
+          "band": 42.4
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "path": "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\combat-floaters.png",
+      "sha256": "a7fb6fd53c31f3ba070ff43f88f25c09744e861f8c949230a68eafab7d63938f",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9542/game/index.html#scene=combat&seed=7&companion=bones&kid=maya&encounter=foyer-boss",
+        "state": "{\"scene\":\"combat\",\"run\":null}",
+        "perf": {
+          "fps": 145,
+          "mem": 34,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 43.34,
+          "warmMs": 29263,
+          "settleMs": 754,
+          "band": 40.3
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "path": "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\event-1280.png",
+      "sha256": "8157fa78663fe4d960a951864f7aae9e57ed35a5b6a52eb50579bf57fc765502",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9542/game/index.html#scene=event&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"event\",\"run\":null}",
+        "perf": {
+          "fps": 145,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 52.7,
+          "warmMs": 31859,
+          "settleMs": 407,
+          "band": 50.3
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "path": "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\event.png",
+      "sha256": "a051e677117983fafcd862de589909ce0e586be50856bf846326e0ec12e72f79",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9542/game/index.html#scene=event&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"event\",\"run\":null}",
+        "perf": {
+          "fps": 88,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 51.84,
+          "warmMs": 36943,
+          "settleMs": 208,
+          "band": 47.0
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "path": "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\gameover-1280.png",
+      "sha256": "89f0ea773c461d4542517cac7cc9b835c21db4a16ccb326302284056d18d7669",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9542/game/index.html#scene=gameover&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"gameover\",\"run\":null}",
+        "perf": {
+          "fps": 100,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 46.91,
+          "warmMs": 11144,
+          "settleMs": 426,
+          "band": 40.8
+        },
+        "void": false,
+        "errors": [],
+        "logs": []
+      }
+    },
+    {
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "path": "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\gameover.png",
+      "sha256": "0e9957184f602561c1ff8b13ec6f5e7f3fe010e92370158b7b63d58dbf9da568",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9542/game/index.html#scene=gameover&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"gameover\",\"run\":null}",
+        "perf": {
+          "fps": 95,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 44.42,
+          "warmMs": 11160,
+          "settleMs": 316,
+          "band": 38.0
+        },
+        "void": false,
+        "errors": [],
+        "logs": []
+      }
+    },
+    {
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "path": "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\rest-1280.png",
+      "sha256": "61afac84a33224fdb80a1e3aa04b35400b7f5644a9bcabc9b6e582b6d6cef95a",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9542/game/index.html#scene=rest&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"rest\",\"run\":null}",
+        "perf": {
+          "fps": 145,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 40.35,
+          "warmMs": 20779,
+          "settleMs": 440,
+          "band": 31.8
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "path": "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\rest.png",
+      "sha256": "e69c2fdca37cf1876c0c0085d1cb96259a914be73fa31b0ec7e93f4a07c0dc28",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9542/game/index.html#scene=rest&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"rest\",\"run\":null}",
+        "perf": {
+          "fps": 139,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 39.51,
+          "warmMs": 26326,
+          "settleMs": 443,
+          "band": 31.2
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "path": "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\shop-1280.png",
+      "sha256": "dfc3efe341ca76bb1dabdb94bc5d89204c7d71655d261aaf34930d9c70ca1197",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9542/game/index.html#scene=shop&seed=7&companion=bones&kid=maya",
+        "state": "{\"scene\":\"shop\",\"run\":null}",
+        "perf": {
+          "fps": 138,
+          "mem": 31,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 47.86,
+          "warmMs": 22910,
+          "settleMs": 330,
+          "band": 51.0
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "path": "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\shop.png",
+      "sha256": "0258b3413e7be802015f1bfd41c39b4818f46966c998a63ee3865b15f07030a4",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9542/game/index.html#scene=shop&seed=7&companion=bones&kid=maya",
+        "state": "{\"scene\":\"shop\",\"run\":null}",
+        "perf": {
+          "fps": 144,
+          "mem": 31,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 43.94,
+          "warmMs": 27752,
+          "settleMs": 426,
+          "band": 47.3
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "path": "D:\\UILOOP\\r54-20261029\\b\\shots\\PERIDOT-title.png",
+      "sha256": "ffd7987e6cd12537a5687d584bf6acfdd8a9992f2efbd6ef0212984e554933f2",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9542/game/index.html#scene=title&seed=7&companion=bones&kid=maya",
+        "state": "{\"scene\":\"title\",\"run\":null}",
+        "perf": {
+          "fps": 144,
+          "mem": 29,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 31.27,
+          "warmMs": 10206,
+          "settleMs": 415,
+          "band": 39.1
+        },
+        "void": false,
+        "errors": [],
+        "logs": []
+      }
+    }
+  ]
+}

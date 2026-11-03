@@ -1,0 +1,38 @@
+create a composite image of sprites of the following enemies in a turn based ccg. make sure the final image has a truly transparent background. Make sure the images are good quality and will 2D animate well (nothing in mid-action pose, extra floating parts around it, etc.). Make sure the enemies match the visual style of the included menu screen with companion characters from another part of the game:
+
+1. Imaginary Friend (Level/Region 2)
+A translucent childlike outline drawn in shifting crayon colors, with incomplete features and exaggerated gestures.
+
+2. The Dollhouse (Level/Region 2)
+A large elaborate dollhouse that acts like a miniature haunted mansion.
+Lights switch on inside.
+Tiny doors open.
+Furniture moves.
+Small silhouettes cross windows.
+Rooms rotate and rearrange themselves.
+The dollhouse itself can remain mostly stationary while the action happens inside and around it.
+
+3. The Toy Chest (Level/Region 2)
+A huge old toy chest possessed by a powerful poltergeist.
+Rather than giving the chest a mouth, toys continuously fly out of it:
+Blocks.
+Balls.
+Dolls.
+Wooden animals.
+Jump ropes.
+Stuffed toys.
+Toy instruments.
+The chest slams open and shut while the entire swarm behaves as one enemy.
+
+4. The Grand Music Box (Level/Region 2)
+A large ornate music box whose lid opens into an impossible miniature stage.
+Tiny spectral performers dance inside.
+The ballerina figure occasionally grows to full size as a translucent apparition before folding back into the box.
+
+5. Rocking Chair (Level/Region 3)
+An empty wooden rocking chair that moves itself across the room while continuing to rock.
+
+6. Nightstand Poltergeist (Level/Region 3)
+A small bedside table surrounded by floating books, glasses, clocks, and drawers opening on their own.
+Production requirements: Create one static composite, one complete enemy design per numbered entry, with clear empty margins separating every enemy. Use the attached UI/selectCompanion.png as the primary visual reference and the accepted source sheets as rendering/style references only. Do not generate animation frames or sequences. All enemies face LEFT toward the players in neutral stable resting poses, no mid-action gesture or attack. Preserve each described identity; action wording above is character context, not a request to depict the action. Keep props held, supported, attached, contained, or touching the core design; omit loose particle effects and orbiting fragments. For inherently grouped enemies, keep the group compact and contained within its own distinct cell. No cropped silhouettes, merged enemies, stray anatomy, halos/matte fringes, text, labels, borders, floors, shadows detached from the sprite, or background scene. Cute, readable and spooky but not threatening; match the accepted art's rich material texture, soft dimensional shading and warm whimsical detail. Output PNG with genuine transparent alpha outside the sprites, never a painted checkerboard or solid-color background. Keep the character itself legible and sufficiently opaque; translucent ghost bodies may have partial alpha. The roster descriptions are quoted from the current original MM Enemies document, not the separate revised roster.
+Exactly 6 enemy designs in this batch.

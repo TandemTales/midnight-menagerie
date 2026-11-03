@@ -1,0 +1,70 @@
+{
+  "judge": 1,
+  "rubrics": [
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\RUBRIC.md",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\RUBRIC-r51.md"
+  ],
+  "references": [
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\title.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\mainMenu.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\selectCompanion.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\selectKid.png"
+  ],
+  "order": [
+    "OBSIDIAN",
+    "MOONSTONE",
+    "SPINEL",
+    "ZIRCON"
+  ],
+  "candidates": {
+    "OBSIDIAN": [
+      "D:\\UILOOP\\r51-20261029\\judging\\OBSIDIAN\\rest.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\OBSIDIAN\\rest-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\OBSIDIAN\\event.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\OBSIDIAN\\event-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\OBSIDIAN\\gameover.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\OBSIDIAN\\gameover-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\OBSIDIAN\\shop.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\OBSIDIAN\\shop-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\OBSIDIAN\\combat-floaters.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\OBSIDIAN\\combat-floaters-1280.png"
+    ],
+    "MOONSTONE": [
+      "D:\\UILOOP\\r51-20261029\\judging\\MOONSTONE\\rest.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\MOONSTONE\\rest-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\MOONSTONE\\event.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\MOONSTONE\\event-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\MOONSTONE\\gameover.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\MOONSTONE\\gameover-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\MOONSTONE\\shop.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\MOONSTONE\\shop-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\MOONSTONE\\combat-floaters.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\MOONSTONE\\combat-floaters-1280.png"
+    ],
+    "SPINEL": [
+      "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\rest.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\rest-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\event.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\event-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\gameover.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\gameover-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\shop.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\shop-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\combat-floaters.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\SPINEL\\combat-floaters-1280.png"
+    ],
+    "ZIRCON": [
+      "D:\\UILOOP\\r51-20261029\\judging\\ZIRCON\\rest.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\ZIRCON\\rest-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\ZIRCON\\event.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\ZIRCON\\event-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\ZIRCON\\gameover.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\ZIRCON\\gameover-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\ZIRCON\\shop.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\ZIRCON\\shop-1280.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\ZIRCON\\combat-floaters.png",
+      "D:\\UILOOP\\r51-20261029\\judging\\ZIRCON\\combat-floaters-1280.png"
+    ]
+  },
+  "output": "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\judges-r51\\judge1-final.json"
+}

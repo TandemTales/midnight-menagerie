@@ -1,0 +1,95 @@
+{
+  "checks": [
+    {
+      "name": "memorial",
+      "exit": 0,
+      "seconds": 26.981,
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+      "reused": true,
+      "evidence": "PERIDOT-r54-proofs/memorial.log"
+    },
+    {
+      "name": "memorial-long",
+      "exit": 0,
+      "seconds": 42.869,
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+      "reused": true,
+      "evidence": "PERIDOT-r54-proofs/memorial-long.log"
+    },
+    {
+      "name": "keepsakes",
+      "exit": 0,
+      "seconds": 23.584,
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+      "reused": true,
+      "evidence": "PERIDOT-r54-proofs/keepsakes.log"
+    },
+    {
+      "name": "event-boundary",
+      "exit": 0,
+      "seconds": 38.377,
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+      "reused": true,
+      "evidence": "PERIDOT-r54-proofs/event-boundary.log"
+    },
+    {
+      "name": "shop-rules",
+      "exit": 0,
+      "seconds": 28.563,
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+      "reused": true,
+      "evidence": "PERIDOT-r54-proofs/shop-rules.log"
+    },
+    {
+      "name": "interactions",
+      "exit": 0,
+      "seconds": 84.282,
+      "visual_source_commit": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+      "reused": true,
+      "evidence": "PERIDOT-r54-proofs/interactions.log"
+    },
+    {
+      "name": "queue",
+      "exit": 0,
+      "seconds": 158.521,
+      "visual_source_commit": "dd246d80028fb4fed39497cf63edb9cb2d68e215",
+      "evidence": "PERIDOT-r54-proofs/queue.log"
+    },
+    {
+      "name": "ink",
+      "exit": 0,
+      "seconds": 56.454,
+      "visual_source_commit": "dd246d80028fb4fed39497cf63edb9cb2d68e215",
+      "evidence": "PERIDOT-r54-proofs/ink.log"
+    },
+    {
+      "name": "idle",
+      "exit": 0,
+      "seconds": 27.188,
+      "visual_source_commit": "dd246d80028fb4fed39497cf63edb9cb2d68e215",
+      "evidence": "PERIDOT-r54-proofs/idle.log"
+    },
+    {
+      "name": "lifecycle",
+      "exit": 0,
+      "seconds": 26.73,
+      "visual_source_commit": "dd246d80028fb4fed39497cf63edb9cb2d68e215",
+      "evidence": "PERIDOT-r54-proofs/lifecycle.log"
+    }
+  ],
+  "extra": [
+    "memorial-geometry.json",
+    "long-quantities-1280.json",
+    "long-quantities-1600.json",
+    "native-material-timing/proof.json",
+    "condition-pixels/proof.json"
+  ],
+  "boardReuseProof": {
+    "from": "503c853a8e62717e967577a0ea2ea00b3e8ed11c",
+    "to": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+    "changedGamePaths": [
+      "game/src/scenes/combat.css"
+    ]
+  },
+  "canonicalSource": "3a49caa56e8a326d63436605e98a0ef1f207b9eb"
+}

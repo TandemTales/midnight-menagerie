@@ -1,0 +1,429 @@
+{
+  "created_utc": "2026-10-26T23:32:44.739588+00:00",
+  "requirement": "All enemies face screen-left toward the kid/companion, including gaze, attack/cast gestures, effects and recovery. Frontal/symmetric alone is insufficient.",
+  "renderer_evidence": {
+    "path": "game/src/ui/enemy.js",
+    "sha256": "323b1e0b5c997d8e9d4b9c847f7174bf8aff50a62230f020569cc432548a63ee",
+    "mirrored_ids": [
+      "bedframe-beast",
+      "blanket-hydra",
+      "night-terror",
+      "nightlight-snuffer",
+      "slipper-skitter"
+    ],
+    "transform": "_mountStill applies scale(-1 1) to $still for DRAWN_FACING_RIGHT IDs; _tickClip uses positive 200/unit scale inside that parent.",
+    "note": "Legacy comment permits facing the viewer; latest instruction is stricter. No renderer edit or runtime test performed."
+  },
+  "legacy_enemies": [
+    {
+      "enemy": "dust-bunny",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "b751c337df29b27d2e20588601063f9fc6c37968e05a2e5540b479e2b9bbf480",
+      "contact_page": "legacy-runtime-1.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "coatrack-crawler",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "a9331fe37a9294afa62a19afe25fc7e773c619b5a020e37072f239e784d99c5a",
+      "contact_page": "legacy-runtime-1.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "lost-luggage",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "45e694659f2da5c6740f83eb8872d883d2e6ffcff5b1896e14f2c09ff1afd812",
+      "contact_page": "legacy-runtime-1.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "red-carpet-runner",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "c0cfe4a9b011f7013ff227917706eef24594bb9bc58644b816a1faccdfda4efe",
+      "contact_page": "legacy-runtime-1.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "door-greeter",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "ba9faa7cad5887f32f606b06821d446ad48ded6dfe032b7f8dd54bd984272a0a",
+      "contact_page": "legacy-runtime-1.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "butler",
+      "actions": [
+        "attack",
+        "cast",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "94a10367b22e056f78be572f01a8a3fe9de71f56a59b274b4954167a42b917be",
+      "contact_page": "legacy-runtime-2.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "button-baby",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "5c748841b4955b798a40b5d97951943cfe11060f42d21b8f294b558bef598acc",
+      "contact_page": "legacy-runtime-2.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "patchwork-soldier",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "b1ff5db10d6f2398b4daad4d2bc46367e6b646781a8427ad1d71366999b3f654",
+      "contact_page": "legacy-runtime-2.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "jack-in-the-box",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "2121112cbafd3d5b1ae21eaed6977306843fa3a917e304510cc1c7aa07d94a70",
+      "contact_page": "legacy-runtime-2.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "blanket-blob",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "6a79d27c8ac1008f1137e52d9d18b9ca2c951a086daf194cd00d0e18a25213ae",
+      "contact_page": "legacy-runtime-2.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "patchwork-giant",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "fd0482330bab34bf550b136613e4eef3003076259cfa4eb909112631c40f6ae8",
+      "contact_page": "legacy-runtime-3.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "toy-chest",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "224612b22eb5601c77e4eddc2088942dc0454b904b067ed9bdd1ad050c1e6c2b",
+      "contact_page": "legacy-runtime-3.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "governess",
+      "actions": [
+        "attack",
+        "cast",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "c55e7b412251018f84a368da7cbc9e6e5195e9f2c0a3405b46bbd33b01130fe1",
+      "contact_page": "legacy-runtime-3.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "wardrobe-guest",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "4ebb3f053ddcf3c706bda9ee69fd1f31618a0b26a1ae95c79fe069ead047258d",
+      "contact_page": "legacy-runtime-3.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "blanket-creeper",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "07a589372f3692b14286f7afcb2f40a71943cecd57691aac6c19ed408a74db5b",
+      "contact_page": "legacy-runtime-3.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "slipper-skitter",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": true,
+      "source_index_sha256": "6a64e6190cb7bcbb3081cb9013eec675717ca40fa1ab7b3f5b62e070dfc85731",
+      "contact_page": "legacy-runtime-4.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "blanket-hydra",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": true,
+      "source_index_sha256": "06bd2bf5f764c99707ac9eb339de080df9bf785bc393bae02035513478d36933",
+      "contact_page": "legacy-runtime-4.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "the-wardrobe",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "07df5b9b71e966cb27b5aed571209f5a3511e0a5c8ed8a2d056cf33cdf1020f1",
+      "contact_page": "legacy-runtime-4.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "dough-blob",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "1ccc8e3ae7a41d15ceb7a170c014545780be995159febdf25aa953826d09f880",
+      "contact_page": "legacy-runtime-4.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "candy-clump",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "9b121dd416a6244a373b8b2af9af4552a23a67fda7f16435dafef03b7c0bd4f4",
+      "contact_page": "legacy-runtime-4.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "jam-jar",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "3361de3948b500c81ad20927254f9b18839d2152b81b8d46d2d0dc2c6cf4f045",
+      "contact_page": "legacy-runtime-5.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "pantry-mimic",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "5bdbbf16c7e4bfe227cecb45b8ae49489172216a791e438435256df0e6cb04e1",
+      "contact_page": "legacy-runtime-5.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "sugar-golem",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "0611dc2dadf4343f98c0d0a52df318c78141ff488954e20a22b9841f0e22da2e",
+      "contact_page": "legacy-runtime-5.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "oven-maw",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "15ca7c241217646ae5b8ebb4b03c0d40a8c44088e3b877c88ba11bdab597ce50",
+      "contact_page": "legacy-runtime-5.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "confectioner",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "37069338949441c3a0e0d6648cadef3c31adb96a80d54dd571c4e746f6b0f804",
+      "contact_page": "legacy-runtime-5.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "creeping-ivy",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "74ff478af43fe7b190d3897b4729a9666fc59226ff55eb167a6863df6ca8360d",
+      "contact_page": "legacy-runtime-6.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "compost-colossus",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "710370a4c29ece587f5f3d4d42512dfe84619a470e5331daafc8b6738dff8c9a",
+      "contact_page": "legacy-runtime-6.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "ancient-topiary",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "572f0cdeb73ae58ee34e4ab8ce30a8036fc2b94ce5cd94c0bf70cde971519a26",
+      "contact_page": "legacy-runtime-6.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    },
+    {
+      "enemy": "carnivorous-conservatory",
+      "actions": [
+        "attack",
+        "defeat",
+        "hurt",
+        "idle"
+      ],
+      "runtime_mirrored": false,
+      "source_index_sha256": "cc0b0fbb7fa6ee45f04e1807e40f1a9cfd4e7eaa01bb43a974752babb232d7ef",
+      "contact_page": "legacy-runtime-6.jpg",
+      "orientation_status": "manual_all_action_sequence_review_pending",
+      "originals_preserved": true
+    }
+  ],
+  "new_saved_status": "All 12 saved actions require orientation audit/correction; prior technical checks do not prove leftward staging.",
+  "blocked_dependency": "Spectral Scullion unchanged; no base-art retry."
+}

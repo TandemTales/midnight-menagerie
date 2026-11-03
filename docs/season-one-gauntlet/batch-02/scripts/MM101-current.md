@@ -1,0 +1,1427 @@
+# Midnight Menagerie — Your Room Is Ready
+
+Episode 101 · Complete animation screenplay · Draft 5
+
+Target approximately 22 minutes; runtime unmeasured. This reading edition mirrors `MM101-v5.fountain`. New staging remains an adaptation proposal. Five editorial passes, including two fresh perspectives and repairs, are recorded in the review history.
+
+## MM101-S01 — EXT. NEIGHBORHOOD NOTICEBOARD - LATE AFTERNOON
+
+A missing-cat poster. ORBIT: black fur, white chest, expression of a cat who knows where something belongs and disagrees.
+
+A hand smooths the photograph. MAYA, 13, stands on her forearm crutches beside the board. An open backpack rests on the bench within reach.
+
+She presses a tack into the corner. The other corner pops loose.
+
+JORDAN, 13, catches it. His SCOUT poster unfolds over Orbit. A beagle mix with a white face stripe and a crooked tail.
+
+**JORDAN**
+
+Sorry. His tail wouldn't fit.
+
+PRIYA, 14, slides a much smaller photograph into the remaining gap: PIXEL, a leopard gecko sunning himself on a crooked stone.
+
+**PRIYA**
+
+We can fit everybody if the edges line up.
+
+She aligns three edges. A fourth poster slips down.
+
+LENA, 11, catches it against the board with a bright yellow button. Her other hand is already searching for a tack.
+
+ELI, 12, offers a little screw. It has very particular tooth marks.
+
+**ELI**
+
+This would hold.
+
+Lena looks at the screw, then at his SPROCKET poster: a black-and-white rat with a nicked ear.
+
+**LENA**
+
+You'd have to leave it here.
+
+Eli withdraws the screw. Lena swaps her button for a tack and pockets the button just as quickly.
+
+SAMIR, 12, patiently holds the entire arrangement in place with both hands.
+
+**SAMIR**
+
+I can hold it until someone sees Bean.
+
+AMINA, 13, sets down a MOCHI poster: cream lop rabbit, gray nose, one gray paw. She takes one of Samir's corners.
+
+**AMINA**
+
+You need lunch eventually.
+
+**SAMIR**
+
+Someone could see him before lunch.
+
+A beat. He looks down at his own photo. BEAN, a tricolor guinea pig with a brown patch over the right eye.
+
+Maya eases Orbit's poster back into place. Behind it, a rough neighborhood map is covered in pencil search routes.
+
+**MAYA**
+
+We did the gardens. Jordan did the park. Has anybody checked this side of—
+
+The entire board tilts forward.
+
+Jordan catches its wooden frame. Everything settles, perfectly flat.
+
+**JORDAN**
+
+I found the problem.
+
+Priya releases her carefully aligned corners. Pixel's tiny photograph now props up an enormous loose strip of cork.
+
+**PRIYA**
+
+Fine. Pixel gets the biggest space.
+
+MATEO, 12, arrives with a phone and a notebook tucked under their arm. They push up their round glasses with the notebook.
+
+**MATEO**
+
+Listen. Before you say it's nothing, listen to the whole thing.
+
+**MAYA**
+
+I haven't said anything.
+
+**MATEO**
+
+Good. Excellent start.
+
+They play a home video. PEPPER, a green-cheek conure, is perched beside a cabinet.
+
+SFX: A LONG, RIDICULOUS CABINET SQUEAK.
+
+The cabinet has not moved. Pepper has.
+
+Eli immediately examines the noticeboard's hinges. Jordan points at the phone. Eli looks at the bird, then puts his little screwdriver away, reluctantly.
+
+**MATEO (ON VIDEO)**
+
+Yes, it sounds like that. I'm going to fix it.
+
+**PEPPER (ON VIDEO)**
+
+Open the little door.
+
+**MATEO (ON VIDEO)**
+
+What little door? Who taught you that?
+
+Pepper tilts his head toward the window. Mateo stops the video.
+
+**MATEO**
+
+That was the night before he disappeared.
+
+**MAYA**
+
+He copies sounds.
+
+**MATEO**
+
+He copies sounds he hears. I didn't say it.
+
+Maya takes a dark blue collar from her bag. ORBIT on the tag. The clasp clicks shut, intact.
+
+**MAYA**
+
+I found this by the old mansion wall.
+
+**MATEO**
+
+Would Orbit answer someone calling?
+
+**MAYA**
+
+He usually makes me come to him.
+
+She taps the bench beside the collar three times. Waits.
+
+**MAYA**
+
+Three scratches at the door. Then he waits for me.
+
+Mateo looks from the collar to the window visible in the paused video.
+
+**MATEO**
+
+That's the side he was looking at.
+
+Priya unrolls her search map on the bench. Amina puts hers beside it. Eli turns his over from a drawing of a mechanism to a map. Different paths. The same blank property at their edges.
+
+Lena lays down a tiny photo of MOONCAKE, a Syrian hamster beside a treasured yellow button. She points to the same property.
+
+**LENA**
+
+We stopped at the gate.
+
+Maya studies all the unfinished routes.
+
+**MAYA**
+
+Then we start at the gate. Together.
+
+Jordan tries to join the others. The board leans again.
+
+**JORDAN**
+
+In a second.
+
+He pushes its loose leg into the soil. It stands. He waits, suspicious. Still standing.
+
+He follows.
+
+## MM101-S02 — EXT. MANSION GATE AND FRONT PORCH - DUSK
+
+Eight children beneath a gate intended to make eight children feel very small.
+
+On its lower edge: a tiny animal hatch.
+
+Mateo plays the last part of the clip.
+
+**PEPPER (RECORDING)**
+
+Open the little door.
+
+CLICK. The animal hatch opens.
+
+Mateo lowers the phone slowly.
+
+**MATEO**
+
+Okay. That is something.
+
+**MAYA**
+
+It is.
+
+Mateo brightens at the agreement.
+
+**MATEO**
+
+Maybe the whole house is scaled to the door, and once you get through—
+
+The full-size gate swings open and bumps their unfolded map.
+
+Mateo folds the map. Then folds the additional explanation away with it.
+
+**MATEO**
+
+Or that.
+
+Beyond, a broad paved path curves around a broken porch step to a level side approach. Maya studies it, then takes that route. The others follow.
+
+Jordan touches the loose edge of the broken step. It wobbles. He points it out to the group and moves on.
+
+The mansion windows glow, one after another. A comfortable invitation. Just a little too attentive.
+
+Samir reaches for the front-door bell.
+
+SFX: DING.
+
+His finger is still an inch away.
+
+**SAMIR**
+
+Thank you?
+
+The door opens.
+
+## MM101-S03 — INT. FRONT VESTIBULE / ENTRY HALL - DUSK
+
+Warm light. Polished floor. A great staircase beyond a row of side passages. The place is enormous, but the door is still a door.
+
+It eases closed behind Lena, the last to enter.
+
+Maya immediately turns its handle. The door opens onto the ordinary porch.
+
+**MAYA**
+
+This way back.
+
+She draws a small door on her map. Priya photographs the vestibule.
+
+A COATRACK CRAWLER unfolds from beside an umbrella stand. Wooden hooks, wooden feet, a very serious wish to be useful.
+
+It offers Samir a hook.
+
+**SAMIR**
+
+I don't have a coat. But thank you.
+
+The Crawler examines him. This is clearly an oversight.
+
+It opens a cupboard.
+
+Eight ceremonial coats drop over its arms. It distributes them with brisk confidence.
+
+Amina holds one against herself. The sleeves reach the floor.
+
+**AMINA**
+
+Mine has a room at the end.
+
+Eli pushes a hand down a sleeve. Amina shakes the cuff before he finds the opening.
+
+**ELI**
+
+Hello from in here.
+
+Maya holds her offered coat away from her crutches and lays it on the entry bench. The Crawler takes this as a new assignment. It tries to dress the bench.
+
+**MATEO**
+
+Is there somebody we can talk to? About animals?
+
+In the wall mirror, a pale cat steps onto an empty box.
+
+Mateo turns. The box is empty.
+
+They look back in the mirror. The cat regards them. Slowly, she appears on the actual box as well.
+
+**MATEO**
+
+There is a cat. There is a very unusual cat.
+
+Maya compares her black-cat photograph with the pale, translucent newcomer. Different cat. She lets out the breath she was holding.
+
+**MAYA**
+
+Hi. Have you seen him?
+
+The ghost cat looks at Orbit's photo, then at Maya. She hops down.
+
+A small collar plate on the box reads MARMALADE.
+
+**MATEO**
+
+Marmalade. Do you work here?
+
+Marmalade sits on a coat as if she owns its entire department.
+
+Samir gathers the unwanted coats. The Coatrack notices a much more manageable collection of straps: their bags.
+
+It takes Samir's bag, then Lena's, and scuttles into the Coat Room.
+
+**SAMIR**
+
+Those aren't coats.
+
+A hook reaches back, politely requesting the others.
+
+**MAYA**
+
+Keep hold of—
+
+Too late. Eli's bag is traveling.
+
+The kids follow the luggage.
+
+## MM101-S04 — INT. COAT ROOM - CONTINUOUS
+
+The GRAND COATCHECK occupies most of the far wall: a grand branching rack with more hooks than a reasonable room needs.
+
+The Crawler passes it the bags. Hooks take them up, one by one. When Jordan reaches for his strap, two hooks wrap around it.
+
+He stops. The hooks stop.
+
+**JORDAN**
+
+It thinks I'm giving it another one.
+
+Maya sets her own bag on a low bench and sits beside it, crutches within reach. The Coatcheck sends a hook toward the bag. She slides it behind her.
+
+The hook waits. Offended by unfinished work.
+
+**MAYA**
+
+No. We need these back.
+
+Mateo reaches for their notebook bag. A hook winds its loose shoulder strap around another branch.
+
+**MAYA**
+
+Wait. Every time we reach, it adds a hook. We need to know which strap goes where.
+
+She points with her pencil.
+
+**MAYA**
+
+Jordan's on the left. Eli's under it. Mateo's is—
+
+Mateo picks up one of the unwanted coats.
+
+**MATEO**
+
+Maybe it needs a proper coat before it'll give back a bag.
+
+**MAYA**
+
+We don't know that.
+
+**MATEO**
+
+We could know it in a second.
+
+They offer the coat. The Coatcheck accepts it, folds it neatly around Mateo's bag, and winds another hook through the strap. A little thread gives way.
+
+Mateo stops reaching. The hook stops winding.
+
+**MATEO**
+
+It keeps both. We know that now.
+
+Maya has lost track of the covered bag. She turns her diagram sideways. It doesn't help.
+
+**MAYA**
+
+And I've lost number four.
+
+Lena keeps her eyes on her yellow bag as it disappears behind a large coat. She steps sideways to preserve the sightline.
+
+Marmalade ambles into the room.
+
+The Coatcheck straightens. A customer without a coat.
+
+Mateo offers the ghost cat a sleeve to sniff. Marmalade walks straight through its fabric. The empty coat sways.
+
+The Coatcheck lifts it. Adjusts its shoulders. There must be a customer in there somewhere.
+
+Its branches turn toward the empty sleeves. For a moment, the bag straps loosen.
+
+Mateo sees it. Maya is still tracing the tangled hooks.
+
+**MATEO**
+
+Forget four. Look at the coat.
+
+**MAYA**
+
+I almost have—
+
+The Coatcheck transfers another hook from a bag to a dangling sleeve. Maya looks up.
+
+**MAYA**
+
+Oh.
+
+Mateo holds the coat farther from the bags. The enormous rack leans after it.
+
+Maya rises, using her crutches, and moves to the clear low row of bag loops. She sets one crutch against the fixed bench at her side, maintaining her support, and slips Jordan's strap off its slack hook.
+
+**MAYA**
+
+Jordan. Can you pass these back?
+
+Jordan takes his bag, then Eli's. Amina and Priya make a chain to the doorway. Lena points out the hidden loop of her own bag.
+
+The coat slips in Mateo's hands. The Coatcheck's attention starts to turn back.
+
+**MAYA**
+
+Can you hold it one more second?
+
+**MATEO**
+
+I can offer it a second sleeve.
+
+They do. An entire branch lunges to arrange the cuff with exquisite care.
+
+Maya frees the last loop. A tiny RIP in Mateo's already stretched strap. She catches the bag from beneath before it drops.
+
+Samir receives his bag from Amina.
+
+**SAMIR**
+
+Thank you.
+
+Still watching Mateo, he automatically passes it to Priya.
+
+**PRIYA**
+
+This is yours.
+
+She hands it back.
+
+**SAMIR**
+
+Thank you.
+
+He starts to pass it again. Priya gently taps the name on it. He hugs it to his chest instead.
+
+Mateo hangs the coat on the offered hook and backs away. The Coatcheck carefully buttons empty air. It pauses, tilts an imaginary chin and straightens the collar.
+
+Maya gives Mateo their bag.
+
+**MAYA**
+
+I didn't see where it was looking.
+
+**MATEO**
+
+Neither did I. I was looking at the cat.
+
+Marmalade is already leaving.
+
+**MAYA**
+
+Keep doing that.
+
+## MM101-S05 — INT. PORTRAIT HALL / HOUSE REGISTER ALCOVE - CONTINUOUS
+
+Portraits track the procession with painted eyes. Nobody is in a hurry to mention it.
+
+Marmalade stops below a large public ledger on a low reading stand. She bats its dangling page corner.
+
+Mateo turns the page for her. She sits on their shoe.
+
+**MATEO**
+
+You're welcome. Am I staying here?
+
+Maya sees the column heading: ANIMAL ARRIVALS.
+
+She leans closer.
+
+ORBIT. A recent date. A departure column with nothing in it.
+
+Her finger rests beneath the name.
+
+**MAYA**
+
+He's here.
+
+A beat. She corrects herself before anyone else can.
+
+**MAYA**
+
+His name is here.
+
+Amina finds MOCHI. Two quick taps of her fingertip, one slower tap. She notices she is doing it and rests her hand.
+
+The others find their own names: PEPPER. SPROCKET. PIXEL. SCOUT. MOONCAKE. BEAN.
+
+Not a roll call. Eight different little shifts of relief.
+
+Lena photographs the whole page, including the headings.
+
+**ELI**
+
+Nothing in the leaving bit.
+
+**MAYA**
+
+We need to find whoever writes in it.
+
+Mateo tries to copy all eight entries onto a page already full of bell sketches. They turn the notebook sideways. Their writing gets tinier.
+
+Maya flips to a blank page.
+
+Mateo regards this astonishing development.
+
+**MATEO**
+
+Yes. I was saving that.
+
+Behind them, a visibly flat painted cat steps halfway out of its frame to look at Marmalade. Its paper-thin edge stays attached to the painted background.
+
+Marmalade does not look back.
+
+The painted cat waits. Gives up. Steps back into its portrait and resumes looking historically important.
+
+A distant, precise throat-clearing.
+
+**BUTLER (O.S.)**
+
+Visitors.
+
+## MM101-S06 — INT. RECEIVING CHAMBER - CONTINUOUS
+
+The BUTLER stands beneath an enormous old floor plan. Tall, immaculate, more part of the room than its furniture.
+
+Beyond him are guest doors with blank destination plaques. Behind the children, the way to the register remains open.
+
+**BUTLER**
+
+Eight. And not one checked in.
+
+**MAYA**
+
+We're looking for our pets. Their names are in your book.
+
+She shows the photograph. He does not need to look.
+
+**BUTLER**
+
+Then they have been received.
+
+**MAYA**
+
+Where are they now?
+
+**BUTLER**
+
+Somewhere suitable.
+
+**MATEO**
+
+How do you decide what's suitable?
+
+The Butler approves of this question. He takes a small paper floor plan from his pocket.
+
+**BUTLER**
+
+A single room. A double room. A room which doubles.
+
+He unfolds it. A little paper room unfolds into two, then four. One expansion crushes a miniature corridor.
+
+He smooths the corridor without acknowledging it.
+
+**BUTLER**
+
+There is room for everyone.
+
+**MAYA**
+
+We already have rooms.
+
+**BUTLER**
+
+How fortunate. Then you know what to do with them.
+
+Mateo studies a bell beside his hand. It has a stitched ribbon tied around its stem.
+
+**MATEO**
+
+Does that bell go to the people with the animals?
+
+**BUTLER**
+
+It goes to the Nursery. Someone always answers there.
+
+Maya starts to ask another question. The Butler rings the bell before she can. Mateo watches for the answer.
+
+One guest door's plaque turns: NURSERY.
+
+A LOST LUGGAGE trunk trundles in. It opens for the children's bags. Nobody hands one over.
+
+The trunk waits.
+
+Samir offers the bundle of ceremonial coats. The trunk accepts this compromise and rolls toward the Nursery door.
+
+**MAYA**
+
+Is that where you took them?
+
+**BUTLER**
+
+That is where young visitors are attended to.
+
+He extends a pen above a check-in card. Maya keeps her hands on her crutches.
+
+**MAYA**
+
+We're visiting. Then we're leaving.
+
+**BUTLER**
+
+One thing at a time.
+
+Marmalade passes between his shoes. He shifts half an inch to avoid her. The first untidy adjustment he has made.
+
+Mateo watches the trunk disappear through the newly labeled door.
+
+**MATEO**
+
+Somebody answered the bell. We can ask them.
+
+Maya glances back at the public register, then toward the still-visible route to the front door.
+
+**MAYA**
+
+We can ask. Bags stay with us.
+
+The Butler opens the Nursery route wider, satisfied that he has arranged them correctly.
+
+**BUTLER**
+
+You will find her very attentive.
+
+Eli passes the little paper plan. One of its rooms doubles again.
+
+The Butler presses it flat with his palm.
+
+Nobody comments.
+
+## MM101-S07 — INT. BELL PULL GALLERY / GRAND STAIRCASE LANDING - CONTINUOUS
+
+A wall of clearly labeled pulls on the lower floor. Across the open stairwell, the upper landing and open Nursery door are visible above them. A broad service lift waits beside the grand staircase, its open car wide enough for all eight.
+
+Mateo opens a NEW RECORDING on the phone. The earlier home clip closes. The counter begins at zero.
+
+**MATEO**
+
+If we forget which one answered, we can listen back.
+
+**MAYA**
+
+Good. I can't draw what a bell sounds like.
+
+**MATEO**
+
+You could. It would need a lot of arrows.
+
+They pull NURSERY.
+
+Above them, through the open Nursery door on the upper landing, a stitched bell answers: DING-DING. Beside that receiver is a return pull labeled FOYER.
+
+A little cloth hand pulls FOYER. The gallery bell above the children answers once.
+
+Eli traces the two visible cords to their paired endpoints. Ordinary-looking wires entering a very unordinary house.
+
+Under the ring, almost lost: SCRATCH-SCRATCH-SCRATCH. A pause.
+
+The recording counter keeps running. None of them singles out the sound.
+
+Samir notices a short cord marked LOCAL TEST. He gives it a courteous tug and launches into a greeting. The clapper swings toward its bell.
+
+**SAMIR**
+
+Good evening. We're very—
+
+DING. Over the last word. He waits for it to finish, then begins again with a small bow. The cord is still in his hand. His bow pulls it.
+
+**SAMIR**
+
+Thank you for—
+
+DING.
+
+Lena lifts the cord out of his hand and hangs it on its hook.
+
+**LENA**
+
+Your turn.
+
+Samir gives the motionless bell a very small nod.
+
+**SAMIR**
+
+Good evening.
+
+Silence. An impeccable greeting at last.
+
+Maya checks the lift's level threshold and enters. The others join her. A wide view keeps all eight, the rail, and the destination landing clear as the lift rises one short level.
+
+Mateo stops the recording.
+
+The little cloth hand withdraws through the Nursery door.
+
+## MM101-S08 — INT. PLAYROOM / STORY NOOK - CONTINUOUS
+
+A welcoming playroom with low tables and a wall of picture books. The landing is behind them. A broad arch leads through the Story Nook into Bedtime Hall; a side door there reads MENDING.
+
+The GOVERNESS glides forward. Nursery-curtain dress. A measuring tape curls loosely around her neck. Silver fingertips remain at her own sewing, never near a child's skin.
+
+**GOVERNESS**
+
+There you are. Eight overtired visitors.
+
+**MAYA**
+
+Eight visitors looking for these animals.
+
+She holds out the photograph of Orbit.
+
+The Governess selects a small cushion with a stitched cat on it and places it beside Maya.
+
+**GOVERNESS**
+
+For you.
+
+Maya looks at the cushion. It is carefully made.
+
+**MAYA**
+
+Thank you. But he's a real cat.
+
+**GOVERNESS**
+
+Of course, dear. Turn it over.
+
+The other side has whiskers.
+
+Mateo covers a laugh that is more disbelief than amusement.
+
+A small rag-doll rabbit, MOPSY, catches a loose strap on a rocking chair before Amina sits. She tightens it, tests the chair with her own weight, then steps aside.
+
+**AMINA**
+
+Thanks. May I?
+
+Mopsy nods. Amina sits. The chair rocks safely.
+
+For a moment, this is a rather good room.
+
+Then the Governess closes the solid Nursery entrance door. She turns a moon-shaped key and hangs it from her measuring tape.
+
+**GOVERNESS**
+
+Drafts.
+
+Maya tests the handle. Locked.
+
+**MAYA**
+
+We weren't staying.
+
+**GOVERNESS**
+
+You needn't decide anything while you're tired.
+
+The PATCHWORK GIANT appears through the Bedtime Hall arch carrying one mattress. A huge stitched figure with a very small embroidered smile.
+
+**GOVERNESS**
+
+Eight beds, please.
+
+The Giant counts slowly on its fingers. Eight.
+
+It looks at the single mattress. Gives it an experimental stretch.
+
+The Governess shakes her head.
+
+The Giant goes back and returns with an unoccupied trolley loaded with eight folded beds, mattresses secured within their frames. It counts again to be sure.
+
+Mopsy notices Mateo's torn bag strap. She points to it, then to the Mending Closet.
+
+**MATEO**
+
+That would be great. Do you have a door in there that isn't locked?
+
+Maya turns toward them. This question, she wants answered.
+
+Mopsy beckons.
+
+## MM101-S09 — INT. MENDING CLOSET - CONTINUOUS
+
+All eight fit around a wide worktable. The open closet doorway looks back into Bedtime Hall. The Giant is busy checking the eight folded beds on its trolley beyond it, counting the headboards without unloading them.
+
+A fixed mending hoop stands beside a large cloth wall hanging.
+
+Mopsy finishes two bright crossed stitches on the corner of the Governess's long blanket. A short loop of thread remains. She tucks the repaired corner proudly onto the folded blanket.
+
+The Governess takes it from the doorway.
+
+**GOVERNESS**
+
+Very neat. Now the visitors.
+
+She leaves to prepare bedtime.
+
+Mopsy points at Mateo's torn strap, holding up a needle and a tiny patch.
+
+**MATEO**
+
+Yes, please. As long as I can still open it.
+
+**MOPSY**
+
+I fix the broken bit.
+
+She waits until Mateo puts the bag on the table. Only then does she begin.
+
+A BUTTON BABY toddles from beneath the workbench with an enormous button. It offers it to Mopsy.
+
+Mopsy compares it to the tiny fastening on Mateo's bag. Too big.
+
+The Baby nods, understanding. It rolls out an even bigger button.
+
+Mateo braces the button before it bumps the table. The Baby looks very pleased with this new collaboration.
+
+**MOPSY**
+
+The small blue one.
+
+The Baby finds a small red one. Mopsy considers it.
+
+**MOPSY**
+
+That will do.
+
+She sews it on. Mateo admires the deliberately mismatched repair.
+
+**MAYA**
+
+The door?
+
+Mopsy lifts one unstitched corner of the cloth wall hanging. Through the palm-sized gap: the very same landing rail and service lift they used before.
+
+Maya looks along its edge. Large stitches fasten the rest of the hanging to the doorway, all the way to the level sill. Nobody can walk through yet.
+
+**MOPSY**
+
+The way back. I close it at bedtime.
+
+**MAYA**
+
+Can you open it now?
+
+**MOPSY**
+
+I can. But she told me to finish closing it.
+
+She lets the corner fall. Keeps her hand on her own needle.
+
+Maya looks toward the Governess, visible through the closet doorway and the neighboring Story Nook arch.
+
+**MAYA**
+
+Then I'll ask her for the key.
+
+**MATEO**
+
+Do you go anywhere when you're finished?
+
+**MOPSY**
+
+Usually I find something else to finish.
+
+Mateo watches her glance through the return opening.
+
+**MATEO**
+
+Where would you go?
+
+Mopsy thinks. Not a grand longing. A very specific one.
+
+**MOPSY**
+
+The umbrellas. I hear they open indoors.
+
+The giant button bumps against the narrow space beside the worktable. The Button Baby tries to roll it back out. It will not fit face-on.
+
+Mopsy finishes the strap. The Baby turns its button sideways and rolls it smoothly through the doorway.
+
+**MATEO**
+
+It doesn't match anymore.
+
+**MOPSY**
+
+Does it have to?
+
+Mateo puts on the bag. It holds.
+
+**MATEO**
+
+No. I like knowing which part you did.
+
+Mopsy touches the red button once, pleased.
+
+## MM101-S10 — INT. BEDTIME HALL / STORY NOOK ARCH - CONTINUOUS
+
+One wide view: the Mending Closet door and Story Nook arch sit beside each other along one wall of Bedtime Hall. Opposite them is the window bay.
+
+All eight children step out of the closet into Bedtime Hall and stand on the window side of the Giant's trolley. Mopsy stays at her worktable inside the closet. The Governess remains in the Story Nook, visible through its arch. Behind her, the original Nursery door is locked; the moon key still hangs from her tape.
+
+She spreads the repaired long blanket across her arms. Maya addresses her across the hall.
+
+**MAYA**
+
+All right. I can make this clearer.
+
+Mateo opens their mouth.
+
+**MAYA**
+
+One minute.
+
+To the Governess, carefully:
+
+**MAYA**
+
+Please use that key and open the door. No beds, no blankets. We need to keep looking.
+
+The Governess measures the distance from Maya to the nearest pillow.
+
+**GOVERNESS**
+
+Too far away. I see.
+
+She moves the pillow closer.
+
+**MATEO**
+
+Maybe if the moon key is for nighttime, there's a sun key for—
+
+**MAYA**
+
+Please don't get us another kind of bedtime.
+
+The Governess lays out DO NOT DISTURB cards on eight intended bed positions marked on the floor. All eight folded beds remain on the trolley.
+
+**MAYA**
+
+We are not—
+
+The Governess gently flips the nearest card. PLEASE DISTURB QUIETLY.
+
+**MAYA**
+
+(lowering her voice despite herself)
+We are not tired.
+
+Maya catches herself whispering. She straightens.
+
+**MAYA**
+
+(ordinary voice)
+And we are leaving.
+
+**MATEO**
+
+Can I ask Mopsy—
+
+**MAYA**
+
+Another question will get us another bed.
+
+Mateo closes their notebook. That lands harder than Maya intended.
+
+**GOVERNESS**
+
+Mopsy. The return seam, please.
+
+Mopsy, still inside the closet, takes up the unfinished seam.
+
+The Giant parks the long trolley in front of the two neighboring openings. Its folded beds now stand between the children by the windows and both doorways. They can see the Governess and Mopsy between the frames, but cannot walk through them. No one has changed sides.
+
+Maya studies her very clear map. All the clear requests have brought them here.
+
+She looks at Mateo's closed notebook.
+
+**MAYA**
+
+I cut you off. I'm sorry. What were you going to ask?
+
+**MATEO**
+
+Whether Mopsy wants to close it.
+
+Maya looks through the trolley frames. Mopsy has the needle poised, not moving.
+
+**MAYA**
+
+Ask her.
+
+## MM101-S11 — INT. BEDTIME HALL - CONTINUOUS
+
+Same positions: children by the windows, Governess beyond the Story Nook arch, Mopsy inside the neighboring closet. The loaded trolley blocks both openings. The Giant holds its rails.
+
+Mateo finds Mopsy's sightline between two folded bed frames.
+
+**MATEO**
+
+Do you want to close the way back?
+
+Mopsy looks toward the Governess. Then at the hanging behind her.
+
+**MOPSY**
+
+No. I want to see the umbrellas tonight.
+
+She sets aside her sewing needle and starts pulling out the big stitches.
+
+**GOVERNESS**
+
+Mopsy. We aren't finished.
+
+**MOPSY**
+
+I finished the blanket.
+
+The Governess gathers that blanket. The trolley is in her way too.
+
+Maya points Jordan toward an empty bay beside the window.
+
+**MAYA**
+
+We can park it there.
+
+Jordan tries a gentle push. The Giant still holds the rails. Nothing moves.
+
+**MATEO**
+
+Which bed is yours?
+
+The Giant considers this important question. It releases the trolley and points to the tiny bed at the top. Seven beds remain folded underneath as it lifts that one out.
+
+It carefully puts its tiny bed in the empty window bay.
+
+Jordan looks at Maya. Their parking space is occupied.
+
+The Giant adds a huge pillow. Its entire bed disappears.
+
+**AMINA**
+
+You lost your bed.
+
+The Giant lifts the pillow and checks. There it is. Replaces the pillow. Gone again.
+
+Amina holds her hands a tiny distance apart. The Giant chooses a pincushion instead. Perfect.
+
+She takes the DO NOT DISTURB card already lying beside her shoe on the children's side of the trolley and sets it beside the tiny bed. The Giant beams.
+
+Mateo gestures toward the remaining trolley.
+
+**MATEO**
+
+Could your bed go a little farther--
+
+The Giant points proudly to its new card. No disturbing this bed.
+
+Maya studies the longer clear stretch along the windows.
+
+**MAYA**
+
+Then we move ours. Other end first. Mateo, can you see that corner?
+
+Mateo takes the far corner, outside the wheel path. Jordan and Samir hold the rails. Priya moves the bags to the closet-side end of the bench.
+
+**MATEO**
+
+Yes. But I can't see you.
+
+**MAYA**
+
+You don't need to. Tell me when it's clear.
+
+Maya keeps both crutches supporting her on stable floor beside the trolley and releases its reachable brake. One coordinated turn: Jordan and Samir guide; Mateo watches the hidden corner.
+
+**MATEO**
+
+A little more. Stop. Clear.
+
+The trolley rolls along the window wall, opening both doorways. Maya parks it with the brake from its clear side. No one climbs, crawls under it or leans on moving equipment.
+
+Mopsy pulls the last stitch. The cloth falls back, now revealing the whole level doorway to the landing.
+
+**MOPSY**
+
+This way.
+
+Amina and Priya hand out the waiting bags as the group passes into the closet. Eight children, their belongings, one clear route.
+
+The Governess steps out of the cleared Story Nook arch toward the neighboring closet door. She gathers the blanket clear of the floor and follows the children, without pushing through them.
+
+**GOVERNESS**
+
+You'll be cold out there.
+
+## MM101-S12 — INT. MENDING CLOSET RETURN OPENING / LANDING - CONTINUOUS
+
+The landing rail and lift are exactly where they were before.
+
+Priya and Amina cross first with their bags; Jordan and Samir follow with theirs. Lena pauses on the landing to photograph the cloth doorway, then moves clear. Eli holds the hanging away from the floor, his backpack secure on his shoulders.
+
+Marmalade walks straight through the cloth without waiting for the opening. Mateo briefly offers her the open doorway with an elaborate usher's gesture. She is already on the other side. They turn the gesture into a wave and follow.
+
+Mateo crosses. Maya follows, placing both crutches on the level landing before turning back.
+
+All eight now outside. Mopsy is still inside the closet, gathering her loose thread so it won't snag.
+
+The Governess enters the closet doorway. She sweeps the long blanket toward the return opening. A soft barrier, becoming a real one.
+
+Its repaired corner catches on the fixed mending hoop.
+
+TENSION. The bright crossed stitches begin to pull apart.
+
+Mopsy sees. Her hand stops above the trailing thread.
+
+The Governess could tug the blanket across. She has the strength. She looks at the neat little repair Mopsy made for her.
+
+Maya stays on the clear landing.
+
+**MAYA**
+
+Mopsy. Are you coming?
+
+Mopsy looks through the open space at the group waiting for her.
+
+**MOPSY**
+
+Yes.
+
+The Governess lifts the snagged corner carefully off the hoop.
+
+Mopsy slips through while the blanket is raised. She uses the open doorway, not Marmalade's ghostly shortcut.
+
+The Governess checks the stitches with one silver fingertip. They have held.
+
+**GOVERNESS**
+
+You haven't taken a blanket.
+
+Mopsy considers the smaller plain blanket on the closet shelf beside the opening. The Governess offers it without approaching.
+
+**MOPSY**
+
+May I bring it back?
+
+**GOVERNESS**
+
+It belongs here.
+
+**MOPSY**
+
+Then I can bring it back.
+
+She takes the small blanket. The Governess has no ready reply.
+
+Maya waits while Mopsy ties it around her own bundle. No one wraps her up or carries her away.
+
+The Giant appears behind the Governess, pleased with its tiny bed. It notices the long blanket and helpfully takes the far end.
+
+The Governess starts to fold. The Giant folds at twice her speed.
+
+An immaculate accordion of blanket rises to its nose.
+
+The Governess lifts off the top fold so it can see.
+
+Across the landing, eight children and one rag-doll rabbit enter the broad lift. Marmalade arrives last, as though this had always been her appointment.
+
+The lift descends. The Governess's bright repaired blanket corner remains visible in the open cloth return.
+
+## MM101-S13 — INT. UMBRELLA GALLERY - LATER
+
+A sheltered alcove near the front door. Its ordinary latch is visible across the vestibule.
+
+Everyone sits or rests against the low benches. Maya has space beside her for her crutches. Bags are counted with glances, not a speech.
+
+Mopsy stands beneath a closed umbrella, waiting.
+
+An umbrella opens. Over an empty teacup.
+
+Mopsy looks up. A drip lands precisely inside the open umbrella, runs to its tip and splashes outside the cup.
+
+She moves the cup six inches. The next drip lands in it.
+
+**MOPSY**
+
+Oh. I like this room.
+
+**MAYA**
+
+You could come out with us.
+
+Mopsy looks through the front door's little window, then back up at the umbrellas.
+
+**MOPSY**
+
+Here first.
+
+Maya nods. Mopsy places her bundle on the bench and sits beside it.
+
+Mateo tests the NURSERY pull on the gallery wall. Across the cut to the Nursery, the stitched receiver rings. The Governess looks up from her folding and gives the nearby FOYER pull one tug. The gallery receiver answers.
+
+Mopsy ties her own short ribbon beneath the gallery bell.
+
+**MOPSY**
+
+If you need me here, ring this one from upstairs.
+
+**MATEO**
+
+Will you answer?
+
+**MOPSY**
+
+If I can. I've got umbrellas to look at.
+
+Mateo looks up at the collection. It is a considerable appointment.
+
+**MATEO**
+
+We'll ask.
+
+They sit and open the new recording. On screen: TODAY — BELL GALLERY. The home video remains a separate thumbnail below it.
+
+**MATEO**
+
+I want to label the first bell before I forget—
+
+SFX: RECORDED BELL. THREE FAINT SCRATCHES. A PAUSE.
+
+Maya's hand goes still on the dark blue collar.
+
+**MAYA**
+
+Again.
+
+Mateo plays it again.
+
+SCRATCH. SCRATCH. SCRATCH.
+
+Silence long enough to notice the missing next set.
+
+**MAYA**
+
+When a door's shut between us. He does three, then waits for me.
+
+Mateo looks toward the staircase.
+
+**MATEO**
+
+Was that near the lift? Or underneath—
+
+They stop. Let Maya listen.
+
+**MAYA**
+
+I don't know. We didn't hear it then.
+
+She looks back toward the stairwell.
+
+**MAYA**
+
+I want to go back up.
+
+Mateo closes the recording. Together they listen to the actual House. A drip in a cup. The settling front door. No scratches now.
+
+Maya looks from her map's Nursery route to the new Mending Closet opening drawn beside it. That route brought them to beds and a locked door.
+
+**MAYA**
+
+But we still don't know which room. I'm not trying her door again tonight.
+
+**MOPSY**
+
+There's a service lift to the sleeping rooms. For the breakfast trays. I can show you next time.
+
+Maya draws a second line beside the route they tried, without crossing the old one out.
+
+**MAYA**
+
+Then tomorrow, we follow the food. Together.
+
+Mateo nods and adds the bell recording's question mark to that new line. A next step, not an answer.
+
+**MAYA**
+
+Keep that one.
+
+Mateo names the file. They do not claim to have found Orbit's room.
+
+## MM101-S14 — INT. FRONT VESTIBULE / EXT. PORCH - CONTINUOUS
+
+Maya opens the same front door she tested on arrival. Ordinary dusk beyond it, now deeper blue.
+
+All eight cross. Amina gives Mopsy a little wave. Mopsy returns it from her chosen bench.
+
+The Butler watches from the Entry Hall, a fresh check-in card still unused in his hand.
+
+Marmalade strolls onto the porch. Sits. Considers the outside air.
+
+Nobody calls her. Nobody offers food.
+
+She gets up and walks back through the open door, straight to her box.
+
+Mateo watches the Butler watching her.
+
+**MATEO**
+
+She came back.
+
+**BUTLER**
+
+A delivery.
+
+The Butler produces a delivery receipt and pen. Marmalade steps straight through the paper and settles into her own box.
+
+**BUTLER**
+
+Signature?
+
+She closes her eyes. The Butler rests his pen on her box flap.
+
+One sleepy paw nudges it off. He catches it, puts the receipt down instead.
+
+The paw nudges the receipt off the other side. He catches that too. Marmalade stretches into the space she has cleared and settles properly.
+
+The Butler stands with both arms extended, holding the unnecessary paperwork. He carefully puts it all back in his pocket.
+
+Maya looks at the ghost cat, then at Orbit's collar.
+
+**MAYA**
+
+We'll ask you again.
+
+It is not clear which of them she means.
+
+As the front door settles, its corner flips the welcome mat.
+
+WELCOME on the other side too.
+
+## MM101-S15 — INT. MAYA'S KITCHEN - EVENING
+
+An ordinary kitchen. A tired overhead light. A meal being warmed, not conjured.
+
+Maya sits at the table with her crutches propped where she can reach them. Her backpack is open on the next chair.
+
+She places the photograph of the register beside Orbit's small, empty food bowl.
+
+Her PARENT sets down a warm meal for her.
+
+**PARENT**
+
+Did you find him?
+
+Maya looks at the name in the photograph.
+
+**MAYA**
+
+We found his name.
+
+Her parent sits. Lets that be different.
+
+Maya starts to align the photograph, bowl, pencil and collar into neat squares. The cat bowl is occupying the space for her own dinner.
+
+She shifts it aside and takes a bite.
+
+**PARENT**
+
+Do you want me to put his bowl away?
+
+Maya considers. Then she shakes her head.
+
+**MAYA**
+
+I'll take it tomorrow.
+
+Her parent puts an ordinary snack in a small container for her. Maya adds it to the separate side pocket of her bag.
+
+On her phone, she sends the register photo to the group. A few quiet responses appear: eight names circled, a photo of Eli's screw, Priya's copied route.
+
+Mateo sends a little drawing of a sound wave, followed by a question mark.
+
+Maya opens her map. A space beside the drawn bell.
+
+She copies the question mark there, deliberately large enough to see.
+
+The meal waits. She takes another bite.
+
+Then she sets Orbit's familiar bowl inside the open backpack.
+
+Hold on the bowl, ready for him.
+
+FADE OUT.
+
+END OF EPISODE

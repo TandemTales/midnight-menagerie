@@ -1,0 +1,22 @@
+{
+  "cases": 16,
+  "delivered": 96,
+  "expired": 96,
+  "frames": 2535,
+  "ordinaryMaxDrainMs": 5687.299999982119,
+  "repeatedDrainMs": [
+    10071.800000011921,
+    4971.9000000059605
+  ],
+  "layoutMs": {
+    "p95": 2.2000000178813934,
+    "max": 4.699999988079071,
+    "samples": 239
+  },
+  "frameP95Range": [
+    27.400000005960464,
+    134.30000001192093
+  ],
+  "frameMax": 279.19999998807907,
+  "note": "Full fixture includes geometry checking and screenshot pauses; static seam audit also overlapped part of the full queue fixture. These are diagnostic harness intervals, not isolated ordinary-game rendering cost. Native ABBA ran after that audit completed with no screenshots or pauses and preserves full lifetimes."
+}

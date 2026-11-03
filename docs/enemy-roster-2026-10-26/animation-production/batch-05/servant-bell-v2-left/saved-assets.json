@@ -1,0 +1,61 @@
+{
+  "created_utc": "2026-10-27T00:18:05.336713+00:00",
+  "enemy": "servant-bell",
+  "states": [
+    "idle",
+    "attack",
+    "hurt",
+    "defeat"
+  ],
+  "method": "Continuous source-art deformation about the bell crown, tapered through the spring into a fixed wooden plaque. Original rope and plaque retained. The separate painted shadow has a delayed motion field; no unpainted hidden metal is invented.",
+  "validation": "batch-05/servant-bell-v2-left/validation.json",
+  "quality_gate": "technical_pass_visual_review_pending",
+  "files": [
+    {
+      "path": "animations/sprites/enemies/animations/SS_servantBell_idle.png",
+      "sha256": "5bda1890f9bcde3db0ec40abb141aa3a2a0f73ffa053df029acb25db8e3cca09",
+      "bytes": 5616324
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/servant-bell/idle.webp",
+      "sha256": "5e190e0fc4f1899505d30d9dac6f33eaeea380e428f49e239aaddc51a3ef9574",
+      "bytes": 2862114
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_servantBell_attack.png",
+      "sha256": "d99189926d03878ed02c12ffad2c2ca9ddab1d914ceb08e00f821f645ff1603c",
+      "bytes": 3859032
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/servant-bell/attack.webp",
+      "sha256": "06a0c5414469966f8276523122be05ef2ce77ff3a5980cdddea7968bcedb4e6d",
+      "bytes": 1952932
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_servantBell_hurt.png",
+      "sha256": "d9648a0a268a92fb1669f251eae3d028af6bfb0aaf5b0bc63f93ea40f6674117",
+      "bytes": 2407123
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/servant-bell/hurt.webp",
+      "sha256": "5c7cf952893fe2d1333dffbf5677d87836d32c4ac07506de468b193065f8972e",
+      "bytes": 1212086
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_servantBell_defeat.png",
+      "sha256": "c90cfd8ebdb19f0194a469df7631fd9311bded1b7eb8ff682df9d1b8b0536975",
+      "bytes": 4035103
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/servant-bell/defeat.webp",
+      "sha256": "9ada38c7eef1beef7fd257563145997d0c55ab209bfd493f66757bd2344bdfc1",
+      "bytes": 1972776
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/servant-bell/index.json",
+      "sha256": "2de4060c29ca5e8e4daa4cea6a211309670556d418760f6ea7b4afcefe89f4f3",
+      "bytes": 2632
+    }
+  ],
+  "complete": true
+}

@@ -1,0 +1,20 @@
+{
+  "enemy": "topiary-hare",
+  "source": "docs\\enemy-roster-2026-10-26\\art-production\\topiary-hare-original.png",
+  "source_sha256": "86e503b15c77467578b15aa54eba06c1944f4218e4112dad4f6334520d9da897",
+  "method": "Two separately articulated source foliage ears; intact head rotates at the neck; body compresses above planted feet and front-paw mesh tucks during a hop. Unlettered, unarmed source reflected to face left. No newly invented hidden body parts.",
+  "actions": {
+    "idle": "Small independent ear twitches; the clipped shrub body stays almost still.",
+    "attack": "Plant feet and crouch, spring into a small leftward hop with tucked paw and lagging ears, land softly and recover.",
+    "hurt": "Quick rightward recoil, head flinch, asymmetric ear response and recovery.",
+    "defeat": "Head bows and both long foliage ears wilt forward while the body settles into a low inactive garden ornament."
+  },
+  "orientation": {
+    "required": "screen-left",
+    "method": "Whole unlettered shrub is reflected so nose/eyes face left. Hop goes left, hurt recoils right, recovery and bowed endpoint retain the left profile. No held prop or text is reversed.",
+    "status": "left_in_inspected_keyposes"
+  },
+  "quality_gate": "technical_pass_visual_review_pending",
+  "delivery_receipt": "batch-04/topiary-hare-v1-left/saved-assets.json",
+  "review_limits": "All decoded packing/timing checks passed and chronological poses inspected. Full-speed intended-size visual approval and game integration remain unverified."
+}

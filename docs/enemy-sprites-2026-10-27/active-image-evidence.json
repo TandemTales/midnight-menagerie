@@ -1,0 +1,4106 @@
+[
+  {
+    "path": "animations/sprites/enemies/ancientTopiary.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "5a79a7da3af926d8993d07905ff1088a931771fac06276a9beae97ccaa6b5fe3",
+    "transparent_pixels": 125092,
+    "opaque_pixels": 48,
+    "partial_alpha_pixels": 137004
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ancientTopiary_attack.png",
+    "size": [
+      3807,
+      3654
+    ],
+    "mode": "RGBA",
+    "sha256": "2abb5e9d16606084c37d51a00145882f22e37ef314d8564158b855fe57e54f9d",
+    "transparent_pixels": 8250044,
+    "opaque_pixels": 162968,
+    "partial_alpha_pixels": 5497766
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ancientTopiary_defeat.png",
+    "size": [
+      4239,
+      3357
+    ],
+    "mode": "RGBA",
+    "sha256": "ceb168f94f84f8158f1666af448b724b3ef80cf97b860f01b591720375dabf75",
+    "transparent_pixels": 9079872,
+    "opaque_pixels": 134090,
+    "partial_alpha_pixels": 5016361
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ancientTopiary_hurt.png",
+    "size": [
+      3960,
+      3222
+    ],
+    "mode": "RGBA",
+    "sha256": "c97720d4b5cefd3490b2b6d51be544632c56b885571c0d4e293f05ea0c0ab1d1",
+    "transparent_pixels": 6993682,
+    "opaque_pixels": 127821,
+    "partial_alpha_pixels": 5637617
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ancientTopiary_idle.png",
+    "size": [
+      3267,
+      2754
+    ],
+    "mode": "RGBA",
+    "sha256": "e5a80dcfcc0e78b2ecf8ac3d8cad3b6382049dc740d4f2d49a01cf6f345e5651",
+    "transparent_pixels": 3446075,
+    "opaque_pixels": 175291,
+    "partial_alpha_pixels": 5375952
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketBlob_attack.png",
+    "size": [
+      3375,
+      2817
+    ],
+    "mode": "RGBA",
+    "sha256": "c2ebc4ad9ba9701c7a1e79bce73228643e32ac5758c14030e9311087121fb822",
+    "transparent_pixels": 4448754,
+    "opaque_pixels": 729392,
+    "partial_alpha_pixels": 4329229
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketBlob_defeat.png",
+    "size": [
+      3375,
+      2565
+    ],
+    "mode": "RGBA",
+    "sha256": "f94b2dc8aecdc132057f91f35c858811b66ad219aacdd78ca610a7c61d305a2a",
+    "transparent_pixels": 3755491,
+    "opaque_pixels": 716274,
+    "partial_alpha_pixels": 4185110
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketBlob_hurt.png",
+    "size": [
+      3375,
+      3231
+    ],
+    "mode": "RGBA",
+    "sha256": "37696bef80b3d089980dcc43ac9b6726aba1f11e20245758a8d97900889bfde1",
+    "transparent_pixels": 5736828,
+    "opaque_pixels": 746281,
+    "partial_alpha_pixels": 4421516
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketBlob_idle.png",
+    "size": [
+      3375,
+      2565
+    ],
+    "mode": "RGBA",
+    "sha256": "bd1c16da925a3ecdf74913083d92cba20544a3d78b16059d478eea60f474f699",
+    "transparent_pixels": 3589327,
+    "opaque_pixels": 750516,
+    "partial_alpha_pixels": 4317032
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketCreeper_attack.png",
+    "size": [
+      3618,
+      2358
+    ],
+    "mode": "RGBA",
+    "sha256": "7af08791b7ba95ce5dfef0b1bd4673599a49b2894ad0199ef4417b2e7aa60aab",
+    "transparent_pixels": 4054259,
+    "opaque_pixels": 479431,
+    "partial_alpha_pixels": 3997554
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketCreeper_defeat.png",
+    "size": [
+      3537,
+      2196
+    ],
+    "mode": "RGBA",
+    "sha256": "7648ac5497d82847c101ec3808e3b95df69a2a81286285a264eb3629098e12f7",
+    "transparent_pixels": 3481600,
+    "opaque_pixels": 551458,
+    "partial_alpha_pixels": 3734194
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketCreeper_hurt.png",
+    "size": [
+      3438,
+      2196
+    ],
+    "mode": "RGBA",
+    "sha256": "6ac1b823eed1b9a234b1710de6a5c118027b46709627ee6407a10038dd5879c3",
+    "transparent_pixels": 3185942,
+    "opaque_pixels": 609807,
+    "partial_alpha_pixels": 3754099
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketCreeper_idle.png",
+    "size": [
+      3447,
+      2241
+    ],
+    "mode": "RGBA",
+    "sha256": "2fd34a5c851863ead42b1040363fec499650f62f4dda77fe18e41d3340923c8e",
+    "transparent_pixels": 3321229,
+    "opaque_pixels": 603873,
+    "partial_alpha_pixels": 3799625
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketHydra_attack.png",
+    "size": [
+      4554,
+      2646
+    ],
+    "mode": "RGBA",
+    "sha256": "6d36b0399374c18969bb2cf8e2490761fc13d11489df6ca1d63dac7e635084f5",
+    "transparent_pixels": 7344312,
+    "opaque_pixels": 28121,
+    "partial_alpha_pixels": 4677451
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketHydra_defeat.png",
+    "size": [
+      3438,
+      2295
+    ],
+    "mode": "RGBA",
+    "sha256": "56c47a7e9dbd90f10042dce9090bad8ae4133c2bb9992b4659f017c6033a1617",
+    "transparent_pixels": 3931293,
+    "opaque_pixels": 19920,
+    "partial_alpha_pixels": 3938997
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketHydra_hurt.png",
+    "size": [
+      3438,
+      2475
+    ],
+    "mode": "RGBA",
+    "sha256": "447fc2e794b8d2e6e3c423903751966a438baaadddd2dae5c3250b0c76e46446",
+    "transparent_pixels": 4215197,
+    "opaque_pixels": 34553,
+    "partial_alpha_pixels": 4259300
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketHydra_idle.png",
+    "size": [
+      3429,
+      2277
+    ],
+    "mode": "RGBA",
+    "sha256": "7b1b415b900ed0dfdb581c6031f69a24906676ca891de20f573736a48fe08c13",
+    "transparent_pixels": 3521133,
+    "opaque_pixels": 30982,
+    "partial_alpha_pixels": 4255718
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_butler_attack.png",
+    "size": [
+      3906,
+      3717
+    ],
+    "mode": "RGBA",
+    "sha256": "1190edf12c80a3b90a470c0b6ae7a407099fe561c1da0a1baed9a2db1b1d6eca",
+    "transparent_pixels": 11158666,
+    "opaque_pixels": 126728,
+    "partial_alpha_pixels": 3233208
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_butler_cast.png",
+    "size": [
+      4203,
+      3564
+    ],
+    "mode": "RGBA",
+    "sha256": "60a83d3026014a82b19d275bcd24ff230a438e41eb806ecd24341771003da654",
+    "transparent_pixels": 11419651,
+    "opaque_pixels": 94642,
+    "partial_alpha_pixels": 3465199
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_butler_defeat.png",
+    "size": [
+      3330,
+      3906
+    ],
+    "mode": "RGBA",
+    "sha256": "2e6887030bb9d28b76ed4c91db567ad6b041df605ed929a67195f681201aa2c4",
+    "transparent_pixels": 9495884,
+    "opaque_pixels": 101837,
+    "partial_alpha_pixels": 3409259
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_butler_hurt.png",
+    "size": [
+      4023,
+      3618
+    ],
+    "mode": "RGBA",
+    "sha256": "73ef6f5e8e2f13a431b417174718c98582d13781e50adc5103ffd2f8c0981912",
+    "transparent_pixels": 11163991,
+    "opaque_pixels": 94943,
+    "partial_alpha_pixels": 3296280
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_butler_idle.png",
+    "size": [
+      2700,
+      3852
+    ],
+    "mode": "RGBA",
+    "sha256": "e63f390533375c073b6673e1752e23ae1190d384cb31e3374c17a53c51163dbb",
+    "transparent_pixels": 7083952,
+    "opaque_pixels": 111538,
+    "partial_alpha_pixels": 3204910
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_buttonBaby_attack.png",
+    "size": [
+      3825,
+      3312
+    ],
+    "mode": "RGBA",
+    "sha256": "c0df1e0d52785059a5a5b7898eaae3b9d56c13951a4a0b8da59795d448146c6a",
+    "transparent_pixels": 7024386,
+    "opaque_pixels": 386463,
+    "partial_alpha_pixels": 5257551
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_buttonBaby_defeat.png",
+    "size": [
+      3843,
+      3123
+    ],
+    "mode": "RGBA",
+    "sha256": "b2e4ed8f90df8cb3f5725a214d93975bddd6c323b9e13bce61c0e85a5524ecfa",
+    "transparent_pixels": 6783527,
+    "opaque_pixels": 315627,
+    "partial_alpha_pixels": 4902535
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_buttonBaby_hurt.png",
+    "size": [
+      3780,
+      3015
+    ],
+    "mode": "RGBA",
+    "sha256": "a84e16525086da634a4073822e953fed7a520236bd71d6a39bc5202a532495c9",
+    "transparent_pixels": 6291016,
+    "opaque_pixels": 319045,
+    "partial_alpha_pixels": 4786639
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_buttonBaby_idle.png",
+    "size": [
+      2880,
+      2988
+    ],
+    "mode": "RGBA",
+    "sha256": "45ee7f6c87ad2971317519aa6e03ba90b1f1d1b66fcaa7cf180ff04bcdcfc4e4",
+    "transparent_pixels": 3296230,
+    "opaque_pixels": 198971,
+    "partial_alpha_pixels": 5110239
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_candyClump_attack.png",
+    "size": [
+      4113,
+      3303
+    ],
+    "mode": "RGBA",
+    "sha256": "c2ddf1ac81024bad0611079cfa829ba878e78b817844af9fc75054f031349af1",
+    "transparent_pixels": 6829482,
+    "opaque_pixels": 516454,
+    "partial_alpha_pixels": 6239303
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_candyClump_defeat.png",
+    "size": [
+      5076,
+      3627
+    ],
+    "mode": "RGBA",
+    "sha256": "45ce5572028f4c3a15e5a0b25431e28c2fb610aca2bed0cc924d27c48103f04a",
+    "transparent_pixels": 11998412,
+    "opaque_pixels": 737811,
+    "partial_alpha_pixels": 5674429
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_candyClump_hurt.png",
+    "size": [
+      5382,
+      3186
+    ],
+    "mode": "RGBA",
+    "sha256": "323134de96d0df41fcc5e6b8be5775720df4ae8d107b89b233f084e72313c085",
+    "transparent_pixels": 10734157,
+    "opaque_pixels": 693819,
+    "partial_alpha_pixels": 5719076
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_candyClump_idle.png",
+    "size": [
+      3249,
+      3186
+    ],
+    "mode": "RGBA",
+    "sha256": "59f00af2341a22fcdc641850fa5d62fe4e7339f37520e09e6e00ad2e5d5f4809",
+    "transparent_pixels": 3912454,
+    "opaque_pixels": 542957,
+    "partial_alpha_pixels": 5895903
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_coatrackCrawler_attack.png",
+    "size": [
+      3672,
+      3807
+    ],
+    "mode": "RGBA",
+    "sha256": "1bf503417867a97544f0fc90c5077b66578ddabd56b9ddf833d55828d227e4de",
+    "transparent_pixels": 9360651,
+    "opaque_pixels": 46179,
+    "partial_alpha_pixels": 4572474
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_coatrackCrawler_defeat.png",
+    "size": [
+      4059,
+      4068
+    ],
+    "mode": "RGBA",
+    "sha256": "f9f1b2b53423dbfaf4958a191290e1a870ee01d1e7fe31f93bf823aca6c21bb8",
+    "transparent_pixels": 11994598,
+    "opaque_pixels": 33127,
+    "partial_alpha_pixels": 4484287
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_coatrackCrawler_hurt.png",
+    "size": [
+      3015,
+      4086
+    ],
+    "mode": "RGBA",
+    "sha256": "58d59b4e7b945b4605b6335160e53e3bc42429a65bcd1f734fa12c3ef0e8e529",
+    "transparent_pixels": 8118163,
+    "opaque_pixels": 41727,
+    "partial_alpha_pixels": 4159400
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_coatrackCrawler_idle.png",
+    "size": [
+      2295,
+      3546
+    ],
+    "mode": "RGBA",
+    "sha256": "e59e4dea63e3756b9373fd95676d5406c4418bed23fd354dd37bc64cf538fa18",
+    "transparent_pixels": 3947595,
+    "opaque_pixels": 35462,
+    "partial_alpha_pixels": 4155013
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_compostColossus_attack.png",
+    "size": [
+      5094,
+      2817
+    ],
+    "mode": "RGBA",
+    "sha256": "6b5b5ea056ad48a55ad8dde8fae943bd3cbf039f66872b01973e73e68beeb415",
+    "transparent_pixels": 8336461,
+    "opaque_pixels": 152151,
+    "partial_alpha_pixels": 5861186
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_compostColossus_defeat.png",
+    "size": [
+      4698,
+      3087
+    ],
+    "mode": "RGBA",
+    "sha256": "80206cc76901d46c30f6cf056e8551d28d692cc73ca0f96d7974a73f5c480117",
+    "transparent_pixels": 8544727,
+    "opaque_pixels": 278722,
+    "partial_alpha_pixels": 5679277
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_compostColossus_hurt.png",
+    "size": [
+      4437,
+      2871
+    ],
+    "mode": "RGBA",
+    "sha256": "2f8955128d8a3383fd06cafcb28c52b9250a02d46cfd41fda90e94ba5f8ed7ae",
+    "transparent_pixels": 6423505,
+    "opaque_pixels": 192431,
+    "partial_alpha_pixels": 6122691
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_compostColossus_idle.png",
+    "size": [
+      4041,
+      2844
+    ],
+    "mode": "RGBA",
+    "sha256": "73ee66fa6208f4d883c903c1f271527b534eae1d85f166b4efb820565fe24506",
+    "transparent_pixels": 5531805,
+    "opaque_pixels": 259483,
+    "partial_alpha_pixels": 5701316
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_confectioner_attack.png",
+    "size": [
+      5616,
+      4068
+    ],
+    "mode": "RGBA",
+    "sha256": "75211f8c078d0c81452cbc24e34eccc46f81e5466434c1efd1b82aed570a01b1",
+    "transparent_pixels": 17079805,
+    "opaque_pixels": 228857,
+    "partial_alpha_pixels": 5537226
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_confectioner_defeat.png",
+    "size": [
+      5301,
+      3879
+    ],
+    "mode": "RGBA",
+    "sha256": "e6dc91ffd01a65016ea0412240c3e0b9a270ae8b2df25f505f91b18cd2c20304",
+    "transparent_pixels": 15881138,
+    "opaque_pixels": 297791,
+    "partial_alpha_pixels": 4383650
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_confectioner_hurt.png",
+    "size": [
+      4059,
+      3672
+    ],
+    "mode": "RGBA",
+    "sha256": "3127e77f988e819f0c3d783228835feaf87bea602f2cf5aa749c267f335ffaf4",
+    "transparent_pixels": 9590406,
+    "opaque_pixels": 250292,
+    "partial_alpha_pixels": 5063950
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_confectioner_idle.png",
+    "size": [
+      2637,
+      3465
+    ],
+    "mode": "RGBA",
+    "sha256": "5b18366fc6c3d18f2d4cd5dbc53668b5acf6a538dde09cf49fe4021c2d9ab55a",
+    "transparent_pixels": 3923151,
+    "opaque_pixels": 297381,
+    "partial_alpha_pixels": 4916673
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_conservatory_attack.png",
+    "size": [
+      4131,
+      2817
+    ],
+    "mode": "RGBA",
+    "sha256": "443afa88ec6cec83b0fe44e91cf8c3d32a1bf213b88180d0b1122a5d62a65f43",
+    "transparent_pixels": 4888112,
+    "opaque_pixels": 243508,
+    "partial_alpha_pixels": 6505407
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_conservatory_defeat.png",
+    "size": [
+      3924,
+      2727
+    ],
+    "mode": "RGBA",
+    "sha256": "a5f5705d875272e3a1011d9bb2d3372ec7bc3e7842f7e0728c3144f0984ba4ac",
+    "transparent_pixels": 5512351,
+    "opaque_pixels": 300127,
+    "partial_alpha_pixels": 4888270
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_conservatory_hurt.png",
+    "size": [
+      3591,
+      3015
+    ],
+    "mode": "RGBA",
+    "sha256": "51b5bafd161cffeecc72ece9fa061e6a0abd0631a2e7ecf35a6ea555e8cf384e",
+    "transparent_pixels": 4683038,
+    "opaque_pixels": 354334,
+    "partial_alpha_pixels": 5789493
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_conservatory_idle.png",
+    "size": [
+      3501,
+      2727
+    ],
+    "mode": "RGBA",
+    "sha256": "4344ed22bc64521df782517f7259308ceffe2af7283178f53e5c2fb29b879103",
+    "transparent_pixels": 3677082,
+    "opaque_pixels": 439022,
+    "partial_alpha_pixels": 5431123
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_creepingIvy_attack.png",
+    "size": [
+      5436,
+      4698
+    ],
+    "mode": "RGBA",
+    "sha256": "5dfedc15144445bd5bfb33eea77d6d70eae796675bf57db33645606b5031295a",
+    "transparent_pixels": 17888671,
+    "opaque_pixels": 86176,
+    "partial_alpha_pixels": 7563481
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_creepingIvy_defeat.png",
+    "size": [
+      3339,
+      3555
+    ],
+    "mode": "RGBA",
+    "sha256": "f8a2488eea09f7b69d13b27c3bdf468004cd405b7f651cdcadd37f1298cbd1f8",
+    "transparent_pixels": 6802577,
+    "opaque_pixels": 246425,
+    "partial_alpha_pixels": 4821143
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_creepingIvy_hurt.png",
+    "size": [
+      3249,
+      3114
+    ],
+    "mode": "RGBA",
+    "sha256": "7fd2d997b2f6dd6881daff8b8032770f5324e8662f8d0f020f6729ee7901c044",
+    "transparent_pixels": 4990002,
+    "opaque_pixels": 159244,
+    "partial_alpha_pixels": 4968140
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_creepingIvy_idle.png",
+    "size": [
+      3249,
+      2601
+    ],
+    "mode": "RGBA",
+    "sha256": "680bd4613977dc942d8e73639b5aeb1dbdb6e67093454e2cfde37b7f45a46f9c",
+    "transparent_pixels": 3432531,
+    "opaque_pixels": 130990,
+    "partial_alpha_pixels": 4887128
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doorGreeter_attack.png",
+    "size": [
+      2385,
+      4671
+    ],
+    "mode": "RGBA",
+    "sha256": "df9d17e6c9b5bcc144458883445a486a70cbc4fac89bc695008a3be0f2f5db86",
+    "transparent_pixels": 6833456,
+    "opaque_pixels": 71638,
+    "partial_alpha_pixels": 4235241
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doorGreeter_defeat.png",
+    "size": [
+      3510,
+      3897
+    ],
+    "mode": "RGBA",
+    "sha256": "16ef7a9e95d635d3a54c21d70eec04b79efb189a67a1e6fb76d76fa629c5fbb6",
+    "transparent_pixels": 10395389,
+    "opaque_pixels": 52520,
+    "partial_alpha_pixels": 3230561
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doorGreeter_hurt.png",
+    "size": [
+      2619,
+      3861
+    ],
+    "mode": "RGBA",
+    "sha256": "52c461108754f2852fba9faed3e5eb2be013be12b5ab673198ab8e7d83e04042",
+    "transparent_pixels": 5509775,
+    "opaque_pixels": 60702,
+    "partial_alpha_pixels": 4541482
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doorGreeter_idle.png",
+    "size": [
+      2133,
+      3843
+    ],
+    "mode": "RGBA",
+    "sha256": "bef38cff8c13d7e7e8dcbb8b38086281e29bbce9436a714082f15ee5b4911b6d",
+    "transparent_pixels": 3672526,
+    "opaque_pixels": 75847,
+    "partial_alpha_pixels": 4448746
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doughBlob_attack.png",
+    "size": [
+      3843,
+      2979
+    ],
+    "mode": "RGBA",
+    "sha256": "4384f0eb586edc41a27d2b73353c604b9d53a988dd9e8c90b36cfdf95e6ea1f1",
+    "transparent_pixels": 6477698,
+    "opaque_pixels": 128616,
+    "partial_alpha_pixels": 4841983
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doughBlob_defeat.png",
+    "size": [
+      3465,
+      3195
+    ],
+    "mode": "RGBA",
+    "sha256": "b81e9b971ce4f5c16f881842ad7e9366e501b29dcfdbd77ff27af1002b5cae29",
+    "transparent_pixels": 6262699,
+    "opaque_pixels": 136333,
+    "partial_alpha_pixels": 4671643
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doughBlob_hurt.png",
+    "size": [
+      3834,
+      2925
+    ],
+    "mode": "RGBA",
+    "sha256": "6890029bcd0bfb7c70c4098542180928d14df111c2cd3bf577dcc0048a5fda02",
+    "transparent_pixels": 6140413,
+    "opaque_pixels": 136306,
+    "partial_alpha_pixels": 4937731
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doughBlob_idle.png",
+    "size": [
+      3510,
+      2655
+    ],
+    "mode": "RGBA",
+    "sha256": "5a6c045e794d16a6a20a326c774e1042bc2094264313e9de2975379b39aef654",
+    "transparent_pixels": 4495980,
+    "opaque_pixels": 115068,
+    "partial_alpha_pixels": 4708002
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_dustBunny_attack.png",
+    "size": [
+      3546,
+      3996
+    ],
+    "mode": "RGBA",
+    "sha256": "c59d6675b1ffbd95265c61ea6bc683e2271cf24d0c6b64b7b5f92fdb4b9111b6",
+    "transparent_pixels": 8448354,
+    "opaque_pixels": 276906,
+    "partial_alpha_pixels": 5444556
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_dustBunny_defeat.png",
+    "size": [
+      3492,
+      4032
+    ],
+    "mode": "RGBA",
+    "sha256": "1108420cfc4e7f63448b5444ae27959a486fcabd1a7f61111bf6739dfe08c1bf",
+    "transparent_pixels": 8807461,
+    "opaque_pixels": 340505,
+    "partial_alpha_pixels": 4931778
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_dustBunny_hurt.png",
+    "size": [
+      4851,
+      4131
+    ],
+    "mode": "RGBA",
+    "sha256": "dad2b6231547776f17dcb2ec565481af10bbc97fb84390e84cf1e5495048fb5d",
+    "transparent_pixels": 14444609,
+    "opaque_pixels": 279107,
+    "partial_alpha_pixels": 5315765
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_dustBunny_idle.png",
+    "size": [
+      3114,
+      2961
+    ],
+    "mode": "RGBA",
+    "sha256": "55c6bb3c23ef5e2ceafcbefef19c99b50916d202a8ce8e8d4f4acf2c16fb998c",
+    "transparent_pixels": 3599777,
+    "opaque_pixels": 68154,
+    "partial_alpha_pixels": 5552623
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_governess_attack.png",
+    "size": [
+      3186,
+      3663
+    ],
+    "mode": "RGBA",
+    "sha256": "864e4795ea386b454a3d20fae7199cca610c3bd4646081b8dc76852fa742b31f",
+    "transparent_pixels": 6656408,
+    "opaque_pixels": 64040,
+    "partial_alpha_pixels": 4949870
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_governess_cast.png",
+    "size": [
+      3258,
+      3978
+    ],
+    "mode": "RGBA",
+    "sha256": "009398d2644c7c164ae64c239d4d750a7406d15563edbeff015da45784d20b4f",
+    "transparent_pixels": 7766957,
+    "opaque_pixels": 88616,
+    "partial_alpha_pixels": 5104751
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_governess_defeat.png",
+    "size": [
+      4140,
+      3753
+    ],
+    "mode": "RGBA",
+    "sha256": "4cfab1ae770187c720f5ac6fa118067eff9ffcaa5527ecdc8efe1608f025f7da",
+    "transparent_pixels": 10878727,
+    "opaque_pixels": 64984,
+    "partial_alpha_pixels": 4593709
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_governess_hurt.png",
+    "size": [
+      3060,
+      3636
+    ],
+    "mode": "RGBA",
+    "sha256": "c5d6462c45af028ad716ced7b956a255dd46dd58b7b7105d3fc1da6664ae46c6",
+    "transparent_pixels": 6268717,
+    "opaque_pixels": 128486,
+    "partial_alpha_pixels": 4728957
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_governess_idle.png",
+    "size": [
+      2628,
+      3582
+    ],
+    "mode": "RGBA",
+    "sha256": "172a7c92a11e0cc114b4c6015f3cee3556dd4477cae362c303faf2facd130eca",
+    "transparent_pixels": 4570493,
+    "opaque_pixels": 49918,
+    "partial_alpha_pixels": 4793085
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_grandWardrobe_attack.png",
+    "size": [
+      5616,
+      4581
+    ],
+    "mode": "RGBA",
+    "sha256": "8e7e1b5b98421b78c1504db2c30c4379c933ea298e8df6a786a9bcd06bde1f3f",
+    "transparent_pixels": 17924926,
+    "opaque_pixels": 288434,
+    "partial_alpha_pixels": 7513536
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_grandWardrobe_defeat.png",
+    "size": [
+      5175,
+      3258
+    ],
+    "mode": "RGBA",
+    "sha256": "3b59979d7593b3266e6fd130289013a9a307c1f69b616a321fa2b55e29e2a6ec",
+    "transparent_pixels": 11222095,
+    "opaque_pixels": 177095,
+    "partial_alpha_pixels": 5460960
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_grandWardrobe_hurt.png",
+    "size": [
+      4284,
+      3114
+    ],
+    "mode": "RGBA",
+    "sha256": "c786187ccb8e0264e16f5f9cf6a9da87a80919acba4e313fbcd82cbf8717f3bd",
+    "transparent_pixels": 7684566,
+    "opaque_pixels": 435912,
+    "partial_alpha_pixels": 5219898
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_grandWardrobe_idle.png",
+    "size": [
+      4158,
+      3087
+    ],
+    "mode": "RGBA",
+    "sha256": "2a0d450745299faa9b98093a68ca6115337f1749e09a737b9a4b9a591fc66720",
+    "transparent_pixels": 7037964,
+    "opaque_pixels": 378839,
+    "partial_alpha_pixels": 5418943
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jackInTheBox_attack.png",
+    "size": [
+      4122,
+      3951
+    ],
+    "mode": "RGBA",
+    "sha256": "166639def72bca82cd5fa58ba4ab5c3101837286c3774065df1ad0a5cbe3f138",
+    "transparent_pixels": 10597936,
+    "opaque_pixels": 95745,
+    "partial_alpha_pixels": 5592341
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jackInTheBox_defeat.png",
+    "size": [
+      2673,
+      3420
+    ],
+    "mode": "RGBA",
+    "sha256": "f3b95f3197371f19c34f8daf354670e2aca42a975b19ea839b3e79e8e7f7b373",
+    "transparent_pixels": 4371617,
+    "opaque_pixels": 54866,
+    "partial_alpha_pixels": 4715177
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jackInTheBox_hurt.png",
+    "size": [
+      4032,
+      3456
+    ],
+    "mode": "RGBA",
+    "sha256": "7956a9680240e880f84f91c08a25235f67f69db1495bf6f995c84071fb9fc2f8",
+    "transparent_pixels": 8984176,
+    "opaque_pixels": 47078,
+    "partial_alpha_pixels": 4903338
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jackInTheBox_idle.png",
+    "size": [
+      2529,
+      3420
+    ],
+    "mode": "RGBA",
+    "sha256": "4f887dd872ad82265cc1e685cd133ffeb9cba4af0334d67be941a9c353d6f43a",
+    "transparent_pixels": 3685556,
+    "opaque_pixels": 41428,
+    "partial_alpha_pixels": 4922196
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jamJar_attack.png",
+    "size": [
+      3933,
+      3384
+    ],
+    "mode": "RGBA",
+    "sha256": "ab3dd1d9cbbb93c8a46225e7c7e868808ebcbfd4a2c16c08f9ade0daaa5fee10",
+    "transparent_pixels": 7265872,
+    "opaque_pixels": 392757,
+    "partial_alpha_pixels": 5650643
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jamJar_defeat.png",
+    "size": [
+      3357,
+      3483
+    ],
+    "mode": "RGBA",
+    "sha256": "8e31b1cbf1a80ae2f8500f8196608220adf554d6d72de87ea163d2ea7a4019ec",
+    "transparent_pixels": 5803090,
+    "opaque_pixels": 367589,
+    "partial_alpha_pixels": 5521752
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jamJar_hurt.png",
+    "size": [
+      3402,
+      3366
+    ],
+    "mode": "RGBA",
+    "sha256": "7a3944c2cc2de4e92f045a08a3cb7d6515478eaae035774d91a913e3cf851bdc",
+    "transparent_pixels": 5286560,
+    "opaque_pixels": 332502,
+    "partial_alpha_pixels": 5832070
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jamJar_idle.png",
+    "size": [
+      3456,
+      3411
+    ],
+    "mode": "RGBA",
+    "sha256": "7dd7a6c42c950b2d2a0e3c80d2e01895ffb5662e909d8dc3d334977b5c905d6c",
+    "transparent_pixels": 5751051,
+    "opaque_pixels": 379296,
+    "partial_alpha_pixels": 5658069
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ovenMaw_attack.png",
+    "size": [
+      3420,
+      2754
+    ],
+    "mode": "RGBA",
+    "sha256": "cf7d87563a6ec4376a20ed069d8b9983464f8a496e1edef6507482035095d84d",
+    "transparent_pixels": 4183360,
+    "opaque_pixels": 262411,
+    "partial_alpha_pixels": 4972909
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ovenMaw_defeat.png",
+    "size": [
+      3393,
+      3402
+    ],
+    "mode": "RGBA",
+    "sha256": "26562087180d312c21c41c489e37da79c4f67bf9f0ece346a3576a38c715ef20",
+    "transparent_pixels": 6578239,
+    "opaque_pixels": 374035,
+    "partial_alpha_pixels": 4590712
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ovenMaw_hurt.png",
+    "size": [
+      3645,
+      3141
+    ],
+    "mode": "RGBA",
+    "sha256": "7e50353fac18f9c8fb1b3ceaf22f8f04979cbea5840f8c8271970daed2a1a1b5",
+    "transparent_pixels": 6372143,
+    "opaque_pixels": 294280,
+    "partial_alpha_pixels": 4782522
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ovenMaw_idle.png",
+    "size": [
+      3213,
+      2952
+    ],
+    "mode": "RGBA",
+    "sha256": "df72618f8a20b10f26d76e2848cbfb05783689fb33ce9cc16ddf7b9c517ab70d",
+    "transparent_pixels": 4232994,
+    "opaque_pixels": 144287,
+    "partial_alpha_pixels": 5107495
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ovenMaw_left_attack.png",
+    "size": [
+      2880,
+      1752
+    ],
+    "mode": "RGBA",
+    "sha256": "27021da211969a063f320ac85d64d3b6fb0c53116f7fded2f16fe0bd8e09903f",
+    "transparent_pixels": 2044790,
+    "opaque_pixels": 154270,
+    "partial_alpha_pixels": 2846700
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ovenMaw_left_defeat.png",
+    "size": [
+      3240,
+      1416
+    ],
+    "mode": "RGBA",
+    "sha256": "43a007b7453680df2f2992bcfbc52576ffe12d5a7be9b24c4d45bab6d6dcc507",
+    "transparent_pixels": 2537754,
+    "opaque_pixels": 143885,
+    "partial_alpha_pixels": 1906201
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ovenMaw_left_hurt.png",
+    "size": [
+      3040,
+      1992
+    ],
+    "mode": "RGBA",
+    "sha256": "033e84fca7d96206f328d4a4b8d99fe84784495bb22e417f3825dd52083bd34e",
+    "transparent_pixels": 3132411,
+    "opaque_pixels": 172537,
+    "partial_alpha_pixels": 2750732
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ovenMaw_left_idle.png",
+    "size": [
+      2704,
+      1878
+    ],
+    "mode": "RGBA",
+    "sha256": "9390a6256228fdca5ba3739ecf41e0cb14193de8ad5c4213d0ca93b047b6288c",
+    "transparent_pixels": 2068109,
+    "opaque_pixels": 85592,
+    "partial_alpha_pixels": 2924411
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_pantryMimic_attack.png",
+    "size": [
+      2871,
+      3330
+    ],
+    "mode": "RGBA",
+    "sha256": "ce1565813f73652a5ad924fae7b440c76b894d6ee92f3da53559126411f56322",
+    "transparent_pixels": 4784148,
+    "opaque_pixels": 470526,
+    "partial_alpha_pixels": 4305756
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_pantryMimic_defeat.png",
+    "size": [
+      3699,
+      3789
+    ],
+    "mode": "RGBA",
+    "sha256": "66def1472d1e5d4c0ee4a4b7041e1312ea711ad08b9d5b2b896edcbb4d547bc1",
+    "transparent_pixels": 8721812,
+    "opaque_pixels": 578075,
+    "partial_alpha_pixels": 4715624
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_pantryMimic_hurt.png",
+    "size": [
+      3366,
+      3339
+    ],
+    "mode": "RGBA",
+    "sha256": "60442f7113d774ddf6b075c329163d61061c3efa6e0a7207d861d8287a285fe3",
+    "transparent_pixels": 6125349,
+    "opaque_pixels": 470150,
+    "partial_alpha_pixels": 4643575
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_pantryMimic_idle.png",
+    "size": [
+      2889,
+      3330
+    ],
+    "mode": "RGBA",
+    "sha256": "1fce3232f4630bbdca601e37a34dbb1a914eee7b1ba742b1c5862e9cb03115f9",
+    "transparent_pixels": 4426968,
+    "opaque_pixels": 269161,
+    "partial_alpha_pixels": 4924241
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkGiant_attack.png",
+    "size": [
+      4266,
+      3114
+    ],
+    "mode": "RGBA",
+    "sha256": "8bfa85c1a18c3d7c46a1984db449e7f504fd38ea6300b050064fd7f14345b5cb",
+    "transparent_pixels": 7203089,
+    "opaque_pixels": 146144,
+    "partial_alpha_pixels": 5935091
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkGiant_defeat.png",
+    "size": [
+      3798,
+      3303
+    ],
+    "mode": "RGBA",
+    "sha256": "88b489525776167d189b1e0d9bd843bcdf397de96d43d46853725b8ac54987f3",
+    "transparent_pixels": 6821596,
+    "opaque_pixels": 254752,
+    "partial_alpha_pixels": 5468446
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkGiant_hurt.png",
+    "size": [
+      3996,
+      3159
+    ],
+    "mode": "RGBA",
+    "sha256": "2741a19159492177983d1c04c5d97de67cfd6b94126cd2b3260a5cb4b6522176",
+    "transparent_pixels": 6530073,
+    "opaque_pixels": 199857,
+    "partial_alpha_pixels": 5893434
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkGiant_idle.png",
+    "size": [
+      3258,
+      3213
+    ],
+    "mode": "RGBA",
+    "sha256": "058dd6af263f3cbd58b23ae5a5f23837b2a49c5ce1e2d1f7f0d40d06d03cd248",
+    "transparent_pixels": 4406186,
+    "opaque_pixels": 290512,
+    "partial_alpha_pixels": 5771256
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkSoldier_attack.png",
+    "size": [
+      3105,
+      3447
+    ],
+    "mode": "RGBA",
+    "sha256": "2d51def21f13b585ec09655fcce956906f9f021ed0464e4c2e0d956fe6e0938b",
+    "transparent_pixels": 6877090,
+    "opaque_pixels": 85960,
+    "partial_alpha_pixels": 3739885
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkSoldier_defeat.png",
+    "size": [
+      3492,
+      3474
+    ],
+    "mode": "RGBA",
+    "sha256": "87b0272e4d71b4cfd4212b89b7b6ac2213a4739314b27dbcc2d8a16b2e21d3a3",
+    "transparent_pixels": 8831868,
+    "opaque_pixels": 48906,
+    "partial_alpha_pixels": 3250434
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkSoldier_hurt.png",
+    "size": [
+      3312,
+      3510
+    ],
+    "mode": "RGBA",
+    "sha256": "961d7124ebc0fe945bc8824e84dc016544375da48663c4ab830d82bf58f4234c",
+    "transparent_pixels": 7522852,
+    "opaque_pixels": 98314,
+    "partial_alpha_pixels": 4003954
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkSoldier_idle.png",
+    "size": [
+      2358,
+      3420
+    ],
+    "mode": "RGBA",
+    "sha256": "bac280ae504a635255aab8d85369db13de3a4f5fc39ab5531bfc8708c264aa4a",
+    "transparent_pixels": 3806534,
+    "opaque_pixels": 62748,
+    "partial_alpha_pixels": 4195078
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_rug_attack.png",
+    "size": [
+      3573,
+      3987
+    ],
+    "mode": "RGBA",
+    "sha256": "cee2e2636738523b4bc49fa1c5962004909e6ad4f7f2240e9b71da6082779a2b",
+    "transparent_pixels": 9588488,
+    "opaque_pixels": 135718,
+    "partial_alpha_pixels": 4521345
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_rug_defeat.png",
+    "size": [
+      3411,
+      3132
+    ],
+    "mode": "RGBA",
+    "sha256": "03eb1b9949abf61efbe910cf92dee336658b4d76bd62a84a4d58acf5be37bf40",
+    "transparent_pixels": 6836554,
+    "opaque_pixels": 28099,
+    "partial_alpha_pixels": 3818599
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_rug_hurt.png",
+    "size": [
+      4536,
+      3069
+    ],
+    "mode": "RGBA",
+    "sha256": "5ec9ad1dc59678b4eea175f387f75c704a5e6dc1290afb7966a93acb53370f56",
+    "transparent_pixels": 9551270,
+    "opaque_pixels": 37528,
+    "partial_alpha_pixels": 4332186
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_rug_idle.png",
+    "size": [
+      3663,
+      3501
+    ],
+    "mode": "RGBA",
+    "sha256": "73a70b702e3446aafdb5f023e0742af8bf4ece7a9247a44e98bd819b605045e0",
+    "transparent_pixels": 8240519,
+    "opaque_pixels": 45952,
+    "partial_alpha_pixels": 4537692
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_slipperSkitter_attack.png",
+    "size": [
+      3510,
+      2601
+    ],
+    "mode": "RGBA",
+    "sha256": "c80c62a7bfeb0e5bdf16d0d69aacc6b63d06428a207a7365fb9bae971013dd4a",
+    "transparent_pixels": 5338134,
+    "opaque_pixels": 132304,
+    "partial_alpha_pixels": 3659072
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_slipperSkitter_defeat.png",
+    "size": [
+      3537,
+      2475
+    ],
+    "mode": "RGBA",
+    "sha256": "a2b56108de5dc937b72863c8a28375e008d49cea484e798f40c53642c5e357f5",
+    "transparent_pixels": 4784813,
+    "opaque_pixels": 113458,
+    "partial_alpha_pixels": 3855804
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_slipperSkitter_hurt.png",
+    "size": [
+      3609,
+      2970
+    ],
+    "mode": "RGBA",
+    "sha256": "11e7947a4dc04c5a2d4bbcbba6edb0594ef73206ed0fb9c9fb871ddf57d2426c",
+    "transparent_pixels": 6909687,
+    "opaque_pixels": 164331,
+    "partial_alpha_pixels": 3644712
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_slipperSkitter_idle.png",
+    "size": [
+      3339,
+      2007
+    ],
+    "mode": "RGBA",
+    "sha256": "54b2879d3cf98730b102c9ca5dd0c3b7325a8c946bc7f82144a84df9d524de9d",
+    "transparent_pixels": 3140191,
+    "opaque_pixels": 116123,
+    "partial_alpha_pixels": 3445059
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_sugarGolem_attack.png",
+    "size": [
+      5499,
+      3546
+    ],
+    "mode": "RGBA",
+    "sha256": "2f8fdcb8acaa2745335f03eafaa51c73191059b3cd5d7220d31c046eb3d5c0c8",
+    "transparent_pixels": 13501305,
+    "opaque_pixels": 41138,
+    "partial_alpha_pixels": 5957011
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_sugarGolem_defeat.png",
+    "size": [
+      4788,
+      3330
+    ],
+    "mode": "RGBA",
+    "sha256": "1485879c56408dd6959a5d17b954c7aa0d0e377c41d2b4492a0cf757213e29b0",
+    "transparent_pixels": 11067051,
+    "opaque_pixels": 146903,
+    "partial_alpha_pixels": 4730086
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_sugarGolem_hurt.png",
+    "size": [
+      4428,
+      3150
+    ],
+    "mode": "RGBA",
+    "sha256": "a011fa725b7faa9e6639bc7844aeb1a29b9780dadd585d50b52c047a01eb53b8",
+    "transparent_pixels": 8751524,
+    "opaque_pixels": 66079,
+    "partial_alpha_pixels": 5130597
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_sugarGolem_idle.png",
+    "size": [
+      3627,
+      3096
+    ],
+    "mode": "RGBA",
+    "sha256": "74de1e5d4b9b72f01ae99e08fd699cc38805521a48bc5de93dc6c8e036c2b9b4",
+    "transparent_pixels": 5865163,
+    "opaque_pixels": 91439,
+    "partial_alpha_pixels": 5272590
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_suitcase_attack.png",
+    "size": [
+      3753,
+      3330
+    ],
+    "mode": "RGBA",
+    "sha256": "7cad6e7ef18d6764e6a473842e0d37acf53ad985a26f48d8388df6059ed9d92d",
+    "transparent_pixels": 7118322,
+    "opaque_pixels": 291870,
+    "partial_alpha_pixels": 5087298
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_suitcase_defeat.png",
+    "size": [
+      3591,
+      3357
+    ],
+    "mode": "RGBA",
+    "sha256": "11633a0111cd3ef90d403c6e43077aa41203a6e0d814f31a3173ce942bb4f353",
+    "transparent_pixels": 7042008,
+    "opaque_pixels": 449181,
+    "partial_alpha_pixels": 4563798
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_suitcase_hurt.png",
+    "size": [
+      3906,
+      3141
+    ],
+    "mode": "RGBA",
+    "sha256": "20e7e01a901af7d87545cf78931fb9d1d455dd00c97c6810cd1159af5e2abf5c",
+    "transparent_pixels": 7080605,
+    "opaque_pixels": 394971,
+    "partial_alpha_pixels": 4793170
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_suitcase_idle.png",
+    "size": [
+      3438,
+      3114
+    ],
+    "mode": "RGBA",
+    "sha256": "e47504f22f7685d976114336bf4ebdd21736bd418352324be385be2f1238bf79",
+    "transparent_pixels": 5852617,
+    "opaque_pixels": 423116,
+    "partial_alpha_pixels": 4430199
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_toyChest_attack.png",
+    "size": [
+      3258,
+      3483
+    ],
+    "mode": "RGBA",
+    "sha256": "9653da0b425da05460cf5e6029d54573692ae47c2fd6894fcf83cccf87ed95c2",
+    "transparent_pixels": 5394863,
+    "opaque_pixels": 433550,
+    "partial_alpha_pixels": 5519201
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_toyChest_defeat.png",
+    "size": [
+      4599,
+      5040
+    ],
+    "mode": "RGBA",
+    "sha256": "28afafd4f1730a08849bc0a27a7c5f68330b265a65495287a61c2618f95dcccd",
+    "transparent_pixels": 15517759,
+    "opaque_pixels": 428881,
+    "partial_alpha_pixels": 7232320
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_toyChest_hurt.png",
+    "size": [
+      3321,
+      3294
+    ],
+    "mode": "RGBA",
+    "sha256": "f55aa0ad49630276b1b2de157ca810c484400cb8a05539d8f17ce35eef40b16b",
+    "transparent_pixels": 4998001,
+    "opaque_pixels": 492175,
+    "partial_alpha_pixels": 5449198
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_toyChest_idle.png",
+    "size": [
+      3375,
+      2916
+    ],
+    "mode": "RGBA",
+    "sha256": "c07853c79d8f273d43edccc6793754b39c406073d14e13b5ec0a9fa894a35673",
+    "transparent_pixels": 3750996,
+    "opaque_pixels": 233296,
+    "partial_alpha_pixels": 5857208
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_wardrobeGuest_attack.png",
+    "size": [
+      2421,
+      3375
+    ],
+    "mode": "RGBA",
+    "sha256": "a132d7f82f29bef856ddbc585b0fd3c3ec46fc50abaa94582c6698b98ae640fa",
+    "transparent_pixels": 3191242,
+    "opaque_pixels": 389678,
+    "partial_alpha_pixels": 4589955
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_wardrobeGuest_defeat.png",
+    "size": [
+      5355,
+      3735
+    ],
+    "mode": "RGBA",
+    "sha256": "ddbd834f7f98981e0d9ee2af0bf12a35c9184bffa939853fccf1d327eb7a553f",
+    "transparent_pixels": 13919982,
+    "opaque_pixels": 583073,
+    "partial_alpha_pixels": 5497870
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_wardrobeGuest_hurt.png",
+    "size": [
+      2088,
+      3384
+    ],
+    "mode": "RGBA",
+    "sha256": "0e78a3c8f98dfdae0c1648f9a31220bcc37786e9a87740d0e76b8aacdaddc1f3",
+    "transparent_pixels": 2324833,
+    "opaque_pixels": 456895,
+    "partial_alpha_pixels": 4284064
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_wardrobeGuest_idle.png",
+    "size": [
+      2088,
+      3366
+    ],
+    "mode": "RGBA",
+    "sha256": "e252562228b48815c9a45feb241ebd4f68883192ca89243b65ea12efdde43ab1",
+    "transparent_pixels": 2317252,
+    "opaque_pixels": 578538,
+    "partial_alpha_pixels": 4132418
+  },
+  {
+    "path": "animations/sprites/enemies/bedframeBeast.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "10aaf75b1838044b6806c30f08e502d0d4f99c428e878a42a99ab22d2872348b",
+    "transparent_pixels": 163889,
+    "opaque_pixels": 121,
+    "partial_alpha_pixels": 98134
+  },
+  {
+    "path": "animations/sprites/enemies/blanketBlob.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "4401934d1dd67379c07b495d54dc1b7f99ab5e14dde77522793da7626c25c571",
+    "transparent_pixels": 35273,
+    "opaque_pixels": 130,
+    "partial_alpha_pixels": 30133
+  },
+  {
+    "path": "animations/sprites/enemies/blanketCreeper.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "292274f544ec0c80e1025fdc8e200dd52347e79ad3d626810ce79946070eca7c",
+    "transparent_pixels": 38871,
+    "opaque_pixels": 159,
+    "partial_alpha_pixels": 26506
+  },
+  {
+    "path": "animations/sprites/enemies/blanketHydra.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "15682d4f4f0f2c618b711321478a54046ac2fa5e91fb052f38751b4ed6f8ae14",
+    "transparent_pixels": 159178,
+    "opaque_pixels": 94,
+    "partial_alpha_pixels": 102872
+  },
+  {
+    "path": "animations/sprites/enemies/butler.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "sha256": "5a49ae51458b2a26df2802cfab9682504f037997cecad822a0fcf9bdb150580f",
+    "transparent_pixels": 738603,
+    "opaque_pixels": 1293,
+    "partial_alpha_pixels": 308680
+  },
+  {
+    "path": "animations/sprites/enemies/buttonBaby.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "785af6beb27e796610a24a818772f28648ca763aa6a03a4e1378f1bb365cabe9",
+    "transparent_pixels": 32805,
+    "opaque_pixels": 86,
+    "partial_alpha_pixels": 32645
+  },
+  {
+    "path": "animations/sprites/enemies/callingBell.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "3175f557fc10bf36bcf69cd0e12f3d0d0fc7e432734cbc051d47e4a4b787f4c8",
+    "transparent_pixels": 40773,
+    "opaque_pixels": 90,
+    "partial_alpha_pixels": 24673
+  },
+  {
+    "path": "animations/sprites/enemies/candyClump.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "da4d654d209ed90a541815f1077e7c10327a10fbc3d4491467da937f4a6aba03",
+    "transparent_pixels": 26092,
+    "opaque_pixels": 122,
+    "partial_alpha_pixels": 39322
+  },
+  {
+    "path": "animations/sprites/enemies/carnivorousConservatory.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "sha256": "a9d6a999c894808f28b6c240ab5309a9d7cefc30b80327f2c4768e3e31ab9a68",
+    "transparent_pixels": 494268,
+    "opaque_pixels": 318,
+    "partial_alpha_pixels": 553990
+  },
+  {
+    "path": "animations/sprites/enemies/coatrackCrawler.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "ed1ed4db9b10eaab30f89fb1728958af05828eacfde0b4378b69a3c3064562db",
+    "transparent_pixels": 164660,
+    "opaque_pixels": 114,
+    "partial_alpha_pixels": 97370
+  },
+  {
+    "path": "animations/sprites/enemies/compostColossus.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "4c4964b9e8ae64844d32d00127af10041fe90c3a3fbd3f360ce6e7cc8275e01c",
+    "transparent_pixels": 121463,
+    "opaque_pixels": 37,
+    "partial_alpha_pixels": 140644
+  },
+  {
+    "path": "animations/sprites/enemies/confectioner.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "sha256": "34b3d1176deccc1a81a10fa41e6bda80cde2052431672908c459af39ec438a01",
+    "transparent_pixels": 552576,
+    "opaque_pixels": 179,
+    "partial_alpha_pixels": 495821
+  },
+  {
+    "path": "animations/sprites/enemies/creepingIvy.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "007d13bce72207f1fbd08ef22981eb6aa54c8c3f1bec6a9985fbff3d5c9c3a46",
+    "transparent_pixels": 35498,
+    "opaque_pixels": 62,
+    "partial_alpha_pixels": 29976
+  },
+  {
+    "path": "animations/sprites/enemies/doorGreeter.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "b2f3b00075c8bb8fcd42ae89113717b8f2a7832d07e8afcd50cf6aa9c90a8c24",
+    "transparent_pixels": 143739,
+    "opaque_pixels": 100,
+    "partial_alpha_pixels": 118305
+  },
+  {
+    "path": "animations/sprites/enemies/doughBlob.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "676b1fd08122eaf752e2c83f2033cf8468c50859ed809ef28bda9eb686c37844",
+    "transparent_pixels": 36219,
+    "opaque_pixels": 118,
+    "partial_alpha_pixels": 29199
+  },
+  {
+    "path": "animations/sprites/enemies/dustBunny.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "e0afdafb3fdc841c56398d18adeedd263a55fa0eb05428381ddddb6c281b232c",
+    "transparent_pixels": 29648,
+    "opaque_pixels": 6,
+    "partial_alpha_pixels": 35882
+  },
+  {
+    "path": "animations/sprites/enemies/glassvine.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "56c839d9f83296ccf9a55536bf7b0fd4511331761fd8190ad8bccad1ff27d64c",
+    "transparent_pixels": 27376,
+    "opaque_pixels": 22,
+    "partial_alpha_pixels": 38138
+  },
+  {
+    "path": "animations/sprites/enemies/governess.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "mode": "RGBA",
+    "sha256": "485cca6869f9d77010bfdb7eb7e30957c343de63429be48290baf4dcea8402a7",
+    "transparent_pixels": 576968,
+    "opaque_pixels": 74,
+    "partial_alpha_pixels": 471534
+  },
+  {
+    "path": "animations/sprites/enemies/grandCoatcheck.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "cb1cb1ae3c30e2771cb257d2419603b5c29f9214956e501915daecf5e8c960a1",
+    "transparent_pixels": 126913,
+    "opaque_pixels": 139,
+    "partial_alpha_pixels": 135092
+  },
+  {
+    "path": "animations/sprites/enemies/headGardener.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "1c4465295010cc6c3cb6d068eaff3bd7c62d464122c5d5edb590300436974638",
+    "transparent_pixels": 150240,
+    "opaque_pixels": 54,
+    "partial_alpha_pixels": 111850
+  },
+  {
+    "path": "animations/sprites/enemies/houseBell.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "09cc2a1e5941e474512233cd47cdd3819a39eb543fd9c3ce2fae40143a79dbd2",
+    "transparent_pixels": 180421,
+    "opaque_pixels": 98,
+    "partial_alpha_pixels": 81625
+  },
+  {
+    "path": "animations/sprites/enemies/jackInTheBox.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "1a00d5b62c026c56911446c305059258f7a0df62c8fd032d3d990fca032f2c81",
+    "transparent_pixels": 37037,
+    "opaque_pixels": 450,
+    "partial_alpha_pixels": 28049
+  },
+  {
+    "path": "animations/sprites/enemies/jamJar.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "74f803351f47df95e536c7363ab7e7d75753d23e978572b8abec9dae6656f5d1",
+    "transparent_pixels": 28904,
+    "opaque_pixels": 159,
+    "partial_alpha_pixels": 36473
+  },
+  {
+    "path": "animations/sprites/enemies/kitchenImp.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "8bcb259a958e6a18c6ced0d40ec40a37babe2e632d23cc1dc43dd6ac0cdd39a6",
+    "transparent_pixels": 34000,
+    "opaque_pixels": 112,
+    "partial_alpha_pixels": 31424
+  },
+  {
+    "path": "animations/sprites/enemies/lostLuggage.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "9165e042746c33ef1291e5ffd839b9d22699efa00a9a9d561c61e283699fd8f2",
+    "transparent_pixels": 35522,
+    "opaque_pixels": 386,
+    "partial_alpha_pixels": 29628
+  },
+  {
+    "path": "animations/sprites/enemies/nightlightSnuffer.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "8f9dff47f66a0cc0c2dd7246f26708ff09000b4b16363ab144e01c286bb48f5d",
+    "transparent_pixels": 35319,
+    "opaque_pixels": 31,
+    "partial_alpha_pixels": 30186
+  },
+  {
+    "path": "animations/sprites/enemies/nightTerror.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "6217c237a6f02705c730ee6c1ef94b30f97f1bfec3b641c1ab29165a8b91f7f3",
+    "transparent_pixels": 156734,
+    "opaque_pixels": 53,
+    "partial_alpha_pixels": 105357
+  },
+  {
+    "path": "animations/sprites/enemies/ovenMaw.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "b3cc8570bd21256d2851b82ea1acabf8268b564a9c54dfc0659b83daab0c2682",
+    "transparent_pixels": 139838,
+    "opaque_pixels": 110,
+    "partial_alpha_pixels": 122196
+  },
+  {
+    "path": "animations/sprites/enemies/pantryMimic.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "e02044fef5a1e97a3e52f3bb21259d62e82a55deb0898a7c3ba4dc4be02f7b71",
+    "transparent_pixels": 34197,
+    "opaque_pixels": 204,
+    "partial_alpha_pixels": 31135
+  },
+  {
+    "path": "animations/sprites/enemies/pantryPoltergeist.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "8e2da0219ea59106ead8e27d289cf35ff3e6fee1c5e35637fb640b400d6885d1",
+    "transparent_pixels": 126257,
+    "opaque_pixels": 99,
+    "partial_alpha_pixels": 135788
+  },
+  {
+    "path": "animations/sprites/enemies/patchworkGiant.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "a1067150ef676112aa1eee191748956782332086fabc7052d145d7fd4748d2d2",
+    "transparent_pixels": 117345,
+    "opaque_pixels": 52,
+    "partial_alpha_pixels": 144747
+  },
+  {
+    "path": "animations/sprites/enemies/patchworkSoldier.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "6ad31eef3c8070e0739d3385bc0f1230e4c331695a0fd8261a160e4b7a1a52ab",
+    "transparent_pixels": 39706,
+    "opaque_pixels": 283,
+    "partial_alpha_pixels": 25547
+  },
+  {
+    "path": "animations/sprites/enemies/pillowPuff.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "251fb1a8a38116dee1360707425a0200e16d7a7e423be71e3186fc7164fbfebc",
+    "transparent_pixels": 33401,
+    "opaque_pixels": 52,
+    "partial_alpha_pixels": 32083
+  },
+  {
+    "path": "animations/sprites/enemies/porcelainDoll.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "7bf468fab8ccef238600e8b3b9a6a62cbfe8b2998853338bd398b92ba852f05d",
+    "transparent_pixels": 32466,
+    "opaque_pixels": 111,
+    "partial_alpha_pixels": 32959
+  },
+  {
+    "path": "animations/sprites/enemies/potling.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "e53b81a4716ab2f329053431d360d4aaabb5f48ed2136fe9fc683bb077a1a6ff",
+    "transparent_pixels": 43336,
+    "opaque_pixels": 105,
+    "partial_alpha_pixels": 22095
+  },
+  {
+    "path": "animations/sprites/enemies/prim.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "0d9275e8aae0b2006073320409c4d0a078626d4e03455579a40eb76ed2d85816",
+    "transparent_pixels": 40828,
+    "opaque_pixels": 670,
+    "partial_alpha_pixels": 24038
+  },
+  {
+    "path": "animations/sprites/enemies/proper.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "5797ae79144ea49de822a7ca9156efe411ac2c85b9e64a5a18374c93ea47e349",
+    "transparent_pixels": 41497,
+    "opaque_pixels": 668,
+    "partial_alpha_pixels": 23371
+  },
+  {
+    "path": "animations/sprites/enemies/redCarpetRunner.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "06b2ca956d7d00243cb5ad6f3031595c911ed0707e7e18c4ee43bc9335850aec",
+    "transparent_pixels": 38499,
+    "opaque_pixels": 191,
+    "partial_alpha_pixels": 26846
+  },
+  {
+    "path": "animations/sprites/enemies/risingBatter.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "52e031835e817eecf264ff3f88d9fca8336aa499673725a887fbe41963b0de52",
+    "transparent_pixels": 25212,
+    "opaque_pixels": 105,
+    "partial_alpha_pixels": 40219
+  },
+  {
+    "path": "animations/sprites/enemies/rockingHorse.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "083f82063fb86600e94cd50ac603da3deb94c13275286dba7bf65e06ab33209e",
+    "transparent_pixels": 29034,
+    "opaque_pixels": 280,
+    "partial_alpha_pixels": 36222
+  },
+  {
+    "path": "animations/sprites/enemies/slipperSkitter.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "9e61b933e5330d87ac6077cd8c35372620d065bc119399d07f9899c76436b95a",
+    "transparent_pixels": 42801,
+    "opaque_pixels": 64,
+    "partial_alpha_pixels": 22671
+  },
+  {
+    "path": "animations/sprites/enemies/snappingBlossom.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "8352d0d95d4fc308bb2a395231cf95557ce6f9e30a2764094b4fcf24ae08eac9",
+    "transparent_pixels": 94561,
+    "opaque_pixels": 83,
+    "partial_alpha_pixels": 167500
+  },
+  {
+    "path": "animations/sprites/enemies/sporepuff.png",
+    "size": [
+      256,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "72088630c8d8ac1e62bd763ed96729921555ce4aedb8c27a092dbe752dc6c850",
+    "transparent_pixels": 25017,
+    "opaque_pixels": 70,
+    "partial_alpha_pixels": 40449
+  },
+  {
+    "path": "animations/sprites/enemies/sugarGolem.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "5172440ab7f9327d2e64ff6cbe6c3ded12341c2b83bcb8a39475265f38e382c1",
+    "transparent_pixels": 135029,
+    "opaque_pixels": 91,
+    "partial_alpha_pixels": 127024
+  },
+  {
+    "path": "animations/sprites/enemies/thingBeneath.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "ab7580966b19ca5ce43046f2f6c749fa83733118b7f9829ed7eec6d486a5201c",
+    "transparent_pixels": 122708,
+    "opaque_pixels": 752,
+    "partial_alpha_pixels": 138684
+  },
+  {
+    "path": "animations/sprites/enemies/topiaryBeast.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "54e4f97095ffb41ff3d825a75968b3d987d3a69e466acf5562500aa6b052b540",
+    "transparent_pixels": 108465,
+    "opaque_pixels": 34,
+    "partial_alpha_pixels": 153645
+  },
+  {
+    "path": "animations/sprites/enemies/toyChest.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "cf745f2fade6091b47b3ba06d2a83c50ab9d0b91bca51cf1589b44aebca0c2b2",
+    "transparent_pixels": 122786,
+    "opaque_pixels": 109,
+    "partial_alpha_pixels": 139249
+  },
+  {
+    "path": "animations/sprites/enemies/unwelcomeGuest.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "2e307cbcf47bac2e3bad642ff4dbbc3daf7e1b7dcc4c0d8bd68f05ab6a415a5d",
+    "transparent_pixels": 132490,
+    "opaque_pixels": 60,
+    "partial_alpha_pixels": 129594
+  },
+  {
+    "path": "animations/sprites/enemies/wardrobe.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "4ad33253bcc76eb180a4045116b07f00b945a0a1f6bc352704a6813a57ac40c8",
+    "transparent_pixels": 126544,
+    "opaque_pixels": 53,
+    "partial_alpha_pixels": 135547
+  },
+  {
+    "path": "animations/sprites/enemies/wardrobeGuest.png",
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "5fc4edb6ec06ed8484ba5642aab79b62d64a972905853811e70ec8c04e983727",
+    "transparent_pixels": 147209,
+    "opaque_pixels": 56,
+    "partial_alpha_pixels": 114879
+  },
+  {
+    "path": "game/assets/sprites/enemies/ancient-topiary.webp",
+    "size": [
+      471,
+      398
+    ],
+    "mode": "RGBA",
+    "sha256": "fc1e46af26224dd94e5c2dd5effb85e420a8d7b96fd363eee32516e1dcfd14fd",
+    "transparent_pixels": 65177,
+    "opaque_pixels": 48,
+    "partial_alpha_pixels": 122233
+  },
+  {
+    "path": "game/assets/sprites/enemies/bedframe-beast.webp",
+    "size": [
+      491,
+      346
+    ],
+    "mode": "RGBA",
+    "sha256": "757dd56ef515bc30ce2eee6450ca321d7f8dac4ae9b0a07bf4de144ee67627a0",
+    "transparent_pixels": 75332,
+    "opaque_pixels": 121,
+    "partial_alpha_pixels": 94433
+  },
+  {
+    "path": "game/assets/sprites/enemies/blanket-blob.webp",
+    "size": [
+      241,
+      184
+    ],
+    "mode": "RGBA",
+    "sha256": "fcccaf1f821fe4961168cb897363ff06096faab812556c982c12551322d206ee",
+    "transparent_pixels": 14653,
+    "opaque_pixels": 130,
+    "partial_alpha_pixels": 29561
+  },
+  {
+    "path": "game/assets/sprites/enemies/blanket-creeper.webp",
+    "size": [
+      247,
+      156
+    ],
+    "mode": "RGBA",
+    "sha256": "d4555bdd72b91cadae8f1c493f9c6cc905700c17a6527d1fec366049cdab9187",
+    "transparent_pixels": 12495,
+    "opaque_pixels": 159,
+    "partial_alpha_pixels": 25878
+  },
+  {
+    "path": "game/assets/sprites/enemies/blanket-hydra.webp",
+    "size": [
+      491,
+      330
+    ],
+    "mode": "RGBA",
+    "sha256": "9a6def79515beb0220d3a37399036d08ab7489c1db7d39cb141ef4af454f8c05",
+    "transparent_pixels": 67797,
+    "opaque_pixels": 94,
+    "partial_alpha_pixels": 94139
+  },
+  {
+    "path": "game/assets/sprites/enemies/butler.webp",
+    "size": [
+      764,
+      1018
+    ],
+    "mode": "RGBA",
+    "sha256": "006defb59884951cd654789ae17af6e88c1e59644bcce834e2ebbec424d47cac",
+    "transparent_pixels": 484861,
+    "opaque_pixels": 1293,
+    "partial_alpha_pixels": 291598
+  },
+  {
+    "path": "game/assets/sprites/enemies/button-baby.webp",
+    "size": [
+      205,
+      214
+    ],
+    "mode": "RGBA",
+    "sha256": "7a27abd9cff39cbe369343d447180b5a4d7d5b6ea64223f2a47f28c1290fe026",
+    "transparent_pixels": 13512,
+    "opaque_pixels": 86,
+    "partial_alpha_pixels": 30272
+  },
+  {
+    "path": "game/assets/sprites/enemies/calling-bell.webp",
+    "size": [
+      234,
+      225
+    ],
+    "mode": "RGBA",
+    "sha256": "f4ca1d6f514ab5aba9bd7d497b1636f362a9d47114df8b477834b691c83538f2",
+    "transparent_pixels": 29974,
+    "opaque_pixels": 90,
+    "partial_alpha_pixels": 22586
+  },
+  {
+    "path": "game/assets/sprites/enemies/candy-clump.webp",
+    "size": [
+      233,
+      227
+    ],
+    "mode": "RGBA",
+    "sha256": "8df71bd6301dc67f19d782d55a1997a4d48980f594e0407ea8caa8f4056ce908",
+    "transparent_pixels": 15674,
+    "opaque_pixels": 122,
+    "partial_alpha_pixels": 37095
+  },
+  {
+    "path": "game/assets/sprites/enemies/carnivorous-conservatory.webp",
+    "size": [
+      996,
+      781
+    ],
+    "mode": "RGBA",
+    "sha256": "5a0291f3fa8b382a7c661af9d5c370d7d3c2747b31d4255a9875bba07af05892",
+    "transparent_pixels": 247844,
+    "opaque_pixels": 318,
+    "partial_alpha_pixels": 529714
+  },
+  {
+    "path": "game/assets/sprites/enemies/coatrack-crawler.webp",
+    "size": [
+      327,
+      506
+    ],
+    "mode": "RGBA",
+    "sha256": "a5645d4c4a217c9dc976606f4006ce91d1a7c53747bd71fec6b5adf0162a7bca",
+    "transparent_pixels": 76558,
+    "opaque_pixels": 114,
+    "partial_alpha_pixels": 88790
+  },
+  {
+    "path": "game/assets/sprites/enemies/compost-colossus.webp",
+    "size": [
+      481,
+      379
+    ],
+    "mode": "RGBA",
+    "sha256": "dc9fa5e8a13c78b44df1173f34d5040ba5fbbfb367b3184f8d77275e3797da07",
+    "transparent_pixels": 52861,
+    "opaque_pixels": 37,
+    "partial_alpha_pixels": 129401
+  },
+  {
+    "path": "game/assets/sprites/enemies/confectioner.webp",
+    "size": [
+      747,
+      995
+    ],
+    "mode": "RGBA",
+    "sha256": "1383a7c155ea581b96677ffd2341e2a9ef5971821eecf61e89aa3fcb9dcd15cd",
+    "transparent_pixels": 291130,
+    "opaque_pixels": 179,
+    "partial_alpha_pixels": 451956
+  },
+  {
+    "path": "game/assets/sprites/enemies/creeping-ivy.webp",
+    "size": [
+      232,
+      187
+    ],
+    "mode": "RGBA",
+    "sha256": "e6733b1fb35fc4baa8bb12d245e0198de70d8872c00fac5889301f4176125df2",
+    "transparent_pixels": 16625,
+    "opaque_pixels": 62,
+    "partial_alpha_pixels": 26697
+  },
+  {
+    "path": "game/assets/sprites/enemies/door-greeter.webp",
+    "size": [
+      281,
+      504
+    ],
+    "mode": "RGBA",
+    "sha256": "fbe696371914948b601a01f89c750e8c0c8499cbdf3c97f2db329b5bb678ec01",
+    "transparent_pixels": 26739,
+    "opaque_pixels": 100,
+    "partial_alpha_pixels": 114785
+  },
+  {
+    "path": "game/assets/sprites/enemies/dough-blob.webp",
+    "size": [
+      245,
+      189
+    ],
+    "mode": "RGBA",
+    "sha256": "b029bd6e511d4eb86dae2c245ffe58e14f1e23e928c41cea688192d1c12767e9",
+    "transparent_pixels": 18202,
+    "opaque_pixels": 118,
+    "partial_alpha_pixels": 27985
+  },
+  {
+    "path": "game/assets/sprites/enemies/dust-bunny.webp",
+    "size": [
+      224,
+      216
+    ],
+    "mode": "RGBA",
+    "sha256": "70fb68c2bf269b7aff6a00e0480c06695be2df95626e49175ca7e944357e26ba",
+    "transparent_pixels": 16131,
+    "opaque_pixels": 6,
+    "partial_alpha_pixels": 32247
+  },
+  {
+    "path": "game/assets/sprites/enemies/glassvine.webp",
+    "size": [
+      220,
+      251
+    ],
+    "mode": "RGBA",
+    "sha256": "6f774947c0efbf89cc792faa7ff5cdadd74c74e846d9425e94405ae2eaf80406",
+    "transparent_pixels": 28203,
+    "opaque_pixels": 22,
+    "partial_alpha_pixels": 26995
+  },
+  {
+    "path": "game/assets/sprites/enemies/governess.webp",
+    "size": [
+      727,
+      987
+    ],
+    "mode": "RGBA",
+    "sha256": "d456419a7e714689b9f2c6d1750375c33533b7f96f56412a04c2c0bce869b01d",
+    "transparent_pixels": 294266,
+    "opaque_pixels": 74,
+    "partial_alpha_pixels": 423209
+  },
+  {
+    "path": "game/assets/sprites/enemies/grand-coatcheck.webp",
+    "size": [
+      487,
+      416
+    ],
+    "mode": "RGBA",
+    "sha256": "d5dea4bc811fb4b865b79d4c74b3b9734216b4a09b7e53379c9aeb3e15325ea6",
+    "transparent_pixels": 74756,
+    "opaque_pixels": 139,
+    "partial_alpha_pixels": 127697
+  },
+  {
+    "path": "game/assets/sprites/enemies/head-gardener.webp",
+    "size": [
+      458,
+      402
+    ],
+    "mode": "RGBA",
+    "sha256": "3e18fc552ea09d573175792fdb58c0a9d341a7f500c52be40d663024fba3a91f",
+    "transparent_pixels": 97240,
+    "opaque_pixels": 54,
+    "partial_alpha_pixels": 86822
+  },
+  {
+    "path": "game/assets/sprites/enemies/house-bell.webp",
+    "size": [
+      448,
+      369
+    ],
+    "mode": "RGBA",
+    "sha256": "0911931cbd4d254e1c17583f70f10fa736f7e81d61af26f7f1cf991e94edc773",
+    "transparent_pixels": 89332,
+    "opaque_pixels": 98,
+    "partial_alpha_pixels": 75882
+  },
+  {
+    "path": "game/assets/sprites/enemies/jack-in-the-box.webp",
+    "size": [
+      181,
+      245
+    ],
+    "mode": "RGBA",
+    "sha256": "20d3a51e1cd82658f4d08cc788c3b940b3b6e8f0ebbd9867d3753efabd8ffb01",
+    "transparent_pixels": 16565,
+    "opaque_pixels": 450,
+    "partial_alpha_pixels": 27330
+  },
+  {
+    "path": "game/assets/sprites/enemies/jam-jar.webp",
+    "size": [
+      223,
+      236
+    ],
+    "mode": "RGBA",
+    "sha256": "17055ea2361b522461dbd270d72a7b9757c44696e87ec89ea7c6f8577d20475a",
+    "transparent_pixels": 17862,
+    "opaque_pixels": 159,
+    "partial_alpha_pixels": 34607
+  },
+  {
+    "path": "game/assets/sprites/enemies/kitchen-imp.webp",
+    "size": [
+      232,
+      224
+    ],
+    "mode": "RGBA",
+    "sha256": "282fa6abc604f72ae2292572c746fce1516248c4232e73137abc72e3255e030c",
+    "transparent_pixels": 23793,
+    "opaque_pixels": 112,
+    "partial_alpha_pixels": 28063
+  },
+  {
+    "path": "game/assets/sprites/enemies/lost-luggage.webp",
+    "size": [
+      224,
+      216
+    ],
+    "mode": "RGBA",
+    "sha256": "c43581a5321a7423ca52f2a9ebc2da85cd699dc5bef357a7650a14be5c7ac89b",
+    "transparent_pixels": 19629,
+    "opaque_pixels": 386,
+    "partial_alpha_pixels": 28369
+  },
+  {
+    "path": "game/assets/sprites/enemies/night-terror.webp",
+    "size": [
+      491,
+      343
+    ],
+    "mode": "RGBA",
+    "sha256": "9e6f006f0f96c24ad58127893e2b32e0e7f86a7efa2057554b5df095d9502dab",
+    "transparent_pixels": 84518,
+    "opaque_pixels": 53,
+    "partial_alpha_pixels": 83842
+  },
+  {
+    "path": "game/assets/sprites/enemies/nightlight-snuffer.webp",
+    "size": [
+      209,
+      239
+    ],
+    "mode": "RGBA",
+    "sha256": "f754be61a2fdd3fe619ff8b6c05d3ac2d83ca08a2a29d2d36c0799d2c17cefbe",
+    "transparent_pixels": 22187,
+    "opaque_pixels": 31,
+    "partial_alpha_pixels": 27733
+  },
+  {
+    "path": "game/assets/sprites/enemies/oven-maw.webp",
+    "size": [
+      460,
+      393
+    ],
+    "mode": "RGBA",
+    "sha256": "b3355761cd26f1af786fd49b467e4aece93b837eb42e87c42e28e9614fa6ad39",
+    "transparent_pixels": 64595,
+    "opaque_pixels": 110,
+    "partial_alpha_pixels": 116075
+  },
+  {
+    "path": "game/assets/sprites/enemies/pantry-mimic.webp",
+    "size": [
+      204,
+      238
+    ],
+    "mode": "RGBA",
+    "sha256": "85fdbb9e77b6b67efe216a2f909736645207c95ebb9ce76cd5fc313231ddd605",
+    "transparent_pixels": 18998,
+    "opaque_pixels": 204,
+    "partial_alpha_pixels": 29350
+  },
+  {
+    "path": "game/assets/sprites/enemies/pantry-poltergeist.webp",
+    "size": [
+      457,
+      383
+    ],
+    "mode": "RGBA",
+    "sha256": "eada9df98114cebe9c84e7fab0522e5b7fd5c9b6e3d8ac8ec78fd7d8f94c60d9",
+    "transparent_pixels": 63285,
+    "opaque_pixels": 99,
+    "partial_alpha_pixels": 111647
+  },
+  {
+    "path": "game/assets/sprites/enemies/patchwork-giant.webp",
+    "size": [
+      457,
+      446
+    ],
+    "mode": "RGBA",
+    "sha256": "49fb30c960058bb7c3941fae5c85fb4687712e4c1e9617f797695c7e27e09c2a",
+    "transparent_pixels": 67494,
+    "opaque_pixels": 52,
+    "partial_alpha_pixels": 136276
+  },
+  {
+    "path": "game/assets/sprites/enemies/patchwork-soldier.webp",
+    "size": [
+      169,
+      246
+    ],
+    "mode": "RGBA",
+    "sha256": "3c45e17739047ef6649d4c7d601efe05c9fcf65ebb70ee34afe4f9e39a340c45",
+    "transparent_pixels": 16924,
+    "opaque_pixels": 283,
+    "partial_alpha_pixels": 24367
+  },
+  {
+    "path": "game/assets/sprites/enemies/pillow-puff.webp",
+    "size": [
+      217,
+      217
+    ],
+    "mode": "RGBA",
+    "sha256": "3e981796eed3e120bda600cbc23a7dd817c081ba9000c8d3c11f58a99c3c7e21",
+    "transparent_pixels": 17911,
+    "opaque_pixels": 52,
+    "partial_alpha_pixels": 29126
+  },
+  {
+    "path": "game/assets/sprites/enemies/porcelain-doll.webp",
+    "size": [
+      189,
+      241
+    ],
+    "mode": "RGBA",
+    "sha256": "2018141c18e7141665abd84186f87553510c68b1eb0c22fdbfcfee931752330e",
+    "transparent_pixels": 13437,
+    "opaque_pixels": 111,
+    "partial_alpha_pixels": 32001
+  },
+  {
+    "path": "game/assets/sprites/enemies/porcelain-twin-prim.webp",
+    "size": [
+      151,
+      249
+    ],
+    "mode": "RGBA",
+    "sha256": "c1e6e3eff77df75513ecdec624f161fdad893717a4ed088d3fc1817b2ab4b674",
+    "transparent_pixels": 13180,
+    "opaque_pixels": 670,
+    "partial_alpha_pixels": 23749
+  },
+  {
+    "path": "game/assets/sprites/enemies/porcelain-twin-proper.webp",
+    "size": [
+      148,
+      250
+    ],
+    "mode": "RGBA",
+    "sha256": "aab63e0646f74d1ac5d629d5a1b876dedb49f72e87ec4541d33468473c1fa5e2",
+    "transparent_pixels": 13300,
+    "opaque_pixels": 668,
+    "partial_alpha_pixels": 23032
+  },
+  {
+    "path": "game/assets/sprites/enemies/potling.webp",
+    "size": [
+      182,
+      224
+    ],
+    "mode": "RGBA",
+    "sha256": "9733c048e153fbcbd76ecc385974ee4f3809f52e5ffbe00c2e2e5864db9d58f1",
+    "transparent_pixels": 21763,
+    "opaque_pixels": 105,
+    "partial_alpha_pixels": 18900
+  },
+  {
+    "path": "game/assets/sprites/enemies/red-carpet-runner.webp",
+    "size": [
+      228,
+      210
+    ],
+    "mode": "RGBA",
+    "sha256": "4db1a4401af9accddbc306f4c862828bdfe34d43985661dd1538dcfc2d36b6b5",
+    "transparent_pixels": 22415,
+    "opaque_pixels": 191,
+    "partial_alpha_pixels": 25274
+  },
+  {
+    "path": "game/assets/sprites/enemies/rising-batter.webp",
+    "size": [
+      242,
+      237
+    ],
+    "mode": "RGBA",
+    "sha256": "5df012a8a7daf80c8c31c9ff2fbed1f08ecdf26b2ab5c7e63006c2fb09138b68",
+    "transparent_pixels": 19374,
+    "opaque_pixels": 105,
+    "partial_alpha_pixels": 37875
+  },
+  {
+    "path": "game/assets/sprites/enemies/rocking-horse.webp",
+    "size": [
+      236,
+      236
+    ],
+    "mode": "RGBA",
+    "sha256": "13771b99ce3cdcc043a4601102fdf07c3c6b4b5533f9413b8dc469468a624d23",
+    "transparent_pixels": 20679,
+    "opaque_pixels": 280,
+    "partial_alpha_pixels": 34737
+  },
+  {
+    "path": "game/assets/sprites/enemies/slipper-skitter.webp",
+    "size": [
+      235,
+      143
+    ],
+    "mode": "RGBA",
+    "sha256": "d2d8eb1ee462c54ef14d706c6c7a4df1f9cf7c7daabf196295a340848a1301e7",
+    "transparent_pixels": 11715,
+    "opaque_pixels": 64,
+    "partial_alpha_pixels": 21826
+  },
+  {
+    "path": "game/assets/sprites/enemies/snapping-blossom.webp",
+    "size": [
+      473,
+      498
+    ],
+    "mode": "RGBA",
+    "sha256": "85f3ea675413bf1f80570aa82a827fda7a71638dd4903748954e6ec6f9268df8",
+    "transparent_pixels": 91372,
+    "opaque_pixels": 83,
+    "partial_alpha_pixels": 144099
+  },
+  {
+    "path": "game/assets/sprites/enemies/spore-puff.webp",
+    "size": [
+      237,
+      243
+    ],
+    "mode": "RGBA",
+    "sha256": "fbf5056f4f88e84cc2562c6b73b0de3cee73fcd9fc3569458bbfdab40032c0bf",
+    "transparent_pixels": 20054,
+    "opaque_pixels": 70,
+    "partial_alpha_pixels": 37467
+  },
+  {
+    "path": "game/assets/sprites/enemies/sugar-golem.webp",
+    "size": [
+      460,
+      386
+    ],
+    "mode": "RGBA",
+    "sha256": "ecd4dd883388715c06077abf9b2d664fa909c7824933e1999dd3986f4b7a7b02",
+    "transparent_pixels": 60020,
+    "opaque_pixels": 91,
+    "partial_alpha_pixels": 117449
+  },
+  {
+    "path": "game/assets/sprites/enemies/the-wardrobe.webp",
+    "size": [
+      492,
+      441
+    ],
+    "mode": "RGBA",
+    "sha256": "5789df797df2acaef0e18ac9707d7f089f76c3502af2130d4f7f0f596990584c",
+    "transparent_pixels": 87170,
+    "opaque_pixels": 53,
+    "partial_alpha_pixels": 129749
+  },
+  {
+    "path": "game/assets/sprites/enemies/thing-beneath.webp",
+    "size": [
+      512,
+      408
+    ],
+    "mode": "RGBA",
+    "sha256": "47e7f41780a179b7cbcab8f66227767209af08819e3febe2e5bbc83834751618",
+    "transparent_pixels": 70874,
+    "opaque_pixels": 752,
+    "partial_alpha_pixels": 137270
+  },
+  {
+    "path": "game/assets/sprites/enemies/topiary-beast.webp",
+    "size": [
+      488,
+      435
+    ],
+    "mode": "RGBA",
+    "sha256": "4c7d5ad930496b32db62dad64c46afe4ab6d078eeda7c718af6d8300b2adaa7e",
+    "transparent_pixels": 70002,
+    "opaque_pixels": 34,
+    "partial_alpha_pixels": 142244
+  },
+  {
+    "path": "game/assets/sprites/enemies/toy-chest.webp",
+    "size": [
+      467,
+      397
+    ],
+    "mode": "RGBA",
+    "sha256": "7dc2d4442559b0ec79a7b7e63080a5357c914aed7cbd6102749fd1e5b41a3024",
+    "transparent_pixels": 50719,
+    "opaque_pixels": 109,
+    "partial_alpha_pixels": 134571
+  },
+  {
+    "path": "game/assets/sprites/enemies/unwelcome-guest.webp",
+    "size": [
+      426,
+      499
+    ],
+    "mode": "RGBA",
+    "sha256": "630d4039bf0c3a5167b31efa6d1863cc6ace82d1475ae6f7bd73165d2c87f38c",
+    "transparent_pixels": 93487,
+    "opaque_pixels": 60,
+    "partial_alpha_pixels": 119027
+  },
+  {
+    "path": "game/assets/sprites/enemies/wardrobe-guest.webp",
+    "size": [
+      297,
+      481
+    ],
+    "mode": "RGBA",
+    "sha256": "a915e5dc277890bc2d1d610b54b09dbb1774bd63850aea4f9f5ff960f53b3d8d",
+    "transparent_pixels": 32740,
+    "opaque_pixels": 56,
+    "partial_alpha_pixels": 110061
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/ancient-topiary/attack.webp",
+    "size": [
+      3200,
+      2292
+    ],
+    "mode": "RGBA",
+    "sha256": "a586156efdf7456c4234aa3368b9076f8dfc3b6ce9be3f83fcacce3ea4f0a3ee",
+    "transparent_pixels": 4093994,
+    "opaque_pixels": 104528,
+    "partial_alpha_pixels": 3135878
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/ancient-topiary/defeat.webp",
+    "size": [
+      3200,
+      1312
+    ],
+    "mode": "RGBA",
+    "sha256": "263dcff65228009e9e0afa35aa8069ecbbc377f9d1348a99411fb9db9ff04c0c",
+    "transparent_pixels": 2370243,
+    "opaque_pixels": 60998,
+    "partial_alpha_pixels": 1767159
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/ancient-topiary/hurt.webp",
+    "size": [
+      3200,
+      1974
+    ],
+    "mode": "RGBA",
+    "sha256": "230f5f355aaec6600c369180b3cf5d12880e17c72eb9a0fea27484c29af0f999",
+    "transparent_pixels": 3327898,
+    "opaque_pixels": 71356,
+    "partial_alpha_pixels": 2917546
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/ancient-topiary/idle.webp",
+    "size": [
+      2752,
+      1740
+    ],
+    "mode": "RGBA",
+    "sha256": "68457f0f5d3329564155e6f6a585b83d77c43f9663ab0d87909a84808408a0c6",
+    "transparent_pixels": 1658864,
+    "opaque_pixels": 104453,
+    "partial_alpha_pixels": 3025163
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-blob/attack.webp",
+    "size": [
+      2848,
+      1824
+    ],
+    "mode": "RGBA",
+    "sha256": "8d3d53d36e49401dba3d21dec0e68c1b89275327f4b5aed52bc068dba6211b5c",
+    "transparent_pixels": 2328166,
+    "opaque_pixels": 407453,
+    "partial_alpha_pixels": 2459133
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-blob/defeat.webp",
+    "size": [
+      2736,
+      783
+    ],
+    "mode": "RGBA",
+    "sha256": "cf063085f5882ae952504fdb24e72d0a115745ed85c6c114dbdece57e7c65aab",
+    "transparent_pixels": 805004,
+    "opaque_pixels": 184380,
+    "partial_alpha_pixels": 1152904
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-blob/hurt.webp",
+    "size": [
+      2776,
+      1986
+    ],
+    "mode": "RGBA",
+    "sha256": "b158c195c3b76a001f83ff7de6e30ecb9ff6c032594e1ba9ea65a9b4c7824f01",
+    "transparent_pixels": 2579895,
+    "opaque_pixels": 409195,
+    "partial_alpha_pixels": 2524046
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-blob/idle.webp",
+    "size": [
+      2744,
+      1566
+    ],
+    "mode": "RGBA",
+    "sha256": "2bc726dceefa8866bfab115dbe0e33a27cd301332c12499b569896fe10cd9301",
+    "transparent_pixels": 1415759,
+    "opaque_pixels": 410772,
+    "partial_alpha_pixels": 2470573
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-creeper/attack.webp",
+    "size": [
+      3024,
+      1482
+    ],
+    "mode": "RGBA",
+    "sha256": "5a05a269b0063a13ec6194e362ac37e77501fbd498f4bdf50581c4249c1de01a",
+    "transparent_pixels": 1879361,
+    "opaque_pixels": 284973,
+    "partial_alpha_pixels": 2317234
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-creeper/defeat.webp",
+    "size": [
+      2944,
+      920
+    ],
+    "mode": "RGBA",
+    "sha256": "0a7c42251c3a0342ed9f17680fde2d5c673ba7d5611a1b30e3770a0714522026",
+    "transparent_pixels": 1193861,
+    "opaque_pixels": 199607,
+    "partial_alpha_pixels": 1315012
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-creeper/hurt.webp",
+    "size": [
+      2872,
+      1398
+    ],
+    "mode": "RGBA",
+    "sha256": "5e36131f1c1bd3489e6c474cf051372487c6bcaedde949e631fd8fc2398ba6fd",
+    "transparent_pixels": 1447657,
+    "opaque_pixels": 360969,
+    "partial_alpha_pixels": 2206430
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-creeper/idle.webp",
+    "size": [
+      2888,
+      1422
+    ],
+    "mode": "RGBA",
+    "sha256": "d651f42e9414a6bc04f4b5b3b78b6da0164dcc2f6dc188b5c7223dae8b4fab26",
+    "transparent_pixels": 1515855,
+    "opaque_pixels": 357484,
+    "partial_alpha_pixels": 2233397
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-hydra/attack.webp",
+    "size": [
+      3200,
+      1386
+    ],
+    "mode": "RGBA",
+    "sha256": "66847a4d20d8cbe21f184fa5fdcf0c9149834464554057458c5c7b3726910cc1",
+    "transparent_pixels": 2744443,
+    "opaque_pixels": 19730,
+    "partial_alpha_pixels": 1671027
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-hydra/defeat.webp",
+    "size": [
+      3231,
+      732
+    ],
+    "mode": "RGBA",
+    "sha256": "35b937767343a551d5db92e0a2b3c939880a16cd0ef87ac967a3e29899229d57",
+    "transparent_pixels": 1172359,
+    "opaque_pixels": 4640,
+    "partial_alpha_pixels": 1188093
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-hydra/hurt.webp",
+    "size": [
+      2904,
+      1608
+    ],
+    "mode": "RGBA",
+    "sha256": "8f9e0b959ffa504c2155473a8f311473007834c0f66bfa0faf2fe9947a7fbb34",
+    "transparent_pixels": 2273141,
+    "opaque_pixels": 20893,
+    "partial_alpha_pixels": 2375598
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-hydra/idle.webp",
+    "size": [
+      2872,
+      1452
+    ],
+    "mode": "RGBA",
+    "sha256": "7547262182bf5e13daac74d72c40088b4394602ed1efa42901c4496850d39d07",
+    "transparent_pixels": 1782950,
+    "opaque_pixels": 18266,
+    "partial_alpha_pixels": 2368928
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/butler/attack.webp",
+    "size": [
+      3200,
+      2100
+    ],
+    "mode": "RGBA",
+    "sha256": "0d8bf499a1ad25e74bc34581401ad3d78737bd4371f82af57f6ad7c2eb463ba7",
+    "transparent_pixels": 5105711,
+    "opaque_pixels": 61136,
+    "partial_alpha_pixels": 1553153
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/butler/cast.webp",
+    "size": [
+      3200,
+      1992
+    ],
+    "mode": "RGBA",
+    "sha256": "51c4d248cd134d4450661b9db338dec2a73c744694952d2b4f7c578eacfb98a7",
+    "transparent_pixels": 4714112,
+    "opaque_pixels": 51587,
+    "partial_alpha_pixels": 1608701
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/butler/defeat.webp",
+    "size": [
+      2752,
+      1600
+    ],
+    "mode": "RGBA",
+    "sha256": "ecd1f94c6a912e300c5f8c36abb3a35305a5d6fddb07ede0fc7f83c037c75b46",
+    "transparent_pixels": 3213982,
+    "opaque_pixels": 34108,
+    "partial_alpha_pixels": 1155110
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/butler/hurt.webp",
+    "size": [
+      3200,
+      2172
+    ],
+    "mode": "RGBA",
+    "sha256": "3ad27193de57ec05942cadbd6139278ed93c81ec733e2f708fea0a50188103ce",
+    "transparent_pixels": 5182944,
+    "opaque_pixels": 53866,
+    "partial_alpha_pixels": 1713590
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/butler/idle.webp",
+    "size": [
+      2312,
+      2400
+    ],
+    "mode": "RGBA",
+    "sha256": "13f6e75ba15d8a2d3e237d4ffee9ee3affe632f99041edaac38cdcfc148d6489",
+    "transparent_pixels": 3597377,
+    "opaque_pixels": 61397,
+    "partial_alpha_pixels": 1890026
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/button-baby/attack.webp",
+    "size": [
+      2704,
+      1740
+    ],
+    "mode": "RGBA",
+    "sha256": "df265aba8b920dd4d4d2677a0a2a602e52520f7f763499c34dc156737b5f4cfd",
+    "transparent_pixels": 2358338,
+    "opaque_pixels": 169974,
+    "partial_alpha_pixels": 2176648
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/button-baby/defeat.webp",
+    "size": [
+      3006,
+      1096
+    ],
+    "mode": "RGBA",
+    "sha256": "6e71125f4a04ec4f2f0b6ccc59ed73d7c9b4c558da48a689020c5fca8f511f2c",
+    "transparent_pixels": 1700108,
+    "opaque_pixels": 92585,
+    "partial_alpha_pixels": 1501883
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/button-baby/hurt.webp",
+    "size": [
+      2664,
+      1602
+    ],
+    "mode": "RGBA",
+    "sha256": "084ea8fb2764e0f3cb8e2a13ae2145f62e61f7a5b7dd1041a4f98bbd40be5dd4",
+    "transparent_pixels": 2137134,
+    "opaque_pixels": 140372,
+    "partial_alpha_pixels": 1990222
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/button-baby/idle.webp",
+    "size": [
+      2016,
+      1572
+    ],
+    "mode": "RGBA",
+    "sha256": "d3c69e84955e83ad0b63f4dd4ba7cd9b82d7645d5fc6e268685c80a24ee65667",
+    "transparent_pixels": 1000022,
+    "opaque_pixels": 91293,
+    "partial_alpha_pixels": 2077837
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/candy-clump/attack.webp",
+    "size": [
+      2728,
+      1632
+    ],
+    "mode": "RGBA",
+    "sha256": "932389ab4d73751557df0e98513269a87c685920690373254c45ebfc758d7fa1",
+    "transparent_pixels": 2007875,
+    "opaque_pixels": 200101,
+    "partial_alpha_pixels": 2244120
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/candy-clump/defeat.webp",
+    "size": [
+      2752,
+      804
+    ],
+    "mode": "RGBA",
+    "sha256": "f41d3bdcf51c640513313709cf9bc95d6a04477e45847c01a7c44b3185095b96",
+    "transparent_pixels": 1203645,
+    "opaque_pixels": 139891,
+    "partial_alpha_pixels": 869072
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/candy-clump/hurt.webp",
+    "size": [
+      3200,
+      1380
+    ],
+    "mode": "RGBA",
+    "sha256": "9411f5e17889b1bd4cbdbd4145f59ccf162cf49461064639fd0d6ad5308c8037",
+    "transparent_pixels": 2583296,
+    "opaque_pixels": 211596,
+    "partial_alpha_pixels": 1621108
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/candy-clump/idle.webp",
+    "size": [
+      2144,
+      1566
+    ],
+    "mode": "RGBA",
+    "sha256": "c950a57fc9f81903a43c2bcba09d4f476f6d767e90422c8e5cfcaae3966ac78e",
+    "transparent_pixels": 1003373,
+    "opaque_pixels": 205889,
+    "partial_alpha_pixels": 2148242
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/carnivorous-conservatory/attack.webp",
+    "size": [
+      3200,
+      1638
+    ],
+    "mode": "RGBA",
+    "sha256": "f99babd316235f027e79a07cbb440d6a3f82a72a7af16949a150d8d91906de02",
+    "transparent_pixels": 1876855,
+    "opaque_pixels": 135252,
+    "partial_alpha_pixels": 3229493
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/carnivorous-conservatory/defeat.webp",
+    "size": [
+      3200,
+      858
+    ],
+    "mode": "RGBA",
+    "sha256": "e1a89534de76db885b843afcde52a59b4750479848d006b8b1a656af8674a21e",
+    "transparent_pixels": 1214143,
+    "opaque_pixels": 80442,
+    "partial_alpha_pixels": 1451015
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/carnivorous-conservatory/hurt.webp",
+    "size": [
+      3008,
+      1932
+    ],
+    "mode": "RGBA",
+    "sha256": "f26b38501c30fe32a5cd591227bfd5aa5777562f959386517e374bdaeb0920e9",
+    "transparent_pixels": 2340178,
+    "opaque_pixels": 210629,
+    "partial_alpha_pixels": 3260649
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/carnivorous-conservatory/idle.webp",
+    "size": [
+      2936,
+      1734
+    ],
+    "mode": "RGBA",
+    "sha256": "477fddeb17c70dbc31b73f07fc3b1c2a9669cac9732b71b3063225cbd70a34c8",
+    "transparent_pixels": 1752081,
+    "opaque_pixels": 261113,
+    "partial_alpha_pixels": 3077830
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/coatrack-crawler/attack.webp",
+    "size": [
+      3176,
+      2382
+    ],
+    "mode": "RGBA",
+    "sha256": "a2129a032f6fbe5046443e823ef7ed286c2eeca80d4e887b7df936a4baded4c8",
+    "transparent_pixels": 5003486,
+    "opaque_pixels": 27227,
+    "partial_alpha_pixels": 2534519
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/coatrack-crawler/defeat.webp",
+    "size": [
+      3465,
+      1600
+    ],
+    "mode": "RGBA",
+    "sha256": "9cef13122c2da7be514e1615f762952c5bdfefe5e84f064eb97326fbe56b6a24",
+    "transparent_pixels": 3946172,
+    "opaque_pixels": 14333,
+    "partial_alpha_pixels": 1583495
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/coatrack-crawler/hurt.webp",
+    "size": [
+      2456,
+      2400
+    ],
+    "mode": "RGBA",
+    "sha256": "404fa2cf0b04c330f6409636a5944aa672a685b4c7cfb9df7656bf981e5733ce",
+    "transparent_pixels": 3754956,
+    "opaque_pixels": 28227,
+    "partial_alpha_pixels": 2111217
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/coatrack-crawler/idle.webp",
+    "size": [
+      1952,
+      2220
+    ],
+    "mode": "RGBA",
+    "sha256": "8aabc36089409a26009a827852105361f615a89825d5739a88266757b29c4bd4",
+    "transparent_pixels": 2012850,
+    "opaque_pixels": 20986,
+    "partial_alpha_pixels": 2299604
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/compost-colossus/attack.webp",
+    "size": [
+      3200,
+      1302
+    ],
+    "mode": "RGBA",
+    "sha256": "3fc6e01dc4cd7d9f2f13b6cf86ff7d26ac999bf10c259a3f8c12c90610ded1f3",
+    "transparent_pixels": 2264800,
+    "opaque_pixels": 63905,
+    "partial_alpha_pixels": 1837695
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/compost-colossus/defeat.webp",
+    "size": [
+      3600,
+      801
+    ],
+    "mode": "RGBA",
+    "sha256": "f6128b562f89b138fee752384f730179ea6f16c94c820fc65eabc3f6ba47eef0",
+    "transparent_pixels": 1461396,
+    "opaque_pixels": 45288,
+    "partial_alpha_pixels": 1376916
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/compost-colossus/hurt.webp",
+    "size": [
+      3200,
+      1524
+    ],
+    "mode": "RGBA",
+    "sha256": "3a6dcffefd2ad379d645a6433fe0c55436e139329898226ee9e5b2ab58ea5701",
+    "transparent_pixels": 2295239,
+    "opaque_pixels": 86726,
+    "partial_alpha_pixels": 2494835
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/compost-colossus/idle.webp",
+    "size": [
+      3200,
+      1710
+    ],
+    "mode": "RGBA",
+    "sha256": "49d21b1e9d887ac656a019f47d27f82da07c6fd96c4e7d9bb6e2470b07dbf794",
+    "transparent_pixels": 2371117,
+    "opaque_pixels": 143597,
+    "partial_alpha_pixels": 2957286
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/confectioner/attack.webp",
+    "size": [
+      3200,
+      1632
+    ],
+    "mode": "RGBA",
+    "sha256": "0e36cfde0dc1659f23c59e7a98732dfd52b1d02811bb65680eafb80be84064d7",
+    "transparent_pixels": 3885737,
+    "opaque_pixels": 81210,
+    "partial_alpha_pixels": 1255453
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/confectioner/defeat.webp",
+    "size": [
+      3600,
+      1324
+    ],
+    "mode": "RGBA",
+    "sha256": "e45a1668a1b7522a02e0566d96edda115c1a40e1b2a27b10cc260ac3ba2faddd",
+    "transparent_pixels": 3325049,
+    "opaque_pixels": 104207,
+    "partial_alpha_pixels": 1337144
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/confectioner/hurt.webp",
+    "size": [
+      3200,
+      2178
+    ],
+    "mode": "RGBA",
+    "sha256": "6017f5eabe3e7245e9626d3bfa4bcdc18c2060a6e9395aa9fe4de598385988df",
+    "transparent_pixels": 4190741,
+    "opaque_pixels": 119295,
+    "partial_alpha_pixels": 2659564
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/confectioner/idle.webp",
+    "size": [
+      2216,
+      2178
+    ],
+    "mode": "RGBA",
+    "sha256": "06a7f338be2ec912264fb65cedbae6fc8490ecf6e49749a0dbbe1f202569ef0f",
+    "transparent_pixels": 1863668,
+    "opaque_pixels": 175424,
+    "partial_alpha_pixels": 2787356
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/creeping-ivy/attack.webp",
+    "size": [
+      3200,
+      2010
+    ],
+    "mode": "RGBA",
+    "sha256": "e260fbad98b14b7302a1f7ce44cff2be862d3bd0280c448803871cf557c6ecff",
+    "transparent_pixels": 4555691,
+    "opaque_pixels": 29526,
+    "partial_alpha_pixels": 1846783
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/creeping-ivy/defeat.webp",
+    "size": [
+      2672,
+      2130
+    ],
+    "mode": "RGBA",
+    "sha256": "e7b3b70322ea68ed23a2474c4043d554e58a250cbce68e62bf6c914254db852b",
+    "transparent_pixels": 2943011,
+    "opaque_pixels": 149915,
+    "partial_alpha_pixels": 2598434
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/creeping-ivy/hurt.webp",
+    "size": [
+      2640,
+      1884
+    ],
+    "mode": "RGBA",
+    "sha256": "e4b8f73a91d26473fc91ede0dcd5bba7b991386b4243532c4b070029bdc77c60",
+    "transparent_pixels": 2237865,
+    "opaque_pixels": 94585,
+    "partial_alpha_pixels": 2641310
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/creeping-ivy/idle.webp",
+    "size": [
+      2616,
+      1572
+    ],
+    "mode": "RGBA",
+    "sha256": "1f2786a25d7cde34170c6571c2e2846836b5bb412cf0b50164c3e415eb575589",
+    "transparent_pixels": 1445849,
+    "opaque_pixels": 78074,
+    "partial_alpha_pixels": 2588429
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/door-greeter/attack.webp",
+    "size": [
+      1640,
+      2400
+    ],
+    "mode": "RGBA",
+    "sha256": "36f77b6efad8a5a613410516718c5c7d2ea88c95eb4b3d8ceac9c7ea0bc082a8",
+    "transparent_pixels": 2201865,
+    "opaque_pixels": 34727,
+    "partial_alpha_pixels": 1699408
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/door-greeter/defeat.webp",
+    "size": [
+      2936,
+      1188
+    ],
+    "mode": "RGBA",
+    "sha256": "f29d930908be131aa6544a20d6d825450394974e8e77c2b58c1b6f8fe21a96b3",
+    "transparent_pixels": 2427470,
+    "opaque_pixels": 14373,
+    "partial_alpha_pixels": 1046125
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/door-greeter/hurt.webp",
+    "size": [
+      2208,
+      2400
+    ],
+    "mode": "RGBA",
+    "sha256": "623bfa695ac8c9c18647c3c3db6c40098d9510fad2e6079fda7d22b6512f87e6",
+    "transparent_pixels": 2621970,
+    "opaque_pixels": 32850,
+    "partial_alpha_pixels": 2644380
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/door-greeter/idle.webp",
+    "size": [
+      1824,
+      2400
+    ],
+    "mode": "RGBA",
+    "sha256": "3ce722f90b27996bf545eea91e207ded65640dc7df4f15cdbda2726663c8d5e3",
+    "transparent_pixels": 1720103,
+    "opaque_pixels": 44624,
+    "partial_alpha_pixels": 2612873
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dough-blob/attack.webp",
+    "size": [
+      3200,
+      1800
+    ],
+    "mode": "RGBA",
+    "sha256": "66b6f6a9abdea9ccabc2f3cef6d1958582a238987783b4fec01d412a5dfa7f1f",
+    "transparent_pixels": 3195458,
+    "opaque_pixels": 66137,
+    "partial_alpha_pixels": 2498405
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dough-blob/defeat.webp",
+    "size": [
+      2728,
+      1890
+    ],
+    "mode": "RGBA",
+    "sha256": "ddfa6083ab39a9e47a662adbf8102c325d917b5d96f7bfc9b39d39808fbe8bbe",
+    "transparent_pixels": 2509887,
+    "opaque_pixels": 70816,
+    "partial_alpha_pixels": 2575217
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dough-blob/hurt.webp",
+    "size": [
+      3048,
+      1740
+    ],
+    "mode": "RGBA",
+    "sha256": "5be3f3dbbda1ecbe288c69a540227c8c17e676d5c788cd80b1efbd852a96ec20",
+    "transparent_pixels": 2590781,
+    "opaque_pixels": 64826,
+    "partial_alpha_pixels": 2647913
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dough-blob/idle.webp",
+    "size": [
+      2768,
+      1572
+    ],
+    "mode": "RGBA",
+    "sha256": "66d4f095daf0af92dbcb23b7ebb6ce50879ac1e77c93809f5daa80bfb19aecfb",
+    "transparent_pixels": 1772623,
+    "opaque_pixels": 56691,
+    "partial_alpha_pixels": 2521982
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dust-bunny/attack.webp",
+    "size": [
+      2600,
+      2148
+    ],
+    "mode": "RGBA",
+    "sha256": "be6d65ab23be055b7d06f2192a2af9c241b1751c2ad4ed11db97f935399d3ece",
+    "transparent_pixels": 3236641,
+    "opaque_pixels": 118658,
+    "partial_alpha_pixels": 2229501
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dust-bunny/defeat.webp",
+    "size": [
+      2464,
+      1710
+    ],
+    "mode": "RGBA",
+    "sha256": "11f5a8cb76fb0a5f6f85118e702680a785d4ab4f4da9715d3b3a0b10eaa0265e",
+    "transparent_pixels": 2429831,
+    "opaque_pixels": 95772,
+    "partial_alpha_pixels": 1687837
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dust-bunny/hurt.webp",
+    "size": [
+      3200,
+      2052
+    ],
+    "mode": "RGBA",
+    "sha256": "cefc59692967e795e7248c31cf2aaa3fdaf012ddd1ca6cea773e230a21905a25",
+    "transparent_pixels": 4544855,
+    "opaque_pixels": 106137,
+    "partial_alpha_pixels": 1915408
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dust-bunny/idle.webp",
+    "size": [
+      2192,
+      1566
+    ],
+    "mode": "RGBA",
+    "sha256": "16282da2a11fa23bfa2deadb72fa965439ec7918775cc0f8ed52a65f225e7e23",
+    "transparent_pixels": 1135206,
+    "opaque_pixels": 34479,
+    "partial_alpha_pixels": 2262987
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/governess/attack.webp",
+    "size": [
+      2744,
+      2376
+    ],
+    "mode": "RGBA",
+    "sha256": "46834ae1cb2e55d51ca9888654807604bb9e9631b6fd31bd6562f774ef9a6525",
+    "transparent_pixels": 3791238,
+    "opaque_pixels": 39256,
+    "partial_alpha_pixels": 2689250
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/governess/cast.webp",
+    "size": [
+      2616,
+      2400
+    ],
+    "mode": "RGBA",
+    "sha256": "9f1908a5b91d4f7425cea67a8061442d017354cfb937fd6f197039f75172d73a",
+    "transparent_pixels": 3732943,
+    "opaque_pixels": 55631,
+    "partial_alpha_pixels": 2489826
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/governess/defeat.webp",
+    "size": [
+      3200,
+      1448
+    ],
+    "mode": "RGBA",
+    "sha256": "20b6cdbf42a17cf46f87fe7c03799e4aa534833cc52fc8fb8dc3843769343cc8",
+    "transparent_pixels": 2995857,
+    "opaque_pixels": 30124,
+    "partial_alpha_pixels": 1607619
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/governess/hurt.webp",
+    "size": [
+      2632,
+      2292
+    ],
+    "mode": "RGBA",
+    "sha256": "aecdab9721a33e9bf728a0a044ae2f3a95917fcab947adea6d156280d700508c",
+    "transparent_pixels": 3325586,
+    "opaque_pixels": 76321,
+    "partial_alpha_pixels": 2630637
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/governess/idle.webp",
+    "size": [
+      2248,
+      2280
+    ],
+    "mode": "RGBA",
+    "sha256": "1936d616124dfa01936daa00da029e9820f1d77f63cc6c4675567967e2e89dee",
+    "transparent_pixels": 2467270,
+    "opaque_pixels": 29396,
+    "partial_alpha_pixels": 2628774
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jack-in-the-box/attack.webp",
+    "size": [
+      2544,
+      1824
+    ],
+    "mode": "RGBA",
+    "sha256": "fabe27cfa09db8af6397010a56dc03a3d4ada5f4c226b1dda4e0b308d6971fe6",
+    "transparent_pixels": 2852939,
+    "opaque_pixels": 38509,
+    "partial_alpha_pixels": 1748808
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jack-in-the-box/defeat.webp",
+    "size": [
+      1218,
+      530
+    ],
+    "mode": "RGBA",
+    "sha256": "cbc8884a1e0ae9ca0b60f122e3b89d633aaa430d5ab2a1b23bc46d2c05021618",
+    "transparent_pixels": 295885,
+    "opaque_pixels": 5537,
+    "partial_alpha_pixels": 344118
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jack-in-the-box/hurt.webp",
+    "size": [
+      2464,
+      1584
+    ],
+    "mode": "RGBA",
+    "sha256": "5ab6086233a65124905005f3e5544543dd50030f07c981d00b25612ec25c6276",
+    "transparent_pixels": 2373868,
+    "opaque_pixels": 24367,
+    "partial_alpha_pixels": 1504741
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jack-in-the-box/idle.webp",
+    "size": [
+      1560,
+      1566
+    ],
+    "mode": "RGBA",
+    "sha256": "407dbb82d8ab8d694390f40992c3c0d448b0350945e70f9fdbe1fc3bf4f7a8ea",
+    "transparent_pixels": 882363,
+    "opaque_pixels": 21799,
+    "partial_alpha_pixels": 1538798
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jam-jar/attack.webp",
+    "size": [
+      2456,
+      1590
+    ],
+    "mode": "RGBA",
+    "sha256": "bd0b456c78f263b10e800e4308ba387432d185723b5ad07a938c9c5169b5a6c5",
+    "transparent_pixels": 1928354,
+    "opaque_pixels": 140213,
+    "partial_alpha_pixels": 1836473
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jam-jar/defeat.webp",
+    "size": [
+      2080,
+      538
+    ],
+    "mode": "RGBA",
+    "sha256": "a205b2402307b39ddcf76ff9b4edd49345533112a485eb2a9908107d3c912f2b",
+    "transparent_pixels": 501270,
+    "opaque_pixels": 49419,
+    "partial_alpha_pixels": 568351
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jam-jar/hurt.webp",
+    "size": [
+      2152,
+      1572
+    ],
+    "mode": "RGBA",
+    "sha256": "22cb57b6f253329df57e279c7e7718c6b3dffc4953bb96200fea0e0ce4ccc71a",
+    "transparent_pixels": 1370924,
+    "opaque_pixels": 115479,
+    "partial_alpha_pixels": 1896541
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jam-jar/idle.webp",
+    "size": [
+      2184,
+      1602
+    ],
+    "mode": "RGBA",
+    "sha256": "e5ba559853c514a655b4f20490f5d73aad0c25be373b4110a862102fe8eb1306",
+    "transparent_pixels": 1521623,
+    "opaque_pixels": 136022,
+    "partial_alpha_pixels": 1841123
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/lost-luggage/attack.webp",
+    "size": [
+      2664,
+      1806
+    ],
+    "mode": "RGBA",
+    "sha256": "81a1cabab08655cc141cce058728e1f1a78f927ec3c900f3cf23575f125289ef",
+    "transparent_pixels": 2507168,
+    "opaque_pixels": 128648,
+    "partial_alpha_pixels": 2175368
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/lost-luggage/defeat.webp",
+    "size": [
+      2584,
+      900
+    ],
+    "mode": "RGBA",
+    "sha256": "cb7f6f079df4f7859b7a0d8c4f5ed0dbe14da34a9739ce79b4ea855d8cb271d6",
+    "transparent_pixels": 1275239,
+    "opaque_pixels": 108990,
+    "partial_alpha_pixels": 941371
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/lost-luggage/hurt.webp",
+    "size": [
+      2768,
+      1674
+    ],
+    "mode": "RGBA",
+    "sha256": "c3ec468daa1d2c58d099251e829634a47befa98f7c6281cdd6314de6413e1982",
+    "transparent_pixels": 2411111,
+    "opaque_pixels": 175869,
+    "partial_alpha_pixels": 2046652
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/lost-luggage/idle.webp",
+    "size": [
+      2464,
+      1656
+    ],
+    "mode": "RGBA",
+    "sha256": "0b9f91fa092b2e6cb88bfd9adf74a189b1733c12fec7c787a16d0a04aa36c8ea",
+    "transparent_pixels": 2001470,
+    "opaque_pixels": 189912,
+    "partial_alpha_pixels": 1889002
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/oven-maw/attack.webp",
+    "size": [
+      2880,
+      1752
+    ],
+    "mode": "RGBA",
+    "sha256": "f292b32be0dcd0faf1b5ad18caad9f8fc0283e011b8b86dd46f5d07cbf0d4c4c",
+    "transparent_pixels": 2044790,
+    "opaque_pixels": 154270,
+    "partial_alpha_pixels": 2846700
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/oven-maw/defeat.webp",
+    "size": [
+      3240,
+      1416
+    ],
+    "mode": "RGBA",
+    "sha256": "66a683fd6d5ba08ea88d3ff90216df1c942fbcc59d6f633f1b23b70c2e8acce9",
+    "transparent_pixels": 2537754,
+    "opaque_pixels": 143885,
+    "partial_alpha_pixels": 1906201
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/oven-maw/hurt.webp",
+    "size": [
+      3040,
+      1992
+    ],
+    "mode": "RGBA",
+    "sha256": "48a54861ef19a54fcec846124897ae4c98a815a8ee1c9f4f3ccce03c29369ff3",
+    "transparent_pixels": 3132411,
+    "opaque_pixels": 172537,
+    "partial_alpha_pixels": 2750732
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/oven-maw/idle.webp",
+    "size": [
+      2704,
+      1878
+    ],
+    "mode": "RGBA",
+    "sha256": "6a88f0261daf03ec9fde7642d9279967083ef5e4615dd9c7d93b8e53f86216dc",
+    "transparent_pixels": 2068109,
+    "opaque_pixels": 85592,
+    "partial_alpha_pixels": 2924411
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/pantry-mimic/attack.webp",
+    "size": [
+      1800,
+      1572
+    ],
+    "mode": "RGBA",
+    "sha256": "dca477b12f0773344300c36bf22c1bc9c6683b7b6ec828618dbd18d4a2d775ed",
+    "transparent_pixels": 1226309,
+    "opaque_pixels": 166346,
+    "partial_alpha_pixels": 1436945
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/pantry-mimic/defeat.webp",
+    "size": [
+      2320,
+      888
+    ],
+    "mode": "RGBA",
+    "sha256": "aad8fd457c957d3770e1ff06e2eecb2e39bd497f55c42c32b5f6cf15f66f8699",
+    "transparent_pixels": 1250438,
+    "opaque_pixels": 86737,
+    "partial_alpha_pixels": 722985
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/pantry-mimic/hurt.webp",
+    "size": [
+      2160,
+      1572
+    ],
+    "mode": "RGBA",
+    "sha256": "08100a40b4c6ba0ddbcf499cabb7f7c7f6d666cf33fb74ba6147b3a3d30b9a39",
+    "transparent_pixels": 1684595,
+    "opaque_pixels": 169000,
+    "partial_alpha_pixels": 1541925
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/pantry-mimic/idle.webp",
+    "size": [
+      1824,
+      1560
+    ],
+    "mode": "RGBA",
+    "sha256": "0f8a7196d0630e12904e4cc6250d3fb24fc1c04b38a6654a2ad98eb204507bb3",
+    "transparent_pixels": 1108333,
+    "opaque_pixels": 107567,
+    "partial_alpha_pixels": 1629540
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-giant/attack.webp",
+    "size": [
+      3200,
+      1782
+    ],
+    "mode": "RGBA",
+    "sha256": "0a3e1e14df7c521a58d6a6aeb4222666dbdf7fcf23ac880925a5b153fd01cb1e",
+    "transparent_pixels": 2794274,
+    "opaque_pixels": 78026,
+    "partial_alpha_pixels": 2830100
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-giant/defeat.webp",
+    "size": [
+      2709,
+      1032
+    ],
+    "mode": "RGBA",
+    "sha256": "30bad252be3b241cc766f8e82b3631c16730fb00e1db815a9c62d56d0e821990",
+    "transparent_pixels": 1470423,
+    "opaque_pixels": 50158,
+    "partial_alpha_pixels": 1275107
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-giant/hurt.webp",
+    "size": [
+      3200,
+      1908
+    ],
+    "mode": "RGBA",
+    "sha256": "283ba813eaa0cba78ad1f498fc62650a9ab5a4f18ad83f516e11d6917cee9481",
+    "transparent_pixels": 2857577,
+    "opaque_pixels": 113167,
+    "partial_alpha_pixels": 3134856
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-giant/idle.webp",
+    "size": [
+      2744,
+      2028
+    ],
+    "mode": "RGBA",
+    "sha256": "16c2d6ee78a0376455123d1399cef381f2db4bb0e14ca42539a91c4e3dc052e0",
+    "transparent_pixels": 2066400,
+    "opaque_pixels": 171210,
+    "partial_alpha_pixels": 3327222
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-soldier/attack.webp",
+    "size": [
+      1960,
+      1578
+    ],
+    "mode": "RGBA",
+    "sha256": "22009ae00005b90043a76de7277fed9cc51d7112a955cc63d2e27c83bfc87159",
+    "transparent_pixels": 1870253,
+    "opaque_pixels": 38254,
+    "partial_alpha_pixels": 1184373
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-soldier/defeat.webp",
+    "size": [
+      1864,
+      801
+    ],
+    "mode": "RGBA",
+    "sha256": "6b1488766e5e30c55fdcb5cf547aac41e225a58ab0e3f039f1b58d6901c6edf9",
+    "transparent_pixels": 915065,
+    "opaque_pixels": 11533,
+    "partial_alpha_pixels": 566466
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-soldier/hurt.webp",
+    "size": [
+      2048,
+      1602
+    ],
+    "mode": "RGBA",
+    "sha256": "594eabf97904c90b63216832f6e584a665c9fd8f2652ae35c5afbe6b1e8e51f0",
+    "transparent_pixels": 1959556,
+    "opaque_pixels": 41877,
+    "partial_alpha_pixels": 1279463
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-soldier/idle.webp",
+    "size": [
+      1440,
+      1554
+    ],
+    "mode": "RGBA",
+    "sha256": "c9d80af1b59ee0fcdfb6eb21663117ce80fe545415642af8da8c537e3aaba4f0",
+    "transparent_pixels": 880059,
+    "opaque_pixels": 33310,
+    "partial_alpha_pixels": 1324391
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/red-carpet-runner/attack.webp",
+    "size": [
+      2440,
+      2052
+    ],
+    "mode": "RGBA",
+    "sha256": "61553cdb6a9daa4d8d22736e1020474a0bc536077845c62fbddb59a987445a3d",
+    "transparent_pixels": 3207227,
+    "opaque_pixels": 55596,
+    "partial_alpha_pixels": 1744057
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/red-carpet-runner/defeat.webp",
+    "size": [
+      2016,
+      777
+    ],
+    "mode": "RGBA",
+    "sha256": "5c755526222a42f94468c651a57a6d38d4f650ee3516ffff48448490859a3804",
+    "transparent_pixels": 901784,
+    "opaque_pixels": 5096,
+    "partial_alpha_pixels": 659552
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/red-carpet-runner/hurt.webp",
+    "size": [
+      3056,
+      1554
+    ],
+    "mode": "RGBA",
+    "sha256": "c39308b5d1ea1c5307a0bf83274efe64cb991cb67abf1e43bee3c73a13c44cf5",
+    "transparent_pixels": 3061025,
+    "opaque_pixels": 22502,
+    "partial_alpha_pixels": 1665497
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/red-carpet-runner/idle.webp",
+    "size": [
+      2504,
+      1782
+    ],
+    "mode": "RGBA",
+    "sha256": "85880211b9fbed14c1ada1e246308d844ec4412a84d191b238e8f52a3523e3f7",
+    "transparent_pixels": 2697047,
+    "opaque_pixels": 23429,
+    "partial_alpha_pixels": 1741652
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/slipper-skitter/attack.webp",
+    "size": [
+      2944,
+      1644
+    ],
+    "mode": "RGBA",
+    "sha256": "2459d59a84348b0ccd15602f9e24a66a3c0b5c6ffe6b0b22aaf04ff7bb2b47a2",
+    "transparent_pixels": 2616639,
+    "opaque_pixels": 78937,
+    "partial_alpha_pixels": 2144360
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/slipper-skitter/defeat.webp",
+    "size": [
+      2450,
+      520
+    ],
+    "mode": "RGBA",
+    "sha256": "813f2128d9d002dc86c41425168defcbd8f5cedb06f3d3997893ff5cada39f40",
+    "transparent_pixels": 684166,
+    "opaque_pixels": 19990,
+    "partial_alpha_pixels": 569844
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/slipper-skitter/hurt.webp",
+    "size": [
+      3024,
+      1884
+    ],
+    "mode": "RGBA",
+    "sha256": "c893cbd0974cf4138a79cc2c446753093e06009d26e33f3e8fd03bccc39b1d51",
+    "transparent_pixels": 3463543,
+    "opaque_pixels": 97562,
+    "partial_alpha_pixels": 2136111
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/slipper-skitter/idle.webp",
+    "size": [
+      2792,
+      1278
+    ],
+    "mode": "RGBA",
+    "sha256": "1c46cddcac00ce90ff8bcb3b3aa30a4ce1ec8cca742c1c4038ce40a130646993",
+    "transparent_pixels": 1484293,
+    "opaque_pixels": 68410,
+    "partial_alpha_pixels": 2015473
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/sugar-golem/attack.webp",
+    "size": [
+      3200,
+      1590
+    ],
+    "mode": "RGBA",
+    "sha256": "d0d6a741498c234e19967d4d4addb5c4637566bffaeb9a2306734e9de24c70b2",
+    "transparent_pixels": 3511723,
+    "opaque_pixels": 21797,
+    "partial_alpha_pixels": 1554480
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/sugar-golem/defeat.webp",
+    "size": [
+      3200,
+      1124
+    ],
+    "mode": "RGBA",
+    "sha256": "b10c588342094051875dc6b55a19d943a9510f350499958c4668e6c8f8b60a81",
+    "transparent_pixels": 2389277,
+    "opaque_pixels": 35869,
+    "partial_alpha_pixels": 1171654
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/sugar-golem/hurt.webp",
+    "size": [
+      3200,
+      1716
+    ],
+    "mode": "RGBA",
+    "sha256": "a4a2dfda161c236f33c1c33c00ea7ca0c4859c6acc126be2781af4bf67e7c974",
+    "transparent_pixels": 3225535,
+    "opaque_pixels": 36317,
+    "partial_alpha_pixels": 2229348
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/sugar-golem/idle.webp",
+    "size": [
+      3040,
+      1968
+    ],
+    "mode": "RGBA",
+    "sha256": "006e9f3b547bc45b32eac8de90d5564de1e448706585ca7d070adddf86ab2d16",
+    "transparent_pixels": 2934436,
+    "opaque_pixels": 54879,
+    "partial_alpha_pixels": 2993405
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/the-wardrobe/attack.webp",
+    "size": [
+      3200,
+      1884
+    ],
+    "mode": "RGBA",
+    "sha256": "61222680bf8825b514ea4dc81c52ce48dc7c1b055519cb8136bb89c673aed6d2",
+    "transparent_pixels": 4160997,
+    "opaque_pixels": 101350,
+    "partial_alpha_pixels": 1766453
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/the-wardrobe/defeat.webp",
+    "size": [
+      3600,
+      738
+    ],
+    "mode": "RGBA",
+    "sha256": "28688a6ee8a0b827d5a2c85f2480a329569e3d43bfd3e221bc9140fa11b755ce",
+    "transparent_pixels": 1612568,
+    "opaque_pixels": 39606,
+    "partial_alpha_pixels": 1004626
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/the-wardrobe/hurt.webp",
+    "size": [
+      3200,
+      1728
+    ],
+    "mode": "RGBA",
+    "sha256": "47e2e7f2d24d35e911c70aa61a49590a1ef154bb9b2f346671db74f749fdd8f4",
+    "transparent_pixels": 2907018,
+    "opaque_pixels": 214854,
+    "partial_alpha_pixels": 2407728
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/the-wardrobe/idle.webp",
+    "size": [
+      3200,
+      1752
+    ],
+    "mode": "RGBA",
+    "sha256": "6067800d17419656ea98ebe20b7df7bfd41137337ff1020ad5325bb72a27ba2b",
+    "transparent_pixels": 2755958,
+    "opaque_pixels": 192706,
+    "partial_alpha_pixels": 2657736
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/toy-chest/attack.webp",
+    "size": [
+      2736,
+      2208
+    ],
+    "mode": "RGBA",
+    "sha256": "478fa10e30a26ab3e5e830054523b7d3443f3f876abb4c821a8d9ac04a4aae63",
+    "transparent_pixels": 2573548,
+    "opaque_pixels": 255033,
+    "partial_alpha_pixels": 3212507
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/toy-chest/defeat.webp",
+    "size": [
+      3384,
+      2000
+    ],
+    "mode": "RGBA",
+    "sha256": "4d11a68be1d6121253a56660e811361604f412f34f3b61e983b5b7bbadbd3552",
+    "transparent_pixels": 4286844,
+    "opaque_pixels": 121035,
+    "partial_alpha_pixels": 2360121
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/toy-chest/hurt.webp",
+    "size": [
+      2776,
+      2094
+    ],
+    "mode": "RGBA",
+    "sha256": "6223120d59ad3eb5ff14d463fbd3af8353500c0ef6db3181a9a076ee23255a62",
+    "transparent_pixels": 2348000,
+    "opaque_pixels": 290910,
+    "partial_alpha_pixels": 3174034
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/toy-chest/idle.webp",
+    "size": [
+      2824,
+      1860
+    ],
+    "mode": "RGBA",
+    "sha256": "d5999f91f17c90494dd73627824d37a64d689a025fe91ebd883116fcfe49f2f6",
+    "transparent_pixels": 1725594,
+    "opaque_pixels": 135329,
+    "partial_alpha_pixels": 3391717
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/wardrobe-guest/attack.webp",
+    "size": [
+      2040,
+      2124
+    ],
+    "mode": "RGBA",
+    "sha256": "fe0873190b46836b5ae9662e7ca0be21cee57e746a368f995b687ce6166b45c8",
+    "transparent_pixels": 1413036,
+    "opaque_pixels": 228482,
+    "partial_alpha_pixels": 2691442
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/wardrobe-guest/defeat.webp",
+    "size": [
+      2604,
+      1098
+    ],
+    "mode": "RGBA",
+    "sha256": "1e949e8836bc63387e3dc32d3827759678045435281945da58d34ccee0eedfae",
+    "transparent_pixels": 1639062,
+    "opaque_pixels": 142812,
+    "partial_alpha_pixels": 1077318
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/wardrobe-guest/hurt.webp",
+    "size": [
+      1760,
+      2118
+    ],
+    "mode": "RGBA",
+    "sha256": "69eeff9301c9c5c682e2f7552d150930c2e136bd8aeb4f40c8e2c0643a6add23",
+    "transparent_pixels": 947041,
+    "opaque_pixels": 270325,
+    "partial_alpha_pixels": 2510314
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/wardrobe-guest/idle.webp",
+    "size": [
+      1744,
+      2112
+    ],
+    "mode": "RGBA",
+    "sha256": "f91484eedfd6108f7fc24840a6f27429c94d1eb91bd019d1fde9846f63c807d6",
+    "transparent_pixels": 914117,
+    "opaque_pixels": 341758,
+    "partial_alpha_pixels": 2427453
+  }
+]

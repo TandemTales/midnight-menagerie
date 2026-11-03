@@ -1,0 +1,1863 @@
+{"time": 1793168310.095718, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793168310.9905303, "action": "End Turn"}
+{"time": 1793168333.2940934, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793168334.2940433, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793168335.159408, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793168335.832331, "action": "End Turn"}
+{"time": 1793168371.9238884, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793168540.332756, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793168541.1351886, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793168542.0909445, "action": "End Turn"}
+{"time": 1793168582.3055036, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793168583.0416555, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793168583.724316, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793168584.7874322, "action": "End Turn"}
+{"time": 1793168636.610379, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793168637.5051837, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793168638.5510082, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793168639.5920832, "action": "End Turn"}
+{"time": 1793168642.6315722, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793168643.4156077, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793168644.3708339, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793168645.5630133, "action": "End Turn"}
+{"time": 1793168687.4831069, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793168688.5592597, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793168689.5412114, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793168690.5747526, "action": "End Turn"}
+{"time": 1793168693.163045, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793168693.9443057, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793168694.8997023, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793168695.8297806, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793168723.282808, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793168724.1788044, "action": "End Turn"}
+{"time": 1793168727.5461135, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793168728.2865806, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793168729.2149503, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793168838.022161, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793168838.8950853, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793168839.7729628, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793168840.7407072, "action": "End Turn"}
+{"time": 1793168844.2560349, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793168844.943825, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793168845.6788828, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793168846.4316957, "action": "End Turn"}
+{"time": 1793168850.5681725, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793168853.5295973, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793168854.2434602, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793168855.4120684, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793168856.3241463, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793168857.0607522, "action": "End Turn"}
+{"time": 1793168859.674309, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793168860.780852, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793168861.662388, "action": "End Turn"}
+{"time": 1793168864.811894, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793168865.532305, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793168866.3858802, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793168867.6360269, "action": "End Turn"}
+{"time": 1793168870.6095936, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793168871.3766327, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793168872.381586, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793168873.5376148, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793168874.5004897, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793168875.1726544, "action": "End Turn"}
+{"time": 1793168878.171948, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793168879.2755954, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169103.3587098, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793169104.2494717, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793169105.2416108, "action": "End Turn"}
+{"time": 1793169108.5888162, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793169110.8636138, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793169111.744136, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169112.4259171, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793169113.9267023, "action": "End Turn"}
+{"time": 1793169117.2115676, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793169117.9868228, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793169118.9552052, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793169119.8731122, "action": "End Turn"}
+{"time": 1793169122.5696807, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793169123.3524678, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169124.5242963, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793169239.0237017, "action": {"key": 2, "targetIndex": 2}}
+{"time": 1793169241.1083372, "action": {"key": 1, "targetIndex": 2}}
+{"time": 1793169243.198707, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793169244.4601521, "action": "End Turn"}
+{"time": 1793169249.2323813, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793169252.028372, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793169253.0944908, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793169253.8723404, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793169256.0143793, "action": "End Turn"}
+{"time": 1793169260.049372, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793169261.0004985, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793169261.92565, "action": "End Turn"}
+{"time": 1793169265.8533902, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793169266.584402, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793169267.308734, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793169268.5016572, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793169272.404738, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793169273.5949852, "action": "End Turn"}
+{"time": 1793169276.9111931, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793169277.7680042, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169278.8400114, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793169279.7298236, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793169281.669973, "action": "End Turn"}
+{"time": 1793169284.5973449, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793169285.5227697, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793169398.216451, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793169399.1910195, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169400.1167939, "action": "End Turn"}
+{"time": 1793169417.0523682, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793169417.6920075, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169418.3086395, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169419.387558, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169420.4754336, "action": "End Turn"}
+{"time": 1793169424.1731207, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793169424.870808, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169425.8627315, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793169426.7349608, "action": "End Turn"}
+{"time": 1793169430.5300207, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793169431.20526, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169431.909751, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793169432.5121648, "action": "End Turn"}
+{"time": 1793169437.1542995, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793169438.1551118, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169439.083878, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793169439.9498594, "action": "End Turn"}
+{"time": 1793169443.4087012, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793169444.101697, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793169445.0006244, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169446.0992177, "action": "End Turn"}
+{"time": 1793169449.0155299, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793169449.941399, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169450.7062705, "action": "End Turn"}
+{"time": 1793169454.859781, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793169455.5433683, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793169456.5485568, "action": "End Turn"}
+{"time": 1793169478.661938, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793169824.1280098, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169825.3316643, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793169826.4623363, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793169827.801529, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169828.9019747, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793169829.7418606, "action": "End Turn"}
+{"time": 1793169832.797464, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793169833.852934, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169834.74536, "action": "End Turn"}
+{"time": 1793169876.0720258, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793169877.1530943, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793169878.7497075, "action": "End Turn"}
+{"time": 1793169881.6160672, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793169882.9215255, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793169883.7722063, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169885.140909, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793169886.5987508, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793169887.6139255, "action": "End Turn"}
+{"time": 1793170340.840363, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793170342.1802504, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793170342.8557107, "action": "End Turn"}
+{"time": 1793170346.6629765, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793170349.3585362, "action": "End Turn"}
+{"time": 1793170352.0589423, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170353.2856538, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170354.3120658, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170355.8582447, "action": "End Turn"}
+{"time": 1793170359.6870432, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793170418.3449175, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793170419.7286878, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170420.75413, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170421.716951, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170422.6367972, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170423.6561909, "action": "End Turn"}
+{"time": 1793170427.999535, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170430.3387485, "action": "End Turn"}
+{"time": 1793170433.3727114, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170434.4016867, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170435.4470491, "action": "End Turn"}
+{"time": 1793170439.1574163, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170439.9714682, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170440.9021838, "action": "End Turn"}
+{"time": 1793170444.07194, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170445.3725219, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170446.3207989, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170447.3557265, "action": "End Turn"}
+{"time": 1793170450.9064171, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170451.5962396, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170452.717286, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170453.9310184, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170455.3953, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170543.6633093, "action": {"room": "West Match Safe. Treasure. Row 9."}}
+{"time": 1793170551.0655146, "action": {"room": "West Blue Flame Room. Big Scare. Row 10."}}
+{"time": 1793170555.4069633, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170556.6238601, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170557.5361352, "action": "End Turn"}
+{"time": 1793170560.5089846, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170561.3999166, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170562.1518893, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170563.3957646, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170564.8673239, "action": "End Turn"}
+{"time": 1793170567.778881, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793170570.9273248, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170572.1992521, "action": "End Turn"}
+{"time": 1793170575.4192488, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170576.269117, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170577.3183074, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170578.0203507, "action": "End Turn"}
+{"time": 1793170581.4738832, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170582.5064259, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170583.6407905, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170584.679296, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170585.7576587, "action": "End Turn"}
+{"time": 1793170588.8675659, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170589.851273, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170590.5476954, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170591.7065907, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170593.3119278, "action": "End Turn"}
+{"time": 1793170610.8915544, "action": {"room": "Inner Chimney Stack Room. Scuffle. Row 11."}}
+{"time": 1793170613.659709, "action": {"key": 7, "targetIndex": 0}}
+{"time": 1793170615.563227, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793170618.105279, "action": "End Turn"}
+{"time": 1793170624.1122541, "action": {"key": 5, "targetIndex": 2}}
+{"time": 1793170628.0204742, "action": "End Turn"}
+{"time": 1793170632.318707, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170635.0281622, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170636.5006416, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170637.3825123, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170639.3419545, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170640.0374389, "action": "End Turn"}
+{"time": 1793170643.4051461, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793170666.057536, "action": {"room": "Old Sconce Hall. Big Scare. Row 12."}}
+{"time": 1793170670.9044075, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170672.0025163, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170674.6586332, "action": "End Turn"}
+{"time": 1793170678.035154, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170679.3357422, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170680.958936, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170682.0540574, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170683.6962495, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170685.0117736, "action": "End Turn"}
+{"time": 1793170689.7181916, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170690.9470177, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170693.1156008, "action": "End Turn"}
+{"time": 1793170696.1870468, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793170698.5916128, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793170699.621754, "action": "End Turn"}
+{"time": 1793170704.3654156, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170705.3632257, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170707.3788712, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170708.7020006, "action": "End Turn"}
+{"time": 1793170712.7770374, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170713.468847, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170715.4157827, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170716.3072824, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170718.8437219, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170720.3204727, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170722.1130373, "action": "End Turn"}
+{"time": 1793170955.6011603, "action": {"room": "East Reception Hall. Scuffle. Row 1."}}
+{"time": 1793170958.903284, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170960.821829, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170962.249582, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793170963.455323, "action": "End Turn"}
+{"time": 1793170967.5845072, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170968.5539658, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170969.6867683, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170971.2841437, "action": "End Turn"}
+{"time": 1793170976.284348, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170979.7663755, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793170980.7480402, "action": "End Turn"}
+{"time": 1793170983.5624132, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793170984.2525816, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170985.1895857, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170986.6685867, "action": "End Turn"}
+{"time": 1793170989.8810759, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793170990.9314163, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793170992.0790124, "action": "End Turn"}
+{"time": 1793170994.828282, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171056.530432, "action": "UI settings: animation speed 2x, Fast mode on, Reduced motion on; rules unchanged"}
+{"time": 1793171056.5515323, "action": {"room": "East Landing. Scuffle. Row 2."}}
+{"time": 1793171058.4872074, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793171059.3266935, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171059.9111652, "action": "End Turn"}
+{"time": 1793171060.7577822, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171061.1245797, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171061.648566, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171062.139569, "action": "End Turn"}
+{"time": 1793171062.9838796, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793171088.8589401, "action": {"room": "West Landing. Scuffle. Row 3."}}
+{"time": 1793171089.8470452, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171090.500058, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171090.9230726, "action": "End Turn"}
+{"time": 1793171091.8779783, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793171092.1643171, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793171092.4513633, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793171092.834052, "action": "End Turn"}
+{"time": 1793171094.2679303, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793171094.891616, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171095.2426617, "action": "End Turn"}
+{"time": 1793171095.940266, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171096.2042472, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171096.4406042, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171097.1195762, "action": "End Turn"}
+{"time": 1793171097.8976154, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793171109.526407, "action": {"room": "House Register Alcove. Curiosity. Row 4."}}
+{"time": 1793171121.1727252, "action": {"room": "Coat Room. Safe Room. Row 5."}}
+{"time": 1793171149.539118, "action": {"room": "West East Reception Hall. Scuffle. Row 6."}}
+{"time": 1793171150.6079464, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171151.0897808, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171151.4169595, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793171151.7456837, "action": "End Turn"}
+{"time": 1793171152.8035438, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171153.7675502, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171154.0600717, "action": "End Turn"}
+{"time": 1793171154.8473642, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793171181.5429618, "action": {"room": "West Bell Pull Gallery. Safe Room. Row 7."}}
+{"time": 1793171190.6961918, "action": {"room": "West Marble Gallery. Treasure. Row 8."}}
+{"time": 1793171220.130239, "action": {"room": "West Drawing Room. Scuffle. In Fresh Paw Prints. Row 9."}}
+{"time": 1793171221.104912, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793171221.6897807, "action": "End Turn"}
+{"time": 1793171223.2291286, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793171223.6079235, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171224.002924, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171224.4629319, "action": "End Turn"}
+{"time": 1793171226.0680265, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793171226.6409879, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793171226.9447758, "action": "End Turn"}
+{"time": 1793171227.9432142, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171241.5641756, "action": {"room": "Second Parlor. Scuffle. In Fresh Paw Prints. Row 10."}}
+{"time": 1793171242.4196575, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171242.838661, "action": {"key": 4, "targetIndex": 2}}
+{"time": 1793171243.5347133, "action": "End Turn"}
+{"time": 1793171244.972163, "action": {"key": 5, "targetIndex": 2}}
+{"time": 1793171245.4525187, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793171245.7987149, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793171246.2768285, "action": "End Turn"}
+{"time": 1793171247.924559, "action": {"key": 4, "targetIndex": 2}}
+{"time": 1793171248.6670396, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171249.254385, "action": "End Turn"}
+{"time": 1793171249.986712, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171274.3550365, "action": {"room": "Front Receiving Room. Safe Room. In Fresh Paw Prints. Row 11."}}
+{"time": 1793171282.934554, "action": {"room": "Inner East Landing. Scuffle. Row 12."}}
+{"time": 1793171283.805231, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793171284.2201598, "action": "End Turn"}
+{"time": 1793171285.7167761, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171286.2624261, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171286.6686783, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171286.9327333, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171287.3960516, "action": "End Turn"}
+{"time": 1793171288.551246, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171289.1684823, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171289.5393915, "action": "End Turn"}
+{"time": 1793171290.8025014, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793171291.3825896, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171338.6615593, "action": {"room": "Receiving Chamber. Boss. Row 13."}}
+{"time": 1793171386.0762901, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793171409.7641504, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171409.9575784, "action": "End Turn"}
+{"time": 1793171410.9257572, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171411.3223166, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171411.6427224, "action": "End Turn"}
+{"time": 1793171412.6084793, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171413.0046997, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171413.545518, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171413.835833, "action": "End Turn"}
+{"time": 1793171414.5359159, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793171414.872006, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171415.3701584, "action": "End Turn"}
+{"time": 1793171416.6346133, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171417.0651472, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171417.3365853, "action": "End Turn"}
+{"time": 1793171418.1128583, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793171418.5386279, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171418.8899553, "action": "End Turn"}
+{"time": 1793171419.918475, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171420.2151344, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171420.6348643, "action": "End Turn"}
+{"time": 1793171557.4477978, "action": {"room": "Lower Attic. Scuffle. Row 1."}}
+{"time": 1793171558.4570196, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171559.108636, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171559.5462012, "action": "End Turn"}
+{"time": 1793171560.6900153, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171561.0889676, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793171561.6795154, "action": "End Turn"}
+{"time": 1793171562.307702, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171562.8677688, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171591.6511238, "action": {"room": "Telescope Gallery. Scuffle. Row 2."}}
+{"time": 1793171594.1286488, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171595.227582, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171596.5201948, "action": "End Turn"}
+{"time": 1793171597.8526807, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171611.2345128, "action": {"room": "Trunk Room. Curiosity. Row 3."}}
+{"time": 1793171634.185006, "action": {"room": "Cobweb Gallery. Curiosity. Row 4."}}
+{"time": 1793171653.6840012, "action": {"room": "Watcher's Nook. Scuffle. Row 5."}}
+{"time": 1793171654.6944418, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793171655.9507406, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793171656.4934893, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171656.8673627, "action": "End Turn"}
+{"time": 1793171659.073966, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793171660.0052574, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793171660.5157876, "action": "End Turn"}
+{"time": 1793171662.43973, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793171663.0619974, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171663.3996744, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793171664.3112488, "action": "End Turn"}
+{"time": 1793171665.9606721, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793171666.9455864, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171667.805608, "action": "End Turn"}
+{"time": 1793171726.370803, "action": {"room": "West Weather Instrument Room. Curiosity. Row 6."}}
+{"time": 1793171757.8349097, "action": {"room": "West Observatory Landing. Safe Room. Row 7."}}
+{"time": 1793171887.918446, "action": {"room": "West Attic Stair. Scuffle. Row 8."}}
+{"time": 1793171890.6098185, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793171891.2588716, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171892.1750653, "action": "End Turn"}
+{"time": 1793171893.2323117, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171893.6247208, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171894.1402154, "action": "End Turn"}
+{"time": 1793171895.444011, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171896.329501, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171896.8709133, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793171897.2998087, "action": "End Turn"}
+{"time": 1793171898.737673, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171899.2990618, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171900.255259, "action": "End Turn"}
+{"time": 1793171901.4830995, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793171915.3899534, "action": {"room": "East Watcher's Nook. Treasure. Row 9."}}
+{"time": 1793171933.5950346, "action": {"room": "East Moth Loft. Scuffle. Row 10."}}
+{"time": 1793171934.526054, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171935.2722085, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171936.1400268, "action": "End Turn"}
+{"time": 1793171937.6176848, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171938.1803334, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171939.0635414, "action": "End Turn"}
+{"time": 1793171940.603035, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171941.1018543, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171941.7973495, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171942.0550559, "action": "End Turn"}
+{"time": 1793171942.8741894, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793171943.7343128, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171944.258042, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171944.7705986, "action": "End Turn"}
+{"time": 1793171945.976939, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171946.3781796, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171946.616527, "action": "End Turn"}
+{"time": 1793171947.9687734, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793171962.0070732, "action": {"room": "Front Hidden Eaves. Unsurveyed. In Fresh Paw Prints. Row 11."}}
+{"time": 1793171963.0011141, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793171963.5301728, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793171964.051136, "action": "End Turn"}
+{"time": 1793171965.4678864, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793171965.9225938, "action": "End Turn"}
+{"time": 1793171967.3546607, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793171968.149699, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793171968.7223947, "action": "End Turn"}
+{"time": 1793171969.8181856, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793171986.3537686, "action": {"room": "Far Trunk Room. Curiosity. Row 12."}}
+{"time": 1793171999.461759, "action": {"room": "Far Telescope Gallery. Scuffle. Row 13."}}
+{"time": 1793172000.4035032, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793172001.2272387, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793172002.3135946, "action": "End Turn"}
+{"time": 1793172003.9239004, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793172004.2223563, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172005.0894163, "action": "End Turn"}
+{"time": 1793172006.9773822, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793172007.6612377, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172007.9300086, "action": "End Turn"}
+{"time": 1793172009.423578, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793172009.664242, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172010.7005684, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172011.1282282, "action": "End Turn"}
+{"time": 1793172012.2650895, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172039.2142885, "action": {"room": "Grand Observatory. Boss. Row 14."}}
+{"time": 1793172059.9285805, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793172060.886928, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793172061.5760055, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172062.1377726, "action": "End Turn"}
+{"time": 1793172064.7365847, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793172065.307359, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793172065.8624759, "action": "End Turn"}
+{"time": 1793172067.029661, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793172067.7956405, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793172068.2274697, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172068.7678418, "action": "End Turn"}
+{"time": 1793172069.8696694, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793172070.3836603, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172070.6574116, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172071.1982615, "action": "End Turn"}
+{"time": 1793172072.7377055, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793172073.4090102, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793172073.6991847, "action": "End Turn"}
+{"time": 1793172074.915867, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172075.2133772, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172076.07905, "action": "End Turn"}
+{"time": 1793172077.143023, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793172077.741419, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793172078.1266031, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172078.6765976, "action": "End Turn"}
+{"time": 1793172080.4803402, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172081.1706524, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172081.7915673, "action": "End Turn"}
+{"time": 1793172082.9296484, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172083.5441232, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793172084.096919, "action": "End Turn"}
+{"time": 1793172085.18285, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172086.0074403, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793172086.6226354, "action": "End Turn"}
+{"time": 1793172087.7883062, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172088.5977652, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793172088.873674, "action": "End Turn"}
+{"time": 1793172239.9315794, "action": {"room": "Flour Room. Scuffle. Row 1."}}
+{"time": 1793172241.2410593, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172242.372054, "action": "End Turn"}
+{"time": 1793172244.0521228, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793172244.9248197, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793172245.86777, "action": "End Turn"}
+{"time": 1793172246.6989856, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172247.909306, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793172248.896176, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793172359.8167903, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793172373.7057526, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793172379.4683979, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793172459.085344, "action": {"room": "Dish Room. Scuffle. Row 2."}}
+{"time": 1793172459.9274065, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793172461.029108, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793172461.6506708, "action": "End Turn"}
+{"time": 1793172462.6153529, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793172486.5345008, "action": {"room": "Scullery. Curiosity. In Moonlit Rooms. Row 3."}}
+{"time": 1793172536.6394491, "action": {"room": "Spice Closet. Unsurveyed. In Moonlit Rooms. Row 4."}}
+{"time": 1793172679.4379256, "action": {"room": "Sugar Store. Scuffle. In Moonlit Rooms. Row 5."}}
+{"time": 1793172684.0244443, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793172685.910067, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172687.697997, "action": "End Turn"}
+{"time": 1793172689.5187082, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793172690.9901524, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172692.0232506, "action": "End Turn"}
+{"time": 1793172693.4109528, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172694.5037, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172695.614726, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172696.618166, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172697.558767, "action": "End Turn"}
+{"time": 1793172741.0695722, "action": {"room": "West Root Cellar. Curiosity. Row 6."}}
+{"time": 1793172776.386088, "action": {"room": "West Bottle Room. Scuffle. Row 7."}}
+{"time": 1793172779.7045748, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793172781.3746202, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793172782.717878, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172784.5298219, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172785.6441143, "action": "End Turn"}
+{"time": 1793172787.778515, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793172789.171316, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172790.266349, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172791.4597394, "action": "End Turn"}
+{"time": 1793172792.9385092, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793172793.927664, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172795.1172056, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172834.3166656, "action": {"room": "West Scullery. Safe Room. Row 8."}}
+{"time": 1793172870.1008658, "action": {"upgradeSelection": "Selected: Ricochet Cat. It will become Ricochet Cat+."}}
+{"time": 1793172870.9156775, "action": {"room": "West Candy Cupboard. Curiosity. Row 9."}}
+{"time": 1793172920.1528955, "action": {"room": "Second Bottle Room. Scuffle. Row 10."}}
+{"time": 1793172923.5869315, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793172924.6887863, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793172926.6894784, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793172928.0468166, "action": "End Turn"}
+{"time": 1793172930.0725884, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793172930.350018, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793172931.8549843, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793172934.15991, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793172935.2320237, "action": "End Turn"}
+{"time": 1793172935.8317049, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793172937.0193388, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793172989.828858, "action": {"room": "Old Main Kitchen. Scuffle. In The Lights Are Out. Row 11."}}
+{"time": 1793172991.8607697, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793172993.729893, "action": {"key": 6, "targetIndex": 1}}
+{"time": 1793172995.4148715, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793172998.454614, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793173001.5727217, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793173004.2281826, "action": "End Turn"}
+{"time": 1793173008.131461, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793173010.1894286, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793173012.357456, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793173013.5210392, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793173014.5999165, "action": "End Turn"}
+{"time": 1793173016.8550346, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793173018.6535904, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793173018.9629366, "action": "End Turn"}
+{"time": 1793173021.937949, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793173041.7581377, "action": {"room": "Old Preserves Pantry. Curiosity. In The Lights Are Out. Row 12."}}
+{"time": 1793173073.2918591, "action": {"room": "Inner Servants' Dining Room. Scuffle. Row 13."}}
+{"time": 1793173166.7893517, "action": {"room": "Inner Butler's Pantry. Mr. Moth's. Row 13."}}
+{"time": 1793173236.8265746, "action": {"room": "Confectioner's Kitchen. Boss. Row 14."}}
+{"time": 1793173319.8833137, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793173322.6477132, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793173324.2232692, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793173324.4911473, "action": "End Turn"}
+{"time": 1793173328.7027702, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793173329.8108785, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793173331.089913, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793173332.4305906, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793173332.8837001, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793173334.961309, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793173336.0130808, "action": "End Turn"}
+{"time": 1793173336.573603, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793173338.7066927, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793173339.7579968, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793173340.729195, "action": "End Turn"}
+{"time": 1793173341.4989104, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793173343.772686, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793173345.023711, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793173345.338442, "action": "End Turn"}
+{"time": 1793173346.9275312, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793173349.1844442, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793173349.6576052, "action": "End Turn"}
+{"time": 1793173352.505293, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793173353.5134683, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793173353.6713676, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793173355.9604783, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793173356.226134, "action": "End Turn"}
+{"time": 1793173359.0624876, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793173360.1228127, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793173360.5149589, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793173361.730832, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793173362.8265424, "action": "End Turn"}
+{"time": 1793173365.735058, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793173366.8916328, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793173602.4179623, "action": {"room": "Rain House. Scuffle. Row 1."}}
+{"time": 1793173607.0395725, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793173608.9803205, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793173609.3385928, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793173612.0688524, "action": "End Turn"}
+{"time": 1793173613.5023692, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793173614.8886378, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793173659.5639741, "action": {"room": "Palm House. Scuffle. Row 2."}}
+{"time": 1793173661.4541166, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793173663.7353344, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793173665.1740701, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793173665.397184, "action": "End Turn"}
+{"time": 1793173667.1437886, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793173668.6291745, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793173669.9007032, "action": "End Turn"}
+{"time": 1793173672.375964, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793173672.6721659, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793173695.97045, "action": {"room": "Tool Shed. Unsurveyed. Row 3."}}
+{"time": 1793174078.0773766, "action": {"room": "Orangery. Curiosity. Row 4."}}
+{"time": 1793174096.5249486, "action": {"room": "Overgrown Conservatory. Scuffle. Row 5."}}
+{"time": 1793174099.9758472, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174101.754255, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174103.1901162, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793174104.6175206, "action": "End Turn"}
+{"time": 1793174106.3078177, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793174107.4709396, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174108.6218152, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174109.7837286, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793174109.967314, "action": "End Turn"}
+{"time": 1793174111.7368, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793174113.8007505, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174115.3183804, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793174115.8448346, "action": "End Turn"}
+{"time": 1793174118.0913315, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174119.2137723, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174145.0374846, "action": {"room": "West Root Nursery. Rescue. Row 6."}}
+{"time": 1793174206.1801915, "action": {"room": "West Palm House. Scuffle. Row 7."}}
+{"time": 1793174209.0162344, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793174210.0577123, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793174211.134224, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793174213.1927533, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793174214.265069, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174215.252088, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174215.612398, "action": "End Turn"}
+{"time": 1793174217.806587, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793174238.0043588, "action": {"room": "West Cactus Gallery. Safe Room. Row 8."}}
+{"time": 1793174288.8447556, "action": {"upgradeSelection": "Selected: Everywhere at Once. It will become Everywhere at Once+."}}
+{"time": 1793174312.9487438, "action": {"room": "West Potting Room. Scuffle. Row 9."}}
+{"time": 1793174320.686705, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793174324.1460688, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174324.5249178, "action": "End Turn"}
+{"time": 1793174328.3705165, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793174329.8042684, "action": {"key": 4, "targetIndex": 2}}
+{"time": 1793174331.702597, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174333.4283316, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174334.8312838, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174335.9724612, "action": "End Turn"}
+{"time": 1793174339.1572077, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174341.4605615, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174342.8575664, "action": "End Turn"}
+{"time": 1793174344.945353, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174366.4032319, "action": {"room": "Back Topiary Court. Scuffle. Row 10."}}
+{"time": 1793174373.0222778, "action": {"key": 4, "targetIndex": 2}}
+{"time": 1793174375.995118, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174377.3072908, "action": "End Turn"}
+{"time": 1793174383.3451276, "action": {"key": 1, "targetIndex": 3}}
+{"time": 1793174385.9172482, "action": {"key": 4, "targetIndex": 2}}
+{"time": 1793174388.5014718, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793174390.4822814, "action": "End Turn"}
+{"time": 1793174393.2667532, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793174395.498056, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174397.8796885, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174399.9250395, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174401.6850467, "action": "End Turn"}
+{"time": 1793174404.9527311, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174407.7911608, "action": {"key": 6, "targetIndex": 0}}
+{"time": 1793174410.2312157, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174412.4515367, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174414.6646454, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174416.4029527, "action": "End Turn"}
+{"time": 1793174418.6032217, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174437.1166215, "action": {"room": "Old Moss House. Safe Room. Row 11."}}
+{"time": 1793174495.446482, "action": {"room": "Far Ivy Bridge. Scuffle. Row 12."}}
+{"time": 1793174500.5484366, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793174502.8057678, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793174505.0165412, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793174506.7636313, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793174508.3111994, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174508.6281524, "action": "End Turn"}
+{"time": 1793174512.06688, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793174512.322729, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174515.2937658, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793174516.8723235, "action": "End Turn"}
+{"time": 1793174519.0852044, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174519.7740517, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793174522.5388935, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174524.574513, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174546.933618, "action": {"room": "The Great Conservatory. Boss. Row 13."}}
+{"time": 1793174555.2403512, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174558.9619544, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174562.0264213, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174564.5956578, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793174566.8758125, "action": "End Turn"}
+{"time": 1793174600.1296349, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793174602.224099, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793174604.2199214, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793174605.995099, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793174606.3919637, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174610.1987748, "action": "End Turn"}
+{"time": 1793174612.8176997, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793174613.8088114, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793174617.0391378, "action": "End Turn"}
+{"time": 1793174618.7435503, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174620.4182994, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793174623.2102463, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174623.7377067, "action": "End Turn"}
+{"time": 1793174629.6076965, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793174632.3322618, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174634.6317163, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793174636.973664, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793174638.945611, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174640.9143827, "action": "End Turn"}
+{"time": 1793174660.029845, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174662.8220668, "action": {"key": 6, "targetIndex": 0}}
+{"time": 1793174665.0755718, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793174667.3846283, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174669.4274657, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174671.7223058, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793174673.633703, "action": "End Turn"}
+{"time": 1793174677.9174805, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793174680.8180215, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793174682.9683924, "action": "End Turn"}
+{"time": 1793174685.7058246, "action": {"key": 2, "targetIndex": 2}}
+{"time": 1793174687.7403626, "action": {"key": 2, "targetIndex": 2}}
+{"time": 1793174689.564943, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793174692.3351128, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793174692.8420804, "action": "End Turn"}
+{"time": 1793174697.6038725, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793174699.498544, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174701.4434056, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174701.742412, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793174703.2681568, "action": "End Turn"}
+{"time": 1793174707.4016604, "action": {"key": 1, "targetIndex": 2}}
+{"time": 1793174708.61046, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174712.4679427, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793174712.977526, "action": "End Turn"}
+{"time": 1793174737.266673, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793174741.5601976, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793174742.1725662, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793174746.4032195, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174748.2918856, "action": "End Turn"}
+{"time": 1793174752.5753424, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793174754.862282, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174757.1172352, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793174759.2196457, "action": "End Turn"}
+{"time": 1793174762.8104846, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793174765.3113558, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174766.9003134, "action": "End Turn"}
+{"time": 1793174769.5953853, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793174770.0305002, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793174774.1576533, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793174776.119603, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793174776.8070471, "action": {"key": 6, "targetIndex": 0}}
+{"time": 1793174936.3538315, "action": {"room": "Front Kennel Hall. Scuffle. Row 1."}}
+{"time": 1793174942.7199721, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793174946.109601, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793174947.9274812, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793175499.9861066, "action": {"room": "East Reception Hall. Scuffle. Row 1."}}
+{"time": 1793175503.182694, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175504.374518, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175505.8052366, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793175506.803877, "action": "End Turn"}
+{"time": 1793175508.5625951, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175509.4222012, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175509.9975429, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175511.0273554, "action": "End Turn"}
+{"time": 1793175513.190256, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175514.2994661, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175515.0627537, "action": "End Turn"}
+{"time": 1793175515.9374878, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793175516.3398046, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175516.694987, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175517.2036803, "action": "End Turn"}
+{"time": 1793175517.9295828, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175518.3750389, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175518.8581, "action": "End Turn"}
+{"time": 1793175519.4803162, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175571.4134812, "action": {"room": "East Landing. Scuffle. Row 2."}}
+{"time": 1793175572.4542332, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793175573.1948178, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175573.572669, "action": "End Turn"}
+{"time": 1793175574.520535, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175574.9122534, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175575.3847826, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175575.9296005, "action": "End Turn"}
+{"time": 1793175576.7569668, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793175606.8134408, "action": {"room": "West Landing. Scuffle. Row 3."}}
+{"time": 1793175607.7964394, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175608.6472414, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175608.967527, "action": "End Turn"}
+{"time": 1793175610.2938075, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793175610.6810987, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793175610.9526825, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793175611.2791858, "action": "End Turn"}
+{"time": 1793175612.5154333, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793175613.048866, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175613.3330972, "action": "End Turn"}
+{"time": 1793175613.9476175, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175614.1569722, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175614.4389086, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175614.9054146, "action": "End Turn"}
+{"time": 1793175615.5901852, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793175647.1210527, "action": {"room": "House Register Alcove. Curiosity. Row 4."}}
+{"time": 1793175655.3900304, "action": {"room": "Coat Room. Safe Room. Row 5."}}
+{"time": 1793175693.9577885, "action": {"upgradeSelection": "Selected: Rattle the Chandelier. It will become Rattle the Chandelier+."}}
+{"time": 1793175694.555738, "action": {"room": "West East Reception Hall. Scuffle. Row 6."}}
+{"time": 1793175695.6326737, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175696.0436816, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175696.298804, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793175696.6070507, "action": "End Turn"}
+{"time": 1793175697.6025186, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175698.2121298, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175698.522634, "action": "End Turn"}
+{"time": 1793175699.4618773, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793175725.276765, "action": {"room": "West Bell Pull Gallery. Safe Room. Row 7."}}
+{"time": 1793175743.3078325, "action": {"helper": "read observation", "observed": "Two answers"}}
+{"time": 1793175743.4860265, "action": {"helper": "read observation", "observed": "The third cord"}}
+{"time": 1793175743.5844378, "action": {"helper": "read observation", "observed": "A very patient brush"}}
+{"time": 1793175743.686359, "action": {"helper": "read observation", "observed": "A small trace \u2014 Orbit"}}
+{"time": 1793175743.7622035, "action": {"helper": "journal text", "observed": [{"title": "Two answers", "text": "An intake card has two ticks: FOUND ALONE and HAS A HOME.\n\nLook closer\n\nTwo different pens made the marks. Neither tick has been erased."}, {"title": "The third cord", "text": "Two bell cords are worn soft. A third ends in a neat knot high above the floor.\n\nLook closer\n\nThe cords run in different directions. Each bell has a small test lever beside the counter.\n\nWho gets an answer?\n\nAre the bells broken, or is one kind of call being blocked?\n\nMy idea \u2014 optional. You can change it.\nThe bells need fixing.\nOne kind of call is being blocked.\nI\u2019m not sure yet.\nTry the worn WATER cord.\nTry the third bell\u2019s test lever.\n\nTry the checks above first. There is no time limit.\n\nPut the observations together"}, {"title": "A very patient brush", "text": "A brush waits below two dog portraits and an empty frame.\n\nLook closer\n\nThe first two read BEFORE BRUSHING and AFTER BRUSHING. The empty frame reads PLEASE REMAIN STILL."}, {"title": "A small trace \u2014 Orbit", "text": "Three scratches. A pause. Three more.\n\nThe marks stop beside a little door with a cat-sized handle.\n\nLook closer\n\nA black hair catches on the handle. Below it: a white one."}]}}
+{"time": 1793175743.7684927, "action": {"helper": "manual investigation controls untouched", "observed": ["The bells need fixing.", "One kind of call is being blocked.", "I\u2019m not sure yet.", "Try the worn WATER cord.", "Try the third bell\u2019s test lever.", "Put the observations together"]}}
+{"time": 1793175744.0410564, "action": {"upgradeSelection": "Selected: Perch Up High. It will become Perch Up High+."}}
+{"time": 1793175744.6482353, "action": {"room": "West Marble Gallery. Treasure. Row 8."}}
+{"time": 1793175759.0710173, "action": {"room": "West Drawing Room. Scuffle. In Fresh Paw Prints. Row 9."}}
+{"time": 1793175760.035336, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793175760.8516219, "action": "End Turn"}
+{"time": 1793175762.2099235, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793175762.5484276, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175762.9559393, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175763.2662907, "action": "End Turn"}
+{"time": 1793175764.8375208, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793175765.4203475, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793175765.8120828, "action": "End Turn"}
+{"time": 1793175767.0217135, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175782.7033057, "action": {"room": "Second Parlor. Scuffle. In Fresh Paw Prints. Row 10."}}
+{"time": 1793175783.671047, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175784.2737617, "action": {"key": 4, "targetIndex": 2}}
+{"time": 1793175784.9264374, "action": "End Turn"}
+{"time": 1793175786.2040858, "action": {"key": 5, "targetIndex": 2}}
+{"time": 1793175786.5572033, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793175786.8333209, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793175787.3225133, "action": "End Turn"}
+{"time": 1793175789.1765642, "action": {"key": 4, "targetIndex": 2}}
+{"time": 1793175790.0730116, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175790.627007, "action": "End Turn"}
+{"time": 1793175791.4661937, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175803.967229, "action": {"room": "Front Receiving Room. Safe Room. In Fresh Paw Prints. Row 11."}}
+{"time": 1793175864.3740118, "action": {"room": "Inner East Landing. Scuffle. Row 12."}}
+{"time": 1793175865.0520039, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175865.5977035, "action": "End Turn"}
+{"time": 1793175866.3195307, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175866.693569, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175867.0473776, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175867.5543954, "action": "End Turn"}
+{"time": 1793175868.6572027, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175869.1324792, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175869.464664, "action": "End Turn"}
+{"time": 1793175870.28824, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793175870.6231515, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175870.9599056, "action": "End Turn"}
+{"time": 1793175871.3900852, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175871.7258008, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175871.9233553, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175872.1065576, "action": "End Turn"}
+{"time": 1793175884.7709255, "action": {"room": "Receiving Chamber. Boss. Row 13."}}
+{"time": 1793175892.3953812, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175892.8179882, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175893.0567582, "action": "End Turn"}
+{"time": 1793175893.5931494, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175894.0294704, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175894.2257645, "action": "End Turn"}
+{"time": 1793175895.0387578, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793175895.4272406, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175895.7227497, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175896.010572, "action": "End Turn"}
+{"time": 1793175896.7060223, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793175896.9588964, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175897.3976586, "action": "End Turn"}
+{"time": 1793175898.6184561, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175898.9629996, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175899.2801352, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175899.518155, "action": "End Turn"}
+{"time": 1793175900.3388667, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175900.64502, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793175900.9875884, "action": "End Turn"}
+{"time": 1793175901.9223955, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793175902.189945, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793175902.6578631, "action": "End Turn"}
+{"time": 1793175953.5995967, "action": {"helper": "reward offers", "observed": [{"name": "Ricochet Cat", "text": "Ricochet Cat\nATTACK \u00b7 RANDOM\nDeal 4 damage to a random enemy 4 times.\n2\nUNCOMMON", "selected": false}, {"name": "Soft Landing", "text": "Soft Landing\nSKILL \u00b7 SELF\nGain 10 Guard. Gain 12 more if Untouched.\n2\nCOMMON", "selected": false}, {"name": "Slip Away", "text": "Slip Away\nSKILL \u00b7 SELF\nGain 5 Guard. Gain 4 more if any enemy intends to attack.\n1\nCOMMON", "selected": false}]}}
+{"time": 1793175953.6004388, "action": {"helper": "reward choice", "observed": "Ricochet Cat"}}
+{"time": 1793175953.656334, "action": {"helper": "room exit", "observed": "TAKE RICOCHET CAT AND GO\nclick it again to change your mind\nENTER"}}
+{"time": 1793175953.865137, "action": {"helper": "arrived", "observed": "narrative"}}
+{"time": 1793175966.0046003, "action": {"helper": "read observation", "observed": "The hidden strands"}}
+{"time": 1793175966.524023, "action": {"helper": "journal text", "observed": [{"title": "The hidden strands", "text": "A web surrounds a pawprint with three words. GETS LOST is tightly wrapped over the other two.\n\nLook closer\n\nBeneath the warning: GOES HOME and COMES BACK."}]}}
+{"time": 1793175966.540355, "action": {"helper": "manual investigation controls untouched", "observed": []}}
+{"time": 1793175966.639861, "action": {"room": "Lower Attic. Scuffle. Row 1."}}
+{"time": 1793175967.7032745, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175968.1518402, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175968.707079, "action": "End Turn"}
+{"time": 1793175969.632307, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175970.2674673, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175970.4948642, "action": "End Turn"}
+{"time": 1793175971.3086162, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175971.638926, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175972.1026776, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175972.4800074, "action": "End Turn"}
+{"time": 1793175973.4530888, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793175992.7195358, "action": {"room": "Telescope Gallery. Scuffle. Row 2."}}
+{"time": 1793175993.4647007, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793175993.994773, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793175994.5646045, "action": "End Turn"}
+{"time": 1793175995.4985702, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176015.9051158, "action": {"room": "Trunk Room. Curiosity. Row 3."}}
+{"time": 1793176023.8311465, "action": {"helper": "read observation", "observed": "The window warning"}}
+{"time": 1793176024.4868662, "action": {"helper": "journal text", "observed": [{"title": "The window warning", "text": "A warning card hangs beside a window. A soft ball rests below the sill.\n\nLook closer\n\nA second card is pinned behind the first. Both show the same window.\n\nA window in two futures\n\nDoes the warning show what must happen?\n\nMy idea \u2014 optional. You can change it.\nThe warning must come true.\nIt shows something that might happen.\nI\u2019m not sure yet.\nRead both cards.\nGently press the soft ball against the glass.\n\nTry the checks above first. There is no time limit.\n\nPut the observations together"}]}}
+{"time": 1793176024.4982615, "action": {"helper": "manual investigation controls untouched", "observed": ["The warning must come true.", "It shows something that might happen.", "I\u2019m not sure yet.", "Read both cards.", "Gently press the soft ball against the glass.", "Put the observations together"]}}
+{"time": 1793176024.6007125, "action": {"room": "Cobweb Gallery. Curiosity. Row 4."}}
+{"time": 1793176040.3123863, "action": {"room": "Watcher's Nook. Scuffle. Row 5."}}
+{"time": 1793176041.3270502, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793176042.0503855, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793176042.5242338, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176042.9742103, "action": "End Turn"}
+{"time": 1793176044.3378644, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176044.9895422, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793176045.2935812, "action": "End Turn"}
+{"time": 1793176047.035302, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793176047.755973, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176048.0845852, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793176048.7856038, "action": "End Turn"}
+{"time": 1793176049.9553208, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176050.6058793, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176051.1627285, "action": "End Turn"}
+{"time": 1793176059.5101986, "action": {"room": "West Weather Instrument Room. Curiosity. Row 6."}}
+{"time": 1793176066.3530138, "action": {"helper": "read observation", "observed": "A tiny telescope"}}
+{"time": 1793176066.9753995, "action": {"helper": "journal text", "observed": [{"title": "A tiny telescope", "text": "A tiny telescope points through the wrong end of a much larger telescope.\n\nLook closer\n\nIt can see one enormous biscuit beside the tea. The stars are elsewhere."}]}}
+{"time": 1793176066.9819748, "action": {"helper": "manual investigation controls untouched", "observed": ["The warning must come true.", "It shows something that might happen.", "I\u2019m not sure yet.", "Read both cards.", "Gently press the soft ball against the glass.", "Put the observations together"]}}
+{"time": 1793176067.097585, "action": {"room": "West Observatory Landing. Safe Room. Row 7."}}
+{"time": 1793176094.349057, "action": {"upgradeSelection": "Selected: Fluff Up. It will become Fluff Up+."}}
+{"time": 1793176098.0344071, "action": {"room": "West Attic Stair. Scuffle. Row 8."}}
+{"time": 1793176110.4946315, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176111.1680205, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176111.687749, "action": "End Turn"}
+{"time": 1793176112.7045608, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176113.168811, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176113.643412, "action": "End Turn"}
+{"time": 1793176114.513747, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176115.1757364, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176115.6454916, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176116.196089, "action": "End Turn"}
+{"time": 1793176117.7145684, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176118.0789502, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176118.4647174, "action": "End Turn"}
+{"time": 1793176119.5647528, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176135.526527, "action": {"room": "East Watcher's Nook. Treasure. Row 9."}}
+{"time": 1793176153.6477919, "action": {"room": "East Moth Loft. Scuffle. Row 10."}}
+{"time": 1793176155.1429217, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176155.904925, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176156.28142, "action": "End Turn"}
+{"time": 1793176158.0352132, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176158.4796517, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176159.1286228, "action": "End Turn"}
+{"time": 1793176161.1465077, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176162.3689458, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176162.8571894, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176163.5276785, "action": "End Turn"}
+{"time": 1793176164.0817115, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176164.6989663, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176165.5796251, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176166.6067426, "action": "End Turn"}
+{"time": 1793176168.442665, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176168.939279, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176169.695852, "action": "End Turn"}
+{"time": 1793176170.933718, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176188.9099166, "action": {"room": "Front Hidden Eaves. Unsurveyed. In Fresh Paw Prints. Row 11."}}
+{"time": 1793176189.8047092, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793176190.2445712, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793176190.488223, "action": "End Turn"}
+{"time": 1793176191.9948945, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176192.7109678, "action": "End Turn"}
+{"time": 1793176193.6132798, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793176194.3488345, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176195.0134816, "action": "End Turn"}
+{"time": 1793176195.740618, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176207.2745326, "action": {"room": "Far Trunk Room. Curiosity. Row 12."}}
+{"time": 1793176224.0713823, "action": {"room": "Far Telescope Gallery. Scuffle. Row 13."}}
+{"time": 1793176225.059278, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176226.3453107, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793176226.7801483, "action": "End Turn"}
+{"time": 1793176228.7096784, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793176228.9625406, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176229.4989665, "action": "End Turn"}
+{"time": 1793176231.0501852, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176231.6184494, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176232.098041, "action": "End Turn"}
+{"time": 1793176233.157501, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176233.6521769, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176234.2441194, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176234.6456933, "action": "End Turn"}
+{"time": 1793176235.649569, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176255.0872824, "action": {"room": "Grand Observatory. Boss. Row 14."}}
+{"time": 1793176256.531435, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176257.3613994, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176257.947652, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176258.400184, "action": "End Turn"}
+{"time": 1793176260.0484154, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176260.2999747, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176261.015714, "action": "End Turn"}
+{"time": 1793176261.9873679, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176262.2966623, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176262.9494984, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176263.3149908, "action": "End Turn"}
+{"time": 1793176264.3522546, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176264.5831072, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176265.249202, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176265.562322, "action": "End Turn"}
+{"time": 1793176267.066926, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176267.6461608, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176267.9008465, "action": "End Turn"}
+{"time": 1793176269.0848138, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176269.35516, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176270.1839116, "action": "End Turn"}
+{"time": 1793176271.065213, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176271.5267625, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176271.9376805, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176272.6017816, "action": "End Turn"}
+{"time": 1793176273.7356155, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176274.1853273, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176274.6776314, "action": "End Turn"}
+{"time": 1793176275.7310545, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176276.2695239, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176276.536854, "action": "End Turn"}
+{"time": 1793176277.642115, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176278.2290926, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176278.499655, "action": "End Turn"}
+{"time": 1793176279.4054372, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176280.5151548, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176280.9995577, "action": "End Turn"}
+{"time": 1793176307.2679808, "action": {"helper": "reward offers", "observed": [{"name": "Hide Under Something", "text": "Hide Under Something\nSKILL \u00b7 SELF\nGain 6 Guard. Your next Attack this turn costs 1 less.\n1\nCOMMON", "selected": false}, {"name": "Spectral Scratch", "text": "Spectral Scratch\nATTACK\nDeal 6 damage. Deal 4 more while Untouched.\n1\nCOMMON", "selected": false}, {"name": "Frenzied Zoomies", "text": "Frenzied Zoomies\nATTACK\nDeal 4 damage. Zoomies: return this to your hand. Once each turn.\n0\nUNCOMMON", "selected": false}]}}
+{"time": 1793176307.2687864, "action": {"helper": "reward choice", "observed": "Frenzied Zoomies"}}
+{"time": 1793176307.31877, "action": {"helper": "room exit", "observed": "TAKE FRENZIED ZOOMIES AND GO\nclick it again to change your mind\nENTER"}}
+{"time": 1793176307.7996929, "action": {"helper": "arrived", "observed": "narrative"}}
+{"time": 1793176310.2011578, "action": {"helper": "read observation", "observed": "Two empty dishes"}}
+{"time": 1793176311.1401923, "action": {"helper": "journal text", "observed": [{"title": "Two empty dishes", "text": "A feeding tray holds two empty dishes: USUAL FOOD and SPECIAL TREAT.\n\nLook closer\n\nA note says ACCEPTED BOTH. THEREFORE HAPPY TO REMAIN."}]}}
+{"time": 1793176311.1540349, "action": {"helper": "manual investigation controls untouched", "observed": []}}
+{"time": 1793176311.407056, "action": {"room": "Flour Room. Scuffle. Row 1."}}
+{"time": 1793176313.0191123, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176314.0551941, "action": "End Turn"}
+{"time": 1793176315.3668163, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176315.7576234, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176316.9985065, "action": "End Turn"}
+{"time": 1793176317.8191876, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176318.1135933, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176318.8676608, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176319.2657566, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176319.8055086, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176320.2426205, "action": "End Turn"}
+{"time": 1793176321.1963341, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176353.520816, "action": {"verified": "Dough Blob split naturally after turn2 Fluff Up + Everywhere at Once. Turn3 only two Doughlings; no parent/NaN. Real keyboard victory turn4."}}
+{"time": 1793176354.2072043, "action": {"room": "Dish Room. Scuffle. Row 2."}}
+{"time": 1793176354.9514732, "action": {"turn": 1, "courage": 71, "enemies": ["Kitchen Imp. Enemy. 29 of 29 Courage. Next: Grab a Tool."]}}
+{"time": 1793176354.961631, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176355.6851008, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176356.0061724, "action": "End Turn"}
+{"time": 1793176356.6776657, "action": {"turn": 2, "courage": 75, "enemies": ["Kitchen Imp. Enemy. 6 of 29 Courage. Next: Utensil Jab. 19 damage."]}}
+{"time": 1793176356.6873875, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176377.3671415, "action": {"room": "Scullery. Curiosity. Row 3."}}
+{"time": 1793176391.897508, "action": {"helper": "read observation", "observed": "The uncoated bowl"}}
+{"time": 1793176392.464153, "action": {"helper": "journal text", "observed": [{"title": "The uncoated bowl", "text": "Five bowls shine with new glaze. A sixth has a worn patch on its rim.\n\nLook closer\n\nOnly the worn bowl has been pulled close to a sleeping mat."}]}}
+{"time": 1793176392.473209, "action": {"helper": "manual investigation controls untouched", "observed": []}}
+{"time": 1793176392.6072543, "action": {"room": "Dumbwaiter Hall. Scuffle. Row 4."}}
+{"time": 1793176393.4977958, "action": {"turn": 1, "courage": 77, "enemies": ["Rising Batter. Enemy. 40 of 40 Courage. Next: Batter Flop. 13 damage.", "Jam Jar. Enemy. 25 of 25 Courage. Next: Spill. puts 1 Sticky Sticky to discard."]}}
+{"time": 1793176393.5209777, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176394.6367478, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793176395.666999, "action": "End Turn"}
+{"time": 1793176396.4931114, "action": {"turn": 2, "courage": 73, "enemies": ["Rising Batter. Enemy. 32 of 40 Courage. Next: Overflow. 7 Guard.", "Jam Jar. Enemy. 17 of 25 Courage. Next: Jam Splash. 9 damage."]}}
+{"time": 1793176396.511566, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176397.2116966, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793176397.6595597, "action": "End Turn"}
+{"time": 1793176398.0657222, "action": {"turn": 3, "courage": 73, "enemies": ["Rising Batter. Enemy. 20 of 40 Courage, 7 Guard. Next: Batter Flop. 13 damage.", "Jam Jar. Enemy. 0 of 25 Courage. Next: Jam Splash. 9 damage."]}}
+{"time": 1793176398.336212, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176398.7721045, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176398.9757013, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176399.5571547, "action": "End Turn"}
+{"time": 1793176411.4831636, "action": {"room": "Candy Cupboard. Safe Room. Row 5."}}
+{"time": 1793176417.9998894, "action": {"upgradeSelection": "Selected: Ricochet Cat. It will become Ricochet Cat+."}}
+{"time": 1793176418.4584863, "action": {"room": "West Flour Room. Scuffle. Row 6."}}
+{"time": 1793176419.4677596, "action": {"turn": 1, "courage": 76, "enemies": ["Candy Clump. Enemy. 38 of 38 Courage. Next: Candy Bash. 17 damage.", "Jam Jar. Enemy. 25 of 25 Courage. Next: Spill. puts 1 Sticky Sticky to discard."]}}
+{"time": 1793176419.4838586, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793176419.9963062, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176420.474934, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176421.3744369, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176421.913689, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176422.4420998, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176422.8872397, "action": "End Turn"}
+{"time": 1793176423.7923322, "action": {"turn": 2, "courage": 63, "enemies": ["Candy Clump. Enemy. 0 of 38 Courage. Next: Candy Bash. 17 damage.", "Jam Jar. Enemy. 8 of 25 Courage. Next: Jam Splash. 9 damage."]}}
+{"time": 1793176423.8090978, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176424.41281, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176424.8616173, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176453.9132535, "action": {"helper": "read observation", "observed": "One more improvement"}}
+{"time": 1793176454.7479224, "action": {"helper": "journal text", "observed": [{"title": "One more improvement", "text": "A recipe begins with a simple bowl of soup. Additions run down the page and onto the table.\n\nLook closer\n\nAt the bottom, somebody drew a spoon. It has a question mark beside it."}]}}
+{"time": 1793176454.756689, "action": {"helper": "manual investigation controls untouched", "observed": []}}
+{"time": 1793176454.887022, "action": {"room": "West Pastry Room. Curiosity. Row 7."}}
+{"time": 1793176480.2297814, "action": {"room": "West Dish Room. Scuffle. Row 8."}}
+{"time": 1793176481.4149287, "action": {"turn": 1, "courage": 86, "enemies": ["Dough Blob. Enemy. 34 of 34 Courage. Next: Knead. 8 Guard.", "Kitchen Imp. Enemy. 29 of 29 Courage. Next: Grab a Tool."]}}
+{"time": 1793176481.4447892, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176482.402546, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176482.7198915, "action": "End Turn"}
+{"time": 1793176484.1531394, "action": {"turn": 2, "courage": 86, "enemies": ["Dough Blob. Enemy. 18 of 34 Courage, 8 Guard. Next: Dough Slam. 15 damage.", "Kitchen Imp. Enemy. 17 of 29 Courage. Next: Utensil Jab. 13 damage, 2 times."]}}
+{"time": 1793176484.1809924, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793176485.1331322, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176485.876579, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176486.3629777, "action": "End Turn"}
+{"time": 1793176487.1983209, "action": {"turn": 3, "courage": 68, "enemies": ["Kitchen Imp. Enemy. 0 of 29 Courage. Next: Utensil Jab. 13 damage, 2 times.", "Doughling. Enemy. 3 of 11 Courage. Next: Squish Together. 4 Guard.", "Doughling. Enemy. 3 of 11 Courage. Next: Squish Together. 4 Guard."]}}
+{"time": 1793176487.2178645, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176487.7601616, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176511.017283, "action": {"room": "West Dry Pantry. Rescue. In A Cold Draught. Row 9."}}
+{"time": 1793176524.0583432, "action": {"room": "Back Scullery. Curiosity. Row 10."}}
+{"time": 1793176544.7357478, "action": {"room": "Little Flour Room. Scuffle. Row 11."}}
+{"time": 1793176547.486224, "action": {"turn": 1, "courage": 77, "enemies": ["Pantry Mimic. Enemy. 35 of 35 Courage. Next: Stay Still. 6 Guard.", "Candy Clump. Enemy. 38 of 38 Courage. Next: Candy Bash. 17 damage."]}}
+{"time": 1793176547.5026386, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176548.9950438, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176550.3967767, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176551.673938, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176552.6856282, "action": "End Turn"}
+{"time": 1793176553.4406614, "action": {"turn": 2, "courage": 64, "enemies": ["Pantry Mimic. Enemy. 16 of 35 Courage, 6 Guard. Next: Pantry Bite. 19 damage.", "Candy Clump. Enemy. 26 of 38 Courage. Next: Harden. 10 Guard."]}}
+{"time": 1793176553.4495132, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176555.403126, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176556.4457872, "action": "End Turn"}
+{"time": 1793176557.984309, "action": {"turn": 3, "courage": 61, "enemies": ["Pantry Mimic. Enemy. 10 of 35 Courage. Next: Swallow Something.", "Candy Clump. Enemy. 26 of 38 Courage, 10 Guard. Next: Sugar Rush. 9 damage, 2 times."]}}
+{"time": 1793176557.9982567, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176559.040185, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176560.30731, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176561.4506092, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176562.2859364, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176563.0940754, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176563.7915242, "action": "End Turn"}
+{"time": 1793176565.1926653, "action": {"turn": 4, "courage": 61, "enemies": ["Pantry Mimic. Enemy. 0 of 35 Courage. Next: Swallow Something.", "Candy Clump. Enemy. 26 of 38 Courage. Next: Candy Bash. 17 damage."]}}
+{"time": 1793176565.2056587, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176566.2467797, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176567.2106152, "action": "End Turn"}
+{"time": 1793176567.8032827, "action": {"turn": 5, "courage": 61, "enemies": ["Pantry Mimic. Enemy. 0 of 35 Courage. Next: Swallow Something.", "Candy Clump. Enemy. 20 of 38 Courage. Next: Harden. 10 Guard."]}}
+{"time": 1793176567.8141596, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176569.908737, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176581.319942, "action": {"room": "Little Breakfast Room. Safe Room. Row 12."}}
+{"time": 1793176606.7907484, "action": {"upgradeSelection": "Selected: Frenzied Zoomies. It will become Frenzied Zoomies+."}}
+{"time": 1793176607.5030086, "action": {"room": "Inner Butler's Pantry. Mr. Moth's. Row 13."}}
+{"time": 1793176672.7434604, "action": {"room": "Confectioner's Kitchen. Boss. Row 14."}}
+{"time": 1793176676.5474422, "action": {"turn": 1, "courage": 70, "enemies": ["The Confectioner. Boss. 305 of 305 Courage. Next: Add Ingredient. 6 Guard."]}}
+{"time": 1793176676.5685494, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176679.7040586, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176681.8143601, "action": "End Turn"}
+{"time": 1793176684.2404644, "action": {"turn": 2, "courage": 74, "enemies": ["The Confectioner. Boss. 299 of 305 Courage, 6 Guard. Next: Sugar Hook. 21 damage."]}}
+{"time": 1793176684.2631755, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176685.535398, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176686.7271647, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176687.9926877, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176689.1540027, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176690.1732621, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176691.0988498, "action": "End Turn"}
+{"time": 1793176691.7005765, "action": {"turn": 3, "courage": 74, "enemies": ["The Confectioner. Boss. 268 of 305 Courage. Next: Stir Everything."]}}
+{"time": 1793176691.7138875, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176694.483643, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176695.5933664, "action": "End Turn"}
+{"time": 1793176697.1225765, "action": {"turn": 4, "courage": 74, "enemies": ["The Confectioner. Boss. 196 of 305 Courage. Next: Taste Test. 9 damage, 2 times."]}}
+{"time": 1793176697.1510866, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176698.1439672, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176698.4271986, "action": "End Turn"}
+{"time": 1793176700.8043823, "action": {"turn": 5, "courage": 74, "enemies": ["The Confectioner. Boss. 175 of 305 Courage. Next: Sugar Hook. 21 damage."]}}
+{"time": 1793176700.820708, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793176702.1781683, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176702.4177234, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176704.5373936, "action": "End Turn"}
+{"time": 1793176706.2820833, "action": {"turn": 6, "courage": 74, "enemies": ["The Confectioner. Boss. 128 of 305 Courage. Next: Candy Cleaver. 28 damage."]}}
+{"time": 1793176706.3162923, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176707.4795487, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176708.4938054, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176709.5574143, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176710.532151, "action": "End Turn"}
+{"time": 1793176712.1243513, "action": {"turn": 7, "courage": 74, "enemies": ["The Confectioner. Boss. 61 of 305 Courage. Next: Toss It In. 5 Guard."]}}
+{"time": 1793176712.1578805, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176713.3616977, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793176752.8362892, "action": {"helper": "reward offers", "observed": [{"name": "Wall Bounce", "text": "Wall Bounce\nATTACK\nDeal 6 damage. If you have Ghoststep, strike again.\n1\nCOMMON", "selected": false}, {"name": "Catastrophe", "text": "Catastrophe\nATTACK \u00b7 RANDOM\nSpend all your Nerve. Deal 6 damage to a random enemy 2 times for each Nerve spent.\nX\nRARE", "selected": false}, {"name": "Hide and Seek", "text": "Hide and Seek\nSKILL \u00b7 SELF\nChoose one: gain 1 Ghoststep; draw 2 Tricks; or gain 9 Guard.\n1\nUNCOMMON", "selected": false}]}}
+{"time": 1793176784.5708816, "action": {"helper": "reward offers", "observed": [{"name": "Wall Bounce", "text": "Wall Bounce\nATTACK\nDeal 6 damage. If you have Ghoststep, strike again.\n1\nCOMMON", "selected": false}, {"name": "Catastrophe", "text": "Catastrophe\nATTACK \u00b7 RANDOM\nSpend all your Nerve. Deal 6 damage to a random enemy 2 times for each Nerve spent.\nX\nRARE", "selected": false}, {"name": "Hide and Seek", "text": "Hide and Seek\nSKILL \u00b7 SELF\nChoose one: gain 1 Ghoststep; draw 2 Tricks; or gain 9 Guard.\n1\nUNCOMMON", "selected": false}]}}
+{"time": 1793176784.5731742, "action": {"helper": "reward choice", "observed": "Catastrophe"}}
+{"time": 1793176784.6310272, "action": {"helper": "room exit", "observed": "TAKE CATASTROPHE AND GO\nclick it again to change your mind\nENTER"}}
+{"time": 1793176785.2946663, "action": {"helper": "arrived", "observed": "atlas"}}
+{"time": 1793176786.9761605, "action": {"helper": "read observation", "observed": "Soft moss, new latch"}}
+{"time": 1793176787.9075508, "action": {"helper": "journal text", "observed": [{"title": "Soft moss, new latch", "text": "Clean moss fills a little shelter. A bright new latch sits outside it.\n\nLook closer\n\nThe moss is worn into a resting hollow. Small scrape marks reach toward the latch."}]}}
+{"time": 1793176787.925329, "action": {"helper": "manual investigation controls untouched", "observed": []}}
+{"time": 1793176788.0328019, "action": {"room": "Rain House. Scuffle. Row 1."}}
+{"time": 1793176790.1681027, "action": {"turn": 1, "courage": 86, "enemies": ["Spore Puff. Enemy. 27 of 27 Courage. Next: Release Spores."]}}
+{"time": 1793176790.1829932, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176857.7279692, "action": {"room": "Palm House. Scuffle. Row 2."}}
+{"time": 1793176859.3202257, "action": {"turn": 1, "courage": 86, "enemies": ["Snapping Blossom. Enemy. 37 of 37 Courage. Next: Unfurl. 5 Guard."]}}
+{"time": 1793176859.3325136, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176862.024349, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793176862.2325802, "action": "End Turn"}
+{"time": 1793176863.9319983, "action": {"turn": 2, "courage": 86, "enemies": ["Snapping Blossom. Enemy. 7 of 37 Courage, 9 Guard. Next: Pollen Shake. 9 damage. 1 Pollen."]}}
+{"time": 1793176863.9406688, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793176866.3458574, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793176910.6425014, "action": {"room": "Tool Shed. Unsurveyed. Row 3."}}
+{"time": 1793177312.679129, "action": {"helper": "room exit", "observed": "BACK TO THE BLUEPRINT\nENTER"}}
+{"time": 1793177313.208917, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793177313.4649575, "action": {"helper": "read observation", "observed": "The turning pot"}}
+{"time": 1793177314.418829, "action": {"helper": "journal text", "observed": [{"title": "The turning pot", "text": "A pot has turned so often that it has worn a circle into the shelf.\n\nLook closer\n\nIts leaves reach toward a small ordinary window, away from the brightest growing lamp."}]}}
+{"time": 1793177314.439802, "action": {"helper": "manual investigation controls untouched", "observed": []}}
+{"time": 1793177314.5531764, "action": {"room": "Orangery. Curiosity. Row 4."}}
+{"time": 1793177331.977327, "action": {"helper": "room exit", "observed": "GO ON\nENTER"}}
+{"time": 1793177332.3788722, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793177332.393629, "action": {"room": "Overgrown Conservatory. Scuffle. Row 5."}}
+{"time": 1793177334.3333168, "action": {"turn": 1, "courage": 86, "enemies": ["Topiary Beast. Enemy. 43 of 43 Courage. Next: Topiary Maul. 26 damage.", "Creeping Ivy. Enemy. 29 of 29 Courage. Next: Creep. 1 Entwined."]}}
+{"time": 1793177335.1521683, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793177336.6124127, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177337.9396536, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793177339.2004652, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177339.4108927, "action": "End Turn"}
+{"time": 1793177342.069279, "action": {"turn": 2, "courage": 86, "enemies": ["Topiary Beast. Enemy. 19 of 43 Courage. Next: Topiary Maul. 28 damage.", "Creeping Ivy. Enemy. 17 of 29 Courage. Next: Take Root. 9 Guard."]}}
+{"time": 1793177342.0976546, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793177343.2456234, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793177344.586823, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793177346.0371175, "action": "End Turn"}
+{"time": 1793177346.778489, "action": {"turn": 3, "courage": 86, "enemies": ["Topiary Beast. Enemy. 2 of 43 Courage, 5 Guard. Next: Reshape.", "Creeping Ivy. Enemy. 0 of 29 Courage. Next: Take Root. 9 Guard."]}}
+{"time": 1793177346.7892654, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793177348.636265, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177380.1868932, "action": {"helper": "reward offers", "observed": [{"name": "Phantom Flurry", "text": "Phantom Flurry\nATTACK\nDeal 5 damage once for each Trick you have played this turn, to a maximum of 5.\n2\nUNCOMMON", "selected": false}, {"name": "Walk Between Rooms", "text": "Walk Between Rooms\nSKILL\nDiscard your hand, then draw that many Tricks. Gain 1 Ghoststep.\n1\nRARE", "selected": false}, {"name": "Curious Paw", "text": "Curious Paw\nSKILL\nDraw 1 Trick. Discard 1 Trick. Vanish.\nVANISH\n0\nCOMMON", "selected": false}]}}
+{"time": 1793177380.1930718, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793177380.6276398, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793177381.0905926, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793177381.1531222, "action": {"room": "West Root Nursery. Rescue. Row 6."}}
+{"time": 1793177396.84096, "action": {"helper": "room exit", "observed": "GO ON\nENTER"}}
+{"time": 1793177396.935054, "action": {"helper": "arrived", "observed": "narrative"}}
+{"time": 1793177397.3446338, "action": {"room": "West Palm House. Scuffle. Row 7."}}
+{"time": 1793177398.926294, "action": {"turn": 1, "courage": 86, "enemies": ["Glassvine. Enemy. 34 of 34 Courage. Next: Shard Whip. 18 damage.", "Potling. Enemy. 23 of 23 Courage. Next: Plant Seed."]}}
+{"time": 1793177398.9399202, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793177400.5806482, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177403.2805111, "action": "End Turn"}
+{"time": 1793177405.2549758, "action": {"turn": 2, "courage": 82, "enemies": ["Glassvine. Enemy. 18 of 34 Courage. Next: Refract. 10 Guard.", "Potling. Enemy. 7 of 23 Courage. Next: Pot Bash. 13 damage.", "Seedling. Enemy. 6 of 6 Courage. Next: Grow."]}}
+{"time": 1793177405.267641, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793177406.683168, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793177407.707029, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793177408.1093533, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793177420.0176566, "action": {"helper": "reward offers", "observed": [{"name": "Knock It Over", "text": "Knock It Over\nSKILL\nRemove 6 Guard from the target. Apply 2 Haunt.\n0\nCOMMON", "selected": false}, {"name": "Tail Flick", "text": "Tail Flick\nATTACK\nDeal 5 damage. Apply 3 Haunt.\n1\nCOMMON", "selected": false}, {"name": "Borrowed Life", "text": "Borrowed Life\nSKILL \u00b7 SELF\nSpend 1 Lives. Draw 2 Tricks.\n0\nUNCOMMON", "selected": false}]}}
+{"time": 1793177420.0182643, "action": {"helper": "reward choice", "observed": "Borrowed Life"}}
+{"time": 1793177420.0903895, "action": {"helper": "room exit", "observed": "TAKE BORROWED LIFE AND GO\nclick it again to change your mind\nENTER"}}
+{"time": 1793177421.0398703, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793177421.2923188, "action": {"helper": "read observation", "observed": "Two pictures of a leaf"}}
+{"time": 1793177422.3503714, "action": {"helper": "journal text", "observed": [{"title": "Two pictures of a leaf", "text": "A leaf in an old picture is small. The same notched leaf in a newer picture glows.\n\nLook closer\n\nBoth leaves turn toward the same window. The notch appears in the same place."}]}}
+{"time": 1793177422.3623633, "action": {"helper": "manual investigation controls untouched", "observed": []}}
+{"time": 1793177422.5819914, "action": {"room": "West Cactus Gallery. Safe Room. Row 8."}}
+{"time": 1793177545.3116324, "action": {"helper": "room exit", "observed": "PACK UP AND GO ON\nENTER"}}
+{"time": 1793177546.742027, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793177546.7798505, "action": {"room": "West Potting Room. Scuffle. Row 9."}}
+{"time": 1793177551.2342827, "action": {"turn": 1, "courage": 86, "enemies": ["Spore Puff. Enemy. 27 of 27 Courage. Next: Release Spores.", "Potling. Enemy. 23 of 23 Courage. Next: Plant Seed."]}}
+{"time": 1793177551.4061334, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793177553.46585, "action": "End Turn"}
+{"time": 1793177555.9351141, "action": {"turn": 2, "courage": 86, "enemies": ["Spore Puff. Enemy. 11 of 27 Courage. Next: Soft Bonk. 11 damage.", "Potling. Enemy. 15 of 23 Courage. Next: Pot Bash. 13 damage.", "Seedling. Enemy. 6 of 6 Courage. Next: Grow."]}}
+{"time": 1793177555.9807837, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793177557.6231613, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177558.9794567, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793177589.2326984, "action": {"helper": "reward offers", "observed": [{"name": "Ghoststep", "text": "Ghoststep\nSKILL \u00b7 SELF\nGain 1 Ghoststep.\n1\nCOMMON", "selected": false}, {"name": "Nine-Lived Nerve", "text": "Nine-Lived Nerve\nSKILL \u00b7 SELF\nSpend 1 Lives. Gain 1 Nerve.\n0\nCOMMON", "selected": false}, {"name": "Spectral Scratch", "text": "Spectral Scratch\nATTACK\nDeal 6 damage. Deal 4 more while Untouched.\n1\nCOMMON", "selected": false}]}}
+{"time": 1793177589.2389202, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793177589.6888533, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793177590.1305437, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793177590.143158, "action": {"room": "Back Topiary Court. Scuffle. Row 10."}}
+{"time": 1793177592.6447241, "action": {"turn": 1, "courage": 86, "enemies": ["Creeping Ivy. Enemy. 29 of 29 Courage. Next: Creep. 1 Entwined.", "Glassvine. Enemy. 34 of 34 Courage. Next: Shard Whip. 18 damage.", "Potling. Enemy. 23 of 23 Courage. Next: Plant Seed."]}}
+{"time": 1793177592.6850843, "action": {"key": 2, "targetIndex": 2}}
+{"time": 1793177596.0616114, "action": {"key": 1, "targetIndex": 2}}
+{"time": 1793177596.340781, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177599.2627022, "action": "End Turn"}
+{"time": 1793177601.5394466, "action": {"turn": 2, "courage": 86, "enemies": ["Creeping Ivy. Enemy. 23 of 29 Courage. Next: Take Root. 9 Guard.", "Glassvine. Enemy. 34 of 34 Courage, 5 Guard. Next: Refract. 10 Guard.", "Potling. Enemy. 23 of 23 Courage. Next: Pot Bash. 13 damage.", "Seedling. Enemy. 6 of 6 Courage. Next: Grow."]}}
+{"time": 1793177601.5615687, "action": {"key": 4, "targetIndex": 3}}
+{"time": 1793177603.7330976, "action": {"key": 2, "targetIndex": 2}}
+{"time": 1793177604.1424913, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793177606.9410794, "action": "End Turn"}
+{"time": 1793177609.863429, "action": {"turn": 3, "courage": 80, "enemies": ["Creeping Ivy. Enemy. 0 of 29 Courage. Next: Take Root. 9 Guard.", "Glassvine. Enemy. 6 of 34 Courage, 10 Guard. Next: Grow Through. 5 Guard.", "Potling. Enemy. 8 of 23 Courage. Next: Water Itself. 6 Guard.", "Seedling. Enemy. 0 of 6 Courage. Next: Grow."]}}
+{"time": 1793177609.8825805, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793177610.027662, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793177612.192715, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793177612.637236, "action": "End Turn"}
+{"time": 1793177615.9694154, "action": {"turn": 4, "courage": 80, "enemies": ["Creeping Ivy. Enemy. 0 of 29 Courage. Next: Take Root. 9 Guard.", "Glassvine. Enemy. 6 of 34 Courage, 5 Guard. Next: Shard Whip. 18 damage.", "Potling. Enemy. 8 of 23 Courage, 6 Guard. Next: Pot Bash. 13 damage.", "Seedling. Enemy. 0 of 6 Courage. Next: Grow."]}}
+{"time": 1793177615.9932923, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793177616.6870198, "action": {"key": 6, "targetIndex": 0}}
+{"time": 1793177633.3167732, "action": {"helper": "reward offers", "observed": [{"name": "Spectral Scratch", "text": "Spectral Scratch\nATTACK\nDeal 6 damage. Deal 4 more while Untouched.\n1\nCOMMON", "selected": false}, {"name": "Borrowed Life", "text": "Borrowed Life\nSKILL \u00b7 SELF\nSpend 1 Lives. Draw 2 Tricks.\n0\nUNCOMMON", "selected": false}, {"name": "Catnap", "text": "Catnap\nSKILL \u00b7 SELF\nGain 12 Guard. Draw 2 Tricks at the start of your next turn.\n2\nCOMMON", "selected": false}]}}
+{"time": 1793177633.3256598, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793177633.8664107, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793177634.3923082, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793177634.4129832, "action": {"room": "Old Moss House. Safe Room. Row 11."}}
+{"time": 1793177659.7359593, "action": {"upgradeSelection": "Selected: Catastrophe. It will become Catastrophe+."}}
+{"time": 1793177677.1654518, "action": {"room": "Far Ivy Bridge. Scuffle. Row 12."}}
+{"time": 1793177679.4073994, "action": {"turn": 1, "courage": 86, "enemies": ["Snapping Blossom. Enemy. 37 of 37 Courage. Next: Unfurl. 5 Guard.", "Glassvine. Enemy. 34 of 34 Courage. Next: Shard Whip. 18 damage."]}}
+{"time": 1793177679.4216018, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793177681.9969902, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177683.6422822, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793177685.0950024, "action": "End Turn"}
+{"time": 1793177686.1287377, "action": {"turn": 2, "courage": 86, "enemies": ["Snapping Blossom. Enemy. 25 of 37 Courage, 9 Guard. Next: Pollen Shake. 9 damage. 1 Pollen.", "Glassvine. Enemy. 34 of 34 Courage. Next: Refract. 10 Guard."]}}
+{"time": 1793177686.1418762, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177687.5383162, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177688.744195, "action": "End Turn"}
+{"time": 1793177691.0060582, "action": {"turn": 3, "courage": 77, "enemies": ["Snapping Blossom. Enemy. 10 of 37 Courage. Next: Unfurl. 5 Guard.", "Glassvine. Enemy. 34 of 34 Courage, 10 Guard. Next: Grow Through. 5 Guard."]}}
+{"time": 1793177691.0226555, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177693.4632976, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177694.554267, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177695.7813923, "action": "End Turn"}
+{"time": 1793177697.7909977, "action": {"turn": 4, "courage": 76, "enemies": ["Snapping Blossom. Enemy. 0 of 37 Courage. Next: Unfurl. 5 Guard.", "Glassvine. Enemy. 15 of 34 Courage, 5 Guard. Next: Shard Whip. 18 damage."]}}
+{"time": 1793177697.8076556, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793177699.137436, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177716.856625, "action": {"helper": "reward offers", "observed": [{"name": "Nope.", "text": "Nope.\nSKILL \u00b7 SELF\nPrevent the next 1 negative condition an enemy would apply to you this turn.\n0\nUNCOMMON", "selected": false}, {"name": "Claw from Beyond", "text": "Claw from Beyond\nATTACK\nDeal 8 damage. Deal 4 more for each Trick that has Vanished this combat.\n2\nUNCOMMON", "selected": false}, {"name": "Spectral Scratch", "text": "Spectral Scratch\nATTACK\nDeal 6 damage. Deal 4 more while Untouched.\n1\nCOMMON", "selected": false}]}}
+{"time": 1793177716.8632529, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793177717.3741667, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793177717.8241684, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793177717.8399348, "action": {"room": "The Great Conservatory. Boss. Row 13."}}
+{"time": 1793177739.7019312, "action": {"turn": 1, "courage": 86, "enemies": ["The Carnivorous Conservatory. Boss. 300 of 300 Courage. Next: Vine Across the Door. 8 Guard.", "Growth Patch. Boss. 12 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 12 of 12 Courage. Next: Spread. 2 Guard."]}}
+{"time": 1793177739.71673, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793177743.3864634, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177743.6352768, "action": "End Turn"}
+{"time": 1793177745.0164354, "action": {"turn": 2, "courage": 86, "enemies": ["The Carnivorous Conservatory. Boss. 282 of 300 Courage, 8 Guard. Next: Hungry Flowers. 11 damage, 2 times.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard."]}}
+{"time": 1793177745.0360188, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177746.348278, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793177747.9626791, "action": "End Turn"}
+{"time": 1793177750.1147287, "action": {"turn": 3, "courage": 75, "enemies": ["The Carnivorous Conservatory. Boss. 282 of 300 Courage. Next: Root Burst. 22 damage.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 12 of 12 Courage. Next: Spread. 2 Guard."]}}
+{"time": 1793177750.1275153, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793177752.4732769, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793177752.6755118, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793177754.8796952, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177755.1332486, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793177756.6481514, "action": "End Turn"}
+{"time": 1793177758.454162, "action": {"turn": 4, "courage": 75, "enemies": ["The Carnivorous Conservatory. Boss. 269 of 300 Courage. Next: Seed Everywhere.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 12 of 12 Courage, 2 Guard. Next: Spread. 2 Guard."]}}
+{"time": 1793177759.7070522, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793177760.741842, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177761.9328485, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177763.2150757, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793177765.1768196, "action": "End Turn"}
+{"time": 1793177766.0615087, "action": {"turn": 5, "courage": 78, "enemies": ["The Carnivorous Conservatory. Boss. 214 of 300 Courage. Next: Vine Across the Door. 8 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 12 of 12 Courage. Next: Spread. 2 Guard."]}}
+{"time": 1793177766.075207, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793177767.5855107, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177769.98711, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177770.2059083, "action": "End Turn"}
+{"time": 1793177771.8825016, "action": {"turn": 6, "courage": 81, "enemies": ["The Carnivorous Conservatory. Boss. 116 of 300 Courage. Next: Vine Across the Door. 8 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 12 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 12 of 12 Courage. Next: Spread. 2 Guard."]}}
+{"time": 1793177771.9000826, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793177774.5050642, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177774.7477367, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793177775.819693, "action": "End Turn"}
+{"time": 1793177777.548954, "action": {"turn": 7, "courage": 86, "enemies": ["The Carnivorous Conservatory. Boss. 80 of 300 Courage, 8 Guard. Next: Hungry Flowers. 11 damage, 2 times.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 0 of 12 Courage. Next: Spread. 2 Guard.", "Growth Patch. Boss. 12 of 12 Courage. Next: Spread. 2 Guard."]}}
+{"time": 1793177777.5716548, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793177779.7535973, "action": {"key": 6, "targetIndex": 0}}
+{"time": 1793177781.1305423, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177817.9539273, "action": {"helper": "reward offers", "observed": [{"name": "Quick Pounce", "text": "Quick Pounce\nATTACK\nDeal 5 damage. Zoomies: deal 6 more.\n1\nCOMMON", "selected": false}, {"name": "Haunting Hiss", "text": "Haunting Hiss\nSKILL\nApply 3 Haunt. If the target is already Haunted, apply 7 instead.\n1\nCOMMON", "selected": false}, {"name": "Fluff Up", "text": "Fluff Up\nSKILL \u00b7 SELF\nGain 6 Guard. If you have no Ghoststep, gain 1.\n1\nCOMMON", "selected": false}]}}
+{"time": 1793177817.9545546, "action": {"helper": "reward choice", "observed": "Fluff Up"}}
+{"time": 1793177818.0017161, "action": {"helper": "room exit", "observed": "TAKE FLUFF UP AND GO\nclick it again to change your mind\nENTER"}}
+{"time": 1793177818.6904502, "action": {"helper": "arrived", "observed": "atlas"}}
+{"time": 1793177829.1209493, "action": {"helper": "read observation", "observed": "Home confirmed"}}
+{"time": 1793177830.2865481, "action": {"helper": "journal text", "observed": [{"title": "Home confirmed", "text": "A collar tray has a card: KNOWN HOME. AWAITING RETURN.\n\nLook closer\n\nA newer slip covers the return box: NOT YET SAFE. The collar\u2019s name is too worn to read."}]}}
+{"time": 1793177830.2987561, "action": {"helper": "manual investigation controls untouched", "observed": []}}
+{"time": 1793177879.293466, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177897.047231, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793177898.8471224, "action": {"turn": 1, "courage": 84, "enemies": ["Walking Cage. Enemy. 59 of 59 Courage. Next: Cage Slam. 24 damage.", "Cage Latch. Enemy. 0 of 16 Courage. Next: Fastened."]}}
+{"time": 1793177898.863203, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793177899.7491484, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793177899.9398677, "action": "End Turn"}
+{"time": 1793177902.4678998, "action": {"turn": 2, "courage": 86, "enemies": ["Walking Cage. Enemy. 21 of 59 Courage. Next: Rattle. 10 Guard.", "Cage Latch. Enemy. 0 of 16 Courage. Next: Fastened."]}}
+{"time": 1793177902.4895525, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793177903.5982082, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793177903.742138, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177930.0693512, "action": {"helper": "reward offers", "observed": [{"name": "Nine Lives, Nine Plans", "text": "Nine Lives, Nine Plans\nSKILL \u00b7 SELF\nChoose one: gain 16 Guard; draw 3 Tricks; apply 10 Haunt; or gain 2 Nerve. Spend 1 Lives to choose two.\n2\nUNCOMMON", "selected": false}, {"name": "Ninefold Scratch", "text": "Ninefold Scratch\nATTACK\nDeal 3 damage 9 times.\n3\nUNCOMMON", "selected": false}, {"name": "Now You See Me", "text": "Now You See Me\nSKILL \u00b7 SELF\nGain 1 Ghoststep. Vanish.\nVANISH\n0\nUNCOMMON", "selected": false}]}}
+{"time": 1793177930.0704324, "action": {"helper": "reward choice", "observed": "Now You See Me"}}
+{"time": 1793177930.1330788, "action": {"helper": "room exit", "observed": "TAKE NOW YOU SEE ME AND GO\nclick it again to change your mind\nENTER"}}
+{"time": 1793177930.6423745, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793177930.6603053, "action": {"room": "Training Hall. Scuffle. Row 2."}}
+{"time": 1793177932.4487872, "action": {"turn": 1, "courage": 81, "enemies": ["Feeding Cart. Enemy. 53 of 53 Courage, 8 Guard. Next: Cart Bump. 18 damage.", "Walking Cage. Enemy. 59 of 59 Courage. Next: Cage Slam. 24 damage.", "Cage Latch. Enemy. 16 of 16 Courage. Next: Fastened."]}}
+{"time": 1793177933.5331674, "action": {"key": 4, "targetIndex": 2}}
+{"time": 1793177933.8084238, "action": {"key": 4, "targetIndex": 2}}
+{"time": 1793177935.9018793, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793177936.2169995, "action": "End Turn"}
+{"time": 1793177938.1948066, "action": {"turn": 2, "courage": 85, "enemies": ["Feeding Cart. Enemy. 53 of 53 Courage. Next: Restock. 8 Guard.", "Walking Cage. Enemy. 59 of 59 Courage. Next: Rattle. 14 Guard.", "Cage Latch. Enemy. 16 of 16 Courage. Next: Fastened."]}}
+{"time": 1793177938.203517, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793177939.563863, "action": {"key": 4, "targetIndex": 2}}
+{"time": 1793177941.6370764, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177942.653151, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177943.6797204, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793177944.7277346, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177945.6763153, "action": "End Turn"}
+{"time": 1793177946.6605039, "action": {"turn": 3, "courage": 86, "enemies": ["Feeding Cart. Enemy. 26 of 53 Courage, 8 Guard. Next: Cart Bump. 18 damage.", "Walking Cage. Enemy. 47 of 59 Courage, 10 Guard. Next: Lock It.", "Cage Latch. Enemy. 0 of 16 Courage. Next: Fastened."]}}
+{"time": 1793177946.676259, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793177947.7708943, "action": {"key": 6, "targetIndex": 0}}
+{"time": 1793177950.1588485, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793177950.557174, "action": "End Turn"}
+{"time": 1793177953.189398, "action": {"turn": 4, "courage": 86, "enemies": ["Feeding Cart. Enemy. 1 of 53 Courage. Next: Restock. 8 Guard.", "Walking Cage. Enemy. 40 of 59 Courage, 6 Guard. Next: Cage Slam. 24 damage.", "Cage Latch. Enemy. 0 of 16 Courage. Next: Fastened."]}}
+{"time": 1793177953.2124295, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177953.7730505, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177954.7602596, "action": "End Turn"}
+{"time": 1793177957.0768883, "action": {"turn": 5, "courage": 72, "enemies": ["Feeding Cart. Enemy. 0 of 53 Courage. Next: Restock. 8 Guard.", "Walking Cage. Enemy. 30 of 59 Courage. Next: Cage Slam. 24 damage.", "Cage Latch. Enemy. 0 of 16 Courage. Next: Fastened."]}}
+{"time": 1793177957.090348, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177957.2967525, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177958.6214836, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177958.7642949, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793177960.0628166, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793177960.7739205, "action": "End Turn"}
+{"time": 1793177962.2628155, "action": {"turn": 6, "courage": 72, "enemies": ["Feeding Cart. Enemy. 0 of 53 Courage. Next: Restock. 8 Guard.", "Walking Cage. Enemy. 8 of 59 Courage. Next: Rattle. 10 Guard.", "Cage Latch. Enemy. 0 of 16 Courage. Next: Fastened."]}}
+{"time": 1793177962.2762935, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793177962.5867555, "action": {"key": 7, "targetIndex": 0}}
+{"time": 1793177974.8463511, "action": {"helper": "reward offers", "observed": [{"name": "I Meant to Do That", "text": "I Meant to Do That\nSKILL \u00b7 SELF\nGain 5 Guard for each Trick you discarded or Vanished this turn. Draw 2 Tricks if that is at least 3.\n1\nRARE", "selected": false}, {"name": "Steal a Turn", "text": "Steal a Turn\nSKILL\nCancel the target\u2019s current action. Apply 6 Haunt. Vanish.\nVANISH\n3\nRARE", "selected": false}, {"name": "Knock It Over", "text": "Knock It Over\nSKILL\nRemove 6 Guard from the target. Apply 2 Haunt.\n0\nCOMMON", "selected": false}]}}
+{"time": 1793177974.859293, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793177975.2699149, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793177975.7353787, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793177975.7547898, "action": {"room": "Wash Room. Scuffle. Row 3."}}
+{"time": 1793177978.6482282, "action": {"turn": 1, "courage": 79, "enemies": ["Walking Cage. Enemy. 59 of 59 Courage. Next: Cage Slam. 24 damage.", "Comfort Blanket. Enemy. 58 of 58 Courage. Next: Tuck In. 5 Guard. 1 Tucked In.", "A Long Haired Cat. Ward animal. Protected; cannot be attacked or hurt. Next: Frightened.", "Cage Latch. Enemy. 16 of 16 Courage. Next: Fastened."]}}
+{"time": 1793177978.6615515, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793177980.388964, "action": {"key": 1, "targetIndex": 2}}
+{"time": 1793177981.8798742, "action": {"key": 2, "targetIndex": 2}}
+{"time": 1793177983.3227863, "action": "End Turn"}
+{"time": 1793177985.395128, "action": {"turn": 2, "courage": 86, "enemies": ["Walking Cage. Enemy. 51 of 59 Courage. Next: Rattle. 10 Guard.", "Comfort Blanket. Enemy. 50 of 58 Courage, 5 Guard. Next: Blanket Flop. 21 damage.", "Cage Latch. Enemy. 0 of 16 Courage. Next: Fastened."]}}
+{"time": 1793177985.4113486, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793177985.662514, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177987.6349995, "action": {"key": 6, "targetIndex": 0}}
+{"time": 1793177988.648196, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793177988.8941858, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177990.543062, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177991.4967244, "action": "End Turn"}
+{"time": 1793177993.3486533, "action": {"turn": 3, "courage": 80, "enemies": ["Walking Cage. Enemy. 51 of 59 Courage, 10 Guard. Next: Lock It.", "Comfort Blanket. Enemy. 50 of 58 Courage. Next: Everything Is Fine. 8 Guard.", "Cage Latch. Enemy. 0 of 16 Courage. Next: Fastened."]}}
+{"time": 1793177993.361652, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793177994.0104456, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793177995.1424444, "action": "End Turn"}
+{"time": 1793177998.0809546, "action": {"turn": 4, "courage": 80, "enemies": ["Walking Cage. Enemy. 31 of 59 Courage, 11 Guard. Next: Cage Slam. 24 damage.", "Comfort Blanket. Enemy. 10 of 58 Courage, 8 Guard. Next: Tuck In. 5 Guard. 1 Tucked In.", "Cage Latch. Enemy. 0 of 16 Courage. Next: Fastened."]}}
+{"time": 1793177998.1071103, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793177999.5064943, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793178000.494631, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178001.4609573, "action": "End Turn"}
+{"time": 1793178002.9276175, "action": {"turn": 5, "courage": 83, "enemies": ["Walking Cage. Enemy. 3 of 59 Courage. Next: Cage Slam. 24 damage.", "Comfort Blanket. Enemy. 0 of 58 Courage. Next: Tuck In. 5 Guard. 1 Tucked In.", "Cage Latch. Enemy. 0 of 16 Courage. Next: Fastened."]}}
+{"time": 1793178002.9495416, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793178003.2607641, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178024.201454, "action": {"helper": "reward offers", "observed": [{"name": "Watchful Eyes", "text": "Watchful Eyes\nSKILL\nDraw 3 Tricks, then discard 1 Trick.\n1\nCOMMON", "selected": false}, {"name": "Quick Pounce", "text": "Quick Pounce\nATTACK\nDeal 5 damage. Zoomies: deal 6 more.\n1\nCOMMON", "selected": false}, {"name": "Nope.", "text": "Nope.\nSKILL \u00b7 SELF\nPrevent the next 1 negative condition an enemy would apply to you this turn.\n0\nUNCOMMON", "selected": false}]}}
+{"time": 1793178024.2067854, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793178024.571381, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793178025.017166, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178025.291684, "action": {"helper": "read observation", "observed": "Treatment complete"}}
+{"time": 1793178026.712066, "action": {"helper": "journal text", "observed": [{"title": "Treatment complete", "text": "A care card reads ARRIVED LIMPING. WALKING COMFORTABLY. TREATMENT COMPLETE.\n\nLook closer\n\nThe leaving box is still blank. A fresh blanket waits beside the card."}]}}
+{"time": 1793178026.7281723, "action": {"helper": "manual investigation controls untouched", "observed": []}}
+{"time": 1793178026.874541, "action": {"room": "Veterinary Room. Curiosity. Row 4."}}
+{"time": 1793178047.018521, "action": {"helper": "room exit", "observed": "GO ON\nENTER"}}
+{"time": 1793178047.4397292, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178047.455145, "action": {"room": "Quarantine Room. Curiosity. Row 5."}}
+{"time": 1793178073.9660518, "action": {"helper": "room exit", "observed": "GO ON\nENTER"}}
+{"time": 1793178074.3110077, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178074.332758, "action": {"room": "West Night Kennels. Scuffle. Row 6."}}
+{"time": 1793178077.13493, "action": {"turn": 1, "courage": 81, "enemies": ["Walking Cage. Enemy. 59 of 59 Courage. Next: Cage Slam. 24 damage.", "Ward Orderly. Enemy. 66 of 66 Courage. Next: Stabilize. 1 Stable.", "A Sooty Bird. Ward animal. Protected; cannot be attacked or hurt. Next: Frightened.", "Cage Latch. Enemy. 16 of 16 Courage. Next: Fastened."]}}
+{"time": 1793178077.1449966, "action": {"key": 2, "targetIndex": 2}}
+{"time": 1793178077.6308992, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793178079.1896045, "action": "End Turn"}
+{"time": 1793178082.614167, "action": {"turn": 2, "courage": 85, "enemies": ["Walking Cage. Enemy. 47 of 59 Courage. Next: Rattle. 14 Guard.", "Ward Orderly. Enemy. 62 of 66 Courage, 7 Guard. Next: Routine Check. 9 Guard.", "A Sooty Bird. Ward animal. Protected; cannot be attacked or hurt. Next: Frightened.", "Cage Latch. Enemy. 16 of 16 Courage. Next: Fastened."]}}
+{"time": 1793178082.6308286, "action": {"key": 5, "targetIndex": 2}}
+{"time": 1793178082.8197942, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793178084.797027, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793178086.5665183, "action": "End Turn"}
+{"time": 1793178088.8676045, "action": {"turn": 3, "courage": 85, "enemies": ["Walking Cage. Enemy. 39 of 59 Courage, 20 Guard. Next: Lock It.", "Ward Orderly. Enemy. 62 of 66 Courage, 9 Guard. Next: Orderly Push. 27 damage.", "A Sooty Bird. Ward animal. Protected; cannot be attacked or hurt. Next: Frightened.", "Cage Latch. Enemy. 8 of 16 Courage. Next: Fastened."]}}
+{"time": 1793178088.8841536, "action": {"key": 1, "targetIndex": 2}}
+{"time": 1793178090.272585, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178090.6364987, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793178092.840826, "action": "End Turn"}
+{"time": 1793178095.2191105, "action": {"turn": 4, "courage": 85, "enemies": ["Walking Cage. Enemy. 39 of 59 Courage. Next: Cage Slam. 24 damage.", "Ward Orderly. Enemy. 62 of 66 Courage. Next: Stabilize. 1 Stable.", "A Sooty Bird. Ward animal. Protected; cannot be attacked or hurt. Next: Frightened.", "Cage Latch. Enemy. 10 of 16 Courage. Next: Fastened."]}}
+{"time": 1793178095.2355542, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178095.5769954, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793178097.8324966, "action": {"key": 5, "targetIndex": 2}}
+{"time": 1793178098.8831656, "action": {"key": 1, "targetIndex": 2}}
+{"time": 1793178099.2517023, "action": "End Turn"}
+{"time": 1793178102.4475696, "action": {"turn": 5, "courage": 85, "enemies": ["Walking Cage. Enemy. 27 of 59 Courage. Next: Cage Slam. 24 damage.", "Ward Orderly. Enemy. 62 of 66 Courage. Next: Routine Check. 9 Guard.", "A Sooty Bird. Ward animal. Protected; cannot be attacked or hurt. Next: Frightened.", "Cage Latch. Enemy. 10 of 16 Courage. Next: Fastened."]}}
+{"time": 1793178102.4581828, "action": {"key": 2, "targetIndex": 2}}
+{"time": 1793178104.0541837, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178104.3792028, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178105.367124, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178107.0347617, "action": "End Turn"}
+{"time": 1793178108.7425382, "action": {"turn": 6, "courage": 88, "enemies": ["Walking Cage. Enemy. 1 of 59 Courage, 6 Guard. Next: Rattle. 10 Guard.", "Ward Orderly. Enemy. 36 of 66 Courage, 9 Guard. Next: Orderly Push. 27 damage.", "Cage Latch. Enemy. 0 of 16 Courage. Next: Fastened."]}}
+{"time": 1793178108.772747, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178109.855569, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178110.8264306, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793178111.1264634, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178112.6915677, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178113.6121006, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178148.8435724, "action": {"helper": "reward offers", "observed": [{"name": "Always Lands on Her Feet", "text": "Always Lands on Her Feet\nPOWER \u00b7 SELF\nThe first time each turn your Ghoststep is consumed, gain 8 Guard.\n1\nUNCOMMON", "selected": false}, {"name": "All Nine", "text": "All Nine\nSKILL \u00b7 SELF\nRestore your Lives to 9. Vanish.\nVANISH\n2\nRARE", "selected": false}, {"name": "Zoomies at Midnight", "text": "Zoomies at Midnight\nPOWER \u00b7 SELF\nThe first Trick each turn that activates Zoomies costs 1 less.\n1\nUNCOMMON", "selected": false}]}}
+{"time": 1793178148.8486643, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793178149.213963, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793178149.659292, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178149.901668, "action": {"helper": "read observation", "observed": "The favourite box"}}
+{"time": 1793178151.2051117, "action": {"helper": "journal text", "observed": [{"title": "The favourite box", "text": "Three splendid toys sit untouched. Their box has a well-worn sleeping hollow.\n\nLook closer\n\nA little resident settles into the box. One cardboard flap folds neatly over its nose."}]}}
+{"time": 1793178151.216502, "action": {"helper": "manual investigation controls untouched", "observed": []}}
+{"time": 1793178151.4041128, "action": {"room": "West Cat Room. Safe Room. Row 7."}}
+{"time": 1793178179.1062105, "action": {"upgradeSelection": "Selected: Everywhere at Once. It will become Everywhere at Once+."}}
+{"time": 1793178181.214526, "action": {"room": "West Rear Kennel Run. Scuffle. Row 8."}}
+{"time": 1793178185.1706648, "action": {"turn": 1, "courage": 86, "enemies": ["Collar Keeper. Enemy. 50 of 50 Courage. Next: Fit the Collar. 1 Tight Collar.", "Feeding Cart. Enemy. 53 of 53 Courage. Next: Cart Bump. 18 damage."]}}
+{"time": 1793178185.3476994, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793178186.552506, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178187.3386102, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178187.5291343, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178189.1272402, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178190.0175598, "action": "End Turn"}
+{"time": 1793178190.9090834, "action": {"turn": 2, "courage": 90, "enemies": ["Collar Keeper. Enemy. 44 of 50 Courage. Next: Tag Snap. 21 damage.", "Feeding Cart. Enemy. 53 of 53 Courage. Next: Restock. 8 Guard."]}}
+{"time": 1793178191.7514324, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178192.7143073, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178193.8292592, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178194.9616988, "action": "End Turn"}
+{"time": 1793178197.1146803, "action": {"turn": 3, "courage": 90, "enemies": ["Collar Keeper. Enemy. 11 of 50 Courage. Next: Check the Buckle. 9 Guard.", "Feeding Cart. Enemy. 38 of 53 Courage, 8 Guard. Next: Cart Bump. 18 damage."]}}
+{"time": 1793178197.141163, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178198.77897, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793178199.7494173, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793178221.1536398, "action": {"helper": "reward offers", "observed": [{"name": "Nine Lives\u2019 Fury", "text": "Nine Lives\u2019 Fury\nATTACK\nSpend up to 4 Lives. Deal 11 damage for each Life spent.\n3\nRARE", "selected": false}, {"name": "Slip Away", "text": "Slip Away\nSKILL \u00b7 SELF\nGain 5 Guard. Gain 4 more if any enemy intends to attack.\n1\nCOMMON", "selected": false}, {"name": "Come Back Wrong", "text": "Come Back Wrong\nSKILL \u00b7 SELF\nSpend 3 Lives. Heal 20 Courage and gain 24 Guard. Add 2 Wrong Side to your draw pile. Vanish.\nVANISH\n2\nRARE", "selected": false}]}}
+{"time": 1793178221.159232, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793178221.5529191, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793178221.971872, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178221.9842827, "action": {"room": "West Collar Room. Treasure. Row 9."}}
+{"time": 1793178248.4755323, "action": {"helper": "room exit", "observed": "TAKE IT AND GO\nENTER"}}
+{"time": 1793178248.794066, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178265.7793102, "action": {"room": "Old Grooming Room. Safe Room. Row 10."}}
+{"time": 1793178266.7295482, "action": {"upgradeSelection": "Selected: Fluff Up. It will become Fluff Up+."}}
+{"time": 1793178308.2265747, "action": {"turn": 1, "courage": 86, "enemies": ["Leash Hand. Enemy. 54 of 54 Courage. Next: Clip On. 5 Guard. 1 Tethered.", "Ward Orderly. Enemy. 66 of 66 Courage. Next: Stabilize. 1 Stable.", "Comfort Blanket. Enemy. 58 of 58 Courage. Next: Tuck In. 5 Guard. 1 Tucked In.", "Leash. Enemy. 14 of 14 Courage. Next: Fastened."]}}
+{"time": 1793178308.2434344, "action": {"key": 3, "targetIndex": 3}}
+{"time": 1793178309.3721294, "action": {"key": 4, "targetIndex": 3}}
+{"time": 1793178310.7231658, "action": "End Turn"}
+{"time": 1793178312.7231667, "action": {"turn": 2, "courage": 90, "enemies": ["Leash Hand. Enemy. 54 of 54 Courage, 5 Guard. Next: Leash Snap. 24 damage.", "Ward Orderly. Enemy. 66 of 66 Courage, 7 Guard. Next: Routine Check. 9 Guard.", "Comfort Blanket. Enemy. 58 of 58 Courage, 5 Guard. Next: Blanket Flop. 21 damage.", "Leash. Enemy. 14 of 14 Courage. Next: Fastened."]}}
+{"time": 1793178312.73603, "action": {"key": 1, "targetIndex": 3}}
+{"time": 1793178314.0521476, "action": {"key": 4, "targetIndex": 3}}
+{"time": 1793178314.249014, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178316.2894943, "action": {"key": 2, "targetIndex": 3}}
+{"time": 1793178317.3964503, "action": "End Turn"}
+{"time": 1793178319.3567712, "action": {"turn": 3, "courage": 90, "enemies": ["Leash Hand. Enemy. 53 of 54 Courage, 6 Guard. Next: Pull Back. 8 Guard.", "Ward Orderly. Enemy. 66 of 66 Courage, 9 Guard. Next: Orderly Push. 27 damage.", "Comfort Blanket. Enemy. 55 of 58 Courage. Next: Everything Is Fine. 8 Guard.", "Leash. Enemy. 14 of 14 Courage. Next: Fastened."]}}
+{"time": 1793178319.3705683, "action": {"key": 3, "targetIndex": 3}}
+{"time": 1793178321.4324625, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793178322.5671442, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178323.5157013, "action": "End Turn"}
+{"time": 1793178325.2575524, "action": {"turn": 4, "courage": 91, "enemies": ["Leash Hand. Enemy. 17 of 54 Courage, 13 Guard. Next: Leash Snap. 24 damage.", "Ward Orderly. Enemy. 45 of 66 Courage. Next: Stabilize. 1 Stable.", "Comfort Blanket. Enemy. 17 of 58 Courage, 8 Guard. Next: Tuck In. 5 Guard. 1 Tucked In.", "Leash. Enemy. 0 of 14 Courage. Next: Fastened."]}}
+{"time": 1793178325.273399, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793178326.6698108, "action": {"key": 4, "targetIndex": 2}}
+{"time": 1793178326.9906797, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178329.1504705, "action": "End Turn"}
+{"time": 1793178331.1565742, "action": {"turn": 5, "courage": 91, "enemies": ["Leash Hand. Enemy. 5 of 54 Courage. Next: Clip On. 5 Guard. 1 Tethered.", "Ward Orderly. Enemy. 20 of 66 Courage. Next: Routine Check. 9 Guard.", "Comfort Blanket. Enemy. 8 of 58 Courage, 5 Guard. Next: Blanket Flop. 21 damage.", "Leash. Enemy. 0 of 14 Courage. Next: Fastened."]}}
+{"time": 1793178331.1783078, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793178332.637179, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178362.0660708, "action": {"helper": "reward offers", "observed": [{"name": "Always Lands on Her Feet", "text": "Always Lands on Her Feet\nPOWER \u00b7 SELF\nThe first time each turn your Ghoststep is consumed, gain 8 Guard.\n1\nUNCOMMON", "selected": false}, {"name": "Impossible Squeeze", "text": "Impossible Squeeze\nSKILL\nVanish another Trick in your hand. Draw 1 Trick.\n0\nUNCOMMON", "selected": false}, {"name": "Nine Lives\u2019 Fury", "text": "Nine Lives\u2019 Fury\nATTACK\nSpend up to 4 Lives. Deal 11 damage for each Life spent.\n3\nRARE", "selected": false}]}}
+{"time": 1793178362.0708368, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793178362.4152913, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793178362.873084, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178362.8835464, "action": {"room": "Second Cat Room. Safe Room. Row 12."}}
+{"time": 1793178400.58367, "action": {"upgradeSelection": "Selected: Rattle the Chandelier. It will become Rattle the Chandelier+."}}
+{"time": 1793178402.877621, "action": {"room": "Little Small Dog Kennels. Treasure. Row 13."}}
+{"time": 1793178419.986079, "action": {"helper": "room exit", "observed": "TAKE IT AND GO\nENTER"}}
+{"time": 1793178420.32233, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178420.3434913, "action": {"room": "Kennelmaster's Court. Boss. Row 14."}}
+{"time": 1793178445.7477772, "action": {"turn": 1, "courage": 86, "enemies": ["The Kennelmaster. Boss. 704 of 704 Courage. Next: Check the Gates. 6 Guard.", "Gate. Boss. 29 of 29 Courage. Next: Secured.", "Collar Dock. Boss. 26 of 26 Courage. Next: Secured.", "Lead Post. Boss. 26 of 26 Courage. Next: Secured."]}}
+{"time": 1793178445.8018532, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793178448.222784, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793178450.7602322, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178451.0764089, "action": {"key": 2, "targetIndex": 2}}
+{"time": 1793178452.5435438, "action": "End Turn"}
+{"time": 1793178456.3822935, "action": {"turn": 2, "courage": 90, "enemies": ["The Kennelmaster. Boss. 692 of 704 Courage, 12 Guard. Next: Lead Snap. 46 damage.", "Gate. Boss. 29 of 29 Courage. Next: Secured.", "Collar Dock. Boss. 26 of 26 Courage. Next: Secured.", "Lead Post. Boss. 26 of 26 Courage. Next: Secured."]}}
+{"time": 1793178456.4013498, "action": {"key": 1, "targetIndex": 2}}
+{"time": 1793178457.552055, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178457.8162146, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178459.1181223, "action": "End Turn"}
+{"time": 1793178462.9240544, "action": {"turn": 3, "courage": 90, "enemies": ["The Kennelmaster. Boss. 691 of 704 Courage, 6 Guard. Next: Stay Close. 1 Leashed.", "Gate. Boss. 29 of 29 Courage. Next: Secured.", "Collar Dock. Boss. 26 of 26 Courage. Next: Secured.", "Lead Post. Boss. 26 of 26 Courage. Next: Secured."]}}
+{"time": 1793178462.9513276, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178464.369044, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793178465.9739223, "action": "End Turn"}
+{"time": 1793178468.2331293, "action": {"turn": 4, "courage": 91, "enemies": ["The Kennelmaster. Boss. 683 of 704 Courage, 6 Guard. Next: Kennel Sweep. 15 damage, 2 times.", "Gate. Boss. 15 of 29 Courage. Next: Secured.", "Collar Dock. Boss. 0 of 26 Courage. Next: Secured.", "Lead Post. Boss. 16 of 26 Courage. Next: Secured."]}}
+{"time": 1793178468.266142, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793178468.646787, "action": {"key": 5, "targetIndex": 1}}
+{"time": 1793178471.2733288, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793178471.6740632, "action": "End Turn"}
+{"time": 1793178511.1666658, "action": {"turn": 5, "courage": 91, "enemies": ["The Kennelmaster. Boss. 683 of 704 Courage, 6 Guard. Next: Treat and Settle.", "Gate. Boss. 15 of 29 Courage. Next: Secured.", "Collar Dock. Boss. 0 of 26 Courage. Next: Secured.", "Lead Post. Boss. 16 of 26 Courage. Next: Secured."]}}
+{"time": 1793178511.183431, "action": {"key": 5, "targetIndex": 2}}
+{"time": 1793178512.705472, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793178513.8984466, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178514.9130576, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178515.8769412, "action": "End Turn"}
+{"time": 1793178518.0097072, "action": {"turn": 6, "courage": 91, "enemies": ["The Kennelmaster. Boss. 620 of 704 Courage. Next: Check the Gates. 6 Guard.", "Gate. Boss. 0 of 29 Courage. Next: Secured.", "Collar Dock. Boss. 0 of 26 Courage. Next: Secured.", "Lead Post. Boss. 0 of 26 Courage. Next: Secured."]}}
+{"time": 1793178518.0307422, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178519.3005311, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178520.3803895, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178520.6644156, "action": "End Turn"}
+{"time": 1793178523.4224713, "action": {"turn": 7, "courage": 91, "enemies": ["The Kennelmaster. Boss. 516 of 704 Courage, 6 Guard. Next: Lead Snap. 36 damage.", "Gate. Boss. 0 of 29 Courage. Next: Secured.", "Collar Dock. Boss. 0 of 26 Courage. Next: Secured.", "Lead Post. Boss. 0 of 26 Courage. Next: Secured."]}}
+{"time": 1793178523.4493263, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793178524.9076364, "action": {"key": 6, "targetIndex": 0}}
+{"time": 1793178525.3377292, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178527.5081916, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178527.7486556, "action": "End Turn"}
+{"time": 1793178530.5024507, "action": {"turn": 8, "courage": 91, "enemies": ["The Kennelmaster. Boss. 456 of 704 Courage. Next: Stay Close. 1 Leashed.", "Gate. Boss. 0 of 29 Courage. Next: Secured.", "Collar Dock. Boss. 0 of 26 Courage. Next: Secured.", "Lead Post. Boss. 0 of 26 Courage. Next: Secured."]}}
+{"time": 1793178530.521238, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178531.8317502, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178532.8076687, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178533.3623831, "action": "End Turn"}
+{"time": 1793178535.7342873, "action": {"turn": 9, "courage": 91, "enemies": ["The Kennelmaster. Boss. 421 of 704 Courage. Next: Kennel Sweep. 15 damage, 2 times.", "Gate. Boss. 0 of 29 Courage. Next: Secured.", "Collar Dock. Boss. 0 of 26 Courage. Next: Secured.", "Lead Post. Boss. 0 of 26 Courage. Next: Secured."]}}
+{"time": 1793178535.7590268, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178536.7042146, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793178536.946126, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178537.850979, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178539.6253018, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178540.63991, "action": "End Turn"}
+{"time": 1793178542.7116313, "action": {"turn": 10, "courage": 76, "enemies": ["The Kennelmaster. Boss. 246 of 704 Courage. Next: Everyone Back to Their Rooms.", "Gate. Boss. 0 of 29 Courage. Next: Secured.", "Collar Dock. Boss. 0 of 26 Courage. Next: Secured.", "Lead Post. Boss. 0 of 26 Courage. Next: Secured."]}}
+{"time": 1793178542.7302735, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793178543.8487468, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793178544.19126, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793178545.9733696, "action": "End Turn"}
+{"time": 1793178547.6790807, "action": {"turn": 11, "courage": 76, "enemies": ["The Kennelmaster. Boss. 189 of 704 Courage. Next: Catch Pole. 43 damage.", "Gate. Boss. 0 of 29 Courage. Next: Secured.", "Collar Dock. Boss. 0 of 26 Courage. Next: Secured.", "Lead Post. Boss. 0 of 26 Courage. Next: Secured."]}}
+{"time": 1793178547.7023885, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178548.7152348, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793178549.0594103, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178550.0566862, "action": "End Turn"}
+{"time": 1793178551.6322544, "action": {"turn": 12, "courage": 76, "enemies": ["The Kennelmaster. Boss. 126 of 704 Courage. Next: Please Stay.", "Gate. Boss. 0 of 29 Courage. Next: Secured.", "Collar Dock. Boss. 0 of 26 Courage. Next: Secured.", "Lead Post. Boss. 0 of 26 Courage. Next: Secured."]}}
+{"time": 1793178551.641877, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793178583.695763, "action": {"helper": "reward offers", "observed": [{"name": "Queen of the Rafters", "text": "Queen of the Rafters\nPOWER \u00b7 SELF\nAt the end of your turn, Retain a Trick of your choice. It costs 1 less next turn.\n2\nRARE", "selected": false}, {"name": "Ninefold Scratch", "text": "Ninefold Scratch\nATTACK\nDeal 3 damage 9 times.\n3\nUNCOMMON", "selected": false}, {"name": "Curiosity", "text": "Curiosity\nSKILL\nDraw 3 Tricks. Add 1 Spooked to your discard pile.\n1\nUNCOMMON", "selected": false}]}}
+{"time": 1793178583.7016106, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793178584.113483, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793178584.293651, "action": {"helper": "arrived", "observed": "narrative"}}
+{"time": 1793178607.9148989, "action": {"helper": "read observation", "observed": "The old gate"}}
+{"time": 1793178609.957409, "action": {"helper": "journal text", "observed": [{"title": "The old gate", "text": "Newer bricks cover an old gate. Two words remain visible: GOING HOME.\n\nLook closer\n\nThe gate has a handle on each side. The bricks were added after the handles."}]}}
+{"time": 1793178609.9774253, "action": {"helper": "manual investigation controls untouched", "observed": []}}
+{"time": 1793178610.1639268, "action": {"room": "Quiet Kennels. Scuffle. Row 1."}}
+{"time": 1793178612.1212997, "action": {"turn": 1, "courage": 83, "enemies": ["Sanctuary Warden. Enemy. 48 of 48 Courage. Next: Provide Shelter. 6 Guard. 1 Sanctuary.", "Namekeeper. Enemy. 40 of 40 Courage. Next: Call Your Name. 4 Guard."]}}
+{"time": 1793178612.1824203, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178615.1481483, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793178615.3288436, "action": {"key": 1, "targetIndex": 1}}
+{"time": 1793178617.3338346, "action": "End Turn"}
+{"time": 1793178618.4804032, "action": {"turn": 2, "courage": 87, "enemies": ["Sanctuary Warden. Enemy. 31 of 48 Courage, 6 Guard. Next: Gentle Push. 9 damage.", "Namekeeper. Enemy. 23 of 40 Courage, 10 Guard. Next: Registry Slam. 8 damage."]}}
+{"time": 1793178619.7274153, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178620.102822, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793178622.1972046, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178622.4917352, "action": "End Turn"}
+{"time": 1793178625.705168, "action": {"turn": 3, "courage": 87, "enemies": ["Sanctuary Warden. Enemy. 8 of 48 Courage. Next: Remain Here. 12 Guard.", "Namekeeper. Enemy. 19 of 40 Courage, 6 Guard. Next: I Know You. 16 damage."]}}
+{"time": 1793178625.7363076, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178627.1687331, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178627.455057, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178653.3531256, "action": {"helper": "reward offers", "observed": [{"name": "Back-Arched Swipe", "text": "Back-Arched Swipe\nATTACK\nDeal 6 damage. Gain 6 Guard if the target intends to attack.\n1\nCOMMON", "selected": false}, {"name": "Ricochet Cat", "text": "Ricochet Cat\nATTACK \u00b7 RANDOM\nDeal 4 damage to a random enemy 4 times.\n2\nUNCOMMON", "selected": false}, {"name": "Paw Through", "text": "Paw Through\nATTACK\nDeal 12 damage. Gain 6 Guard.\n2\nCOMMON", "selected": false}]}}
+{"time": 1793178653.3622627, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793178653.7444994, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793178654.1973634, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178654.2110748, "action": {"room": "Impossible Door. Scuffle. Row 2."}}
+{"time": 1793178657.0392518, "action": {"turn": 1, "courage": 86, "enemies": ["House Pulse. Enemy. 35 of 35 Courage. Next: Beat. 1 damage. 1 Diastole.", "Memory Animal. Enemy. 38 of 38 Courage. Next: Waiting Memory. 8 Guard."]}}
+{"time": 1793178657.0500216, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178658.5850933, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178658.9477496, "action": {"key": 3, "targetIndex": 1}}
+{"time": 1793178661.3563552, "action": "End Turn"}
+{"time": 1793178662.4576476, "action": {"turn": 2, "courage": 86, "enemies": ["House Pulse. Enemy. 15 of 35 Courage. Next: Beat. 1 damage.", "Memory Animal. Enemy. 0 of 38 Courage. Next: Remembered Pounce. 11 damage."]}}
+{"time": 1793178663.2590647, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178684.0479083, "action": {"helper": "reward offers", "observed": [{"name": "Curious Paw", "text": "Curious Paw\nSKILL\nDraw 1 Trick. Discard 1 Trick. Vanish.\nVANISH\n0\nCOMMON", "selected": false}, {"name": "Zoomies at Midnight", "text": "Zoomies at Midnight\nPOWER \u00b7 SELF\nThe first Trick each turn that activates Zoomies costs 1 less.\n1\nUNCOMMON", "selected": false}, {"name": "Slip Away", "text": "Slip Away\nSKILL \u00b7 SELF\nGain 5 Guard. Gain 4 more if any enemy intends to attack.\n1\nCOMMON", "selected": false}]}}
+{"time": 1793178684.057523, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793178684.4845436, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793178684.9446495, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178684.9597242, "action": {"room": "Hall of Collars. Curiosity. Row 3."}}
+{"time": 1793178700.8254437, "action": {"helper": "room exit", "observed": "GO ON\nENTER"}}
+{"time": 1793178701.1714947, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178701.535944, "action": {"helper": "read observation", "observed": "A name that stayed"}}
+{"time": 1793178703.358052, "action": {"helper": "journal text", "observed": [{"title": "A name that stayed", "text": "A clean name tile remains beneath the words WENT HOME.\n\nLook closer\n\nIt is polished as carefully as the names marked STILL HERE."}]}}
+{"time": 1793178703.3826072, "action": {"helper": "manual investigation controls untouched", "observed": []}}
+{"time": 1793178703.7218118, "action": {"room": "Inner Sanctuary. Scuffle. Row 4."}}
+{"time": 1793178705.970147, "action": {"turn": 1, "courage": 79, "enemies": ["Perfect Keeper. Enemy. 54 of 54 Courage. Next: You Need Something. 7 damage. 8 Guard."]}}
+{"time": 1793178705.9846146, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178708.5648954, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793178708.87572, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178711.3639624, "action": "End Turn"}
+{"time": 1793178712.0275526, "action": {"turn": 2, "courage": 83, "enemies": ["Perfect Keeper. Enemy. 31 of 54 Courage, 15 Guard. Next: Check Again. 7 Guard."]}}
+{"time": 1793178712.042052, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178713.3794532, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178714.4285967, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178715.3732429, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178717.243356, "action": "End Turn"}
+{"time": 1793178717.9180999, "action": {"turn": 3, "courage": 83, "enemies": ["Perfect Keeper. Enemy. 23 of 54 Courage, 7 Guard. Next: You Need Something. 7 damage. 8 Guard."]}}
+{"time": 1793178717.9319441, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793178719.0666904, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178736.7757995, "action": {"helper": "reward offers", "observed": [{"name": "Graveyard Pounce", "text": "Graveyard Pounce\nATTACK\nDeal 12 damage. Deal additional damage equal to the target\u2019s Haunt.\n2\nUNCOMMON", "selected": false}, {"name": "Haunting Hiss", "text": "Haunting Hiss\nSKILL\nApply 3 Haunt. If the target is already Haunted, apply 7 instead.\n1\nCOMMON", "selected": false}, {"name": "Chase the Light", "text": "Chase the Light\nSKILL\nDraw 2 Tricks. Gain 1 Nerve for each of them that costs 0.\n1\nUNCOMMON", "selected": false}]}}
+{"time": 1793178736.7835684, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793178737.1520872, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793178737.6567273, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178737.680195, "action": {"room": "Transformation Gallery. Safe Room. Row 5."}}
+{"time": 1793178772.0119085, "action": {"helper": "room exit", "observed": "PACK UP AND GO ON\nENTER"}}
+{"time": 1793178772.3203573, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178772.3405533, "action": {"room": "West Observation Room. Curiosity. In The Floor Sags. Row 6."}}
+{"time": 1793178790.9727552, "action": {"helper": "room exit", "observed": "GO ON\nENTER"}}
+{"time": 1793178791.4085066, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178791.713862, "action": {"helper": "read observation", "observed": "Two photographs"}}
+{"time": 1793178793.107011, "action": {"helper": "journal text", "observed": [{"title": "Two photographs", "text": "Two pictures share a name. The later animal glows; the earlier one does not.\n\nLook closer\n\nBoth tilt their heads beside the same crooked bowl. The glow has not replaced every familiar habit."}]}}
+{"time": 1793178793.1173217, "action": {"helper": "manual investigation controls untouched", "observed": []}}
+{"time": 1793178793.3097277, "action": {"room": "West Impossible Door. Scuffle. Row 7."}}
+{"time": 1793178794.6923513, "action": {"turn": 1, "courage": 86, "enemies": ["Housekeeper. Enemy. 42 of 42 Courage. Next: Tidy Up. 8 Guard.", "Perfect Keeper. Enemy. 54 of 54 Courage. Next: You Need Something. 7 damage. 8 Guard."]}}
+{"time": 1793178794.7061398, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178796.2637908, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178797.848324, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793178799.9561293, "action": "End Turn"}
+{"time": 1793178800.6683638, "action": {"turn": 2, "courage": 90, "enemies": ["Housekeeper. Enemy. 17 of 42 Courage, 8 Guard. Next: Feather Duster. 8 damage.", "Perfect Keeper. Enemy. 13 of 54 Courage, 15 Guard. Next: Check Again. 7 Guard."]}}
+{"time": 1793178801.5614994, "action": {"key": 6, "targetIndex": 0}}
+{"time": 1793178801.772964, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793178803.582209, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178804.0019994, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178805.5683477, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178805.7383733, "action": "End Turn"}
+{"time": 1793178808.1808608, "action": {"turn": 3, "courage": 90, "enemies": ["Housekeeper. Enemy. 8 of 42 Courage. Next: Put That Back.", "Perfect Keeper. Enemy. 13 of 54 Courage, 7 Guard. Next: You Need Something. 7 damage. 8 Guard."]}}
+{"time": 1793178808.1923592, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178809.1644628, "action": "End Turn"}
+{"time": 1793178810.6583986, "action": {"turn": 4, "courage": 90, "enemies": ["Housekeeper. Enemy. 2 of 42 Courage. Next: Everything in Its Place. 9 Guard.", "Perfect Keeper. Enemy. 13 of 54 Courage, 8 Guard. Next: Check Again. 7 Guard."]}}
+{"time": 1793178810.6709647, "action": {"key": 6, "targetIndex": 0}}
+{"time": 1793178810.8748462, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793178812.9412374, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793178813.2465398, "action": {"key": 6, "targetIndex": 0}}
+{"time": 1793178815.072434, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178834.7104213, "action": {"helper": "reward offers", "observed": [{"name": "Back-Arched Swipe", "text": "Back-Arched Swipe\nATTACK\nDeal 6 damage. Gain 6 Guard if the target intends to attack.\n1\nCOMMON", "selected": false}, {"name": "Hiss and Hit", "text": "Hiss and Hit\nATTACK\nDeal 7 damage. The target loses Courage equal to half its Haunt, rounded up. Its Haunt does not dissipate.\n1\nUNCOMMON", "selected": false}, {"name": "Disappearing Act", "text": "Disappearing Act\nSKILL\nVanish your hand. Draw that many Tricks plus 1. Gain 2 Ghoststep.\n2\nRARE", "selected": false}]}}
+{"time": 1793178834.7172747, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793178835.0905514, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793178835.514675, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178835.5348318, "action": {"room": "West Ancestral Gallery. Curiosity. Row 8."}}
+{"time": 1793178884.5047355, "action": {"room": "West Transformation Gallery. Treasure. Row 9."}}
+{"time": 1793178891.5283642, "action": {"helper": "room exit", "observed": "TAKE IT AND GO\nENTER"}}
+{"time": 1793178891.818155, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178891.829975, "action": {"room": "Inner Threshold Hall. Scuffle. Row 10."}}
+{"time": 1793178893.281053, "action": {"turn": 1, "courage": 86, "enemies": ["Namekeeper. Enemy. 40 of 40 Courage. Next: Call Your Name. 4 Guard.", "Quiet Room. Enemy. 50 of 50 Courage. Next: Soft Walls. 12 Guard."]}}
+{"time": 1793178894.1265469, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178895.4719434, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793178896.593841, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178897.8454068, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793178898.6670654, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178899.5378814, "action": "End Turn"}
+{"time": 1793178901.0856566, "action": {"turn": 2, "courage": 90, "enemies": ["Namekeeper. Enemy. 1 of 40 Courage, 4 Guard. Next: Registry Slam. 8 damage.", "Quiet Room. Enemy. 23 of 50 Courage, 12 Guard. Next: Please Settle Down. 8 damage."]}}
+{"time": 1793178901.0993333, "action": {"key": 6, "targetIndex": 0}}
+{"time": 1793178901.5864017, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178903.4893801, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178914.5179381, "action": {"helper": "reward offers", "observed": [{"name": "Slip Away", "text": "Slip Away\nSKILL \u00b7 SELF\nGain 5 Guard. Gain 4 more if any enemy intends to attack.\n1\nCOMMON", "selected": false}, {"name": "Hide and Seek", "text": "Hide and Seek\nSKILL \u00b7 SELF\nChoose one: gain 1 Ghoststep; draw 2 Tricks; or gain 9 Guard.\n1\nUNCOMMON", "selected": false}, {"name": "Watchful Eyes", "text": "Watchful Eyes\nSKILL\nDraw 3 Tricks, then discard 1 Trick.\n1\nCOMMON", "selected": false}]}}
+{"time": 1793178914.523465, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793178914.8459868, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793178915.264431, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793178915.2858167, "action": {"room": "Little Sanctuary Garden. Safe Room. Row 11."}}
+{"time": 1793178936.2298067, "action": {"upgradeSelection": "Selected: Graveyard Pounce. It will become Graveyard Pounce+."}}
+{"time": 1793178936.759129, "action": {"room": "Little Voice Chamber. Curiosity. Row 12."}}
+{"time": 1793178967.3117619, "action": {"room": "Far Pet Holding Ward. Scuffle. Row 13."}}
+{"time": 1793178968.7076178, "action": {"turn": 1, "courage": 86, "enemies": ["Old Welcome. Enemy. 44 of 44 Courage. Next: Stay Awhile.", "Quiet Room. Enemy. 50 of 50 Courage. Next: Soft Walls. 12 Guard.", "House Pulse. Enemy. 35 of 35 Courage. Next: Beat. 1 damage. 1 Diastole."]}}
+{"time": 1793178968.7156408, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178971.4941924, "action": {"key": 3, "targetIndex": 2}}
+{"time": 1793178972.9041152, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793178973.1568167, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178974.240191, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178976.0370147, "action": "End Turn"}
+{"time": 1793178978.3075244, "action": {"turn": 2, "courage": 90, "enemies": ["Old Welcome. Enemy. 23 of 44 Courage. Next: Warm Welcome. 7 damage.", "Quiet Room. Enemy. 42 of 50 Courage, 12 Guard. Next: Please Settle Down. 8 damage.", "House Pulse. Enemy. 27 of 35 Courage. Next: Beat. 1 damage. 1 Systole."]}}
+{"time": 1793178978.3425837, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178978.7980978, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178980.1598601, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178981.3236027, "action": "End Turn"}
+{"time": 1793178983.5373294, "action": {"turn": 3, "courage": 90, "enemies": ["Old Welcome. Enemy. 17 of 44 Courage, 5 Guard. Next: Fluff the Cushion. 9 Guard.", "Quiet Room. Enemy. 42 of 50 Courage, 5 Guard. Next: Too Much. 8 damage.", "House Pulse. Enemy. 27 of 35 Courage. Next: Quickening. 1 Systole."]}}
+{"time": 1793178984.5241165, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793178985.973737, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793178986.7568047, "action": {"key": 6, "targetIndex": 1}}
+{"time": 1793178988.914171, "action": "End Turn"}
+{"time": 1793178989.565499, "action": {"turn": 4, "courage": 87, "enemies": ["Old Welcome. Enemy. 0 of 44 Courage. Next: Fluff the Cushion. 9 Guard.", "Quiet Room. Enemy. 14 of 50 Courage, 4 Guard. Next: Soft Walls. 12 Guard.", "House Pulse. Enemy. 2 of 35 Courage. Next: Beat. 1 damage. 1 Diastole."]}}
+{"time": 1793178989.574213, "action": {"key": 4, "targetIndex": 1}}
+{"time": 1793178991.5024846, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793178992.4255428, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793179002.4058113, "action": {"helper": "reward offers", "observed": [{"name": "Hide and Seek", "text": "Hide and Seek\nSKILL \u00b7 SELF\nChoose one: gain 1 Ghoststep; draw 2 Tricks; or gain 9 Guard.\n1\nUNCOMMON", "selected": false}, {"name": "Shadow Swat", "text": "Shadow Swat\nATTACK\nDeal 15 damage. If this defeats an enemy, gain 2 Ghoststep.\n2\nUNCOMMON", "selected": false}, {"name": "Graveyard Pounce", "text": "Graveyard Pounce\nATTACK\nDeal 12 damage. Deal additional damage equal to the target\u2019s Haunt.\n2\nUNCOMMON", "selected": false}]}}
+{"time": 1793179002.4142084, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793179002.830339, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793179003.2704015, "action": {"helper": "arrived", "observed": "map"}}
+{"time": 1793179003.284722, "action": {"room": "Old Voice Chamber. Safe Room. Row 14."}}
+{"time": 1793179024.8982568, "action": {"upgradeSelection": "Selected: Hiss and Hit. It will become Hiss and Hit+."}}
+{"time": 1793179026.3564851, "action": {"room": "Heart Chamber. Boss. Row 15."}}
+{"time": 1793179155.2780297, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793179156.9022143, "action": {"turn": 1, "courage": 86, "enemies": ["The Keeper. Boss. 540 of 540 Courage. Next: Close the Door. 13 damage.", "Shelter Lock. Boss. 24 of 24 Courage. Next: Hold. 3 Guard.", "Routine Lock. Boss. 24 of 24 Courage. Next: Hold. 3 Guard.", "Observation Lock. Boss. 24 of 24 Courage. Next: Hold. 3 Guard.", "Return Lock. Boss. 24 of 24 Courage. Next: Hold. 3 Guard."]}}
+{"time": 1793179156.924419, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793179159.125143, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793179161.3900647, "action": "End Turn"}
+{"time": 1793179164.349439, "action": {"turn": 2, "courage": 91, "enemies": ["The Keeper. Boss. 520 of 540 Courage. Next: Put You Somewhere Safe. 14 Guard.", "Shelter Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Routine Lock. Boss. 4 of 24 Courage, 3 Guard. Next: Hold. 3 Guard.", "Observation Lock. Boss. 4 of 24 Courage, 3 Guard. Next: Hold. 3 Guard.", "Return Lock. Boss. 4 of 24 Courage, 3 Guard. Next: Hold. 3 Guard."]}}
+{"time": 1793179164.3743227, "action": {"key": 2, "targetIndex": 1}}
+{"time": 1793179168.065783, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793179168.4104843, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793179172.1223674, "action": {"key": 8, "targetIndex": 0}}
+{"time": 1793179172.5431452, "action": {"key": 8, "targetIndex": 0}}
+{"time": 1793179174.001096, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793179175.7850378, "action": "End Turn"}
+{"time": 1793179177.8233392, "action": {"turn": 3, "courage": 91, "enemies": ["The Keeper. Boss. 443 of 540 Courage, 14 Guard. Next: Stay Where I Can See You. 11 damage, 2 times.", "Shelter Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Routine Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Observation Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Return Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard."]}}
+{"time": 1793179178.9337163, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793179180.6171074, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793179182.110601, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793179183.81031, "action": {"key": 6, "targetIndex": 0}}
+{"time": 1793179185.3671925, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793179186.7405932, "action": "End Turn"}
+{"time": 1793179188.950199, "action": {"turn": 4, "courage": 80, "enemies": ["The Keeper. Boss. 399 of 540 Courage. Next: Everything Is Ready for You. 9 Guard.", "Shelter Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Routine Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Observation Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Return Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard."]}}
+{"time": 1793179188.9908154, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793179190.3033917, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793179191.4082656, "action": "End Turn"}
+{"time": 1793179209.740019, "action": {"turn": 5, "courage": 80, "enemies": ["The Keeper. Boss. 393 of 540 Courage, 9 Guard. Next: Come Back. 14 damage.", "Shelter Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Routine Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Observation Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Return Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard."]}}
+{"time": 1793179209.765662, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793179212.0286393, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793179213.9973218, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793179215.1899798, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793179216.9409525, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793179218.5065036, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793179219.934299, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793179221.081391, "action": "End Turn"}
+{"time": 1793179223.0477066, "action": {"turn": 6, "courage": 80, "enemies": ["The Keeper. Boss. 325 of 540 Courage. Next: Hold On. 19 damage.", "Shelter Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Routine Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Observation Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Return Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard."]}}
+{"time": 1793179223.0732863, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793179223.440288, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793179225.4435136, "action": "End Turn"}
+{"time": 1793179227.7301316, "action": {"turn": 7, "courage": 82, "enemies": ["The Keeper. Boss. 291 of 540 Courage. Next: Let Me Help. 15 Guard.", "Shelter Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Routine Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Observation Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Return Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard."]}}
+{"time": 1793179227.7678366, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793179229.1798897, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793179230.7117584, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793179230.9956906, "action": "End Turn"}
+{"time": 1793179233.5970902, "action": {"turn": 8, "courage": 82, "enemies": ["The Keeper. Boss. 254 of 540 Courage, 15 Guard. Next: I Know What Happens Outside. 10 damage, 3 times.", "Shelter Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Routine Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Observation Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Return Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard."]}}
+{"time": 1793179233.631071, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793179235.113765, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793179236.6742134, "action": {"key": 5, "targetIndex": 0}}
+{"time": 1793179238.4241393, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793179240.0503018, "action": "End Turn"}
+{"time": 1793179242.3159873, "action": {"turn": 9, "courage": 62, "enemies": ["The Keeper. Boss. 229 of 540 Courage. Next: You Always Come Back. 15 damage.", "Shelter Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Routine Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Observation Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Return Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard."]}}
+{"time": 1793179242.3337977, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793179243.9112988, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793179245.210971, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793179245.5596855, "action": "End Turn"}
+{"time": 1793179249.0221894, "action": {"turn": 10, "courage": 62, "enemies": ["The Keeper. Boss. 206 of 540 Courage, 8 Guard. Next: I Can Fix This. 8 Guard.", "Shelter Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Routine Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Observation Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Return Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard."]}}
+{"time": 1793179249.0483587, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793179250.53731, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793179252.0274339, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793179253.2292461, "action": {"key": 3, "targetIndex": 0}}
+{"time": 1793179254.6948726, "action": "End Turn"}
+{"time": 1793179256.9848964, "action": {"turn": 11, "courage": 62, "enemies": ["The Keeper. Boss. 159 of 540 Courage, 8 Guard. Next: Please Don't Go. 1 Open Heart.", "Shelter Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Routine Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Observation Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Return Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard."]}}
+{"time": 1793179257.001578, "action": {"key": 4, "targetIndex": 0}}
+{"time": 1793179257.245295, "action": {"key": 7, "targetIndex": 0}}
+{"time": 1793179259.099181, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793179261.227125, "action": "End Turn"}
+{"time": 1793179264.5781248, "action": {"turn": 12, "courage": 62, "enemies": ["The Keeper. Boss. 112 of 540 Courage. Next: Don't Leave. 21 damage.", "Shelter Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Routine Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Observation Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard.", "Return Lock. Boss. 0 of 24 Courage. Next: Hold. 3 Guard."]}}
+{"time": 1793179264.601105, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793179266.3147233, "action": {"key": 1, "targetIndex": 0}}
+{"time": 1793179268.4186625, "action": {"key": 2, "targetIndex": 0}}
+{"time": 1793179317.8169265, "action": {"helper": "reward offers", "observed": [{"name": "Fluff Up", "text": "Fluff Up\nSKILL \u00b7 SELF\nGain 6 Guard. If you have no Ghoststep, gain 1.\n1\nCOMMON", "selected": false}, {"name": "All Nine", "text": "All Nine\nSKILL \u00b7 SELF\nRestore your Lives to 9. Vanish.\nVANISH\n2\nRARE", "selected": false}, {"name": "Phase Out", "text": "Phase Out\nSKILL \u00b7 SELF\nGain 2 Ghoststep. Draw 1 fewer Trick next turn.\n1\nUNCOMMON", "selected": false}]}}
+{"time": 1793179317.8262134, "action": {"helper": "reward choice", "observed": "Take none"}}
+{"time": 1793179318.3554375, "action": {"helper": "room exit", "observed": "LEAVE THE ROOM\nENTER"}}
+{"time": 1793179318.5690508, "action": {"helper": "arrived", "observed": "narrative"}}
+{"time": 1793180058.9524987, "action": {"sanctuaryVisit": "Marmalade", "text": ["Marmalade sleeps across the open doorway. Everyone carefully steps around her. The door remains open."]}}
+{"time": 1793180059.0122435, "action": {"sanctuaryVisit": "Drizzle", "text": ["Drizzle makes one soft raindrop land in a cup. Then another. The rhythm is almost a song.", "Drizzle watches a real cloud pass. For a moment the two clouds share one shadow."]}}
+{"time": 1793180059.0690193, "action": {"sanctuaryVisit": "Wink", "text": ["Wink weaves a tiny hammock. You lean closer. Wink adds a curtain.", "Wink hangs the hammock beside the entrance, with the curtain cord on the inside."]}}
+{"time": 1793180059.1182272, "action": {"sanctuaryVisit": "Taffy", "text": ["Taffy stretches toward a spoon. The spoon sticks. A second spoon is sent to help.", "Taffy leaves a little gap around a new visitor instead of wrapping them in a hug. The visitor steps closer."]}}
+{"time": 1793180059.1742258, "action": {"sanctuaryVisit": "Brambleboo", "text": ["Brambleboo turns a leaf toward the torch. You move the torch closer. The leaf turns away. Back a little, then.", "Brambleboo chooses a sunny patch outside, keeping one long root curled by the open door."]}}
+{"time": 1793180059.2151983, "action": {"sanctuaryVisit": "Mossbit", "text": ["Mossbit studies a crumb. Then eats it. This took exactly as long as Mossbit required.", "Mossbit rests halfway down the garden path. There is plenty of path left for everyone else."]}}
+{"time": 1793180059.2792096, "action": {"sanctuaryVisit": "Wisp", "text": ["Wisp tries to light the inside of a closed lunchbox. A thin blue line leaks out around the sandwich.", "Wisp drifts outside, becomes one small light among many, then returns to light the step."]}}

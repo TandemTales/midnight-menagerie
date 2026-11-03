@@ -1,0 +1,14 @@
+{
+  "type": "Manuscript structural check only",
+  "date": "2026-10-27",
+  "mainMarkdownFiles": 10,
+  "approximateWordsIncludingMetadata": 45485,
+  "regionalUnitDefinitions": 150,
+  "duplicateRegionalIDs": 0,
+  "indexLinks": 10,
+  "missingIndexTargets": 0,
+  "runtimeTestsExecuted": false,
+  "uiRenderingVerified": false,
+  "humanPlaytest": false,
+  "gameFilesEditedByThisTask": false
+}

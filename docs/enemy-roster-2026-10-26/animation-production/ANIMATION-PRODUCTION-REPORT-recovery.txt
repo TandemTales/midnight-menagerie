@@ -1,0 +1,46 @@
+MIDNIGHT MENAGERIE - 30 FPS ANIMATION PRODUCTION CHECKPOINT
+
+RESULT: recovered and saved the existing Hall Mirror idle image generation. No new final animation has been approved or installed. Original request remains incomplete.
+
+VIEW: animation-gallery.html (local 30 fps playback, pause/step, contact sheet, complete roster matrix).
+SOURCE: hall-mirror-idle-v1.png (1536x1024 RGBA; 40 observed poses in 10 columns x 4 rows, not the requested 36 in 9 x 4).
+DIAGNOSTIC: hall-mirror-idle-diagnostic-atlas.png (9 x 5, 160 x 272 cells, 40 frames) and hall-mirror-idle-diagnostic.webp.
+The generated image has real alpha: 738,919 fully transparent pixels and 833,945 partially transparent pixels. Brown in the original tool presentation was not an opaque background in the saved PNG.
+Diagnostic packing translates extracted poses to a common anchor [80,264]. No generated interpolation, duplicate frames, warping, or whole-sprite wobble was introduced. All 40 pixel frames differ. A 30 fps playback cycle lasts 1.333333 seconds. Animated WebP millisecond timing approximates that rate; the HTML player uses 1000/30 exactly.
+
+QUALITY GATE: PENDING / NOT PASSED
+Silhouette loop seam IoU 0.9808; adjacent average IoU 0.9764; body height 246-248 pixels. The reflection blinks, but the stationary gold texture also changes: mean adjacent RGB difference 20.29/255, maximum 29.26/255 in the first frame's gold mask. Pixel uniqueness alone does not establish coherent motion. Small re-rendered ornament differences pose a visible 30 fps flicker risk. The full representative enemy's attack, hurt, defeat and any cast have not been generated or validated. No batch may be counted as final from this diagnostic.
+This is an authoring/quality limitation, not a moderation denial of Hall Mirror. A coherent action-animation workflow has not yet been demonstrated. Built-in raster image generation is available; a dedicated temporally controlled animation/video tool was not found. A lower-fidelity cutout/procedural workaround has not been mass-produced or passed off as final art.
+
+COVERAGE
+187 identities in matrix.
+29 existing animated enemies / 118 preserved actions.
+157 usable enemies need new animations: 155 new still identities plus existing still-only Unwelcome Guest and Porcelain Doll.
+663 pending new actions: 157 each idle/attack/hurt/defeat plus 35 proposed separate cast actions.
+1 dependency-blocked enemy / 4 blocked actions: Spectral Scullion. Its prior still generation was denied at output moderation. No retry or bypass attempted.
+0 new final enemies; 0 new final actions.
+
+CONTRACT
+Actual existing enemy states: idle, attack, hurt, defeat, cast. Damaged maps to hurt; killed maps to defeat. Other companion states are not enemy requirements.
+Idle loops. Attack/hurt/cast are one-shots. Defeat is nonlooping and holds the defeated final pose. New final clips must publish fps=30 and actual duration=frames/30, with chronological row-major frames. Existing rates remain unchanged (idle 11.85, attack/hurt 35.56, cast 28.44, defeat 40 fps); do not retime old clips.
+35 new cast proposals are individually explained in enemy-action-matrix.json. They correspond to separately readable magical/support/conducting gestures in the approved briefs. These are art decisions, not enemy registry integration or a claim that new gameplay intent mappings exist.
+
+PIPELINE
+Sources belong at animations/sprites/enemies/animations/SS_<sourceKey>_<state>.png.
+Packed WebP and index.json belong under game/assets/sprites/enemy-clips/<id>/.
+Exact future paths are in the matrix; planned rows are not files or completed art.
+The normal tools/prep_sprites.py CLI is unsuitable for this isolated delivery: it reduces frames, adjusts playback rates, can add ping-pong, updates the live discovery registry and removes stale files. A separate non-destructive exporter must keep actual new frames at 30 fps, shared scale/anchor and per-enemy metadata. No final exporter was run.
+No gameplay, registries, publishing, deployment, purchases, credentials or external uploads performed.
+
+RECOVERY HISTORY
+The initial path-based image reference call failed before generation with AbsolutePathBuf deserialization. Conversation image references succeeded, returning a data URL without savedPath. A large apply_patch transfer returned exactly 'aborted by user' after a long wait. On resumption its target did not exist. Small bounded writes saved that same returned image; it was not regenerated. Exact generation prompt is in hall-mirror-idle-prompt.json.
+
+EVIDENCE
+CHECKPOINT.json; prototype-validation.json; preview-browser-validation.json;
+enemy-action-matrix.json and .csv; existing-clip-inventory.json;
+preexisting-assets-sha256.json; preservation-validation.json.
+Read preservation-validation.json for final hash outcome, and browser validation for the actual preview test result. No in-game integration or runtime combat test is claimed.
+
+FINAL CHECKPOINT VERIFICATION
+SHA-256 preservation check passed: all 3,408 protected preexisting files unchanged, zero missing.
+Browser preview check did not complete or produce a screenshot; the command was stopped with Ctrl-C (exit 1). Its browser-stage outcome is uncertain, with no reported permission denial. HTML timing is authored at 30 fps, but actual browser playback and controls are not verified. See preview-browser-validation.json. The diagnostic PNGs and WebP were decoded successfully; no in-game tests were run.

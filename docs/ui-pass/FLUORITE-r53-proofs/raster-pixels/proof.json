@@ -1,0 +1,34 @@
+[
+  {
+    "kind": "current-auto",
+    "result": {
+      "hand": 9,
+      "boss": "e0",
+      "labels": [
+        "+3 Strength",
+        "+2 Vulnerable",
+        "+4 Bristle",
+        "+2 Weak",
+        "+2 Dexterity",
+        "+3 Regen"
+      ],
+      "capture": "all six real status labels visible; clock paused for screenshot"
+    }
+  },
+  {
+    "kind": "current-fixed",
+    "result": {
+      "hand": 9,
+      "boss": "e0",
+      "labels": [
+        "+3 Strength",
+        "+2 Vulnerable",
+        "+4 Bristle",
+        "+2 Weak",
+        "+2 Dexterity",
+        "+3 Regen"
+      ],
+      "capture": "all six real status labels visible; clock paused for screenshot"
+    }
+  }
+]

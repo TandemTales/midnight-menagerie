@@ -1,0 +1,31 @@
+{
+  "region": 5,
+  "existing": 4,
+  "new": 7,
+  "pending": 0,
+  "blocked": 0,
+  "new_final_files": 14,
+  "baseline_files_verified": 367,
+  "changed_baseline_files": [],
+  "source_canvas_counts": {
+    "256x256": 6,
+    "512x512": 1
+  },
+  "raw_originals_and_prompts_retained": 7,
+  "final_files": [
+    "animations\\sprites\\enemies\\walkingPlanter.png",
+    "game\\assets\\sprites\\enemies\\walking-planter.webp",
+    "animations\\sprites\\enemies\\gardenShears.png",
+    "game\\assets\\sprites\\enemies\\garden-shears.webp",
+    "animations\\sprites\\enemies\\topiaryHound.png",
+    "game\\assets\\sprites\\enemies\\topiary-hound.webp",
+    "animations\\sprites\\enemies\\topiaryHare.png",
+    "game\\assets\\sprites\\enemies\\topiary-hare.webp",
+    "animations\\sprites\\enemies\\gardenStatue.png",
+    "game\\assets\\sprites\\enemies\\garden-statue.webp",
+    "animations\\sprites\\enemies\\fountainSpirit.png",
+    "game\\assets\\sprites\\enemies\\fountain-spirit.webp",
+    "animations\\sprites\\enemies\\midnightFountain.png",
+    "game\\assets\\sprites\\enemies\\midnight-fountain.webp"
+  ]
+}

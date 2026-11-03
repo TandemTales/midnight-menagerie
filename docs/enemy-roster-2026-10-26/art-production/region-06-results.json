@@ -1,0 +1,1079 @@
+{
+  "level": 6,
+  "region": "Mansion Graveyard",
+  "entries": [
+    {
+      "level": 6,
+      "region": "Mansion Graveyard",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Epitaph Spirit",
+      "existing_animation": false,
+      "description": "Pale ghost emerging directly from engraved writing on a tombstone, with letters still floating through its body. Spells a remembered name in floating letters, briefly distracting attention.",
+      "animation": "2D animation Idle letter drift; tell two glyphs glow; action ghost rises; resolve letters settle.",
+      "signature": "Signature Narrow typographic apparition; the lettering, not a walking stone, is its body.",
+      "production_id": "epitaph-spirit",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\epitaph-spirit.webp",
+      "source_path": "animations\\sprites\\enemies\\epitaphSpirit.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            118,
+            231
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 12905,
+          "partial_alpha_pixels": 13643,
+          "alpha_bbox": [
+            0,
+            0,
+            118,
+            231
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            117,
+            230
+          ],
+          "sha256": "cc093b6c8536c807f63fcfa87c3e1f509943d9bd6f5daab1d23e8783e8b72d87"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 49620,
+          "partial_alpha_pixels": 15206,
+          "alpha_bbox": [
+            13,
+            10,
+            207,
+            247
+          ],
+          "visible_bbox_alpha64": [
+            87,
+            14,
+            204,
+            244
+          ],
+          "sha256": "90399647f77d89cf52a067f552870cfbf7838cf526176cee37a914882f1f9262"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1192541,
+          "partial_alpha_pixels": 379590,
+          "alpha_bbox": [
+            25,
+            37,
+            1232,
+            1230
+          ],
+          "visible_bbox_alpha64": [
+            429,
+            69,
+            1000,
+            1195
+          ],
+          "sha256": "ce3cdd3cf5162d84dc37d7dc83c4139c59d034c0dbb24bac8a5190307c3e4a11"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\epitaph-spirit-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\epitaph-spirit-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "epitaph-spirit.webp",
+          "w": 118,
+          "h": 231,
+          "source": "epitaphSpirit.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 6,
+      "region": "Mansion Graveyard",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Mourning Candle",
+      "existing_animation": false,
+      "description": "Tall black funeral candle drifting above the ground with wax flowing upward and a blue spectral flame. Patiently relights itself whenever the evening becomes too quiet.",
+      "animation": "2D animation Idle flame loop; tell wick dip; action wax curls upward; resolve small glow.",
+      "signature": "Signature Single thin candle with reverse wax motion, not an architectural light fixture.",
+      "production_id": "mourning-candle",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\mourning-candle.webp",
+      "source_path": "animations\\sprites\\enemies\\mourningCandle.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            48,
+            243
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 4844,
+          "partial_alpha_pixels": 6405,
+          "alpha_bbox": [
+            0,
+            0,
+            48,
+            243
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            48,
+            242
+          ],
+          "sha256": "5c1356506be57ac5b538ff6db718ed4aedf024ddfa4b9f9fa1d8fbc43aaa6f73"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 57647,
+          "partial_alpha_pixels": 7474,
+          "alpha_bbox": [
+            23,
+            5,
+            232,
+            251
+          ],
+          "visible_bbox_alpha64": [
+            107,
+            7,
+            155,
+            248
+          ],
+          "sha256": "ae4a2142f4bb3bbeeea40d3da181197929d55c0fad3e37a5d9622f9d835b7942"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1390002,
+          "partial_alpha_pixels": 182085,
+          "alpha_bbox": [
+            25,
+            19,
+            1224,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            525,
+            32,
+            757,
+            1215
+          ],
+          "sha256": "28aef5241cc7d2d2db088ebc35d592a3da8c3555ec4d2247d7ec356cdb49a81a"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\mourning-candle-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\mourning-candle-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "mourning-candle.webp",
+          "w": 48,
+          "h": 243,
+          "source": "mourningCandle.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 6,
+      "region": "Mansion Graveyard",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Funeral Veil",
+      "existing_animation": false,
+      "description": "Long black mourning veil floating as if worn by an invisible figure, occasionally forming the outline of a head and shoulders. Practices an excessively formal bow, brushing a soft curtain of lace across the encounter.",
+      "animation": "2D animation Idle hem sway; tell bow; action lace fan; resolve upright.",
+      "signature": "Signature Broad triangular lace silhouette; never constricts or resembles a wrapped body.",
+      "production_id": "funeral-veil",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\funeral-veil.webp",
+      "source_path": "animations\\sprites\\enemies\\funeralVeil.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            239,
+            220
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 27315,
+          "partial_alpha_pixels": 24691,
+          "alpha_bbox": [
+            0,
+            0,
+            239,
+            220
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            239,
+            219
+          ],
+          "sha256": "3da1301ed83f7713fc7d63fa7ea86baa6a6050ae65f60283d67329be5f8958e1"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 39149,
+          "partial_alpha_pixels": 25813,
+          "alpha_bbox": [
+            7,
+            18,
+            250,
+            254
+          ],
+          "visible_bbox_alpha64": [
+            9,
+            21,
+            248,
+            239
+          ],
+          "sha256": "b2cd730dcbb032185da535b40211f3f7db0d38d1a4110d327ebbc4f5295c6e6a"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 954393,
+          "partial_alpha_pixels": 617843,
+          "alpha_bbox": [
+            0,
+            21,
+            1238,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            46,
+            101,
+            1214,
+            1172
+          ],
+          "sha256": "2401a0b791b79a61841d894b3432ea630b1e5836361035eb2608f46900235f8c"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\funeral-veil-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\funeral-veil-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "funeral-veil.webp",
+          "w": 239,
+          "h": 220,
+          "source": "funeralVeil.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 6,
+      "region": "Mansion Graveyard",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Memorial Wreath",
+      "existing_animation": false,
+      "description": "A low circular wreath of faded silk flowers with an oversized remembrance ribbon. Re-ties its bow until it covers its own dedication, suggesting a brief concealment nuisance.",
+      "animation": "2D animation Idle petal twitch; tell ribbon loops rise; action bow ties; resolve satisfied bounce.",
+      "signature": "Signature Hollow floral ring with bow action, no stone body or mournful humanoid.",
+      "production_id": "memorial-wreath",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\memorial-wreath.webp",
+      "source_path": "animations\\sprites\\enemies\\memorialWreath.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            239,
+            223
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 21998,
+          "partial_alpha_pixels": 29932,
+          "alpha_bbox": [
+            0,
+            0,
+            239,
+            223
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            238,
+            222
+          ],
+          "sha256": "5e23ff195c9e899ff79a69c9f06d8470fe7d07c8ad7ff54025c619efe0b19967"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 32157,
+          "partial_alpha_pixels": 32012,
+          "alpha_bbox": [
+            8,
+            15,
+            251,
+            243
+          ],
+          "visible_bbox_alpha64": [
+            10,
+            19,
+            248,
+            240
+          ],
+          "sha256": "3ea9a380c96d0d92d06d4c11022075e7cfd21c26acf4c1a6087261e248e09e9e"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 791826,
+          "partial_alpha_pixels": 779491,
+          "alpha_bbox": [
+            0,
+            21,
+            1234,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            51,
+            91,
+            1215,
+            1177
+          ],
+          "sha256": "eb13f4670c8e460ddbd0c411a6a23968448bfd2c045963baf5382dd6d6950fd1"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\memorial-wreath-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\memorial-wreath-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "memorial-wreath.webp",
+          "w": 239,
+          "h": 223,
+          "source": "memorialWreath.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 6,
+      "region": "Mansion Graveyard",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Headstone Walker",
+      "existing_animation": false,
+      "description": "A weathered gravestone sliding or hopping slowly across the ground while dirt shifts beneath it. Politely nudges its own plot marker into the visitor’s path, suggesting a brief obstruction.",
+      "animation": "2D animation Idle lean; tell dirt puff; action short hop; resolve settle.",
+      "signature": "Signature Low broad stone silhouette; moves its marker, not its engraved occupant.",
+      "production_id": "headstone-walker",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\headstone-walker.webp",
+      "source_path": "animations\\sprites\\enemies\\headstoneWalker.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            180,
+            173
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 10937,
+          "partial_alpha_pixels": 19722,
+          "alpha_bbox": [
+            0,
+            0,
+            180,
+            173
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            180,
+            172
+          ],
+          "sha256": "1f5a0cddab3885b45400547557858de81cde7928f969682b106a8c734a794dc6"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 44500,
+          "partial_alpha_pixels": 20555,
+          "alpha_bbox": [
+            40,
+            5,
+            224,
+            246
+          ],
+          "visible_bbox_alpha64": [
+            42,
+            43,
+            222,
+            215
+          ],
+          "sha256": "ff4c84ed4122b7279ad20fa0de7e4f1962099313963c10d2b64ecd6d80fc443c"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1072633,
+          "partial_alpha_pixels": 499679,
+          "alpha_bbox": [
+            33,
+            25,
+            1218,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            207,
+            211,
+            1086,
+            1055
+          ],
+          "sha256": "53d2b7b89a31a27423f4f3f37885ce4098401d0dc0e8064eb67554e7ba740da3"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\headstone-walker-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\headstone-walker-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "headstone-walker.webp",
+          "w": 180,
+          "h": 173,
+          "source": "headstoneWalker.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 6,
+      "region": "Mansion Graveyard",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Gargoyle",
+      "existing_animation": false,
+      "description": "Small cemetery statue that changes posture whenever nobody is watching it directly. A squat stone ornament pretends it has not moved, then cheekily changes its perch.",
+      "animation": "2D animation Idle still; tell blink; action two-pose shuffle; resolve frozen grin.",
+      "signature": "Signature Compact crouched statue and sheepish freeze, unlike the greenhouse’s upright gardener.",
+      "production_id": "gargoyle",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\gargoyle.webp",
+      "source_path": "animations\\sprites\\enemies\\gargoyle.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            159,
+            202
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 8954,
+          "partial_alpha_pixels": 22619,
+          "alpha_bbox": [
+            0,
+            0,
+            159,
+            202
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            158,
+            202
+          ],
+          "sha256": "89c8e0e058116c88f213103aeb3a8c3b9bc9dc735637aeda58ef119bbf2c1a16"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 41399,
+          "partial_alpha_pixels": 23592,
+          "alpha_bbox": [
+            7,
+            11,
+            248,
+            249
+          ],
+          "visible_bbox_alpha64": [
+            52,
+            28,
+            210,
+            230
+          ],
+          "sha256": "07be8c0c7cf35ff20a02b9cc72a2e57af81afade9ae7551d8566a06f0caaa97c"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1000299,
+          "partial_alpha_pixels": 571783,
+          "alpha_bbox": [
+            0,
+            0,
+            1238,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            255,
+            139,
+            1029,
+            1124
+          ],
+          "sha256": "c3ff68ab64d0df8b636ae5728278ef5878d4be9610961b9ddbb66051f3bf52e0"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\gargoyle-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\gargoyle-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "gargoyle.webp",
+          "w": 159,
+          "h": 202,
+          "source": "gargoyle.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 6,
+      "region": "Mansion Graveyard",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Sandglass Sexton",
+      "existing_animation": false,
+      "description": "A squat hourglass in a dark wooden cradle; pale sand flows upward. Counts down the wrong way to prolong a respectful moment of silence.",
+      "animation": "2D animation Idle sand loop; tell frame tilts; action half-turn; resolve gentle settle.",
+      "signature": "Signature Transparent waist and moving sand; no clock hands or skeletal anatomy.",
+      "production_id": "sandglass-sexton",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\sandglass-sexton.webp",
+      "source_path": "animations\\sprites\\enemies\\sandglassSexton.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            158,
+            231
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 12342,
+          "partial_alpha_pixels": 23322,
+          "alpha_bbox": [
+            0,
+            0,
+            158,
+            231
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            1,
+            157,
+            231
+          ],
+          "sha256": "15416314093e72bc8aef109a961ff82c1497ab8462d8b807f032b5a564594ec0"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 40078,
+          "partial_alpha_pixels": 24624,
+          "alpha_bbox": [
+            50,
+            7,
+            222,
+            246
+          ],
+          "visible_bbox_alpha64": [
+            53,
+            10,
+            209,
+            240
+          ],
+          "sha256": "f09599aabbdac76e999a65a1073b823a20c835186b774c4a54f7e3b420cd5222"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 976750,
+          "partial_alpha_pixels": 595263,
+          "alpha_bbox": [
+            0,
+            21,
+            1236,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            258,
+            48,
+            1024,
+            1174
+          ],
+          "sha256": "afb23ee4b1c54221e50c8e1aca4f309167be3a96357c3f30fd750550f7297fb6"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\sandglass-sexton-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\sandglass-sexton-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "sandglass-sexton.webp",
+          "w": 158,
+          "h": 231,
+          "source": "sandglassSexton.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 6,
+      "region": "Mansion Graveyard",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Mourning Angel",
+      "existing_animation": false,
+      "description": "Large weathered angel ornament, round-faced and solemn, with folded stone wings. Opens its wings to shelter smaller apparitions, suggesting a temporary protective stance.",
+      "animation": "2D animation Idle still; tell head inclines; action two wing panels unfold; resolve stone shrug.",
+      "signature": "Signature Wide upper-body fan with slow protection gestures; not a jumping gargoyle.",
+      "production_id": "mourning-angel",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\mourning-angel.webp",
+      "source_path": "animations\\sprites\\enemies\\mourningAngel.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            342,
+            484
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 46496,
+          "partial_alpha_pixels": 118023,
+          "alpha_bbox": [
+            0,
+            0,
+            342,
+            484
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            341,
+            484
+          ],
+          "sha256": "8cf44829139de38fb148699ee26b2be002b3676755e1445abb5609c20f44d506"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 140526,
+          "partial_alpha_pixels": 120609,
+          "alpha_bbox": [
+            9,
+            13,
+            491,
+            501
+          ],
+          "visible_bbox_alpha64": [
+            89,
+            15,
+            430,
+            499
+          ],
+          "sha256": "a166556ce6ff4374a2fd14e584fbf9564a1f9ad1503aedb18d5902ebe7c45384"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 843674,
+          "partial_alpha_pixels": 728315,
+          "alpha_bbox": [
+            0,
+            33,
+            1238,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            218,
+            38,
+            1054,
+            1221
+          ],
+          "sha256": "e31fa0a4844ea866960290828bf1fc2265d19a73b4105a4ca0a776b6c0ab159d"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\mourning-angel-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\mourning-angel-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "mourning-angel.webp",
+          "w": 342,
+          "h": 484,
+          "source": "mourningAngel.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 6,
+      "region": "Mansion Graveyard",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Mausoleum",
+      "existing_animation": false,
+      "description": "Compact ornate tomb facade with one open doorway and warm lights receding inside. Invites everyone to take the very long scenic route indoors.",
+      "animation": "2D animation Idle candle flicker; tell door cracks; action three-layer interior parallax; resolve close.",
+      "signature": "Signature Heavy building facade; depth is a fixed three-plane illusion, not a simulated cemetery.",
+      "production_id": "mausoleum",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\mausoleum.webp",
+      "source_path": "animations\\sprites\\enemies\\mausoleum.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            392,
+            435
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 54511,
+          "partial_alpha_pixels": 115367,
+          "alpha_bbox": [
+            0,
+            0,
+            392,
+            435
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            391,
+            435
+          ],
+          "sha256": "4ad7dcd862c3fcd8dcb05f6f3b96e44e3d5390764f5a42fa96d612157dfc54d7"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 141891,
+          "partial_alpha_pixels": 119611,
+          "alpha_bbox": [
+            22,
+            30,
+            481,
+            490
+          ],
+          "visible_bbox_alpha64": [
+            63,
+            32,
+            454,
+            467
+          ],
+          "sha256": "a5bb5478d1f281bf531d80b4aec572fd341477ab1e9d20fe7bb277a8e66ab7f9"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 847842,
+          "partial_alpha_pixels": 724481,
+          "alpha_bbox": [
+            0,
+            71,
+            1236,
+            1210
+          ],
+          "visible_bbox_alpha64": [
+            155,
+            80,
+            1113,
+            1142
+          ],
+          "sha256": "7c942878ca0f589a1113f34e342d2c460090a035317b3716a7450f5a15ffaebc"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\mausoleum-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\mausoleum-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "mausoleum.webp",
+          "w": 392,
+          "h": 435,
+          "source": "mausoleum.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 6,
+      "region": "Mansion Graveyard",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Cemetery Gate",
+      "existing_animation": false,
+      "description": "Two wrought-iron leaves on squat stone posts, with an oversized swinging padlock. Closes for the evening far too early and politely holds the line.",
+      "animation": "2D animation Idle lock swing; tell latch lifts; action gate leaves pivot; resolve reopen.",
+      "signature": "Signature Open ironwork barrier; no grasping hands, chains around people, or angry face.",
+      "production_id": "cemetery-gate",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\cemetery-gate.webp",
+      "source_path": "animations\\sprites\\enemies\\cemeteryGate.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            404,
+            260
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 44664,
+          "partial_alpha_pixels": 56369,
+          "alpha_bbox": [
+            0,
+            0,
+            404,
+            260
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            404,
+            260
+          ],
+          "sha256": "cbaa74b8dc3a710ec1fd3249e8988933c3f368ab6adc42c48d32769e0028a846"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 193583,
+          "partial_alpha_pixels": 64554,
+          "alpha_bbox": [
+            17,
+            13,
+            485,
+            503
+          ],
+          "visible_bbox_alpha64": [
+            54,
+            124,
+            458,
+            383
+          ],
+          "sha256": "f22955a2f5d83220e1c1c4e614f54613d11081a5a6bbbe61b310bd4ef4598528"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1157386,
+          "partial_alpha_pixels": 412702,
+          "alpha_bbox": [
+            0,
+            25,
+            1234,
+            1238
+          ],
+          "visible_bbox_alpha64": [
+            133,
+            303,
+            1121,
+            937
+          ],
+          "sha256": "b29ad1079a062462085f621759766651822a869fc2cf99afca1ec585e29a6545"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\cemetery-gate-v2-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\cemetery-gate-v2-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "cemetery-gate.webp",
+          "w": 404,
+          "h": 260,
+          "source": "cemeteryGate.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 6,
+      "region": "Mansion Graveyard",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Widow of the Grounds",
+      "existing_animation": false,
+      "description": "A dignified spectral mourner in black formal dress; a broad veiled hat softens her silhouette. Hosts a quiet remembrance that keeps restarting whenever a flower is out of place. She lights candles and gathers gentle rain, never strikes or pursues.",
+      "animation": "2D animation Idle veil sway; tell flower lift; action three candle glows or small rain overlay; resolve grateful bow.",
+      "signature": "Signature Single flowing mourner with floral and rain motifs; sorrowful but not frightening.",
+      "production_id": "widow-of-the-grounds",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\widow-of-the-grounds.webp",
+      "source_path": "animations\\sprites\\enemies\\widowOfTheGrounds.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            849,
+            957
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 340246,
+          "partial_alpha_pixels": 471480,
+          "alpha_bbox": [
+            0,
+            0,
+            849,
+            957
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            1,
+            849,
+            957
+          ],
+          "sha256": "f511c6771b2b46e798297c5b4c1ceb358f92983d9aa5b96d00c23c36870dcb41"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 561614,
+          "partial_alpha_pixels": 486195,
+          "alpha_bbox": [
+            0,
+            28,
+            1013,
+            1024
+          ],
+          "visible_bbox_alpha64": [
+            88,
+            37,
+            936,
+            993
+          ],
+          "sha256": "cc46a9833416f1602353fcb83957585d91dbcb7fe84911005eb63dbcb0b9af08"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 842100,
+          "partial_alpha_pixels": 729985,
+          "alpha_bbox": [
+            0,
+            35,
+            1240,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            108,
+            45,
+            1146,
+            1215
+          ],
+          "sha256": "0357b14d10bd01f7916e8e559383c13749eae00a53d7205a4e4a3748396b2aa2"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\widow-of-the-grounds-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\widow-of-the-grounds-prompt.txt",
+        "visual": "Full generated image visually reviewed for roster identity, complete silhouette, anatomy and tactile cute haunted-house style; regional contact sheet also reviewed before final report.",
+        "runtime_metadata": {
+          "file": "widow-of-the-grounds.webp",
+          "w": 849,
+          "h": 957,
+          "source": "widowOfTheGrounds.png"
+        },
+        "conversion": "Tier-sized square source PNG; isolated existing build_enemy_still function for new WebP only. No registry changes."
+      },
+      "blocker": null
+    }
+  ],
+  "counts": {
+    "new": 11,
+    "remaining_in_region": 0
+  },
+  "review": "All 11 original images and final regional contact sheet visually reviewed. Distinct roster identities, complete silhouettes, valid anatomy, true transparent alpha and matching tactile cute haunted-house style. All source/runtime dimensions and hashes checked.",
+  "complete": true
+}

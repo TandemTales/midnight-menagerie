@@ -25,6 +25,10 @@
   color: var(--kit-text);
   font-family: var(--font-body);
   overflow: hidden;
+  /* clip, not just hidden: the stage's mantel and floor may run past the foot of
+     the room, and a hidden box still scrolls when something in it takes focus,
+     which walked the whole story up the screen */
+  overflow: clip;
 }
 
 /* The room, lit but held back, the way a fight's vignette holds it: its edges
@@ -84,7 +88,7 @@
 }
 .tut-floor__pool { --light-a: 54%; z-index: 1; }
 .tut-floor__pool--fig  { left: 30%; top: 62%; width: clamp(380px, 36vw, 600px); }
-.tut-floor__pool--page { left: 70%; top: 58%; width: clamp(500px, 48vw, 780px); --light-a: 40%; animation-delay: -1.3s; }
+.tut-floor__pool--page { left: 70%; top: 58%; width: clamp(500px, 48vw, 780px); --light-a: 40%; animation-delay: calc(-1.3s * var(--anim-scale)); }
 /* the kids' brass lantern set down on the stones beside the portrait's candle,
    burning under its own rim; its light on the floor and up the mantel's apron */
 .tut-lantern {
@@ -106,8 +110,8 @@
   border-radius: 50%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 44%, transparent), color-mix(in srgb, var(--kit-candle) 13%, transparent) 46%, transparent);
   mix-blend-mode: screen;
-  animation: kit-flicker 3.1s ease-in-out infinite;
-  animation-delay: -.8s;
+  animation: kit-flicker calc(3.1s * var(--anim-scale)) ease-in-out infinite;
+  animation-delay: calc(-.8s * var(--anim-scale));
 }
 .mm-reduce-motion .tut-lantern::after,
 :root[data-reduce-motion="1"] .tut-lantern::after { animation: none; }
@@ -206,7 +210,7 @@
   white-space: nowrap;
   gap: 0;
 }
-.tut-plate .kit-plate__name { font-size: calc(var(--plate-h) * .33); padding-top: calc(var(--plate-h) * .05); }
+.tut-plate .kit-plate__name { --reading-size: calc(var(--plate-h) * .33); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); padding-top: calc(var(--plate-h) * .05); }
 /* the Kid board's star medallion capping the plate, seated on its arch */
 .tut-plate__star {
   position: absolute; z-index: 1; left: 50%; top: 0;
@@ -216,7 +220,7 @@
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
   pointer-events: none;
 }
-.tut-plate .kit-plate__epithet { font-size: max(12.5px, calc(var(--plate-h) * .215)); }
+.tut-plate .kit-plate__epithet { --reading-size: max(12.5px, calc(var(--plate-h) * .215)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 /* the skull on its books and the candle at the frame's two feet, as on the Kid
    board: in front of the frame's corners, clear of the nameplate between them */
 .tut-prop { z-index: 5; }
@@ -239,9 +243,21 @@
   gap: clamp(14px, 2vh, 20px);
   min-width: 0;
   padding: clamp(58px, 7.4vh, 68px) clamp(46px, 3.9vw, 62px) clamp(34px, 4.2vh, 44px);
-  max-height: calc(100vh - 120px);
   opacity: 0;
 }
+/* THE WAY ON IS ALWAYS ON THE SCREEN. The page may grow from where it stands until
+   Go on is about to reach the top of the Skip plate (the page's foot rail may pass
+   behind the plate, the button may not); past that the words scroll inside it. The
+   room hides any overflow, so a page that ran off the foot took its only button
+   with it (Large Text at 1280x800, the Deck's default, on the first page of the
+   game). */
+.tut-root .tut-panel {
+  --page-top: var(--stage-pt);
+  --page-foot: calc(clamp(8px, .7vw, 12px) + clamp(10px, 1.7vh, 18px) + clamp(40px, 5vh, 46px) + 8px - clamp(34px, 4.2vh, 44px));
+  max-height: calc(100vh - var(--page-top) - var(--page-foot));
+  min-height: 0;
+}
+.tut-root[data-wide="0"] .tut-panel { --page-top: calc(var(--stage-pt) + clamp(34px, 5vh, 46px)); }
 /* the velvet and its gilt fillet are the page's inner edge: the panel's thin
    engraved double rule is not drawn again inside them */
 .tut-panel { --rule: none; }
@@ -336,7 +352,15 @@
   color: var(--kit-text-mid);
 }
 
-.tut-lines { display: flex; flex-direction: column; gap: clamp(10px, 1.7vh, 16px); }
+.tut-lines {
+  display: flex; flex-direction: column; gap: clamp(10px, 1.7vh, 16px);
+  /* the last resort of the rule above; the side padding keeps the illuminated
+     initial's glow inside the scroll box without moving a word */
+  flex: 0 1 auto; min-height: 0;
+  overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--kit-gold) transparent;
+  padding-inline: 14px; margin-inline: -14px;
+}
+.tut-foot { flex: none; }
 /* the fleuron over the story: title.png's own gilt fleur-de-lis and its
    scrolls (boss-crest.webp) set as a printed headpiece, a fine gilt rule
    running out from either side of it, so the words stand under something on
@@ -529,55 +553,55 @@
 }
 .tut-dos__f {
   margin: 0;
-  font-size: calc(max(8px, 0.86cqw) * var(--fit, 1));
+  --reading-size: calc(max(8px, 0.86cqw) * var(--fit, 1)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   line-height: 1.3;
   color: var(--text-lo);
   text-wrap: balance;
 }
 .tut-dos__n {
   font-family: var(--font-display);
-  font-size: calc(max(13px, 2.07cqw) * var(--fit, 1));
+  --reading-size: calc(max(13px, 2.07cqw) * var(--fit, 1)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   line-height: 1.05;
   color: var(--flame-200);
   letter-spacing: .01em;
 }
 .tut-dos__a {
-  font-size: calc(max(9px, 1.04cqw) * var(--fit, 1));
+  --reading-size: calc(max(9px, 1.04cqw) * var(--fit, 1)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   color: color-mix(in srgb, var(--flame-200) 62%, var(--text-lo));
   letter-spacing: .12em;
 }
 .tut-dos__t {
   margin: 0;
-  font-size: calc(max(9px, 1.10cqw) * var(--fit, 1));
+  --reading-size: calc(max(9px, 1.10cqw) * var(--fit, 1)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   line-height: 1.42;
   color: var(--text-mid);
 }
 .tut-dos__k {
   font-family: var(--font-display);
-  font-size: calc(max(9px, 1.16cqw) * var(--fit, 1));
+  --reading-size: calc(max(9px, 1.16cqw) * var(--fit, 1)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   line-height: 1.15;
   color: var(--flame-300);
 }
 .tut-dos__p {
   margin: 0;
-  font-size: calc(max(8px, 0.86cqw) * var(--fit, 1));
+  --reading-size: calc(max(8px, 0.86cqw) * var(--fit, 1)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   line-height: 1.3;
   color: var(--text-lo);
   text-wrap: balance;
 }
 .tut-dos__pn {
   font-family: var(--font-display);
-  font-size: calc(max(11px, 1.52cqw) * var(--fit, 1));
+  --reading-size: calc(max(11px, 1.52cqw) * var(--fit, 1)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   color: var(--flame-200);
 }
 .tut-dos__pk {
-  font-size: calc(max(8px, 0.90cqw) * var(--fit, 1));
+  --reading-size: calc(max(8px, 0.90cqw) * var(--fit, 1)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   color: var(--text-lo);
   text-transform: uppercase; letter-spacing: .1em;
 }
 .tut-dos__pl {
   margin: 0.1em 0 0;
-  font-size: calc(max(9px, 1.04cqw) * var(--fit, 1));
+  --reading-size: calc(max(9px, 1.04cqw) * var(--fit, 1)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   line-height: 1.4;
   font-style: italic;
   color: var(--text-mid);
@@ -606,7 +630,7 @@
 .tut-btn--go:disabled { cursor: default; opacity: 0.45; }
 .tut-btn--go:disabled:hover { border-color: transparent; box-shadow: none; }
 .tut-btn--go:not(:disabled) {
-  animation: tut-tick 2.4s var(--ease-soft) infinite;
+  animation: tut-tick calc(2.4s * var(--anim-scale)) var(--ease-soft) infinite;
 }
 @keyframes tut-tick {
   0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--flame-400) 30%, transparent); }
@@ -673,7 +697,7 @@
   bottom: calc(clamp(8px, .7vw, 12px) + clamp(10px, 1.7vh, 18px));
   padding-right: calc(var(--plate-h) * 1.06);
 }
-.tut-skip.kit-btn { font-size: 12.5px; }
+.tut-skip.kit-btn { --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .tut-skip.kit-btn--quiet {
   color: color-mix(in oklab, var(--kit-name) 84%, var(--kit-text-mid));
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .8)) saturate(.8) brightness(.92);
@@ -692,4 +716,31 @@
 @media (max-width: 900px) {
   .tut-stage { grid-template-columns: minmax(0, 1fr); }
   .tut-fig { display: none; }
+}
+
+/* ── Large Text, and short windows ────────────────────────────────────────────
+   The story was laid out for its own size of type, and at Large Text a page of
+   it no longer fits beside the portrait. So the words are kept at their full size
+   and the page makes the room: the portrait stands smaller on the mantel, the page
+   takes the width it gives up (a row of the same height, so the page still keeps
+   its size from beat to beat), and on a screen with no height to spare the printed
+   headpiece goes before any word does. */
+@media (min-width: 901px) {
+  :root[data-large-text="1"] .tut-root[data-wide="0"] .tut-stage {
+    grid-template-columns: minmax(0, clamp(13rem, 22vw, 26rem)) minmax(0, 52rem);
+    grid-template-rows: minmax(calc(100vh - var(--stage-pt) - var(--stage-pb)), auto);
+    gap: clamp(36px, 3.4vw, 64px);
+  }
+}
+/* the type's size runs on the window's WIDTH, so a wide short window is the one
+   that runs out of page: a line never stands taller than the height can carry */
+:root[data-large-text="1"] .tut-line { font-size: min(calc(var(--fs-lg) * 1.2), 4vh); line-height: 1.38; }
+:root[data-large-text="1"] .tut-lines { padding-bottom: 6px; }
+@media (max-height: 1100px) {
+  :root[data-large-text="1"] .tut-lines::before { display: none; }
+  :root[data-large-text="1"] .tut-lines { padding-top: 10px; }
+}
+@media (max-height: 760px) {
+  .tut-lines::before { display: none; }
+  .tut-lines { padding-top: 10px; }
 }

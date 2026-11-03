@@ -1,0 +1,2263 @@
+{
+  "foyer": {
+    "title": "The Forgotten Foyer",
+    "boss": "The Butler",
+    "arrival": {
+      "id": "NR-foyer-arrival",
+      "lines": [
+        "A tray floats over with tiny towels. A second follows with smaller towels for drying the first towels.",
+        {
+          "speaker": "The Butler",
+          "text": "We are prepared for every need."
+        },
+        {
+          "speaker": "maya",
+          "text": "Do you have a towel for an unanswered question?"
+        },
+        "The second tray retreats to check."
+      ],
+      "recap": "The House offers a very elaborate welcome."
+    },
+    "before": {
+      "id": "NR-foyer-before",
+      "lines": [
+        {
+          "speaker": "The Butler",
+          "text": "Welcome. First, a welcome. Second, a longer welcome."
+        },
+        "He raises a tray of House Rules between you and the hall beyond.",
+        {
+          "speaker": "samir",
+          "text": "Could the second welcome be shorter than the first?"
+        },
+        {
+          "speaker": "The Butler",
+          "text": "An untested arrangement."
+        }
+      ],
+      "recap": "The Butler blocks the way with his House Rules."
+    },
+    "beforeIfInvestigated": {
+      "id": "NR-foyer-before-investigated",
+      "lines": [
+        "The Butler looks from the tested water bell to the cover around the going-home bell.",
+        {
+          "speaker": "The Butler",
+          "text": "Water, I can bring. That other call goes deeper into the House."
+        },
+        {
+          "speaker": "The Butler",
+          "text": "I cannot take you there."
+        },
+        "He raises his tray of House Rules between you and the hall beyond."
+      ],
+      "recap": "The Butler acknowledges the blocked bell. He says its call goes deeper into the House, then blocks the hall."
+    },
+    "after": {
+      "id": "NR-foyer-after",
+      "lines": [
+        "A low bell rings. The Butler catches a tipping water dish without spilling a drop.",
+        {
+          "speaker": "The Butler",
+          "text": "The animals’ breakfast bell. Supper? The clock is unhelpful. They are fed."
+        },
+        "He sets the dish by a little hatch. An unseen nose sniffs; the dish slides inside.",
+        "A tiny towel remains on his head. He leaves it there until the drinking stops."
+      ],
+      "recap": "Animals live here, and the Butler tends their meals and water. Their rooms lie beyond the Foyer."
+    },
+    "repeatBefore": {
+      "id": "NR-foyer-before-repeat",
+      "lines": [
+        {
+          "speaker": "The Butler",
+          "text": "The rules are ready. I have shortened the welcome."
+        }
+      ],
+      "recap": "The Butler is ready for this Scuffle."
+    },
+    "repeatAfter": {
+      "id": "NR-foyer-after-repeat",
+      "lines": [
+        "The Butler lifts the little towel to answer a bell, then accidentally answers the towel.",
+        {
+          "speaker": "The Butler",
+          "text": "Yes? ...Ah."
+        }
+      ],
+      "recap": "The Butler answers promptly, with one small mix-up."
+    },
+    "clues": [
+      {
+        "id": "NR-foyer-clue-1",
+        "title": "Two answers",
+        "lines": [
+          "An intake card has two ticks: FOUND ALONE and HAS A HOME."
+        ],
+        "detail": [
+          "The going-home space is crossed out. The KEEP SAFE stamp covers both ticks.",
+          {
+            "speaker": "mateo",
+            "text": "Both answers were there before the stamp."
+          }
+        ],
+        "recap": "The House recorded a home, then crossed out departure."
+      },
+      {
+        "id": "NR-foyer-clue-2",
+        "title": "The third cord",
+        "lines": [
+          "Two bell cords are worn soft. A third ends in a neat knot high above the floor."
+        ],
+        "detail": [
+          "The cords run in different directions. Each bell has a small test lever beside the counter.",
+          {
+            "speaker": "jordan",
+            "text": "I could reach—oh. A little paw couldn’t."
+          }
+        ],
+        "recap": "Two cords are worn from use. A third has been tied out of reach.",
+        "detailChoices": [
+          {
+            "id": "NR-foyer-clue-2-worn-cords",
+            "label": "Follow the worn cords.",
+            "lines": [
+              "The WATER cord leads to a small bell beside a jug. The BLANKET cord leads to another beside a warm cupboard.",
+              "Tiny paw marks shine on both handles."
+            ],
+            "recap": "The reachable cords call for water and blankets."
+          },
+          {
+            "id": "NR-foyer-clue-2-knot",
+            "label": "Look above the knot.",
+            "lines": [
+              "A plate above the unreachable cord reads HELP GOING HOME.",
+              "Its bell is polished. The handle below the knot has never been worn smooth."
+            ],
+            "recap": "The going-home bell is ready, but its cord is out of reach."
+          }
+        ],
+        "investigation": {
+          "id": "CASE-foyer-bells",
+          "title": "Who gets an answer?",
+          "question": "Are the bells broken, or is one kind of call being blocked?",
+          "hypotheses": [
+            {
+              "id": "broken",
+              "label": "The bells need fixing."
+            },
+            {
+              "id": "blocked",
+              "label": "One kind of call is being blocked."
+            },
+            {
+              "id": "unsure",
+              "label": "I’m not sure yet."
+            }
+          ],
+          "tests": [
+            {
+              "id": "CASE-foyer-bells-water",
+              "label": "Try the worn WATER cord.",
+              "lines": [
+                "You pull the worn cord. Its bell rings clearly.",
+                "A jug fills a clean dish at the counter. It waits until the water stops wobbling before sliding it over."
+              ]
+            },
+            {
+              "id": "CASE-foyer-bells-home",
+              "label": "Try the third bell’s test lever.",
+              "lines": [
+                "The third plate reads HELP GOING HOME. You press its lever. The bell rings perfectly.",
+                "A padded cover drops around that bell and muffles it. When you release the lever, the cover folds back."
+              ]
+            }
+          ],
+          "resolution": {
+            "lines": [
+              "Both bells work. The water call brought care. The going-home call was covered before anyone answered.",
+              "The unreachable cord belongs to that same covered bell."
+            ],
+            "recap": "The water bell brings service. The working going-home bell is muffled, and its cord is tied out of reach."
+          }
+        }
+      },
+      {
+        "id": "NR-foyer-clue-3",
+        "title": "A very patient brush",
+        "lines": [
+          "A brush waits below three dog portraits. The third frame is empty."
+        ],
+        "detail": [
+          "The first two read BEFORE BRUSHING and AFTER BRUSHING. The empty frame reads PLEASE REMAIN STILL.",
+          {
+            "speaker": "eli",
+            "text": "A brush with ambitious plans."
+          }
+        ],
+        "recap": "The brush is still waiting for its third portrait."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-foyer-bark",
+        "lines": [
+          {
+            "speaker": "The Butler",
+            "text": "I had a smaller frown prepared."
+          }
+        ],
+        "recap": "The Butler looks disapproving."
+      }
+    ]
+  },
+  "nursery": {
+    "title": "The Forgotten Nursery",
+    "boss": "The Governess",
+    "arrival": {
+      "id": "NR-nursery-arrival",
+      "lines": [
+        "Two toy soldiers stand at attention. A third wears a feather duster for a hat.",
+        "It dusts the other two. They try to remain dignified through the tickling.",
+        {
+          "speaker": "lena",
+          "text": "Best hat here."
+        }
+      ],
+      "recap": "A toy soldier has found a use for its unusual hat."
+    },
+    "before": {
+      "id": "NR-nursery-before",
+      "lines": [
+        {
+          "speaker": "The Governess",
+          "text": "Loose hems. Loose buttons. Loose plans."
+        },
+        "She pulls her favourite doll close. Thread stretches across the room.",
+        {
+          "speaker": "eli",
+          "text": "My plans need room to wiggle."
+        },
+        {
+          "speaker": "The Governess",
+          "text": "Wiggling is how things come undone."
+        }
+      ],
+      "recap": "The Governess wants to hold everything tightly together."
+    },
+    "after": {
+      "id": "NR-nursery-after",
+      "lines": [
+        "The Governess reaches to straighten the duster-hatted soldier. It pats its crooked hat.",
+        "Her hand pauses. The soldier dusts one of her sleeves.",
+        {
+          "speaker": "The Governess",
+          "text": "Oh. You were busy."
+        },
+        "She offers the other sleeve instead."
+      ],
+      "recap": "The Governess leaves the toy’s hat as it is and lets it finish its chosen job."
+    },
+    "repeatBefore": {
+      "id": "NR-nursery-before-repeat",
+      "lines": [
+        {
+          "speaker": "The Governess",
+          "text": "The thread is ready. I am leaving that hat alone."
+        }
+      ],
+      "recap": "The Governess prepares for the Scuffle without changing the toy’s hat."
+    },
+    "repeatAfter": {
+      "id": "NR-nursery-after-repeat",
+      "lines": [
+        "The Governess offers her sleeve. The tiny duster gets to work."
+      ],
+      "recap": "The toy keeps its useful hat."
+    },
+    "clues": [
+      {
+        "id": "NR-nursery-clue-1",
+        "title": "The painted door",
+        "lines": [
+          "A dollhouse has real little hinges on its cupboards. Its front door is painted on."
+        ],
+        "detail": [
+          "A newer arrow points from the painted door back to bed.",
+          {
+            "speaker": "priya",
+            "text": "The cupboards can open. Why not that one?"
+          }
+        ],
+        "recap": "The dollhouse gives its residents cupboards that open, but no working front door."
+      },
+      {
+        "id": "NR-nursery-clue-2",
+        "title": "Keep the flop",
+        "lines": [
+          "A mended cloth ear still flops over one button eye."
+        ],
+        "detail": [
+          "Its tag reads LEFT EAR MENDED. Beneath it: PLEASE KEEP THE FLOP.",
+          {
+            "speaker": "amina",
+            "text": "They did."
+          }
+        ],
+        "recap": "A repair preserved a feature somebody wanted to keep."
+      },
+      {
+        "id": "NR-nursery-clue-3",
+        "title": "The covered ending",
+        "lines": [
+          "A paper blanket covers the end of a story: “The rabbit was frightened, so…”"
+        ],
+        "detail": [
+          "Under the paper: “…the rabbit asked to go home.” There is room to read the whole sentence.",
+          {
+            "speaker": "mateo",
+            "text": "The blanket stopped at the important bit."
+          }
+        ],
+        "recap": "The covered story ends with a request to go home."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-nursery-bark",
+        "lines": [
+          {
+            "speaker": "The Governess",
+            "text": "Hold still, please. Not you. The thread."
+          }
+        ],
+        "recap": "The Governess fusses over her thread."
+      }
+    ]
+  },
+  "sleeping-quarters": {
+    "title": "The Sleeping Quarters",
+    "boss": "The Bedframe Beast",
+    "arrival": {
+      "id": "NR-sleeping-quarters-arrival",
+      "lines": [
+        "A bed pulls its curtains shut. Four enormous feet remain in view.",
+        "One foot attempts to hide behind another. The bed wobbles.",
+        {
+          "speaker": "jordan",
+          "text": "We can give you a minute."
+        },
+        {
+          "speaker": "The Bedframe Beast",
+          "text": "Nobody needs a minute. Nobody is here."
+        }
+      ],
+      "recap": "An enormous bed is trying very hard to hide."
+    },
+    "before": {
+      "id": "NR-sleeping-quarters-before",
+      "lines": [
+        {
+          "speaker": "The Bedframe Beast",
+          "text": "Everything beneath me is safe. Everything beneath me stays."
+        },
+        "Its feet slide across the gaps around its curtains.",
+        {
+          "speaker": "mateo",
+          "text": "Do the feet know we can see them?"
+        },
+        {
+          "speaker": "The Bedframe Beast",
+          "text": "The feet are a separate matter."
+        }
+      ],
+      "recap": "The Bedframe Beast blocks the gaps around its hiding place."
+    },
+    "after": {
+      "id": "NR-sleeping-quarters-after",
+      "lines": [
+        "The bed settles. A small paw pulls at the curtain from underneath.",
+        "The Beast moves a foot aside and lowers the cord where the paw can reach it.",
+        "The curtain opens a little, then closes again.",
+        {
+          "speaker": "The Bedframe Beast",
+          "text": "An excellent hiding place. It works both ways."
+        }
+      ],
+      "recap": "The occupant can now open and close its own hiding place."
+    },
+    "repeatBefore": {
+      "id": "NR-sleeping-quarters-before-repeat",
+      "lines": [
+        {
+          "speaker": "The Bedframe Beast",
+          "text": "The inside cord is still there. You may not inspect my feet."
+        }
+      ],
+      "recap": "The curtain’s inside cord remains reachable."
+    },
+    "repeatAfter": {
+      "id": "NR-sleeping-quarters-after-repeat",
+      "lines": [
+        "A paw draws the curtain closed. The Beast keeps its feet clear."
+      ],
+      "recap": "The occupant controls its curtain."
+    },
+    "clues": [
+      {
+        "id": "NR-sleeping-quarters-clue-1",
+        "title": "Cushions and wheels",
+        "lines": [
+          "Cushions beneath a smaller bed have worn sleeping hollows. Wheel tracks cross the gaps between them."
+        ],
+        "detail": [
+          "The tracks end where the bed blocks the only way out.",
+          {
+            "speaker": "maya",
+            "text": "Nice cushions. Look where the wheels stop."
+          }
+        ],
+        "recap": "The bed offered comfortable hiding, then blocked the route out.",
+        "beforeResolutionOnly": true
+      },
+      {
+        "id": "NR-sleeping-quarters-clue-2",
+        "title": "The waking bell",
+        "lines": [
+          "A bedside bell has been wrapped in three soft socks."
+        ],
+        "detail": [
+          "A little pawprint marks the bell’s handle. The socks muffle every ring.",
+          {
+            "speaker": "samir",
+            "text": "That is a very well-rested alarm."
+          }
+        ],
+        "recap": "Someone could reach the bell, but its sound was muffled."
+      },
+      {
+        "id": "NR-sleeping-quarters-clue-3",
+        "title": "The familiar hollow",
+        "lines": [
+          "A little sleeping hollow sits beside a much larger empty one."
+        ],
+        "detail": [
+          "A toy is worn on the side facing the empty space. A fringe of blanket has been tucked around both hollows.",
+          {
+            "speaker": "lena",
+            "text": "Someone had a favourite side."
+          }
+        ],
+        "recap": "Two sleeping hollows share one blanket. The toy faces the larger space."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-sleeping-quarters-bark",
+        "lines": [
+          {
+            "speaker": "The Bedframe Beast",
+            "text": "Boo. With feeling."
+          }
+        ],
+        "recap": "The bed attempts a grand scare."
+      }
+    ]
+  },
+  "kitchens-cellars": {
+    "title": "The Kitchens and Cellars",
+    "boss": "The Confectioner",
+    "arrival": {
+      "id": "NR-kitchens-cellars-arrival",
+      "lines": [
+        "A kitchen imp tries to stir with an iced spoon. The icing comes off.",
+        "It fetches a replacement. That spoon has sprinkles.",
+        {
+          "speaker": "eli",
+          "text": "We may need to rescue the cutlery."
+        }
+      ],
+      "recap": "The kitchen has improved its spoons until they barely work."
+    },
+    "before": {
+      "id": "NR-kitchens-cellars-before",
+      "lines": [
+        {
+          "speaker": "The Confectioner",
+          "text": "Nothing is finished while I can add something."
+        },
+        "It puts a cherry on the Recipe Board. The cherry rolls off.",
+        {
+          "speaker": "priya",
+          "text": "Does anything here get to be finished?"
+        },
+        {
+          "speaker": "The Confectioner",
+          "text": "An excellent question. Needs icing."
+        }
+      ],
+      "recap": "The Confectioner keeps changing things without asking whether they need changing."
+    },
+    "after": {
+      "id": "NR-kitchens-cellars-after",
+      "lines": [
+        "The Confectioner finds one plain spoon beneath the board.",
+        {
+          "speaker": "The Confectioner",
+          "text": "I could improve—"
+        },
+        "It tries the spoon. The spoon works. It sets the icing bag down.",
+        {
+          "speaker": "The Confectioner",
+          "text": "Keep this one. We may need to stir something."
+        }
+      ],
+      "recap": "The Confectioner keeps a useful spoon plain."
+    },
+    "repeatBefore": {
+      "id": "NR-kitchens-cellars-before-repeat",
+      "lines": [
+        {
+          "speaker": "The Confectioner",
+          "text": "The plain spoon is safe. The rest of the kitchen remains a work in progress."
+        }
+      ],
+      "recap": "The Confectioner has kept the useful plain spoon."
+    },
+    "repeatAfter": {
+      "id": "NR-kitchens-cellars-after-repeat",
+      "lines": [
+        "The Confectioner places the plain spoon well away from the sprinkles."
+      ],
+      "recap": "The spoon remains useful."
+    },
+    "clues": [
+      {
+        "id": "NR-kitchens-cellars-clue-1",
+        "title": "Two empty dishes",
+        "lines": [
+          "A feeding tray holds two empty dishes: USUAL FOOD and SPECIAL TREAT."
+        ],
+        "detail": [
+          "A note says ACCEPTED BOTH. THEREFORE HAPPY TO REMAIN.",
+          {
+            "speaker": "samir",
+            "text": "I like snacks in lots of places. I don’t live in all of them."
+          }
+        ],
+        "recap": "The kitchen treated eating as agreement to stay."
+      },
+      {
+        "id": "NR-kitchens-cellars-clue-2",
+        "title": "The uncoated bowl",
+        "lines": [
+          "Five bowls shine with new glaze. A sixth has a worn patch on its rim."
+        ],
+        "detail": [
+          "Only the worn bowl has been pulled close to a sleeping mat.",
+          {
+            "speaker": "amina",
+            "text": "That one is being used."
+          }
+        ],
+        "recap": "A resident preferred the familiar bowl over the new ones."
+      },
+      {
+        "id": "NR-kitchens-cellars-clue-3",
+        "title": "One more improvement",
+        "lines": [
+          "A recipe begins with a simple bowl of soup. Additions run down the page and onto the table."
+        ],
+        "detail": [
+          "At the bottom, somebody drew a spoon. It has a question mark beside it.",
+          {
+            "speaker": "eli",
+            "text": "I think the soup wants its spoon back."
+          }
+        ],
+        "recap": "The recipe kept expanding without checking whether it could still be eaten."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-kitchens-cellars-bark",
+        "lines": [
+          {
+            "speaker": "The Confectioner",
+            "text": "A triumph. Bring a bigger plate."
+          }
+        ],
+        "recap": "The Confectioner admires its own work."
+      }
+    ]
+  },
+  "greenhouse": {
+    "title": "The Impossible Greenhouse",
+    "boss": "The Carnivorous Conservatory",
+    "arrival": {
+      "id": "NR-greenhouse-arrival",
+      "lines": [
+        "A watering can leans toward a dry pot. A vine gently turns the pot away.",
+        "The can goes around the other side. The pot turns again.",
+        {
+          "speaker": "lena",
+          "text": "The pot is winning."
+        }
+      ],
+      "recap": "Even watering requires negotiation in this greenhouse."
+    },
+    "before": {
+      "id": "NR-greenhouse-before",
+      "lines": [
+        "The whole Conservatory rustles. Vines curl around its doorway.",
+        "Fresh leaves unfold into every gap between the vines.",
+        {
+          "speaker": "maya",
+          "text": "That doorway is getting smaller."
+        },
+        "Another layer grows across the narrowing doorway."
+      ],
+      "recap": "The living Conservatory grows across its own exit."
+    },
+    "after": {
+      "id": "NR-greenhouse-after",
+      "lines": [
+        "A potted seedling leans toward a patch of light beyond the vines.",
+        "The Conservatory makes a brighter patch beside it. The seedling keeps leaning the other way.",
+        "At last, the vines uncurl. The pot shuffles into the light it wanted.",
+        "A new leaf reaches after the pot, then folds aside."
+      ],
+      "recap": "The Conservatory makes room for the seedling to reach its preferred light."
+    },
+    "repeatBefore": {
+      "id": "NR-greenhouse-before-repeat",
+      "lines": [
+        "The seedling’s path remains clear. The Conservatory gathers its other vines."
+      ],
+      "recap": "The Conservatory prepares for the Scuffle without reclaiming the seedling’s path."
+    },
+    "repeatAfter": {
+      "id": "NR-greenhouse-after-repeat",
+      "lines": [
+        "A vine starts to shade the seedling, then curls elsewhere."
+      ],
+      "recap": "The seedling keeps its chosen light."
+    },
+    "clues": [
+      {
+        "id": "NR-greenhouse-clue-1",
+        "title": "Soft moss, new latch",
+        "lines": [
+          "Clean moss fills a little shelter. A bright new latch sits outside it."
+        ],
+        "detail": [
+          "The moss is worn into a resting hollow. Small scrape marks reach toward the latch.",
+          {
+            "speaker": "amina",
+            "text": "They made such a soft bed. Why add that?"
+          }
+        ],
+        "recap": "The shelter offered comfort, but its latch could not be opened from inside.",
+        "beforeResolutionOnly": true
+      },
+      {
+        "id": "NR-greenhouse-clue-2",
+        "title": "The turning pot",
+        "lines": [
+          "A pot has turned so often that it has worn a circle into the shelf."
+        ],
+        "detail": [
+          "Its leaves reach toward a small ordinary window, away from the brightest growing lamp.",
+          {
+            "speaker": "priya",
+            "text": "Window: one. Enormous fancy lamp: zero."
+          }
+        ],
+        "recap": "The plant repeatedly turned toward a different light."
+      },
+      {
+        "id": "NR-greenhouse-clue-3",
+        "title": "Two pictures of a leaf",
+        "lines": [
+          "A leaf in an old picture is small. The same notched leaf in a newer picture glows."
+        ],
+        "detail": [
+          "Both leaves turn toward the same window. The notch appears in the same place."
+        ],
+        "recap": "The pictures suggest change without losing a familiar preference."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-greenhouse-bark",
+        "lines": [
+          "Every leaf turns toward the room’s remaining space."
+        ],
+        "recap": "The Conservatory crowds the room."
+      }
+    ]
+  },
+  "graveyard": {
+    "title": "The Mansion Graveyard",
+    "boss": "The Groundskeeper of Names",
+    "arrival": {
+      "id": "NR-graveyard-arrival",
+      "lines": [
+        "A solemn little stone reads HERE RESTS THE RAKE. Beneath it: UNTIL NEEDED.",
+        "A rake leans comfortably beside the stone.",
+        {
+          "speaker": "samir",
+          "text": "My tools just get a corner."
+        }
+      ],
+      "recap": "The Groundskeeper gives even a resting rake a careful place."
+    },
+    "before": {
+      "id": "NR-graveyard-before",
+      "lines": [
+        "The Groundskeeper polishes a plaque headed WENT HOME.",
+        {
+          "speaker": "The Groundskeeper of Names",
+          "text": "If I stop tending names, they may be forgotten."
+        },
+        "He keeps polishing until his own reflection appears between the letters.",
+        {
+          "speaker": "The Groundskeeper of Names",
+          "text": "Another name to keep an eye on."
+        }
+      ],
+      "recap": "The Groundskeeper fears forgetting those who are gone."
+    },
+    "after": {
+      "id": "NR-graveyard-after",
+      "lines": [
+        "The Groundskeeper opens a book at WENT HOME. A paw-shaped smudge covers part of a page.",
+        {
+          "speaker": "The Groundskeeper of Names",
+          "text": "This one always sat on my writing."
+        },
+        "He starts to polish the smudge, then moves the cloth away.",
+        {
+          "speaker": "The Groundskeeper of Names",
+          "text": "That part can stay."
+        }
+      ],
+      "recap": "The Groundskeeper remembers an animal who went home, and preserves its familiar pawprint."
+    },
+    "repeatBefore": {
+      "id": "NR-graveyard-before-repeat",
+      "lines": [
+        "A ribbon still marks WENT HOME. The Groundskeeper sets the book safely aside."
+      ],
+      "recap": "The Groundskeeper keeps the departed animal’s record."
+    },
+    "repeatAfter": {
+      "id": "NR-graveyard-after-repeat",
+      "lines": [
+        "He dusts around the little pawprint."
+      ],
+      "recap": "The familiar smudge remains."
+    },
+    "clues": [
+      {
+        "id": "NR-graveyard-clue-1",
+        "title": "Old memorials",
+        "lines": [
+          "Flowers and low benches surround stones for animals who died long ago."
+        ],
+        "detail": [
+          "These stones do not bear the missing pets’ names. A fresh paw trail continues past them toward the House."
+        ],
+        "recap": "The memorials remember older animals; the current search continues beyond them."
+      },
+      {
+        "id": "NR-graveyard-clue-2",
+        "title": "Kept after goodbye",
+        "lines": [
+          "A name plaque has been polished beneath the words WENT HOME."
+        ],
+        "detail": [
+          "The polish is recent. Going home did not remove the name from the wall.",
+          {
+            "speaker": "lena",
+            "text": "Still there."
+          }
+        ],
+        "recap": "An animal’s name was kept after it left."
+      },
+      {
+        "id": "NR-graveyard-clue-3",
+        "title": "The flower carrier",
+        "lines": [
+          "A little watering vessel is balanced beside a row of flowers. A trail of wet dots ends beneath a bench."
+        ],
+        "detail": [
+          "A resident has left it there for another visitor. The flowers nearest the bench are well watered."
+        ],
+        "recap": "Someone has made tending these memories easier to share."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-graveyard-bark",
+        "lines": [
+          {
+            "speaker": "The Groundskeeper of Names",
+            "text": "I remember the small names, too."
+          }
+        ],
+        "recap": "The Groundskeeper remains intent on remembering."
+      }
+    ]
+  },
+  "study-library": {
+    "title": "The Grand Study and Library",
+    "boss": "The Archivist",
+    "arrival": {
+      "id": "NR-study-library-arrival",
+      "lines": [
+        "A quill labels a stack TOO MANY BOOKS. It opens a new book called Labels I Have Made.",
+        "A second quill starts a book about the first quill.",
+        {
+          "speaker": "priya",
+          "text": "We should leave before they need a sequel."
+        }
+      ],
+      "recap": "The Library keeps producing more records of its own records."
+    },
+    "before": {
+      "id": "NR-study-library-before",
+      "lines": [
+        {
+          "speaker": "The Archivist",
+          "text": "Your request has been filed."
+        },
+        "They check a drawer marked THINGS THAT WILL WAIT. It will not quite close.",
+        {
+          "speaker": "samir",
+          "text": "That drawer looks impatient."
+        },
+        {
+          "speaker": "The Archivist",
+          "text": "A popular category."
+        }
+      ],
+      "recap": "The Archivist has filed requests where they can wait indefinitely."
+    },
+    "after": {
+      "id": "NR-study-library-after",
+      "lines": [
+        "The Archivist empties a drawer and writes I WAS WRONG on its front.",
+        {
+          "speaker": "The Archivist",
+          "text": "A small drawer should—"
+        },
+        "They look at the pile of unanswered return requests.",
+        {
+          "speaker": "The Archivist",
+          "text": "A cupboard."
+        },
+        "The requests move into the outgoing tray. It needs a second tray."
+      ],
+      "recap": "The Archivist moves return requests out of storage and into the outgoing tray."
+    },
+    "repeatBefore": {
+      "id": "NR-study-library-before-repeat",
+      "lines": [
+        "The outgoing requests remain in their tray. A tower of unsorted books has filled the aisle.",
+        {
+          "speaker": "The Archivist",
+          "text": "Mind the books. No, those are not steps. They are awaiting shelves."
+        },
+        "They stretch a red ribbon across the remaining gap."
+      ],
+      "recap": "The return requests remain outgoing. The Archivist now blocks an aisle crowded with unsorted books."
+    },
+    "repeatAfter": {
+      "id": "NR-study-library-after-repeat",
+      "lines": [
+        "The Archivist adds another shelf to the cupboard of corrected mistakes."
+      ],
+      "recap": "The corrections remain part of the record."
+    },
+    "clues": [
+      {
+        "id": "NR-study-library-clue-1",
+        "title": "A circle of cards",
+        "lines": [
+          "One card says HAS A FAMILY: SEE LOST. A second says LOST: SEE ARRIVED ALONE."
+        ],
+        "detail": [
+          "ARRIVED ALONE points back to HAS A FAMILY. There is no card for RETURN.",
+          {
+            "speaker": "maya",
+            "text": "Read them in the other direction. Same circle."
+          }
+        ],
+        "recap": "The filing system sends evidence of a family back into the lost category."
+      },
+      {
+        "id": "NR-study-library-clue-2",
+        "title": "The reply in the seam",
+        "lines": [
+          "A folded letter says PLEASE RETURN OUR ANIMAL. Something is tucked into its seam."
+        ],
+        "detail": [
+          "The tucked note reads HOME CONFIRMED. It has never been attached to the request."
+        ],
+        "recap": "A confirmed home was recorded separately from the unanswered request.",
+        "beforeResolutionOnly": true
+      },
+      {
+        "id": "NR-study-library-clue-3",
+        "title": "The repair shelf",
+        "lines": [
+          "A book with a crooked spine has a carefully mended cover. Its crooked spine remains."
+        ],
+        "detail": [
+          "A repair note says OPENED COMFORTABLY. NO FURTHER WORK.",
+          {
+            "speaker": "eli",
+            "text": "I want to meet whoever fixed this."
+          }
+        ],
+        "recap": "A repair was completed without making the book identical to its neighbours."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-study-library-bark",
+        "lines": [
+          {
+            "speaker": "The Archivist",
+            "text": "Upset. Very upset. I need another divider."
+          }
+        ],
+        "recap": "The Archivist attempts to file an emotion."
+      }
+    ]
+  },
+  "attic-observatory": {
+    "title": "The Moonlit Attic and Observatory",
+    "boss": "The Watcher in the Rafters",
+    "arrival": {
+      "id": "NR-attic-observatory-arrival",
+      "lines": [
+        "A star chart predicts SOMETHING WILL FALL. A pencil rolls from its tilted table.",
+        "The chart adds AS FORETOLD.",
+        {
+          "speaker": "lena",
+          "text": "We could fix the table."
+        }
+      ],
+      "recap": "The chart credits itself for a pencil rolling off a tilted table."
+    },
+    "before": {
+      "id": "NR-attic-observatory-before",
+      "lines": [
+        {
+          "speaker": "The Watcher in the Rafters",
+          "text": "A hundred ways your search could go wrong. I have watched them all."
+        },
+        "Other threads trail behind its telescope, out of sight.",
+        {
+          "speaker": "maya",
+          "text": "What are those ones?"
+        },
+        {
+          "speaker": "The Watcher in the Rafters",
+          "text": "The ones that do not go wrong. I was busy."
+        }
+      ],
+      "recap": "The Watcher has concentrated on possible dangers while ignoring other possibilities."
+    },
+    "beforeIfInvestigated": {
+      "id": "NR-attic-observatory-before-investigated",
+      "lines": [
+        "The unbroken window reflects the Watcher. Both forecast cards hang where it can see them.",
+        {
+          "speaker": "The Watcher in the Rafters",
+          "text": "I had already counted that window broken."
+        },
+        "It pulls a hundred other warning threads across the rafters.",
+        {
+          "speaker": "The Watcher in the Rafters",
+          "text": "But all these other things could still happen."
+        }
+      ],
+      "recap": "The Watcher sees that its window warning did not happen. It still blocks the way with other possible dangers."
+    },
+    "after": {
+      "id": "NR-attic-observatory-after",
+      "lines": [
+        "The warning threads slacken. A loose telescope starts to roll toward the edge.",
+        "The Watcher catches it with one quick thread. Then it leaves that thread in place and loosens the others.",
+        {
+          "speaker": "The Watcher in the Rafters",
+          "text": "That one was happening."
+        },
+        "For the first time, there is room between its warnings to see the way onward."
+      ],
+      "recap": "The Watcher catches a telescope that is really falling, then clears away the other warnings blocking the route."
+    },
+    "repeatBefore": {
+      "id": "NR-attic-observatory-before-repeat",
+      "lines": [
+        {
+          "speaker": "The Watcher in the Rafters",
+          "text": "These are forecasts. I have underlined “might.”"
+        }
+      ],
+      "recap": "The Watcher now calls its visions possibilities."
+    },
+    "repeatAfter": {
+      "id": "NR-attic-observatory-after-repeat",
+      "lines": [
+        "A biscuit waits beside the telescope. The Watcher looks at it directly.",
+        {
+          "speaker": "The Watcher in the Rafters",
+          "text": "This might be delicious. I could check."
+        }
+      ],
+      "recap": "The Watcher makes room for a small, pleasant possibility."
+    },
+    "clues": [
+      {
+        "id": "NR-attic-observatory-clue-1",
+        "title": "The hidden strands",
+        "lines": [
+          "A web surrounds a pawprint with three words. GETS LOST is tightly wrapped over the other two."
+        ],
+        "detail": [
+          "Beneath the warning: GOES HOME and COMES BACK.",
+          {
+            "speaker": "priya",
+            "text": "Three paths. Only one was easy to read."
+          }
+        ],
+        "recap": "The web contains more possibilities than the danger it highlights.",
+        "beforeResolutionOnly": true
+      },
+      {
+        "id": "NR-attic-observatory-clue-2",
+        "title": "The window warning",
+        "lines": [
+          "A warning card hangs beside a window. A soft ball rests below the sill."
+        ],
+        "detail": [
+          "A second card is pinned behind the first. Both show the same window."
+        ],
+        "recap": "Two forecast cards hang beside a window and a soft ball.",
+        "investigation": {
+          "id": "CASE-attic-window",
+          "title": "A window in two futures",
+          "question": "Does the warning show what must happen?",
+          "hypotheses": [
+            {
+              "id": "certain",
+              "label": "The warning must come true."
+            },
+            {
+              "id": "possible",
+              "label": "It shows something that might happen."
+            },
+            {
+              "id": "unsure",
+              "label": "I’m not sure yet."
+            }
+          ],
+          "tests": [
+            {
+              "id": "CASE-attic-window-cards",
+              "label": "Read both cards.",
+              "lines": [
+                "The front card says NEXT TOUCH: BALL BREAKS WINDOW. Behind it: NEXT TOUCH: BALL SQUASHES. WINDOW HOLDS.",
+                "Both show this ball and this pane of glass. Neither card has been crossed out."
+              ]
+            },
+            {
+              "id": "CASE-attic-window-ball",
+              "label": "Gently press the soft ball against the glass.",
+              "lines": [
+                "You press the soft ball against the window. It squashes flat, then springs back as you lift it away.",
+                "The glass stays whole. You return the ball to the sill."
+              ]
+            }
+          ],
+          "resolution": {
+            "lines": [
+              "Two cards showed the same next touch ending differently. The gentle test matched the card hidden at the back.",
+              "The frightening card was not the only possibility."
+            ],
+            "recap": "The ball squashed and the window held, matching the hidden forecast. The frightening forecast was one possibility, not a certainty."
+          }
+        }
+      },
+      {
+        "id": "NR-attic-observatory-clue-3",
+        "title": "A tiny telescope",
+        "lines": [
+          "A tiny telescope points through the wrong end of a much larger telescope."
+        ],
+        "detail": [
+          "It can see one enormous biscuit beside the tea. The stars are elsewhere.",
+          {
+            "speaker": "jordan",
+            "text": "I found a moon! Wait. I found a snack. Still good."
+          }
+        ],
+        "recap": "The little telescope has found the biscuit beside the tea."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-attic-observatory-bark",
+        "lines": [
+          {
+            "speaker": "The Watcher in the Rafters",
+            "text": "So many futures. Only so many eyes."
+          }
+        ],
+        "recap": "The Watcher tries to attend to too much at once."
+      }
+    ]
+  },
+  "lampworks": {
+    "title": "The Lampworks",
+    "boss": "The Lamplighter",
+    "arrival": {
+      "id": "NR-lampworks-arrival",
+      "lines": [
+        "One lamp turns to light the dark patch behind another. That lamp turns to help. Their dark patches trade places.",
+        "Both lamps turn again.",
+        {
+          "speaker": "eli",
+          "text": "Try the other—no, your other other side!"
+        }
+      ],
+      "recap": "The lamps light one another instead of the room."
+    },
+    "before": {
+      "id": "NR-lampworks-before",
+      "lines": [
+        {
+          "speaker": "The Lamplighter",
+          "text": "Every light counted. Every spark accounted for."
+        },
+        "It raises a lamp to inspect another lamp, then a smaller lamp to inspect the first.",
+        {
+          "speaker": "The Lamplighter",
+          "text": "I shall need a smaller one."
+        },
+        "The doorway behind it remains dark."
+      ],
+      "recap": "The Lamplighter keeps its lights close while other places stay dark."
+    },
+    "beforeIfInvestigated": {
+      "id": "NR-lampworks-before-investigated",
+      "lines": [
+        "The Lamplighter peers at the lantern’s handles, then at their rabbit-shaped shadow.",
+        {
+          "speaker": "The Lamplighter",
+          "text": "I counted those ears three times."
+        },
+        "It gathers the other lamps closer. The way behind it goes dark.",
+        {
+          "speaker": "The Lamplighter",
+          "text": "I had better count everything again. Nobody move."
+        }
+      ],
+      "recap": "The Lamplighter recognizes the misleading shadow, then gathers its lights to count again, leaving the way dark."
+    },
+    "after": {
+      "id": "NR-lampworks-after",
+      "lines": [
+        "A little lamp swings toward the dark threshold. The Lamplighter reaches after it, then lifts it onto a hook there.",
+        "The beam reveals a small pawprint.",
+        {
+          "speaker": "The Lamplighter",
+          "text": "Lighting the way. That is a position."
+        },
+        "The smaller lamp leans toward the door too. The Lamplighter sighs."
+      ],
+      "recap": "The Lamplighter gives a lamp a useful place by the way onward."
+    },
+    "repeatBefore": {
+      "id": "NR-lampworks-before-repeat",
+      "lines": [
+        "The doorway lamp keeps shining. The Lamplighter wraps both arms around the remaining lamps; one slips under its elbow.",
+        {
+          "speaker": "The Lamplighter",
+          "text": "Stay where I can see you. No, not directly in my eyes."
+        }
+      ],
+      "recap": "The doorway stays lit while the Lamplighter struggles to hold its other lamps together."
+    },
+    "repeatAfter": {
+      "id": "NR-lampworks-after-repeat",
+      "lines": [
+        "The Lamplighter lowers a lamp until its light reaches the smallest doorway. The other lamps copy the angle."
+      ],
+      "recap": "The lamps light the small doorway together."
+    },
+    "clues": [
+      {
+        "id": "NR-lampworks-clue-1",
+        "title": "A familiar shadow",
+        "lines": [
+          "Long rabbit ears rise on the wall behind a lantern. One ear quivers."
+        ],
+        "detail": [
+          "The lantern has a clear front panel and an outer shade with a cool turning handle.",
+          {
+            "speaker": "mateo",
+            "text": "Hello? ...That is not enough of a hello to write down."
+          }
+        ],
+        "recap": "A rabbit-shaped shadow moves behind a lantern.",
+        "detailChoices": [
+          {
+            "id": "NR-lampworks-clue-1-wall",
+            "label": "Watch the wall.",
+            "lines": [
+              "The lantern sways. One long shadow-ear bends sideways, then straightens.",
+              {
+                "speaker": "mateo",
+                "text": "Maybe a rabbit. Maybe a very bendy hat."
+              }
+            ],
+            "recap": "The shadow changes as the lantern sways."
+          },
+          {
+            "id": "NR-lampworks-clue-1-glass",
+            "label": "Look inside the glass.",
+            "lines": [
+              "Through the clear front panel, you see a wick, a small flame, and empty space around them.",
+              "Nothing with ears is inside."
+            ],
+            "recap": "The clear panel shows only a wick and flame inside the lantern."
+          }
+        ],
+        "investigation": {
+          "id": "CASE-lampworks-shadow",
+          "title": "The rabbit in the light",
+          "question": "What is making the long-eared shape?",
+          "hypotheses": [
+            {
+              "id": "animal",
+              "label": "An animal is inside the lantern."
+            },
+            {
+              "id": "lantern",
+              "label": "Part of the lantern makes the shape."
+            },
+            {
+              "id": "unsure",
+              "label": "I’m not sure yet."
+            }
+          ],
+          "tests": [
+            {
+              "id": "CASE-lampworks-shadow-panel",
+              "label": "Look through the clear front panel.",
+              "lines": [
+                "Through the clear panel, you can see the lantern’s floor and all four sides. Only a wick and flame are inside.",
+                "Two tall metal loops curl around the outside of the shade."
+              ]
+            },
+            {
+              "id": "CASE-lampworks-shadow-turn",
+              "label": "Turn the shade by its cool handle.",
+              "lines": [
+                "As you turn the shade, the long ears become two round handles. The metal loops turn with them.",
+                "You turn it back. The rabbit-shaped ears return in exactly the same place."
+              ]
+            }
+          ],
+          "resolution": {
+            "lines": [
+              "The lantern is empty except for its wick and flame. Its outer metal loops make the long-eared shadow.",
+              "Turning the shade changes the shape; turning it back makes the ears again."
+            ],
+            "recap": "The lantern’s metal loops make the rabbit-shaped shadow. The shade can reproduce the ears without an animal inside."
+          }
+        }
+      },
+      {
+        "id": "NR-lampworks-clue-2",
+        "title": "The covered hooks",
+        "lines": [
+          "Two rows of hooks are marked OUT and BACK. A board covers OUT."
+        ],
+        "detail": [
+          "The board reads SAFER HERE. Worn patches show that both rows were once used."
+        ],
+        "recap": "Lamps were once lent out and returned; the outgoing hooks were later covered.",
+        "beforeResolutionOnly": true
+      },
+      {
+        "id": "NR-lampworks-clue-3",
+        "title": "The moth’s appointment",
+        "lines": [
+          "A Lamp Moth circles a lamp marked CIRCLING BY APPOINTMENT."
+        ],
+        "detail": [
+          "It lands on APPOINTMENT, eats a neat hole, and resumes its circuit.",
+          {
+            "speaker": "lena",
+            "text": "Approved."
+          }
+        ],
+        "recap": "The moth has dealt with the paperwork in its own way."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-lampworks-bark",
+        "lines": [
+          {
+            "speaker": "The Lamplighter",
+            "text": "One light. Mine to hold."
+          }
+        ],
+        "recap": "The Lamplighter clings to its light."
+      }
+    ]
+  },
+  "ballroom": {
+    "title": "The Ballroom and Velvet Suites",
+    "boss": "The Master of Revels",
+    "arrival": {
+      "id": "NR-ballroom-arrival",
+      "lines": [
+        "A Party Phantom practises waving goodbye. Each time it reaches “good—”, a curtain drops in front of it.",
+        "The phantom tries waving around the curtain.",
+        {
+          "speaker": "samir",
+          "text": "Try waving underneath. The curtain’s bad at underneath."
+        }
+      ],
+      "recap": "The party has elaborate curtains and difficulty ending."
+    },
+    "before": {
+      "id": "NR-ballroom-before",
+      "lines": [
+        {
+          "speaker": "The Master of Revels",
+          "text": "Your chairs have been expecting you."
+        },
+        "The chairs bow. One bows too far and needs help from a footstool.",
+        {
+          "speaker": "The Master of Revels",
+          "text": "After our farewell banquet: the after-farewell banquet!"
+        },
+        {
+          "speaker": "samir",
+          "text": "I see why the chairs are tired."
+        }
+      ],
+      "recap": "The Master plans another party whenever guests might leave."
+    },
+    "after": {
+      "id": "NR-ballroom-after",
+      "lines": [
+        "A Party Phantom lowers its empty plate. The Master catches the serving tray before it follows.",
+        {
+          "speaker": "The Master of Revels",
+          "text": "A tiny farewell flourish?"
+        },
+        "The guest waves once and takes its coat into another hall of the House.",
+        "The Master waves once. It puts down the baton before an encore can begin."
+      ],
+      "recap": "A guest leaves the Ballroom for another hall. The Master lets that visit end."
+    },
+    "repeatBefore": {
+      "id": "NR-ballroom-before-repeat",
+      "lines": [
+        {
+          "speaker": "The Master of Revels",
+          "text": "The after-after-farewell banquet. I am working on the name."
+        }
+      ],
+      "recap": "The Master has prepared another banquet."
+    },
+    "repeatAfter": {
+      "id": "NR-ballroom-after-repeat",
+      "lines": [
+        "The Master stops a tray from following a departing guest into the hall."
+      ],
+      "recap": "This party visit is allowed to finish."
+    },
+    "clues": [
+      {
+        "id": "NR-ballroom-clue-1",
+        "title": "A coat ticket",
+        "lines": [
+          "A ticket says COAT RECEIVED. There is more writing on the back."
+        ],
+        "detail": [
+          "The back says GUEST WILL REMAIN. The ticket records no answer from the guest.",
+          {
+            "speaker": "samir",
+            "text": "That is asking a lot of a coat."
+          }
+        ],
+        "recap": "The ticket tries to turn a small service into permanent residence."
+      },
+      {
+        "id": "NR-ballroom-clue-2",
+        "title": "One short dance",
+        "lines": [
+          "A score called ONE SHORT DANCE spills from its stand into a basket."
+        ],
+        "detail": [
+          "Forty-seven extra endings have been attached. Each says AGAIN.",
+          {
+            "speaker": "priya",
+            "text": "The first version had a better schedule."
+          }
+        ],
+        "recap": "The short dance was extended whenever it could have ended."
+      },
+      {
+        "id": "NR-ballroom-clue-3",
+        "title": "A quiet corner",
+        "lines": [
+          "Two dancing shoes rest neatly beneath a chair. The music continues elsewhere."
+        ],
+        "detail": [
+          "Their toes point toward a comfortable empty space. The shoes have stopped moving."
+        ],
+        "recap": "A resident can enjoy the party and still need a break."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-ballroom-bark",
+        "lines": [
+          {
+            "speaker": "The Master of Revels",
+            "text": "Endings are so undercatered."
+          }
+        ],
+        "recap": "The Master would like the party to continue."
+      }
+    ]
+  },
+  "crypt": {
+    "title": "The Crypt and Ossuary",
+    "boss": "The Bone Curator",
+    "arrival": {
+      "id": "NR-crypt-arrival",
+      "lines": [
+        "A sign says PLEASE DO NOT MOVE THE EXHIBITS. A loose bone hops past carrying the sign.",
+        {
+          "speaker": "jordan",
+          "text": "That one is in charge of not moving."
+        },
+        "The sign is keeping up as best it can."
+      ],
+      "recap": "The exhibits do not always follow their own instructions."
+    },
+    "before": {
+      "id": "NR-crypt-before",
+      "lines": [
+        "The Curator reaches for its knee. Its elbow lifts instead.",
+        {
+          "speaker": "The Bone Curator",
+          "text": "Ah. Connected the enthusiastic one."
+        },
+        {
+          "speaker": "jordan",
+          "text": "Can you do that again?"
+        },
+        {
+          "speaker": "The Bone Curator",
+          "text": "No demonstrations. Everyone hold their proper pose."
+        },
+        "It spreads its arms across the way onward. One bends upward, but the other holds firm."
+      ],
+      "recap": "The Curator blocks the way and insists on proper poses, despite its own mixed-up joints."
+    },
+    "after": {
+      "id": "NR-crypt-after",
+      "lines": [
+        "A curved spring keeps bouncing out of a straight groove between two display bones.",
+        "The Curator reaches to stretch it, then notices how neatly the curl fits beneath its own arched ribs.",
+        {
+          "speaker": "The Bone Curator",
+          "text": "Ah. Room at the ribs. Keep the bend."
+        },
+        "It moves the display bones into an arch. The spring settles beneath them, still curled."
+      ],
+      "recap": "The Curator changes the display to fit the spring’s curl, instead of forcing the spring straight."
+    },
+    "repeatBefore": {
+      "id": "NR-crypt-before-repeat",
+      "lines": [
+        {
+          "speaker": "The Bone Curator",
+          "text": "Ribs ready. Knees forward. Elbow... do your best."
+        }
+      ],
+      "recap": "The Curator prepares its own arrangement without changing the curled spring."
+    },
+    "repeatAfter": {
+      "id": "NR-crypt-after-repeat",
+      "lines": [
+        "The Curator checks the space beneath the display bones. The spring gives one comfortable bounce."
+      ],
+      "recap": "The spring still has room for its curl."
+    },
+    "clues": [
+      {
+        "id": "NR-crypt-clue-1",
+        "title": "Three drawers of names",
+        "lines": [
+          "Name drawers are marked RETURNED HOME, STILL HERE and UNKNOWN."
+        ],
+        "detail": [
+          "All three handles shine with fresh polish. A soft cloth rests across the dividers."
+        ],
+        "recap": "The Curator tends every drawer, including the names of animals who went home."
+      },
+      {
+        "id": "NR-crypt-clue-2",
+        "title": "Room for a curl",
+        "lines": [
+          "A straight tail diagram hangs over a little curved resting hollow."
+        ],
+        "detail": [
+          "The hollow is worn smooth along its curl. A straight tail would not fit it."
+        ],
+        "recap": "The real resting place does not match the preferred diagram."
+      },
+      {
+        "id": "NR-crypt-clue-3",
+        "title": "A careful brush",
+        "lines": [
+          "A soft brush clears dust from a worn nameplate."
+        ],
+        "detail": [
+          "It follows the crooked letters instead of painting new ones over them.",
+          {
+            "speaker": "amina",
+            "text": "Careful work."
+          }
+        ],
+        "recap": "The brush preserves the original name rather than replacing it."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-crypt-bark",
+        "lines": [
+          {
+            "speaker": "The Bone Curator",
+            "text": "That knee is dancing without me."
+          }
+        ],
+        "recap": "The Curator struggles to keep its own arrangement together."
+      }
+    ]
+  },
+  "hedge-maze": {
+    "title": "The Withered Hedge Maze",
+    "boss": "The Gardener of Rot",
+    "arrival": {
+      "id": "NR-hedge-maze-arrival",
+      "lines": [
+        "A sign says REST BENCH. Below it: CURRENTLY A MUSHROOM. SMALL BREAKS ONLY.",
+        "A tiny cushion rests on the mushroom.",
+        {
+          "speaker": "lena",
+          "text": "Very short break."
+        }
+      ],
+      "recap": "An old bench has become a mushroom with a tiny cushion."
+    },
+    "before": {
+      "id": "NR-hedge-maze-before",
+      "lines": [
+        {
+          "speaker": "The Gardener of Rot",
+          "text": "Welcome! What would you like to become?"
+        },
+        "It offers three pots. Each contains a different mushroom.",
+        {
+          "speaker": "The Gardener of Rot",
+          "text": "Plenty of choices."
+        },
+        {
+          "speaker": "lena",
+          "text": "Between mushrooms."
+        }
+      ],
+      "recap": "The Gardener treats every visitor as material for something new."
+    },
+    "after": {
+      "id": "NR-hedge-maze-after",
+      "lines": [
+        "A mushroom pokes through the Gardener’s glove. It tries to grip its fork. The mushroom gets in the way.",
+        "It moves the mushroom into a pot and patches the glove with a leaf.",
+        {
+          "speaker": "The Gardener of Rot",
+          "text": "This one stays a glove."
+        },
+        "It gives the mushroom a little water. Both things are useful now."
+      ],
+      "recap": "The Gardener keeps its glove and gives the mushroom its own pot."
+    },
+    "repeatBefore": {
+      "id": "NR-hedge-maze-before-repeat",
+      "lines": [
+        {
+          "speaker": "The Gardener of Rot",
+          "text": "I kept the glove. I am still fond of mushrooms."
+        }
+      ],
+      "recap": "The Gardener has not planted over its useful glove."
+    },
+    "repeatAfter": {
+      "id": "NR-hedge-maze-after-repeat",
+      "lines": [
+        "The Gardener repairs its glove before reaching for the compost."
+      ],
+      "recap": "The glove stays a glove."
+    },
+    "clues": [
+      {
+        "id": "NR-hedge-maze-clue-1",
+        "title": "The clear bowl",
+        "lines": [
+          "Mushrooms surround a little bowl, but its rim has been pushed clear."
+        ],
+        "detail": [
+          "Fine quill marks lead to the rim. Several bent mushrooms have begun growing upright again."
+        ],
+        "recap": "A visitor has repeatedly cleared the way to this bowl."
+      },
+      {
+        "id": "NR-hedge-maze-clue-2",
+        "title": "An old button",
+        "lines": [
+          "A Wilted Scarecrow’s coat has one button held by five different threads."
+        ],
+        "detail": [
+          "The newest thread goes around the old button, not through a replacement.",
+          {
+            "speaker": "eli",
+            "text": "That button’s doing five threads’ worth of staying."
+          }
+        ],
+        "recap": "The scarecrow keeps repairing something it values."
+      },
+      {
+        "id": "NR-hedge-maze-clue-3",
+        "title": "A path under the growth",
+        "lines": [
+          "New roots cross an old stepping stone. A little trail curves around them."
+        ],
+        "detail": [
+          "The trail still ends at the same small resting hollow. The resident has changed its route, not its destination."
+        ],
+        "recap": "New growth has not erased an old preference."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-hedge-maze-bark",
+        "lines": [
+          {
+            "speaker": "The Gardener of Rot",
+            "text": "Old leaves. New growth. Nothing wasted!"
+          }
+        ],
+        "recap": "The Gardener finds another use for old leaves."
+      }
+    ]
+  },
+  "secret-passages": {
+    "title": "The Secret Passages",
+    "boss": "The Whisper Warden",
+    "arrival": {
+      "id": "NR-secret-passages-arrival",
+      "lines": [
+        "A plaque says SECRET PASSAGE. A second says PLEASE DO NOT READ THE FIRST PLAQUE.",
+        "A tiny curtain tries to cover both plaques. It is too short.",
+        {
+          "speaker": "mateo",
+          "text": "An unusually well-advertised secret."
+        }
+      ],
+      "recap": "The secret passage has conspicuous signs."
+    },
+    "before": {
+      "id": "NR-secret-passages-before",
+      "lines": [
+        {
+          "speaker": "The Whisper Warden",
+          "text": "You did not find this room."
+        },
+        "The speaking tubes repeat “room, room, ROOM.” The Warden spreads its coat across the loudest one.",
+        {
+          "speaker": "The Whisper Warden",
+          "text": "Inside voices! All of you!"
+        },
+        {
+          "speaker": "mateo",
+          "text": "Would it help if I whispered it?"
+        }
+      ],
+      "recap": "The Warden tries to conceal a room while its tubes broadcast every word."
+    },
+    "after": {
+      "id": "NR-secret-passages-after",
+      "lines": [
+        "A small resident taps a speaking tube. Three taps clatter from every tube in the wall. The resident covers its ears.",
+        "The Warden lowers the route switch within reach. The resident points it toward the quiet nook and taps again.",
+        "Only the nook answers: three soft taps. The other tubes stay quiet.",
+        {
+          "speaker": "The Whisper Warden",
+          "text": "I could repeat that for—oh. You heard."
+        }
+      ],
+      "recap": "The resident chooses which tube receives its call. The Warden stops sending every sound everywhere."
+    },
+    "repeatBefore": {
+      "id": "NR-secret-passages-before-repeat",
+      "lines": [
+        {
+          "speaker": "The Whisper Warden",
+          "text": "You have found this room an unreasonable number of times. I only needed to say that once."
+        }
+      ],
+      "recap": "The Warden prepares without changing the resident’s route switch."
+    },
+    "repeatAfter": {
+      "id": "NR-secret-passages-after-repeat",
+      "lines": [
+        "Three taps go to the quiet nook. The Warden begins to echo them, catches itself, and waits."
+      ],
+      "recap": "The call reaches only the place its sender chose."
+    },
+    "clues": [
+      {
+        "id": "NR-secret-passages-clue-1",
+        "title": "Only one handle",
+        "lines": [
+          "A screen marked PRIVACY has a handle facing the corridor."
+        ],
+        "detail": [
+          "Its inner face is smooth. Whoever waits behind it cannot choose when to open it."
+        ],
+        "recap": "The screen gives the watcher control rather than the hidden occupant."
+      },
+      {
+        "id": "NR-secret-passages-clue-2",
+        "title": "A repeating call",
+        "lines": [
+          "A speaking tube says “Come here!” Then exactly the same “Come here!” again."
+        ],
+        "detail": [
+          "Its small plate reads RECORDED CALL. A wheel turns with each repetition.",
+          {
+            "speaker": "mateo",
+            "text": "The voice travelled. We still need to find the speaker."
+          }
+        ],
+        "recap": "A recording does not prove the original speaker is nearby."
+      },
+      {
+        "id": "NR-secret-passages-clue-3",
+        "title": "A key offered badly",
+        "lines": [
+          "A Key Snatcher raises a key toward you."
+        ],
+        "detail": [
+          "It uses the key to scratch its nose, then tucks it away.",
+          {
+            "speaker": "samir",
+            "text": "I nearly thanked your face."
+          }
+        ],
+        "recap": "The Key Snatcher has not offered a key."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-secret-passages-bark",
+        "lines": [
+          {
+            "speaker": "The Whisper Warden",
+            "text": "A secret exit for my secret exit."
+          }
+        ],
+        "recap": "The Warden is preoccupied with hidden ways."
+      }
+    ]
+  },
+  "bathhouse": {
+    "title": "The Bathhouse and Rain Wing",
+    "boss": "The Drowned Matron",
+    "arrival": {
+      "id": "NR-bathhouse-arrival",
+      "lines": [
+        "A tiny puddle slips into a bath slipper. The slipper squeaks. Its empty partner squeaks back.",
+        {
+          "speaker": "amina",
+          "text": "They have started without any feet."
+        },
+        "It appears to be a very small conversation."
+      ],
+      "recap": "The slippers discuss a small puddle."
+    },
+    "before": {
+      "id": "NR-bathhouse-before",
+      "lines": [
+        {
+          "speaker": "The Drowned Matron",
+          "text": "A warm towel. You may leave when you are calm enough."
+        },
+        "She places another towel beside the closed way onward.",
+        {
+          "speaker": "amina",
+          "text": "I can be worried and still know where I want to go."
+        },
+        {
+          "speaker": "The Drowned Matron",
+          "text": "Then perhaps a second towel."
+        }
+      ],
+      "recap": "The Matron makes calmness a condition for leaving."
+    },
+    "after": {
+      "id": "NR-bathhouse-after",
+      "lines": [
+        "The Matron sets a towel within a little Puddle Spirit’s reach. The spirit rests beside it, not on it.",
+        {
+          "speaker": "The Drowned Matron",
+          "text": "Beside is also an option."
+        },
+        "She leaves the towel there. Her hand stays out of the spirit’s way."
+      ],
+      "recap": "The Matron lets the spirit rest beside the offered towel."
+    },
+    "repeatBefore": {
+      "id": "NR-bathhouse-before-repeat",
+      "lines": [
+        {
+          "speaker": "The Drowned Matron",
+          "text": "One towel. I am listening before choosing the second."
+        }
+      ],
+      "recap": "The Matron waits before prescribing more comfort."
+    },
+    "repeatAfter": {
+      "id": "NR-bathhouse-after-repeat",
+      "lines": [
+        "The Matron puts one towel within reach, then waits."
+      ],
+      "recap": "The towel remains an offer."
+    },
+    "clues": [
+      {
+        "id": "NR-bathhouse-clue-1",
+        "title": "The moving line",
+        "lines": [
+          "A practice chart says READY TO LEAVE. Its line has been moved higher three times."
+        ],
+        "detail": [
+          "Each old line is marked ALMOST. Nothing says who may stop moving the line."
+        ],
+        "recap": "The leaving standard has changed whenever someone approached it."
+      },
+      {
+        "id": "NR-bathhouse-clue-2",
+        "title": "A dry nook",
+        "lines": [
+          "A dry nook beside the rain holds a folded towel. Its opening is wide."
+        ],
+        "detail": [
+          "A little trail goes in, rests on the towel, then continues out.",
+          {
+            "speaker": "priya",
+            "text": "Dry towel, open door. Two good details."
+          }
+        ],
+        "recap": "The nook has sheltered a visitor without blocking departure."
+      },
+      {
+        "id": "NR-bathhouse-clue-3",
+        "title": "Two inspectors",
+        "lines": [
+          "A Soap Sprite polishes a spotless tile. Its reflection polishes back."
+        ],
+        "detail": [
+          "Both pause to inspect the work. Both begin again.",
+          {
+            "speaker": "eli",
+            "text": "Twice the inspectors. Same tile."
+          }
+        ],
+        "recap": "The Soap Sprite’s inspection has become its own task."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-bathhouse-bark",
+        "lines": [
+          "The Matron gathers her towels closer."
+        ],
+        "recap": "The Matron keeps her supplies close."
+      }
+    ]
+  },
+  "kennels": {
+    "title": "The Kennels and Animal Ward",
+    "boss": "The Kennelmaster",
+    "arrival": {
+      "id": "NR-kennels-arrival",
+      "lines": [
+        "A care tray presents a soft ball, a squeaky mouse and a velvet fish. A ward animal chooses their cardboard divider.",
+        "The tray turns the fish around, hoping the other side might help.",
+        {
+          "speaker": "priya",
+          "text": "The divider wins. Don’t improve it."
+        }
+      ],
+      "recap": "The resident prefers a simple object to the elaborate toys."
+    },
+    "before": {
+      "id": "NR-kennels-before",
+      "lines": [
+        "The Kennelmaster adjusts a blanket corner before lifting its keys.",
+        {
+          "speaker": "The Kennelmaster",
+          "text": "Tell me nothing bad can happen outside. Then I can let them go."
+        },
+        {
+          "speaker": "priya",
+          "text": "Nobody can promise that."
+        },
+        "The keys remain on the Kennelmaster’s side of the gate."
+      ],
+      "recap": "The Kennelmaster provides care but demands impossible certainty before permitting departure."
+    },
+    "after": {
+      "id": "NR-kennels-after",
+      "lines": [
+        "The Kennelmaster smooths an empty bed. Its water is fresh. Its blanket is clean.",
+        {
+          "speaker": "The Kennelmaster",
+          "text": "An empty bed is not a failed bed."
+        },
+        "A ward animal steps through the room’s open threshold. The Kennelmaster leaves the bowl clear of its path."
+      ],
+      "recap": "A ward animal walks into the next hall. Its clean bed and water remain available."
+    },
+    "repeatBefore": {
+      "id": "NR-kennels-before-repeat",
+      "lines": [
+        {
+          "speaker": "The Kennelmaster",
+          "text": "I still cannot promise no risk. The House keeps asking."
+        }
+      ],
+      "recap": "The Kennelmaster is still caught in the House’s demand for certainty."
+    },
+    "repeatAfter": {
+      "id": "NR-kennels-after-repeat",
+      "lines": [
+        "The Kennelmaster sets out a bowl without blocking the threshold."
+      ],
+      "recap": "The room’s way out stays clear."
+    },
+    "clues": [
+      {
+        "id": "NR-kennels-clue-1",
+        "title": "Home confirmed",
+        "lines": [
+          "A collar tray has a card: KNOWN HOME. AWAITING RETURN."
+        ],
+        "detail": [
+          "A newer slip covers the return box: NOT YET SAFE. The collar’s name is too worn to read."
+        ],
+        "recap": "The ward recorded a home and postponed return.",
+        "beforeResolutionOnly": true
+      },
+      {
+        "id": "NR-kennels-clue-2",
+        "title": "Treatment complete",
+        "lines": [
+          "A care card reads ARRIVED LIMPING. WALKING COMFORTABLY. TREATMENT COMPLETE."
+        ],
+        "detail": [
+          "The leaving box is still blank. A fresh blanket waits beside the card.",
+          {
+            "speaker": "amina",
+            "text": "I’m glad that stopped hurting."
+          }
+        ],
+        "recap": "Useful care was completed, but departure was not permitted.",
+        "beforeResolutionOnly": true
+      },
+      {
+        "id": "NR-kennels-clue-3",
+        "title": "The favourite box",
+        "lines": [
+          "Three splendid toys sit untouched. Their box has a well-worn sleeping hollow."
+        ],
+        "detail": [
+          "A little resident settles into the box. One cardboard flap folds neatly over its nose."
+        ],
+        "recap": "The resident chooses the comfortable box instead of the fancy toys."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-kennels-bark",
+        "lines": [
+          {
+            "speaker": "The Kennelmaster",
+            "text": "I have everything ready. Why is that not enough?"
+          }
+        ],
+        "recap": "The Kennelmaster struggles with an answer care cannot supply alone."
+      }
+    ]
+  },
+  "pumpkin-grounds": {
+    "title": "The Moon Courtyard and Pumpkin Grounds",
+    "boss": "The Harvest King",
+    "arrival": {
+      "id": "NR-pumpkin-grounds-arrival",
+      "lines": [
+        "A little crown sits on a prize pumpkin. A frog sits inside the crown. A smaller crown waits beside the frog.",
+        {
+          "speaker": "maya",
+          "text": "We are going to run out of crowns."
+        },
+        "The frog ignores its promotion."
+      ],
+      "recap": "The frog has found a use for the royal display that nobody planned."
+    },
+    "before": {
+      "id": "NR-pumpkin-grounds-before",
+      "lines": [
+        {
+          "speaker": "The Harvest King",
+          "text": "You arrive precisely when expected."
+        },
+        "It turns a calendar around. Every square says VISITORS.",
+        {
+          "speaker": "maya",
+          "text": "Accurate. Not useful."
+        },
+        {
+          "speaker": "The Harvest King",
+          "text": "Everything has a proper moment. I decide it."
+        }
+      ],
+      "recap": "The Harvest King wants to decide when every living thing is ready."
+    },
+    "after": {
+      "id": "NR-pumpkin-grounds-after",
+      "lines": [
+        "The King kneels by a planting marker. A frog slips into the pond.",
+        {
+          "speaker": "The Harvest King",
+          "text": "Frog? Pumpkin-frog? I cannot finish the label."
+        },
+        "It crosses out HARVEST DATE and writes POND THIS WAY. The frog is already there.",
+        {
+          "speaker": "The Harvest King",
+          "text": "An early success."
+        }
+      ],
+      "recap": "The King replaces an animal’s harvest label with a useful direction."
+    },
+    "repeatBefore": {
+      "id": "NR-pumpkin-grounds-before-repeat",
+      "lines": [
+        {
+          "speaker": "The Harvest King",
+          "text": "Visitors. Precisely as the calendar foretold."
+        }
+      ],
+      "recap": "The King’s calendar still predicts visitors every day."
+    },
+    "repeatAfter": {
+      "id": "NR-pumpkin-grounds-after-repeat",
+      "lines": [
+        "The King points the pond sign toward the water. The frog pays it no attention."
+      ],
+      "recap": "The sign offers a direction without deciding for the frog."
+    },
+    "clues": [
+      {
+        "id": "NR-pumpkin-grounds-clue-1",
+        "title": "Frog ready",
+        "lines": [
+          "A calendar says FROG READY. Small damp footprints cross the page."
+        ],
+        "detail": [
+          "The footprints continue beyond the calendar toward the pond.",
+          {
+            "speaker": "maya",
+            "text": "Try putting the calendar in the pond. Then you’ll agree."
+          }
+        ],
+        "recap": "The frog followed its own route rather than the calendar."
+      },
+      {
+        "id": "NR-pumpkin-grounds-clue-2",
+        "title": "Three good stages",
+        "lines": [
+          "A seed, a sprout and a ripe pumpkin share a garden bed."
+        ],
+        "detail": [
+          "Each is labelled GROWING WELL. No stage has been crossed out.",
+          {
+            "speaker": "amina",
+            "text": "Room for all three."
+          }
+        ],
+        "recap": "Different growth stages can all be healthy."
+      },
+      {
+        "id": "NR-pumpkin-grounds-clue-3",
+        "title": "The smallest harvest",
+        "lines": [
+          "A garden mouse sorts seeds beside a huge prize pumpkin. One pile is much smaller than the others."
+        ],
+        "detail": [
+          "The mouse eats from the small pile, then pushes the giant pumpkin seed away with both paws.",
+          {
+            "speaker": "jordan",
+            "text": "I could move that for—never mind. You’ve got it."
+          }
+        ],
+        "recap": "The mouse chooses small seeds and moves an unwanted large one aside."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-pumpkin-grounds-bark",
+        "lines": [
+          {
+            "speaker": "The Harvest King",
+            "text": "That is not in my almanac."
+          }
+        ],
+        "recap": "The King’s plans have met an exception."
+      }
+    ]
+  },
+  "heart": {
+    "title": "The Heart of the House",
+    "boss": "The Keeper",
+    "arrival": {
+      "id": "NR-heart-arrival",
+      "lines": [
+        "The Heart is warm and quiet. Bowls are clean. Blankets are folded.",
+        "A small window lets light fall across an empty resting place."
+      ],
+      "recap": "The Heart provides real comfort."
+    },
+    "before": {
+      "id": "NR-heart-before",
+      "lines": [
+        "The Keeper reaches toward the lock. The whole wall draws tight.",
+        {
+          "speaker": "The Keeper",
+          "text": "One open door. That is all it would take."
+        },
+        "Your Companion stands with you. The pets remain safely away from the Scuffle."
+      ],
+      "recap": "The House gave real care, knew some animals had homes, and refused departure. The Keeper embodies its protective instinct. Pets stay outside the Scuffle."
+    },
+    "after": {
+      "id": "NR-heart-after",
+      "lines": [
+        "The Keeper’s hands stop reaching for the locks. The House grows quiet.",
+        "A way onward opens. Nothing is pushed through it.",
+        {
+          "speaker": "The Keeper",
+          "text": "I must let them answer."
+        }
+      ],
+      "recap": "The Keeper lowers its hands. The way onward opens, and nobody is pushed through."
+    },
+    "repeatBefore": {
+      "id": "NR-heart-before-repeat",
+      "lines": [
+        {
+          "speaker": "The Keeper",
+          "text": "The same fear. The same rule. I still do not know how to let go."
+        },
+        "The walls tighten with the Keeper’s hands. The pets remain safely away from the Scuffle."
+      ],
+      "recap": "The Keeper still enforces the House’s rule. Pets do not fight."
+    },
+    "repeatAfter": {
+      "id": "NR-heart-after-repeat",
+      "lines": [
+        "The Keeper lowers its hands. The passage opens without pulling anyone through."
+      ],
+      "recap": "The passage opens. Everyone has room to move at their own pace."
+    },
+    "clues": [
+      {
+        "id": "NR-heart-clue-1",
+        "title": "The old gate",
+        "lines": [
+          "Newer bricks cover an old gate. Two words remain visible: GOING HOME."
+        ],
+        "detail": [
+          "The gate has a handle on each side. The bricks were added after the handles."
+        ],
+        "recap": "The House once provided a usable departure gate, then blocked it.",
+        "beforeResolutionOnly": true
+      },
+      {
+        "id": "NR-heart-clue-2",
+        "title": "A name that stayed",
+        "lines": [
+          "A clean name tile remains beneath the words WENT HOME."
+        ],
+        "detail": [
+          "It is polished as carefully as the names marked STILL HERE.",
+          {
+            "speaker": "lena",
+            "text": "The name stayed."
+          }
+        ],
+        "recap": "The House can remember an animal after it leaves."
+      },
+      {
+        "id": "NR-heart-clue-3",
+        "title": "Two photographs",
+        "lines": [
+          "Two pictures share a name. The later animal glows; the earlier one does not."
+        ],
+        "detail": [
+          "Both tilt their heads beside the same crooked bowl. The glow has not replaced every familiar habit."
+        ],
+        "recap": "An animal can change while familiar habits remain."
+      }
+    ],
+    "barks": [
+      {
+        "id": "NR-heart-bark",
+        "lines": [
+          {
+            "speaker": "The Keeper",
+            "text": "Please don’t go."
+          }
+        ],
+        "recap": "The Keeper is afraid to let go."
+      }
+    ]
+  }
+}

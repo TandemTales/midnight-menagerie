@@ -1,0 +1,11 @@
+{
+  "passed": [
+    "real Foyer route shows loaded Marmalade portrait; rendering does not mutate narrative saves",
+    "all controls fit at 1280x800 and 1920x1080, including large text",
+    "keyboard short/full controls preserve authored text and save state",
+    "failed save keeps Foyer open; retry reaches map and progress survives reload",
+    "narrow window scrolls without horizontal clipping; Companion introduction shows its own portrait",
+    "zero game console or uncaught browser errors"
+  ],
+  "errors": []
+}

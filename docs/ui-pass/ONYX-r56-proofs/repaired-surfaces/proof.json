@@ -1,0 +1,2182 @@
+{
+  "initialSource": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+  "finalSource": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+  "rows": [
+    {
+      "scene": "shop",
+      "width": 1280,
+      "initialCSS": "9e4843389da76bf3072c966f1ac782037b9424b521f9a38f52c8c66989000909",
+      "finalCSS": "0eab40a17cdf83e31d3fc1dbaca46245f0a5095ab488c02cc9e137be347fb645",
+      "initial": [
+        {
+          "text": "0",
+          "box": {
+            "x": 285.3233642578125,
+            "y": 240.89671325683594,
+            "width": 51.72430419921875,
+            "height": 51.72431945800781
+          },
+          "font": "",
+          "fontSize": "27px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "url(\"http://localhost:9562/game/assets/ui/kit/grain.webp\"), url(\"http://localhost:9562/game/assets/ui/kit/coin-face.webp\")",
+          "shadow": "color(srgb 0.901961 0.788235 0.541177 / 0.65) 1.08px 2.16px 1.08px 0px inset, color(srgb 0.419608 0.298039 0.141176 / 0.7) -2.16px -3.24px 2.16px 0px inset",
+          "ink": [
+            {
+              "x": 304.1484680175781,
+              "y": 245.40367126464844,
+              "width": 14.057830810546875,
+              "height": 41.65278625488281
+            }
+          ]
+        },
+        {
+          "text": "0",
+          "box": {
+            "x": 603.4014892578125,
+            "y": 245.89671325683594,
+            "width": 51.72430419921875,
+            "height": 51.72431945800781
+          },
+          "font": "",
+          "fontSize": "27px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "url(\"http://localhost:9562/game/assets/ui/kit/grain.webp\"), url(\"http://localhost:9562/game/assets/ui/kit/coin-face.webp\")",
+          "shadow": "color(srgb 0.901961 0.788235 0.541177 / 0.65) 1.08px 2.16px 1.08px 0px inset, color(srgb 0.419608 0.298039 0.141176 / 0.7) -2.16px -3.24px 2.16px 0px inset",
+          "ink": [
+            {
+              "x": 622.2266235351562,
+              "y": 250.40367126464844,
+              "width": 14.05780029296875,
+              "height": 41.65278625488281
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 921.4952392578125,
+            "y": 245.89671325683594,
+            "width": 51.72430419921875,
+            "height": 51.72431945800781
+          },
+          "font": "",
+          "fontSize": "27px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "url(\"http://localhost:9562/game/assets/ui/kit/grain.webp\"), url(\"http://localhost:9562/game/assets/ui/kit/coin-face.webp\")",
+          "shadow": "color(srgb 0.901961 0.788235 0.541177 / 0.65) 1.08px 2.16px 1.08px 0px inset, color(srgb 0.419608 0.298039 0.141176 / 0.7) -2.16px -3.24px 2.16px 0px inset",
+          "ink": [
+            {
+              "x": 940.3203735351562,
+              "y": 250.40367126464844,
+              "width": 14.05780029296875,
+              "height": 41.65278625488281
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 309.3233642578125,
+            "y": 752.131103515625,
+            "width": 51.72430419921875,
+            "height": 51.72430419921875
+          },
+          "font": "",
+          "fontSize": "27px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "url(\"http://localhost:9562/game/assets/ui/kit/grain.webp\"), url(\"http://localhost:9562/game/assets/ui/kit/coin-face.webp\")",
+          "shadow": "color(srgb 0.901961 0.788235 0.541177 / 0.65) 1.08px 2.16px 1.08px 0px inset, color(srgb 0.419608 0.298039 0.141176 / 0.7) -2.16px -3.24px 2.16px 0px inset",
+          "ink": [
+            {
+              "x": 328.1484680175781,
+              "y": 756.6380615234375,
+              "width": 14.057830810546875,
+              "height": 41.65277099609375
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 627.4014892578125,
+            "y": 752.131103515625,
+            "width": 51.72430419921875,
+            "height": 51.72430419921875
+          },
+          "font": "",
+          "fontSize": "27px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "url(\"http://localhost:9562/game/assets/ui/kit/grain.webp\"), url(\"http://localhost:9562/game/assets/ui/kit/coin-face.webp\")",
+          "shadow": "color(srgb 0.901961 0.788235 0.541177 / 0.65) 1.08px 2.16px 1.08px 0px inset, color(srgb 0.419608 0.298039 0.141176 / 0.7) -2.16px -3.24px 2.16px 0px inset",
+          "ink": [
+            {
+              "x": 646.2266235351562,
+              "y": 756.6380615234375,
+              "width": 14.05780029296875,
+              "height": 41.65277099609375
+            }
+          ]
+        }
+      ],
+      "final": [
+        {
+          "text": "0",
+          "box": {
+            "x": 285.3233642578125,
+            "y": 240.89671325683594,
+            "width": 51.72430419921875,
+            "height": 51.72431945800781
+          },
+          "font": "",
+          "fontSize": "27px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "radial-gradient(60% 60% at 36% 30%, oklab(0.876907 0.00505498 0.0694812), rgba(0, 0, 0, 0) 62%), radial-gradient(100% 100% at 50% 60%, rgb(230, 201, 138) 0%, rgb(176, 138, 74) 55%, rgb(107, 76, 36) 100%)",
+          "shadow": "oklab(0.35317 0.0179578 0.0527824) 0px 0px 0px 2.7px inset, color(srgb 0.901961 0.788235 0.541176 / 0.45) 0px 0px 0px 4.32px inset, rgba(0, 0, 0, 0.7) 0px 0px 0px 1.62px, rgba(0, 0, 0, 0.65) 0px 3.24px 8.64px 0px",
+          "ink": [
+            {
+              "x": 304.1484680175781,
+              "y": 245.40367126464844,
+              "width": 14.057830810546875,
+              "height": 41.65278625488281
+            }
+          ]
+        },
+        {
+          "text": "0",
+          "box": {
+            "x": 603.4014892578125,
+            "y": 245.89671325683594,
+            "width": 51.72430419921875,
+            "height": 51.72431945800781
+          },
+          "font": "",
+          "fontSize": "27px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "radial-gradient(60% 60% at 36% 30%, oklab(0.876907 0.00505498 0.0694812), rgba(0, 0, 0, 0) 62%), radial-gradient(100% 100% at 50% 60%, rgb(230, 201, 138) 0%, rgb(176, 138, 74) 55%, rgb(107, 76, 36) 100%)",
+          "shadow": "oklab(0.35317 0.0179578 0.0527824) 0px 0px 0px 2.7px inset, color(srgb 0.901961 0.788235 0.541176 / 0.45) 0px 0px 0px 4.32px inset, rgba(0, 0, 0, 0.7) 0px 0px 0px 1.62px, rgba(0, 0, 0, 0.65) 0px 3.24px 8.64px 0px",
+          "ink": [
+            {
+              "x": 622.2266235351562,
+              "y": 250.40367126464844,
+              "width": 14.05780029296875,
+              "height": 41.65278625488281
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 921.4952392578125,
+            "y": 245.89671325683594,
+            "width": 51.72430419921875,
+            "height": 51.72431945800781
+          },
+          "font": "",
+          "fontSize": "27px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "radial-gradient(60% 60% at 36% 30%, oklab(0.876907 0.00505498 0.0694812), rgba(0, 0, 0, 0) 62%), radial-gradient(100% 100% at 50% 60%, rgb(230, 201, 138) 0%, rgb(176, 138, 74) 55%, rgb(107, 76, 36) 100%)",
+          "shadow": "oklab(0.35317 0.0179578 0.0527824) 0px 0px 0px 2.7px inset, color(srgb 0.901961 0.788235 0.541176 / 0.45) 0px 0px 0px 4.32px inset, rgba(0, 0, 0, 0.7) 0px 0px 0px 1.62px, rgba(0, 0, 0, 0.65) 0px 3.24px 8.64px 0px",
+          "ink": [
+            {
+              "x": 940.3203735351562,
+              "y": 250.40367126464844,
+              "width": 14.05780029296875,
+              "height": 41.65278625488281
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 309.3233642578125,
+            "y": 752.131103515625,
+            "width": 51.72430419921875,
+            "height": 51.72430419921875
+          },
+          "font": "",
+          "fontSize": "27px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "radial-gradient(60% 60% at 36% 30%, oklab(0.876907 0.00505498 0.0694812), rgba(0, 0, 0, 0) 62%), radial-gradient(100% 100% at 50% 60%, rgb(230, 201, 138) 0%, rgb(176, 138, 74) 55%, rgb(107, 76, 36) 100%)",
+          "shadow": "oklab(0.35317 0.0179578 0.0527824) 0px 0px 0px 2.7px inset, color(srgb 0.901961 0.788235 0.541176 / 0.45) 0px 0px 0px 4.32px inset, rgba(0, 0, 0, 0.7) 0px 0px 0px 1.62px, rgba(0, 0, 0, 0.65) 0px 3.24px 8.64px 0px",
+          "ink": [
+            {
+              "x": 328.1484680175781,
+              "y": 756.6380615234375,
+              "width": 14.057830810546875,
+              "height": 41.65277099609375
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 627.4014892578125,
+            "y": 752.131103515625,
+            "width": 51.72430419921875,
+            "height": 51.72430419921875
+          },
+          "font": "",
+          "fontSize": "27px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "radial-gradient(60% 60% at 36% 30%, oklab(0.876907 0.00505498 0.0694812), rgba(0, 0, 0, 0) 62%), radial-gradient(100% 100% at 50% 60%, rgb(230, 201, 138) 0%, rgb(176, 138, 74) 55%, rgb(107, 76, 36) 100%)",
+          "shadow": "oklab(0.35317 0.0179578 0.0527824) 0px 0px 0px 2.7px inset, color(srgb 0.901961 0.788235 0.541176 / 0.45) 0px 0px 0px 4.32px inset, rgba(0, 0, 0, 0.7) 0px 0px 0px 1.62px, rgba(0, 0, 0, 0.65) 0px 3.24px 8.64px 0px",
+          "ink": [
+            {
+              "x": 646.2266235351562,
+              "y": 756.6380615234375,
+              "width": 14.05780029296875,
+              "height": 41.65277099609375
+            }
+          ]
+        }
+      ],
+      "image": {
+        "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\repaired-surfaces\\shop-1280.png",
+        "sha256": "6144d0da2b9e156a4442096bcd2d846bac103e138a6f355d58722d65d193c72f",
+        "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f"
+      }
+    },
+    {
+      "scene": "shop",
+      "width": 1600,
+      "initialCSS": "9e4843389da76bf3072c966f1ac782037b9424b521f9a38f52c8c66989000909",
+      "finalCSS": "0eab40a17cdf83e31d3fc1dbaca46245f0a5095ab488c02cc9e137be347fb645",
+      "initial": [
+        {
+          "text": "0",
+          "box": {
+            "x": 362.36236572265625,
+            "y": 263.50958251953125,
+            "width": 53.4583740234375,
+            "height": 53.4583740234375
+          },
+          "font": "",
+          "fontSize": "33.75px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "url(\"http://localhost:9562/game/assets/ui/kit/grain.webp\"), url(\"http://localhost:9562/game/assets/ui/kit/coin-face.webp\")",
+          "shadow": "color(srgb 0.901961 0.788235 0.541177 / 0.65) 1.35px 2.7px 1.35px 0px inset, color(srgb 0.419608 0.298039 0.141176 / 0.7) -2.7px -4.05px 2.7px 0px inset",
+          "ink": [
+            {
+              "x": 381.82745361328125,
+              "y": 267.96221923828125,
+              "width": 14.5281982421875,
+              "height": 43.0465087890625
+            }
+          ]
+        },
+        {
+          "text": "0",
+          "box": {
+            "x": 767.2998657226562,
+            "y": 268.50958251953125,
+            "width": 53.4583740234375,
+            "height": 53.4583740234375
+          },
+          "font": "",
+          "fontSize": "33.75px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "url(\"http://localhost:9562/game/assets/ui/kit/grain.webp\"), url(\"http://localhost:9562/game/assets/ui/kit/coin-face.webp\")",
+          "shadow": "color(srgb 0.901961 0.788235 0.541177 / 0.65) 1.35px 2.7px 1.35px 0px inset, color(srgb 0.419608 0.298039 0.141176 / 0.7) -2.7px -4.05px 2.7px 0px inset",
+          "ink": [
+            {
+              "x": 786.7649536132812,
+              "y": 272.96221923828125,
+              "width": 14.5281982421875,
+              "height": 43.0465087890625
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1172.2218017578125,
+            "y": 268.50958251953125,
+            "width": 53.4583740234375,
+            "height": 53.4583740234375
+          },
+          "font": "",
+          "fontSize": "33.75px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "url(\"http://localhost:9562/game/assets/ui/kit/grain.webp\"), url(\"http://localhost:9562/game/assets/ui/kit/coin-face.webp\")",
+          "shadow": "color(srgb 0.901961 0.788235 0.541177 / 0.65) 1.35px 2.7px 1.35px 0px inset, color(srgb 0.419608 0.298039 0.141176 / 0.7) -2.7px -4.05px 2.7px 0px inset",
+          "ink": [
+            {
+              "x": 1191.6868896484375,
+              "y": 272.96221923828125,
+              "width": 14.5281982421875,
+              "height": 43.0465087890625
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 398.36236572265625,
+            "y": 798.1658325195312,
+            "width": 53.4583740234375,
+            "height": 53.4583740234375
+          },
+          "font": "",
+          "fontSize": "33.75px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "url(\"http://localhost:9562/game/assets/ui/kit/grain.webp\"), url(\"http://localhost:9562/game/assets/ui/kit/coin-face.webp\")",
+          "shadow": "color(srgb 0.901961 0.788235 0.541177 / 0.65) 1.35px 2.7px 1.35px 0px inset, color(srgb 0.419608 0.298039 0.141176 / 0.7) -2.7px -4.05px 2.7px 0px inset",
+          "ink": [
+            {
+              "x": 417.82745361328125,
+              "y": 802.6184692382812,
+              "width": 14.5281982421875,
+              "height": 43.0465087890625
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 803.2998657226562,
+            "y": 798.1658325195312,
+            "width": 53.4583740234375,
+            "height": 53.4583740234375
+          },
+          "font": "",
+          "fontSize": "33.75px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "url(\"http://localhost:9562/game/assets/ui/kit/grain.webp\"), url(\"http://localhost:9562/game/assets/ui/kit/coin-face.webp\")",
+          "shadow": "color(srgb 0.901961 0.788235 0.541177 / 0.65) 1.35px 2.7px 1.35px 0px inset, color(srgb 0.419608 0.298039 0.141176 / 0.7) -2.7px -4.05px 2.7px 0px inset",
+          "ink": [
+            {
+              "x": 822.7649536132812,
+              "y": 802.6184692382812,
+              "width": 14.5281982421875,
+              "height": 43.0465087890625
+            }
+          ]
+        }
+      ],
+      "final": [
+        {
+          "text": "0",
+          "box": {
+            "x": 362.36236572265625,
+            "y": 263.50958251953125,
+            "width": 53.4583740234375,
+            "height": 53.4583740234375
+          },
+          "font": "",
+          "fontSize": "33.75px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "radial-gradient(60% 60% at 36% 30%, oklab(0.876907 0.00505498 0.0694812), rgba(0, 0, 0, 0) 62%), radial-gradient(100% 100% at 50% 60%, rgb(230, 201, 138) 0%, rgb(176, 138, 74) 55%, rgb(107, 76, 36) 100%)",
+          "shadow": "oklab(0.35317 0.0179578 0.0527824) 0px 0px 0px 3.375px inset, color(srgb 0.901961 0.788235 0.541176 / 0.45) 0px 0px 0px 5.4px inset, rgba(0, 0, 0, 0.7) 0px 0px 0px 2.025px, rgba(0, 0, 0, 0.65) 0px 4.05px 10.8px 0px",
+          "ink": [
+            {
+              "x": 381.82745361328125,
+              "y": 267.96221923828125,
+              "width": 14.5281982421875,
+              "height": 43.0465087890625
+            }
+          ]
+        },
+        {
+          "text": "0",
+          "box": {
+            "x": 767.2998657226562,
+            "y": 268.50958251953125,
+            "width": 53.4583740234375,
+            "height": 53.4583740234375
+          },
+          "font": "",
+          "fontSize": "33.75px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "radial-gradient(60% 60% at 36% 30%, oklab(0.876907 0.00505498 0.0694812), rgba(0, 0, 0, 0) 62%), radial-gradient(100% 100% at 50% 60%, rgb(230, 201, 138) 0%, rgb(176, 138, 74) 55%, rgb(107, 76, 36) 100%)",
+          "shadow": "oklab(0.35317 0.0179578 0.0527824) 0px 0px 0px 3.375px inset, color(srgb 0.901961 0.788235 0.541176 / 0.45) 0px 0px 0px 5.4px inset, rgba(0, 0, 0, 0.7) 0px 0px 0px 2.025px, rgba(0, 0, 0, 0.65) 0px 4.05px 10.8px 0px",
+          "ink": [
+            {
+              "x": 786.7649536132812,
+              "y": 272.96221923828125,
+              "width": 14.5281982421875,
+              "height": 43.0465087890625
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1172.2218017578125,
+            "y": 268.50958251953125,
+            "width": 53.4583740234375,
+            "height": 53.4583740234375
+          },
+          "font": "",
+          "fontSize": "33.75px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "radial-gradient(60% 60% at 36% 30%, oklab(0.876907 0.00505498 0.0694812), rgba(0, 0, 0, 0) 62%), radial-gradient(100% 100% at 50% 60%, rgb(230, 201, 138) 0%, rgb(176, 138, 74) 55%, rgb(107, 76, 36) 100%)",
+          "shadow": "oklab(0.35317 0.0179578 0.0527824) 0px 0px 0px 3.375px inset, color(srgb 0.901961 0.788235 0.541176 / 0.45) 0px 0px 0px 5.4px inset, rgba(0, 0, 0, 0.7) 0px 0px 0px 2.025px, rgba(0, 0, 0, 0.65) 0px 4.05px 10.8px 0px",
+          "ink": [
+            {
+              "x": 1191.6868896484375,
+              "y": 272.96221923828125,
+              "width": 14.5281982421875,
+              "height": 43.0465087890625
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 398.36236572265625,
+            "y": 798.1658325195312,
+            "width": 53.4583740234375,
+            "height": 53.4583740234375
+          },
+          "font": "",
+          "fontSize": "33.75px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "radial-gradient(60% 60% at 36% 30%, oklab(0.876907 0.00505498 0.0694812), rgba(0, 0, 0, 0) 62%), radial-gradient(100% 100% at 50% 60%, rgb(230, 201, 138) 0%, rgb(176, 138, 74) 55%, rgb(107, 76, 36) 100%)",
+          "shadow": "oklab(0.35317 0.0179578 0.0527824) 0px 0px 0px 3.375px inset, color(srgb 0.901961 0.788235 0.541176 / 0.45) 0px 0px 0px 5.4px inset, rgba(0, 0, 0, 0.7) 0px 0px 0px 2.025px, rgba(0, 0, 0, 0.65) 0px 4.05px 10.8px 0px",
+          "ink": [
+            {
+              "x": 417.82745361328125,
+              "y": 802.6184692382812,
+              "width": 14.5281982421875,
+              "height": 43.0465087890625
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 803.2998657226562,
+            "y": 798.1658325195312,
+            "width": 53.4583740234375,
+            "height": 53.4583740234375
+          },
+          "font": "",
+          "fontSize": "33.75px",
+          "color": "rgb(32, 20, 10)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "radial-gradient(60% 60% at 36% 30%, oklab(0.876907 0.00505498 0.0694812), rgba(0, 0, 0, 0) 62%), radial-gradient(100% 100% at 50% 60%, rgb(230, 201, 138) 0%, rgb(176, 138, 74) 55%, rgb(107, 76, 36) 100%)",
+          "shadow": "oklab(0.35317 0.0179578 0.0527824) 0px 0px 0px 3.375px inset, color(srgb 0.901961 0.788235 0.541176 / 0.45) 0px 0px 0px 5.4px inset, rgba(0, 0, 0, 0.7) 0px 0px 0px 2.025px, rgba(0, 0, 0, 0.65) 0px 4.05px 10.8px 0px",
+          "ink": [
+            {
+              "x": 822.7649536132812,
+              "y": 802.6184692382812,
+              "width": 14.5281982421875,
+              "height": 43.0465087890625
+            }
+          ]
+        }
+      ],
+      "image": {
+        "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\repaired-surfaces\\shop-1600.png",
+        "sha256": "2b298360575cee9235c2cb493908394b91e314b2a062002d594cf9e5c61887e4",
+        "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f"
+      }
+    },
+    {
+      "scene": "gameover",
+      "width": 1280,
+      "initialCSS": "e1dbfa2b1e00d45a7e8c20ef55eed9302734b2efc207c21a7c79ad7823c7dcf3",
+      "finalCSS": "dd161bfc8dfa47f324fde47b4d793cd1f94b01eac88a79bedd1f393cc16ff72a",
+      "initial": [
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 448.625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 446.75,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 514.625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 512.75,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 895.46875,
+            "y": 580.625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 578.75,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 646.625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 644.75,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 712.625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 710.75,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "3",
+          "box": {
+            "x": 895.46875,
+            "y": 778.625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 776.75,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 895.46875,
+            "y": 844.625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 842.75,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 895.46875,
+            "y": 913.75,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 911.875,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 895.46875,
+            "y": 982.875,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 981,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "0",
+          "box": {
+            "x": 895.46875,
+            "y": 1048.875,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 1047,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 1114.875,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 1113,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 895.46875,
+            "y": 1184,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 1182.125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 895.46875,
+            "y": 1253.125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 1251.25,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 1319.125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 1317.25,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 1385.125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 1383.25,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 1451.125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 1449.25,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        }
+      ],
+      "final": [
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 448.625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 446.75,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 514.625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 512.75,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 895.46875,
+            "y": 580.625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 578.75,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 646.625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 644.75,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 712.625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 710.75,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "3",
+          "box": {
+            "x": 895.46875,
+            "y": 778.625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 776.75,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 895.46875,
+            "y": 844.625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 842.75,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 895.46875,
+            "y": 913.75,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 911.875,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 895.46875,
+            "y": 982.875,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 981,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "0",
+          "box": {
+            "x": 895.46875,
+            "y": 1048.875,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 1047,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 1114.875,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 1113,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 895.46875,
+            "y": 1184,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 1182.125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 895.46875,
+            "y": 1253.125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 1251.25,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 1319.125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 1317.25,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 1385.125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 1383.25,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 895.46875,
+            "y": 1451.125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 905.03125,
+              "y": 1449.25,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        }
+      ],
+      "image": {
+        "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\repaired-surfaces\\gameover-1280.png",
+        "sha256": "a6fa13d082567f0192ce1678c5b028f7b707fdd79a5fe24c0e206deb1b62f8c8",
+        "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f"
+      }
+    },
+    {
+      "scene": "gameover",
+      "width": 1600,
+      "initialCSS": "e1dbfa2b1e00d45a7e8c20ef55eed9302734b2efc207c21a7c79ad7823c7dcf3",
+      "finalCSS": "dd161bfc8dfa47f324fde47b4d793cd1f94b01eac88a79bedd1f393cc16ff72a",
+      "initial": [
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 526.53125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 524.65625,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 592.53125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 590.65625,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 1120.15625,
+            "y": 658.53125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 656.65625,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 724.53125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 722.65625,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 790.53125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 788.65625,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "3",
+          "box": {
+            "x": 1120.15625,
+            "y": 856.53125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 854.65625,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 1120.15625,
+            "y": 922.53125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 920.65625,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 1120.15625,
+            "y": 992.59375,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 990.71875,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 1120.15625,
+            "y": 1062.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1060.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "0",
+          "box": {
+            "x": 1120.15625,
+            "y": 1128.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1126.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 1194.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1192.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 1120.15625,
+            "y": 1260.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1258.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 1120.15625,
+            "y": 1326.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1324.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 1392.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1390.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 1458.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1456.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 1524.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 19% 16%, color(srgb 0.72549 0.607843 0.878431 / 0.48), rgba(0, 0, 0, 0) 47%), url(\"http://localhost:9562/game/assets/ui/r54-peridot/lavender-paint-v1.webp\")",
+          "shadow": "rgb(59, 37, 96) 1px 1px 1px 0px inset, rgb(2, 1, 9) -2px -2px 1px 0px inset, rgb(2, 1, 9) 0px 2px 1px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1522.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        }
+      ],
+      "final": [
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 526.53125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 524.65625,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 592.53125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 590.65625,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 1120.15625,
+            "y": 658.53125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 656.65625,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 724.53125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 722.65625,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 790.53125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 788.65625,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "3",
+          "box": {
+            "x": 1120.15625,
+            "y": 856.53125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 854.65625,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 1120.15625,
+            "y": 922.53125,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 920.65625,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 1120.15625,
+            "y": 992.59375,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 990.71875,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 1120.15625,
+            "y": 1062.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1060.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "0",
+          "box": {
+            "x": 1120.15625,
+            "y": 1128.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1126.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 1194.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1192.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 1120.15625,
+            "y": 1260.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1258.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "2",
+          "box": {
+            "x": 1120.15625,
+            "y": 1326.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1324.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 1392.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1390.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 1458.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1456.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        },
+        {
+          "text": "1",
+          "box": {
+            "x": 1120.15625,
+            "y": 1524.65625,
+            "width": 29,
+            "height": 29
+          },
+          "font": "",
+          "fontSize": "19.745px",
+          "color": "rgb(230, 201, 138)",
+          "padding": "0px 0px 1px",
+          "borderWidth": "2px",
+          "background": "radial-gradient(at 30% 20%, rgb(111, 69, 168), rgb(59, 37, 96) 64%, rgb(2, 1, 9))",
+          "shadow": "rgb(2, 1, 9) 0px 0px 0px 1px inset, rgb(2, 1, 9) 0px 2px 3px 0px",
+          "ink": [
+            {
+              "x": 1129.71875,
+              "y": 1522.78125,
+              "width": 9.875,
+              "height": 30
+            }
+          ]
+        }
+      ],
+      "image": {
+        "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\repaired-surfaces\\gameover-1600.png",
+        "sha256": "17bd49d5d737b3e5ad843ee6c9e669deaf29cdaf3d85545946e3192b9e3db151",
+        "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f"
+      }
+    },
+    {
+      "scene": "event",
+      "width": 1280,
+      "initialCSS": "3cbaf162e79c99c65e1bb3e74739ea4fe14923c674e7b90a73d8a886f859ecad",
+      "finalCSS": "30ef0102dedc058d88449a0e2682b97ecfa20b8268665b0a7388d75a0e9a8c11",
+      "initial": [
+        {
+          "text": "",
+          "box": {
+            "x": 998,
+            "y": 284.25,
+            "width": 22,
+            "height": 90
+          },
+          "font": "",
+          "fontSize": "20px",
+          "color": "rgb(244, 239, 228)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "linear-gradient(97deg, rgb(110, 31, 20), rgb(207, 60, 40) 16%, color(srgb 0.883294 0.412627 0.234353) 24%, rgb(110, 31, 20) 38%, rgb(207, 60, 40) 66%, rgb(110, 31, 20)), url(\"http://localhost:9562/game/assets/ui/kit/flock.webp\")",
+          "shadow": "color(srgb 1 0.701961 0.360784 / 0.42) 2px 0px 1px 0px inset, rgb(110, 31, 20) -3px 0px 1px 0px inset, rgb(110, 31, 20) 0px 5px 2px 0px inset",
+          "ink": []
+        }
+      ],
+      "final": [
+        {
+          "text": "",
+          "box": {
+            "x": 998,
+            "y": 284.25,
+            "width": 22,
+            "height": 90
+          },
+          "font": "",
+          "fontSize": "20px",
+          "color": "rgb(244, 239, 228)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "linear-gradient(94deg, rgb(110, 31, 20), color(srgb 0.811765 0.235294 0.156863 / 0.84) 26%, color(srgb 0.811765 0.235294 0.156863 / 0.64) 46%, rgb(110, 31, 20) 67%, color(srgb 0.811765 0.235294 0.156863 / 0.72) 82%, rgb(110, 31, 20)), url(\"http://localhost:9562/game/assets/ui/kit/flock.webp\")",
+          "shadow": "color(srgb 1 0.701961 0.360784 / 0.28) 1px 0px 0px 0px inset, rgb(110, 31, 20) -2px 0px 1px 0px inset",
+          "ink": []
+        }
+      ],
+      "image": {
+        "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\repaired-surfaces\\event-1280.png",
+        "sha256": "51b8fbab7969eb8cf443a59c0b874c606c95e8f06c455aafc29a887e846ceb00",
+        "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f"
+      }
+    },
+    {
+      "scene": "event",
+      "width": 1600,
+      "initialCSS": "3cbaf162e79c99c65e1bb3e74739ea4fe14923c674e7b90a73d8a886f859ecad",
+      "finalCSS": "30ef0102dedc058d88449a0e2682b97ecfa20b8268665b0a7388d75a0e9a8c11",
+      "initial": [
+        {
+          "text": "",
+          "box": {
+            "x": 1158,
+            "y": 304.21875,
+            "width": 22,
+            "height": 90
+          },
+          "font": "",
+          "fontSize": "22px",
+          "color": "rgb(244, 239, 228)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "linear-gradient(97deg, rgb(110, 31, 20), rgb(207, 60, 40) 16%, color(srgb 0.883294 0.412627 0.234353) 24%, rgb(110, 31, 20) 38%, rgb(207, 60, 40) 66%, rgb(110, 31, 20)), url(\"http://localhost:9562/game/assets/ui/kit/flock.webp\")",
+          "shadow": "color(srgb 1 0.701961 0.360784 / 0.42) 2px 0px 1px 0px inset, rgb(110, 31, 20) -3px 0px 1px 0px inset, rgb(110, 31, 20) 0px 5px 2px 0px inset",
+          "ink": []
+        }
+      ],
+      "final": [
+        {
+          "text": "",
+          "box": {
+            "x": 1158,
+            "y": 304.21875,
+            "width": 22,
+            "height": 90
+          },
+          "font": "",
+          "fontSize": "22px",
+          "color": "rgb(244, 239, 228)",
+          "padding": "0px",
+          "borderWidth": "0px",
+          "background": "linear-gradient(94deg, rgb(110, 31, 20), color(srgb 0.811765 0.235294 0.156863 / 0.84) 26%, color(srgb 0.811765 0.235294 0.156863 / 0.64) 46%, rgb(110, 31, 20) 67%, color(srgb 0.811765 0.235294 0.156863 / 0.72) 82%, rgb(110, 31, 20)), url(\"http://localhost:9562/game/assets/ui/kit/flock.webp\")",
+          "shadow": "color(srgb 1 0.701961 0.360784 / 0.28) 1px 0px 0px 0px inset, rgb(110, 31, 20) -2px 0px 1px 0px inset",
+          "ink": []
+        }
+      ],
+      "image": {
+        "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\repaired-surfaces\\event-1600.png",
+        "sha256": "caaaefc03e6cea8c00fb48fdd34cd15337a0925f9eace3a30cca8fbb10466653",
+        "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f"
+      }
+    }
+  ],
+  "errors": [],
+  "note": "Only background/border-color/box-shadow overrides removed; box, Range ink, text, font, computed color, padding and border widths exactly identical. All original interaction assertions retained from initial source."
+}

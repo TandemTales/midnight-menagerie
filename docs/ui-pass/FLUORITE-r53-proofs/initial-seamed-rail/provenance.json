@@ -1,0 +1,18 @@
+{
+  "visual_source_commit": "9eede9a30bff9a43301131e3a5b0ce106b5f7bfd",
+  "defect": "Repeating grain mismatched fixed terminal scale; hard center boundary. Scheduler stopped after rest pair; active event shot allowed to finish.",
+  "images": [
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-seamed-rail\\FLUORITE-event.png",
+      "sha256": "fd82e51ba7db32f1e853e9029e490bda3fe77a985d2088c8bc201aba66014af4"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-seamed-rail\\rest-1280.png",
+      "sha256": "b2a27ba240460461422b92ff9685f5a9e590ebd0068ca8897efcd0322111c758"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-seamed-rail\\rest.png",
+      "sha256": "dbd98074a88f97cc9a850ed636fd3bccaa3aa9731ed744424ca48289ca0bdb10"
+    }
+  ]
+}

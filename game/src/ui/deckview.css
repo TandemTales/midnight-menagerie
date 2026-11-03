@@ -48,8 +48,8 @@
   gap: .5em;
   padding: 0 calc(var(--h) * .7);
 }
-.mm-deck__count .kit-enamel__value { font-size: calc(var(--h) * .56); }
-.mm-deck__count .kit-enamel__label { font-size: max(12px, calc(var(--h) * .3)); }
+.mm-deck__count .kit-enamel__value { --reading-size: calc(var(--h) * .56); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+.mm-deck__count .kit-enamel__label { --reading-size: max(12px, calc(var(--h) * .3)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 
 .mm-deck__search {
   --field-h: clamp(40px, 5vh, 44px);
@@ -65,7 +65,7 @@
   width: 100%;
   padding-left: calc(var(--field-h) * 1.02);
   text-align: left;
-  font-size: calc(var(--field-h) * .42);
+  --reading-size: calc(var(--field-h) * .42); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
 }
 .mm-deck__cap.kit-medallion {
   --md: calc(var(--field-h) * 1.04);
@@ -116,7 +116,7 @@
 /* the choice clear of the cartouche's scrolled ends */
 .mm-deck__sortwrap .kit-hw-cycle__sel {
   padding: 0 calc(var(--cy-h) * .66) 1px;
-  font-size: max(14px, calc(var(--cy-h) * .37));
+  --reading-size: max(14px, calc(var(--cy-h) * .37)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
 }
 /* nothing to clear is still a plate, and it stands on the plates' own line —
    not on the tags' */
@@ -331,7 +331,7 @@
 }
 .mm-deck__sortwrap .kit-hw-cycle__sel {
   padding: 0 calc(var(--cy-h) * .74) 1px;
-  font-size: max(16px, calc(var(--cy-h) * .4));
+  --reading-size: max(16px, calc(var(--cy-h) * .4)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   color: var(--kit-name);
 }
 .mm-deck__sortwrap .kit-hw-cycle__step.kit-hw-enamel { --en: calc(var(--cy-h) * 1.06); z-index: 2; }
@@ -340,7 +340,7 @@
 .mm-deck__sortwrap .kit-hw-cycle__step > .kit-hw-chev { width: 56%; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .8)) brightness(1.18); }
 .mm-deck__sortwrap .kit-hw-cycle__label {
   display: inline-flex; align-items: center; gap: .55em;
-  font-size: max(12.5px, calc(var(--cy-h) * .3));
+  --reading-size: max(12.5px, calc(var(--cy-h) * .3)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .24em;
 }
 .mm-deck__sortwrap .kit-hw-cycle__label::before,
@@ -372,8 +372,8 @@
   gap: 0 var(--dr-gap);
   flex-wrap: nowrap;
 }
-.mm-deck__filters .kit-hw-stop__label { font-size: 12.5px; }
-.mm-deck__filters .kit-hw-stop__value { font-size: 17px; }
+.mm-deck__filters .kit-hw-stop__label { --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+.mm-deck__filters .kit-hw-stop__value { --reading-size: 17px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .mm-deck__filters .kit-hw-stop__medal.kit-medallion { --md: calc(var(--dr-h) * .84); margin-block: -4px; }
 .mm-deck__filters.kit-hw-dialrail::before { content: none; }
 .mm-deck__filters .kit-hw-stop + .kit-hw-stop::before { left: calc(var(--dr-gap) * -.5 - 5px); }
@@ -386,7 +386,7 @@
 /* the note under the moon: upright, a step larger, parchment -- it was a
    12px grey italic at 1280 */
 .mm-deck__table > .mm-deck__note {
-  font-style: normal; font-size: 14px; line-height: 1.25;
+  font-style: normal; --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.25;
   color: color-mix(in oklab, var(--kit-text) 88%, var(--kit-lav-hi));
 }
 
@@ -403,11 +403,11 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 .mm-deck__filters.kit-hw-dialrail { --dr-gap: clamp(22px, 2.1vw, 40px); }
 .mm-deck__filters .kit-hw-stop__label {
-  font-size: 13.5px; letter-spacing: .15em;
+  --reading-size: 13.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .15em;
   color: var(--kit-gold-hi);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 rgba(0, 0, 0, .7), 0 0 8px color-mix(in srgb, var(--kit-candle) 25%, transparent);
 }
-.mm-deck__filters .kit-hw-stop__value { font-size: 16.5px; }
+.mm-deck__filters .kit-hw-stop__value { --reading-size: 16.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .mm-deck__filters .kit-hw-stop__medal.kit-medallion {
   --md: calc(var(--dr-h) * .9);
   --tint: transparent;
@@ -421,7 +421,7 @@
 .mm-deck__filters .kit-hw-stop[data-filter="upgraded"] .kit-hw-stop__medal { --tint: rgba(46, 132, 108, .74); }
 .mm-deck__filters .kit-hw-stop[data-filter="sort"] .kit-hw-stop__medal { --tint: rgba(168, 44, 58, .74); }
 .mm-deck__table > .mm-deck__note {
-  font-size: 15.5px; letter-spacing: .01em;
+  --reading-size: 15.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .01em;
   color: var(--kit-text);
 }
 
@@ -441,9 +441,9 @@
   width: 100%;
   padding-left: calc(var(--field-h) * 1.02);
   text-align: left;
-  font-size: max(14px, calc(var(--field-h) * .38));
+  --reading-size: max(14px, calc(var(--field-h) * .38)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
 }
-.mm-deck__search .kit-hw-inlay::placeholder { font-size: max(14px, calc(var(--field-h) * .38)); }
+.mm-deck__search .kit-hw-inlay::placeholder { --reading-size: max(14px, calc(var(--field-h) * .38)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .mm-deck-modal .mm-modal__close.mm-deck__xhidden,
 .mm-modal__close.mm-deck__xhidden { display: none; }
 @media (min-height: 861px) {
@@ -528,14 +528,14 @@
   background: none; box-shadow: none;
   -webkit-appearance: none; appearance: none;
   font-family: var(--font-display); font-weight: 600; font-style: normal;
-  font-size: 15.5px; line-height: 1; letter-spacing: .08em;
+  --reading-size: 15.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1; letter-spacing: .08em;
   color: var(--kit-gold-hi); caret-color: var(--kit-gold-hi);
   text-shadow: 0 -1px 0 rgb(0 0 0 / .9), 0 1px 0 rgb(230 200 140 / .16);
   transition: box-shadow var(--t-quick) var(--ease-out);
 }
 .mm-deck__search .mm-deck__seek::placeholder {
   font-family: var(--font-body); font-weight: 400; font-style: italic;
-  font-size: 15px; letter-spacing: .02em;
+  --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .02em;
   color: #b4a5c8; opacity: 1;
   text-shadow: 0 1px 0 rgb(0 0 0 / .9);
 }
@@ -557,7 +557,7 @@
     inset 0 0 calc(var(--field-h) * .45) rgb(255 178 92 / .2);
 }
 :root[data-large-text="1"] .mm-deck__search .mm-deck__seek,
-:root[data-large-text="1"] .mm-deck__search .mm-deck__seek::placeholder { font-size: 17px; }
+:root[data-large-text="1"] .mm-deck__search .mm-deck__seek::placeholder { --reading-size: 17px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 
 /* CLOSE on the case's lower rail: the foot rises half a plate into the case's
    rail and its own floor rule goes (the case's rail is its floor) */
@@ -678,13 +678,13 @@
   border-radius: 2px;
   background: none;
   box-shadow: none;
-  font-family: var(--font-display); font-weight: 700; font-size: 15px; letter-spacing: .07em;
+  font-family: var(--font-display); font-weight: 700; --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .07em;
   color: #2a1606; caret-color: #2a1606;
   text-shadow: 0 1px 0 rgb(255 230 172 / .5), 0 -1px 0 rgb(30 16 2 / .25);
 }
 .mm-deck__search .mm-deck__seek::placeholder {
   font-family: var(--font-body); font-weight: 600; font-style: italic;
-  font-size: 15px; letter-spacing: .01em;
+  --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .01em;
   color: #3b230b; opacity: 1;
   text-shadow: 0 1px 0 rgb(255 230 172 / .45);
 }
@@ -708,7 +708,7 @@
   filter: drop-shadow(1px 2px 2px rgb(0 0 0 / .75));
 }
 :root[data-large-text="1"] .mm-deck__search .mm-deck__seek,
-:root[data-large-text="1"] .mm-deck__search .mm-deck__seek::placeholder { font-size: 17px; }
+:root[data-large-text="1"] .mm-deck__search .mm-deck__seek::placeholder { --reading-size: 17px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 
 /* the dialog's ground: its damask raised where the candle reaches */
 .mm-modal--kit:has(.mm-deck) .mm-modal__dialog::before {

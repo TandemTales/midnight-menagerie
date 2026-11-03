@@ -1,0 +1,171 @@
+{
+  "method": "Inherited test sources equal supplied snapshot; wrapper changes limited to evidence directory (including named directory overrides) and heading image name.",
+  "base": "1bfcea516055b63b9f8e9274718f2212e8b9841b",
+  "rows": [
+    {
+      "code": "JADE",
+      "wrapper_sha256": "70327a3af0e74e1e8a6f59202b33907a6bdfb6569b8662eefad0cb1874761dfd",
+      "wrapper_replacements": [
+        [
+          "shots/ui-r51-spinel",
+          "docs/ui-pass/JADE-r55-proofs"
+        ]
+      ],
+      "permitted_output_directory_environment_variables": [],
+      "inherited_checks": [
+        {
+          "path": "tests/ui-r51-spinel/probe-queue.py",
+          "sha256": "18336d776e228fadd10a66dbfbe3c876f367da33e1c03bda19f30e3c1affda8e",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 6
+        },
+        {
+          "path": "tests/ui-r51-spinel/probe-idle-resize.py",
+          "sha256": "ee06b1d97c2bc06f99e37e866791dc87ca7bef4292c8c804f28ea8eddafb1639",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 4
+        },
+        {
+          "path": "tests/ui-r51-spinel/queue-lifecycle.py",
+          "sha256": "0578e5c0739c3ebf603c54df86cf3a6fa84737d7e8adf95eb03a53c3b2af2e31",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 6
+        },
+        {
+          "path": "tests/ui-r51-spinel/memorial.py",
+          "sha256": "d0a26fdc395bb2524a3d9af232aa958cedd9cd1b69b93a710b6a0eb4b9a4e314",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 11
+        },
+        {
+          "path": "tests/ui-r51-spinel/keepsakes.py",
+          "sha256": "f6d0561e09aa079ca23e975a35fa1c9dc770869b9019647f984379cf4bcd11b4",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 10
+        },
+        {
+          "path": "tests/ui-r51-spinel/interactions.py",
+          "sha256": "19e02c64d867a04ffc9d5266b680f9fe961e6ef38c88165ec1ebb9af3f314c34",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 14
+        },
+        {
+          "path": "tests/ui-r51-spinel/event-boundary.py",
+          "sha256": "47d7c2e1f905bab11c6bbe88e487aa2b9aabf75cba55002705e46a89c2e74ef4",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 8
+        }
+      ]
+    },
+    {
+      "code": "IOLITE",
+      "wrapper_sha256": "7bc3bc2e8353042800d1cc6637560026f4aa858287fcb9d009dac9cb2048be34",
+      "wrapper_replacements": [
+        [
+          "shots/ui-r51-spinel",
+          "docs/ui-pass/IOLITE-r55-proofs"
+        ]
+      ],
+      "permitted_output_directory_environment_variables": [],
+      "inherited_checks": [
+        {
+          "path": "tests/ui-r51-spinel/probe-queue.py",
+          "sha256": "18336d776e228fadd10a66dbfbe3c876f367da33e1c03bda19f30e3c1affda8e",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 6
+        },
+        {
+          "path": "tests/ui-r51-spinel/probe-idle-resize.py",
+          "sha256": "ee06b1d97c2bc06f99e37e866791dc87ca7bef4292c8c804f28ea8eddafb1639",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 4
+        },
+        {
+          "path": "tests/ui-r51-spinel/queue-lifecycle.py",
+          "sha256": "0578e5c0739c3ebf603c54df86cf3a6fa84737d7e8adf95eb03a53c3b2af2e31",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 6
+        },
+        {
+          "path": "tests/ui-r51-spinel/memorial.py",
+          "sha256": "d0a26fdc395bb2524a3d9af232aa958cedd9cd1b69b93a710b6a0eb4b9a4e314",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 11
+        },
+        {
+          "path": "tests/ui-r51-spinel/keepsakes.py",
+          "sha256": "f6d0561e09aa079ca23e975a35fa1c9dc770869b9019647f984379cf4bcd11b4",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 10
+        },
+        {
+          "path": "tests/ui-r51-spinel/interactions.py",
+          "sha256": "19e02c64d867a04ffc9d5266b680f9fe961e6ef38c88165ec1ebb9af3f314c34",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 14
+        },
+        {
+          "path": "tests/ui-r51-spinel/event-boundary.py",
+          "sha256": "47d7c2e1f905bab11c6bbe88e487aa2b9aabf75cba55002705e46a89c2e74ef4",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 8
+        }
+      ]
+    },
+    {
+      "code": "ZIRCON",
+      "wrapper_sha256": "5c74615330c2c08c4ffcdbb7a954bd34927579a2662d1231b3d748b20e06c9ed",
+      "wrapper_replacements": [
+        [
+          "shots/ui-r51-spinel",
+          "docs/ui-pass/ZIRCON-r55-proofs"
+        ]
+      ],
+      "permitted_output_directory_environment_variables": [],
+      "inherited_checks": [
+        {
+          "path": "tests/ui-r51-spinel/probe-queue.py",
+          "sha256": "18336d776e228fadd10a66dbfbe3c876f367da33e1c03bda19f30e3c1affda8e",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 6
+        },
+        {
+          "path": "tests/ui-r51-spinel/probe-idle-resize.py",
+          "sha256": "ee06b1d97c2bc06f99e37e866791dc87ca7bef4292c8c804f28ea8eddafb1639",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 4
+        },
+        {
+          "path": "tests/ui-r51-spinel/queue-lifecycle.py",
+          "sha256": "0578e5c0739c3ebf603c54df86cf3a6fa84737d7e8adf95eb03a53c3b2af2e31",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 6
+        },
+        {
+          "path": "tests/ui-r51-spinel/memorial.py",
+          "sha256": "d0a26fdc395bb2524a3d9af232aa958cedd9cd1b69b93a710b6a0eb4b9a4e314",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 11
+        },
+        {
+          "path": "tests/ui-r51-spinel/keepsakes.py",
+          "sha256": "f6d0561e09aa079ca23e975a35fa1c9dc770869b9019647f984379cf4bcd11b4",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 10
+        },
+        {
+          "path": "tests/ui-r51-spinel/interactions.py",
+          "sha256": "19e02c64d867a04ffc9d5266b680f9fe961e6ef38c88165ec1ebb9af3f314c34",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 14
+        },
+        {
+          "path": "tests/ui-r51-spinel/event-boundary.py",
+          "sha256": "47d7c2e1f905bab11c6bbe88e487aa2b9aabf75cba55002705e46a89c2e74ef4",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 8
+        }
+      ]
+    }
+  ]
+}

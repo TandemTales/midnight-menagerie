@@ -1,0 +1,1221 @@
+{
+  "rows": [
+    {
+      "size": [
+        1600,
+        900
+      ],
+      "initial": {
+        "heading": {
+          "left": 68.796875,
+          "right": 490.921875,
+          "top": 367.125,
+          "bottom": 532.421875,
+          "width": 422.125,
+          "height": 165.296875
+        },
+        "card": {
+          "left": 631.4462280273438,
+          "right": 931.8350219726562,
+          "top": 188.22576904296875,
+          "bottom": 606.625,
+          "width": 300.3887939453125,
+          "height": 418.39923095703125
+        },
+        "cardVisible": true,
+        "cardRules": {
+          "lines": 10,
+          "clipped": [],
+          "font": 17.023654152199075
+        },
+        "headingOverlap": 0,
+        "cues": [
+          {
+            "text": "\u2193 More below",
+            "box": {
+              "left": 1344.578125,
+              "right": 1479.390625,
+              "top": 732.234375,
+              "bottom": 768.234375,
+              "width": 134.8125,
+              "height": 36
+            },
+            "hit": true
+          },
+          {
+            "text": "\u2193 More record below",
+            "box": {
+              "left": 1319.953125,
+              "right": 1506,
+              "top": 783.015625,
+              "bottom": 819.015625,
+              "width": 186.046875,
+              "height": 36
+            },
+            "hit": true
+          }
+        ],
+        "cueOverlap": 0,
+        "stats": 8,
+        "tricks": 109,
+        "scrollMax": 423,
+        "deckScrollMax": 7057
+      },
+      "keys": [
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=Tricks]",
+          "key": "Enter",
+          "before": [
+            0,
+            0
+          ],
+          "after": [
+            0,
+            129
+          ],
+          "sameScene": true
+        },
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=Tricks]",
+          "key": "Space",
+          "before": [
+            0,
+            129
+          ],
+          "after": [
+            0,
+            258
+          ],
+          "sameScene": true
+        },
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=record]",
+          "key": "Enter",
+          "before": [
+            0,
+            258
+          ],
+          "after": [
+            423,
+            258
+          ],
+          "sameScene": true
+        },
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=record]",
+          "key": "Space",
+          "before": [
+            423,
+            258
+          ],
+          "after": [
+            0,
+            258
+          ],
+          "sameScene": true
+        }
+      ],
+      "endChecks": [
+        "record",
+        "Tricks"
+      ],
+      "trickHits": [
+        {
+          "text": "\n        1\n        Anatomy Is Optional\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Backyard Cache\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Bad Luck\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        3\n        Best Dog in the House\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        3\n        Big Swing\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Bite\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Bone A Fide Missile\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Bone Toss\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Boomerang Bone\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Borrowed Courage\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Built Wrong, Still Works\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Buried Bite\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Bury It\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Bury the Evidence\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Call That Back\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Can\u2019t Reach It\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Candle Burn\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Caramel Sticky\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Clatter Pounce\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Clingy Shadow\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Clumsy Swing\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Creaky Floorboard\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Dig Here\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Dig Like Crazy\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Dig to the Basement\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Dig Up a Fight\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Digging Claws\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        3\n        Dogpile of One\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Dug Up Dinner\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Dust Off\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Emergency Reassembly\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        4\n        Every Bone at Once\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Every Bone Knows the Way Home\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Excavation Frenzy\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Fall Apart on Purpose\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Favorite Toy\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Fetch the Moon\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Fetch!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Flop Over\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Flying Femur\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Full Body Tackle\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Gloom\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Go Get It!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Good as New\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Good Boy!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Good Dog\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Headless Rush\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Heavy Heart\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Heel!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        3\n        Jawbone Jamboree\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Jingle Collar\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Leave It!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Lost Mitten\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Lucky Penny\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Missing Piece Missile\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Never Really Lost\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Night Terror\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        No, the Other Bone\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Off Leash\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        One More Throw\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Perfect Fetch\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Pile of Me\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Play Dead\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Put Yourself Back Together\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Quick Look\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Rattletrap\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Reassemble\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Rebuild from Scratch\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Regret\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Rib Rattle\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Roll Over\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Run in Circles\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Scattershot Skeleton\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Scent Memory\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Scent Trail\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Scrape\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Second Wind\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Secret Stash\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Shake Dry\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Shake Everything Off\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Shake It Loose\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Shake, Boy!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Sit Pretty\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Sit, Stay\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Skeleton Key\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Skeleton Stampede\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Skull Boop\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Smell Something?\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Sniff Around\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Spare Bone\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Spare Parts\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Spare Parts Everywhere\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Spooked\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Stash Under the Rug\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Sticky\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Sticky Fur\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Tail Going A Mile A Minute\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Tailbone Thump\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Take Me Apart\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Tighten the Collar\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Torchlight\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Toss and Chase\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Treasure Yard\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Treat Stash\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Under the Couch\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Wet Dog Shake\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Who Buried That?\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Wrong Side\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Yard Map\n        \n      ",
+          "hit": true
+        }
+      ],
+      "bottom": [
+        {
+          "text": "\n    \n    \n    \n    \n    \n    Scuffles won0",
+          "top": 403.921875,
+          "bottom": 465.921875,
+          "clear": true
+        },
+        {
+          "text": "\n    \n    \n    \n    Big Scares0",
+          "top": 403.921875,
+          "bottom": 465.921875,
+          "clear": true
+        },
+        {
+          "text": "\n    \n    \n    \n    Curiosities0",
+          "top": 403.921875,
+          "bottom": 465.921875,
+          "clear": true
+        },
+        {
+          "text": "\n    \n    \n    \n    \n    \n    \n    \n    \n    Naps taken0",
+          "top": 403.921875,
+          "bottom": 465.921875,
+          "clear": true
+        },
+        {
+          "text": "Tricks played0",
+          "top": 475.921875,
+          "bottom": 537.921875,
+          "clear": true
+        },
+        {
+          "text": "Damage dealt0",
+          "top": 475.921875,
+          "bottom": 537.921875,
+          "clear": true
+        },
+        {
+          "text": "Buttons99",
+          "top": 475.921875,
+          "bottom": 537.921875,
+          "clear": true
+        },
+        {
+          "text": "Turns taken0",
+          "top": 475.921875,
+          "bottom": 537.921875,
+          "clear": true
+        }
+      ]
+    },
+    {
+      "size": [
+        1280,
+        800
+      ],
+      "initial": {
+        "heading": {
+          "left": 55.03125,
+          "right": 390.359375,
+          "top": 329.6875,
+          "bottom": 463.890625,
+          "width": 335.328125,
+          "height": 134.203125
+        },
+        "card": {
+          "left": 495.45660400390625,
+          "right": 755.3558959960938,
+          "top": 162.67178344726562,
+          "bottom": 524.6875,
+          "width": 259.8992919921875,
+          "height": 362.0157165527344
+        },
+        "cardVisible": true,
+        "cardRules": {
+          "lines": 10,
+          "clipped": [],
+          "font": 17.029917275088597
+        },
+        "headingOverlap": 0,
+        "cues": [
+          {
+            "text": "\u2193 More below",
+            "box": {
+              "left": 1069.640625,
+              "right": 1194.171875,
+              "top": 606.6875,
+              "bottom": 639.6875,
+              "width": 124.53125,
+              "height": 33
+            },
+            "hit": true
+          },
+          {
+            "text": "\u2193 More record below",
+            "box": {
+              "left": 1026.5625,
+              "right": 1197.203125,
+              "top": 697,
+              "bottom": 730,
+              "width": 170.640625,
+              "height": 33
+            },
+            "hit": true
+          }
+        ],
+        "cueOverlap": 0,
+        "stats": 8,
+        "tricks": 109,
+        "scrollMax": 389,
+        "deckScrollMax": 7201
+      },
+      "keys": [
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=Tricks]",
+          "key": "Enter",
+          "before": [
+            0,
+            0
+          ],
+          "after": [
+            0,
+            106
+          ],
+          "sameScene": true
+        },
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=Tricks]",
+          "key": "Space",
+          "before": [
+            0,
+            106
+          ],
+          "after": [
+            0,
+            212
+          ],
+          "sameScene": true
+        },
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=record]",
+          "key": "Enter",
+          "before": [
+            0,
+            212
+          ],
+          "after": [
+            389,
+            212
+          ],
+          "sameScene": true
+        },
+        {
+          "selector": ".r49-scrollcue[data-board-scroll=record]",
+          "key": "Space",
+          "before": [
+            389,
+            212
+          ],
+          "after": [
+            0,
+            212
+          ],
+          "sameScene": true
+        }
+      ],
+      "endChecks": [
+        "record",
+        "Tricks"
+      ],
+      "trickHits": [
+        {
+          "text": "\n        1\n        Anatomy Is Optional\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Backyard Cache\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Bad Luck\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        3\n        Best Dog in the House\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        3\n        Big Swing\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Bite\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Bone A Fide Missile\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Bone Toss\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Boomerang Bone\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Borrowed Courage\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Built Wrong, Still Works\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Buried Bite\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Bury It\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Bury the Evidence\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Call That Back\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Can\u2019t Reach It\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Candle Burn\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Caramel Sticky\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Clatter Pounce\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Clingy Shadow\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Clumsy Swing\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Creaky Floorboard\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Dig Here\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Dig Like Crazy\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Dig to the Basement\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Dig Up a Fight\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Digging Claws\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        3\n        Dogpile of One\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Dug Up Dinner\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Dust Off\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Emergency Reassembly\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        4\n        Every Bone at Once\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Every Bone Knows the Way Home\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Excavation Frenzy\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Fall Apart on Purpose\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Favorite Toy\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Fetch the Moon\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Fetch!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Flop Over\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Flying Femur\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Full Body Tackle\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Gloom\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Go Get It!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Good as New\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Good Boy!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Good Dog\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Headless Rush\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Heavy Heart\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Heel!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        3\n        Jawbone Jamboree\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Jingle Collar\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Leave It!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Lost Mitten\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Lucky Penny\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Missing Piece Missile\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Never Really Lost\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Night Terror\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        No, the Other Bone\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Off Leash\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        One More Throw\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Perfect Fetch\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Pile of Me\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Play Dead\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Put Yourself Back Together\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Quick Look\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Rattletrap\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Reassemble\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Rebuild from Scratch\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Regret\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Rib Rattle\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Roll Over\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Run in Circles\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Scattershot Skeleton\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Scent Memory\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Scent Trail\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Scrape\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Second Wind\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Secret Stash\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Shake Dry\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Shake Everything Off\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Shake It Loose\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Shake, Boy!\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Sit Pretty\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Sit, Stay\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Skeleton Key\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Skeleton Stampede\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Skull Boop\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Smell Something?\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Sniff Around\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Spare Bone\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Spare Parts\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Spare Parts Everywhere\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Spooked\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        0\n        Stash Under the Rug\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Sticky\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Sticky Fur\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Tail Going A Mile A Minute\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Tailbone Thump\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Take Me Apart\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Tighten the Collar\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Torchlight\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Toss and Chase\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Treasure Yard\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Treat Stash\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        2\n        Under the Couch\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Wet Dog Shake\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Who Buried That?\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        X\n        Wrong Side\n        \n      ",
+          "hit": true
+        },
+        {
+          "text": "\n        1\n        Yard Map\n        \n      ",
+          "hit": true
+        }
+      ],
+      "bottom": [
+        {
+          "text": "\n    \n    \n    \n    \n    \n    Scuffles won0",
+          "top": 322.46875,
+          "bottom": 384.46875,
+          "clear": true
+        },
+        {
+          "text": "\n    \n    \n    \n    Big Scares0",
+          "top": 322.46875,
+          "bottom": 384.46875,
+          "clear": true
+        },
+        {
+          "text": "\n    \n    \n    \n    Curiosities0",
+          "top": 322.46875,
+          "bottom": 384.46875,
+          "clear": true
+        },
+        {
+          "text": "\n    \n    \n    \n    \n    \n    \n    \n    \n    Naps taken0",
+          "top": 322.46875,
+          "bottom": 384.46875,
+          "clear": true
+        },
+        {
+          "text": "Tricks played0",
+          "top": 394.46875,
+          "bottom": 456.46875,
+          "clear": true
+        },
+        {
+          "text": "Damage dealt0",
+          "top": 394.46875,
+          "bottom": 456.46875,
+          "clear": true
+        },
+        {
+          "text": "Buttons99",
+          "top": 394.46875,
+          "bottom": 456.46875,
+          "clear": true
+        },
+        {
+          "text": "Turns taken0",
+          "top": 394.46875,
+          "bottom": 456.46875,
+          "clear": true
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

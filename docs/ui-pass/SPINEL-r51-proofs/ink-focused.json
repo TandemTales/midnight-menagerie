@@ -1,0 +1,105 @@
+{
+  "rows": [
+    {
+      "kind": "status",
+      "frames": 100,
+      "visible": 98,
+      "font": 20,
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "buff",
+      "frames": 91,
+      "visible": 89,
+      "font": 20.75,
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "debuff",
+      "frames": 97,
+      "visible": 95,
+      "font": 20.75,
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "counter",
+      "frames": 98,
+      "visible": 96,
+      "font": 20,
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "blocked",
+      "frames": 106,
+      "visible": 104,
+      "font": 23,
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "status",
+      "frames": 70,
+      "visible": 68,
+      "font": 20,
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "buff",
+      "frames": 75,
+      "visible": 73,
+      "font": 20.75,
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "debuff",
+      "frames": 74,
+      "visible": 72,
+      "font": 20.75,
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "counter",
+      "frames": 67,
+      "visible": 65,
+      "font": 20,
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "blocked",
+      "frames": 76,
+      "visible": 74,
+      "font": 23,
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    }
+  ],
+  "errors": []
+}

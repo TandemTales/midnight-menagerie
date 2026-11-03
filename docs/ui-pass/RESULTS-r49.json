@@ -1,0 +1,32 @@
+{
+  "round": 49,
+  "status": "complete; selected build repaired, validated and applied as working changes",
+  "winner": "RUBY",
+  "selection": "unanimous independent blind votes",
+  "votes": ["RUBY", "RUBY"],
+  "system_scores_descriptive_only": {
+    "judge1": {"CITRINE": 6.3, "LAPIS": 7.1, "RUBY": 7.6, "OPAL": 6.8},
+    "judge2": {"CITRINE": 5.9, "LAPIS": 7.3, "RUBY": 7.8, "OPAL": 7.0}
+  },
+  "base": "06678114cd21f033d5bb80a4b26001b2b40e5ffb",
+  "comparison_source": "85571d56",
+  "comparison_notes_commit": "71cebe3f",
+  "comparison_captures": "CAPTURES-r49.json",
+  "all_fit_thresholds_met": false,
+  "applied_to_main": true,
+  "selected_repair_commit": "177c3aafb1540418bfb2aa10779eeee175bf5dfc",
+  "main_index_preserved": true,
+  "applied_files_byte_verified": 33,
+  "main_committed_or_pushed": false,
+  "validated_captures": "VALIDATED-CAPTURES-r49.json",
+  "browser_gates": {"chrome": "27/0", "steam_deck": "6/0", "gamepad": "23/0", "events": "pass", "gameover_keeps": "16/0", "seams_proof": "pass", "combat_scene_seam": "22/0"},
+  "static_checks": {"scene_css_conflicts": 0, "undefined_css_tokens": 0, "seam_sites": 9104, "unchanged_local_Map_false_positives": 4, "syntax": "pass", "endings": "pass"},
+  "repair_verification": {"combat_cases": 14, "labels_delivered_with_full_lifetime": 84, "sampled_frames": 3099, "collisions": 0, "layout_p95_ms": 1.9, "layout_max_ms": 8.6, "ordinary_max_drain_seconds": 4.833, "boss_six_simultaneous_both_sizes": true, "idle_resize_recovery_seconds": 0.137, "memorial_tricks_normal_long": [16,109], "memorial_stats": 8, "both_sizes_pass": true},
+  "presentation_change": "Crowded overflow labels queue FIFO near their owner with full text/type/lifetime; engine effects and persistent icons remain immediate. Six identical labels in the compact stress fixture take9.336s to drain. Normal boss retains six simultaneous labels.",
+  "completed_repairs": [
+    "Crowded actor and intent clearance for condition groups",
+    "Separate inner and outer memorial scroll controls",
+    "Keep memorial progress plaque clear of the featured card cost"
+  ],
+  "evidence_root": "D:/UILOOP/r49-20261029"
+}

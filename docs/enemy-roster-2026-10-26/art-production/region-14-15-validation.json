@@ -1,0 +1,135 @@
+{
+  "levels": [
+    14,
+    15
+  ],
+  "new": 22,
+  "existing_replaced": 0,
+  "pending": 0,
+  "blocked": 0,
+  "source_files_verified": 22,
+  "runtime_files_verified": 22,
+  "preserved_baseline_files_verified": 367,
+  "changed_baseline_files": [],
+  "result_manifests": [
+    "region-14-results.json",
+    "region-15-results-v11.json"
+  ],
+  "previews": [
+    "region-14-contact-final.jpg",
+    "region-15-contact-final.jpg"
+  ],
+  "files": [
+    {
+      "id": "towel-poltergeist",
+      "source": "animations\\sprites\\enemies\\towelPoltergeist.png",
+      "output": "game\\assets\\sprites\\enemies\\towel-poltergeist.webp"
+    },
+    {
+      "id": "drain-shade",
+      "source": "animations\\sprites\\enemies\\drainShade.png",
+      "output": "game\\assets\\sprites\\enemies\\drain-shade.webp"
+    },
+    {
+      "id": "scrub-brush",
+      "source": "animations\\sprites\\enemies\\scrubBrush.png",
+      "output": "game\\assets\\sprites\\enemies\\scrub-brush.webp"
+    },
+    {
+      "id": "soap-dish-skater",
+      "source": "animations\\sprites\\enemies\\soapDishSkater.png",
+      "output": "game\\assets\\sprites\\enemies\\soap-dish-skater.webp"
+    },
+    {
+      "id": "tile-quartet",
+      "source": "animations\\sprites\\enemies\\tileQuartet.png",
+      "output": "game\\assets\\sprites\\enemies\\tile-quartet.webp"
+    },
+    {
+      "id": "rain-chain",
+      "source": "animations\\sprites\\enemies\\rainChain.png",
+      "output": "game\\assets\\sprites\\enemies\\rain-chain.webp"
+    },
+    {
+      "id": "bath-thermometer",
+      "source": "animations\\sprites\\enemies\\bathThermometer.png",
+      "output": "game\\assets\\sprites\\enemies\\bath-thermometer.webp"
+    },
+    {
+      "id": "grand-bath",
+      "source": "animations\\sprites\\enemies\\grandBath.png",
+      "output": "game\\assets\\sprites\\enemies\\grand-bath.webp"
+    },
+    {
+      "id": "breathing-radiator",
+      "source": "animations\\sprites\\enemies\\breathingRadiator.png",
+      "output": "game\\assets\\sprites\\enemies\\breathing-radiator.webp"
+    },
+    {
+      "id": "rain-collector",
+      "source": "animations\\sprites\\enemies\\rainCollector.png",
+      "output": "game\\assets\\sprites\\enemies\\rain-collector.webp"
+    },
+    {
+      "id": "bathhouse-matron",
+      "source": "animations\\sprites\\enemies\\bathhouseMatron.png",
+      "output": "game\\assets\\sprites\\enemies\\bathhouse-matron.webp"
+    },
+    {
+      "id": "water-bowl-poltergeist",
+      "source": "animations\\sprites\\enemies\\waterBowlPoltergeist.png",
+      "output": "game\\assets\\sprites\\enemies\\water-bowl-poltergeist.webp"
+    },
+    {
+      "id": "grooming-mitt",
+      "source": "animations\\sprites\\enemies\\groomingMitt.png",
+      "output": "game\\assets\\sprites\\enemies\\grooming-mitt.webp"
+    },
+    {
+      "id": "reward-clicker",
+      "source": "animations\\sprites\\enemies\\rewardClicker.png",
+      "output": "game\\assets\\sprites\\enemies\\reward-clicker.webp"
+    },
+    {
+      "id": "fussing-fan",
+      "source": "animations\\sprites\\enemies\\fussingFan.png",
+      "output": "game\\assets\\sprites\\enemies\\fussing-fan.webp"
+    },
+    {
+      "id": "treat-puzzle",
+      "source": "animations\\sprites\\enemies\\treatPuzzle.png",
+      "output": "game\\assets\\sprites\\enemies\\treat-puzzle.webp"
+    },
+    {
+      "id": "scent-tin",
+      "source": "animations\\sprites\\enemies\\scentTin.png",
+      "output": "game\\assets\\sprites\\enemies\\scent-tin.webp"
+    },
+    {
+      "id": "pace-cone",
+      "source": "animations\\sprites\\enemies\\paceCone.png",
+      "output": "game\\assets\\sprites\\enemies\\pace-cone.webp"
+    },
+    {
+      "id": "tag-collector",
+      "source": "animations\\sprites\\enemies\\tagCollector.png",
+      "output": "game\\assets\\sprites\\enemies\\tag-collector.webp"
+    },
+    {
+      "id": "fetch-return",
+      "source": "animations\\sprites\\enemies\\fetchReturn.png",
+      "output": "game\\assets\\sprites\\enemies\\fetch-return.webp"
+    },
+    {
+      "id": "portion-balance",
+      "source": "animations\\sprites\\enemies\\portionBalance.png",
+      "output": "game\\assets\\sprites\\enemies\\portion-balance.webp"
+    },
+    {
+      "id": "kennelmaster",
+      "source": "animations\\sprites\\enemies\\kennelmaster.png",
+      "output": "game\\assets\\sprites\\enemies\\kennelmaster.webp"
+    }
+  ],
+  "save_incident": "Atomic rename region-15-results.tmp to region-15-results.json failed with OS PermissionError [WinError 5] Access is denied. No approval/user denial was returned. Denied rename not retried; preserved both paths and wrote immutable versioned manifests v07 through v11. Pace Cone image files were already saved and their hashes verified before v07 copy. No image regenerated for save incidents."
+}

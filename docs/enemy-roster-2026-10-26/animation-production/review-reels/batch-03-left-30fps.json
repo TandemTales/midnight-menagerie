@@ -1,0 +1,116 @@
+{
+  "created_utc": "2026-10-26T23:47:07.631121+00:00",
+  "path": "docs/enemy-roster-2026-10-26/animation-production/review-reels/batch-03-left-30fps.mp4",
+  "sha256": "651163977acb17df988d68ee70c76058bdb479ef0481cc256e452a46d769e687",
+  "bytes": 374381,
+  "fps": 30,
+  "decoded_frames": 267,
+  "duration_seconds": 8.9,
+  "stream": {
+    "ffmpeg_version": "7.1-essentials_build-www.gyan.dev built with gcc 14.2.0 (Rev1, Built by MSYS2 project)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 30.0,
+    "source_size": [
+      960,
+      540
+    ],
+    "size": [
+      960,
+      540
+    ],
+    "rotate": 0,
+    "duration": 8.9
+  },
+  "inputs": [
+    {
+      "enemy": "hanging-pots",
+      "state": "idle",
+      "path": "game/assets/sprites/enemy-clips/hanging-pots/idle.webp",
+      "sha256": "1abbaae1b12bc2db80c06825aaa8b2c9f6e622ca4483f9d094f0463ada31c075",
+      "frames": 60,
+      "fps": 30
+    },
+    {
+      "enemy": "hanging-pots",
+      "state": "attack",
+      "path": "game/assets/sprites/enemy-clips/hanging-pots/attack.webp",
+      "sha256": "15cead31d41667e64e0d27f8a8e404323b8dc29da4804382a4b6c574eee722f5",
+      "frames": 48,
+      "fps": 30
+    },
+    {
+      "enemy": "hanging-pots",
+      "state": "hurt",
+      "path": "game/assets/sprites/enemy-clips/hanging-pots/hurt.webp",
+      "sha256": "8b33c77bdf96d594416a39ec474ace57d8d5df2bcab19bbd4c8be4055114a32f",
+      "frames": 24,
+      "fps": 30
+    },
+    {
+      "enemy": "hanging-pots",
+      "state": "defeat",
+      "path": "game/assets/sprites/enemy-clips/hanging-pots/defeat.webp",
+      "sha256": "cdd53bfa2e72948d7a3946c72eb79bdff56804d8d856b01becc83f1748c5d3bb",
+      "frames": 45,
+      "fps": 30
+    },
+    {
+      "enemy": "garden-shears",
+      "state": "idle",
+      "path": "game/assets/sprites/enemy-clips/garden-shears/idle.webp",
+      "sha256": "5cbf26b9606fe89cfd557eeb644044161b50ad1a5e11998bf6eb89fd6fc460c7",
+      "frames": 60,
+      "fps": 30
+    },
+    {
+      "enemy": "garden-shears",
+      "state": "attack",
+      "path": "game/assets/sprites/enemy-clips/garden-shears/attack.webp",
+      "sha256": "18ff4e54eeb0ffef8b0997069654a27ff382560eedb9b6792adf1f35976b8fc3",
+      "frames": 48,
+      "fps": 30
+    },
+    {
+      "enemy": "garden-shears",
+      "state": "hurt",
+      "path": "game/assets/sprites/enemy-clips/garden-shears/hurt.webp",
+      "sha256": "b247287a6307f5cc966aad324fd46c12d5f5d8376fd6a0e687ed26a75a20c466",
+      "frames": 24,
+      "fps": 30
+    },
+    {
+      "enemy": "garden-shears",
+      "state": "defeat",
+      "path": "game/assets/sprites/enemy-clips/garden-shears/defeat.webp",
+      "sha256": "491f371dbe7fd94d8877d0fb0144f3336b974d32e9f9d379316d99f3877487ed",
+      "frames": 45,
+      "fps": 30
+    }
+  ],
+  "timeline": [
+    {
+      "state": "idle",
+      "frames": 120,
+      "authored_frames": 60,
+      "repetitions": 2
+    },
+    {
+      "state": "attack",
+      "frames": 48
+    },
+    {
+      "state": "hurt",
+      "frames": 24
+    },
+    {
+      "state": "defeat",
+      "frames": 45
+    },
+    {
+      "state": "defeat endpoint review hold",
+      "frames": 30
+    }
+  ],
+  "verification": "Every encoded frame decoded; exact source sequence, count, 30 fps and nominal 200/unit scale verified. Selected chronological frames inspected. Full-speed human visual review pending; no browser navigation or game runtime test."
+}

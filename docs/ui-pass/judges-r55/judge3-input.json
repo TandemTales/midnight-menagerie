@@ -1,0 +1,70 @@
+{
+  "judge": 3,
+  "rubrics": [
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\RUBRIC.md",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\RUBRIC-r55.md"
+  ],
+  "references": [
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\title.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\mainMenu.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\selectCompanion.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\selectKid.png"
+  ],
+  "order": [
+    "JADE",
+    "ZIRCON",
+    "ALMANDINE",
+    "IOLITE"
+  ],
+  "candidates": {
+    "JADE": [
+      "D:\\UILOOP\\r55-20261029\\judging\\JADE\\rest.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\JADE\\rest-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\JADE\\event.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\JADE\\event-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\JADE\\gameover.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\JADE\\gameover-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\JADE\\shop.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\JADE\\shop-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\JADE\\combat-floaters.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\JADE\\combat-floaters-1280.png"
+    ],
+    "ZIRCON": [
+      "D:\\UILOOP\\r55-20261029\\judging\\ZIRCON\\rest.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ZIRCON\\rest-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ZIRCON\\event.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ZIRCON\\event-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ZIRCON\\gameover.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ZIRCON\\gameover-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ZIRCON\\shop.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ZIRCON\\shop-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ZIRCON\\combat-floaters.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ZIRCON\\combat-floaters-1280.png"
+    ],
+    "ALMANDINE": [
+      "D:\\UILOOP\\r55-20261029\\judging\\ALMANDINE\\rest.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ALMANDINE\\rest-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ALMANDINE\\event.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ALMANDINE\\event-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ALMANDINE\\gameover.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ALMANDINE\\gameover-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ALMANDINE\\shop.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ALMANDINE\\shop-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ALMANDINE\\combat-floaters.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\ALMANDINE\\combat-floaters-1280.png"
+    ],
+    "IOLITE": [
+      "D:\\UILOOP\\r55-20261029\\judging\\IOLITE\\rest.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\IOLITE\\rest-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\IOLITE\\event.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\IOLITE\\event-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\IOLITE\\gameover.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\IOLITE\\gameover-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\IOLITE\\shop.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\IOLITE\\shop-1280.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\IOLITE\\combat-floaters.png",
+      "D:\\UILOOP\\r55-20261029\\judging\\IOLITE\\combat-floaters-1280.png"
+    ]
+  },
+  "output": "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\judges-r55\\judge3-final.json"
+}

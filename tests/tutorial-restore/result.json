@@ -1,0 +1,45 @@
+{
+  "passed": [
+    "original story pages/name timing and all eight coach beats exactly match Git predecessor",
+    "eight-child picker, original rumour page, focused Enter advances once, skip returns to selection and records opening",
+    "skip persists after reload and leaves narrative search recap eligible",
+    "all eight original loss variants render; invalid deep links return to child picker",
+    "loaded portrait and opening controls fit at 1280x800 and 1920x1080 with large text",
+    "original eight-step coach advances through real keyboard card play and End Turn; controller confirm isolates hand",
+    "actual UI victory returns to old after/name/hook pages, starts expedition, preserves save and newer narrative handoff",
+    "zero game-resource/console or uncaught page errors; absent favicon recorded separately"
+  ],
+  "errors": [],
+  "favicon_warnings": [
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "location": {
+        "url": "http://localhost:8777/favicon.ico",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "location": {
+        "url": "http://localhost:8777/favicon.ico",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "location": {
+        "url": "http://localhost:8777/favicon.ico",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ]
+}

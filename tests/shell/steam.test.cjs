@@ -431,6 +431,292 @@ function launch(steam, p, appId = 4242) {
     la.close(); lb.close(); ta.close();
   }
 
+  const { Session } = await import(pathToFileURL(path.join(ROOT, 'game/src/net/session.js')).href);
+  const threeInARoom = async (room, base) => {
+    const steam = new FakeSteam();
+    const ps = [1, 2, 3].map(i => up(steam, `${base}${i}`, `P${i}`));
+    const ts = [];
+    for (const p of ps) {
+      ts.push(new SteamTransport(room, { net: p.bridge.net, seats: 4 }));
+      await until(() => steam.liveLobbies().length === 1);
+    }
+    await until(() => ts.every(t => t.known.size === 2));
+    return { steam, ps, ts };
+  };
+
+  console.log('§9 the host\'s GO carries the table');
+  {
+    const { ts } = await threeInARoom('rope-lookout', '7656119000000008');
+    const ls = ts.map((t, i) => new Lobby({ transport: t, room: 'rope-lookout', companion: 'marmalade', kid: 'maya', name: `P${i + 1}` }));
+    await until(() => ls.every(l => l.players.length === 3));
+    // A row the third player has not heard yet. Messages are ordered per sender,
+    // not across senders, so they can hear the host's GO first.
+    const stale = ls[2]._peers.get(ts[1].id);
+    ls[1].setChoice({ companion: 'bones', kid: 'eli' });
+    ls[1].setReady(true);
+    await until(() => ls[0]._peers.get(ts[1].id).companion === 'bones');
+    ls[2]._peers.set(ts[1].id, { ...stale, companion: 'marmalade' });
+    const dropHere = ls[2].transport.onMessage(() => {});
+    const r0 = ls[0].go();
+    await until(() => ls.every(l => l.roster));
+    dropHere();
+    check(ls.every(l => l.roster), 'everyone started');
+    const party = (l) => l.roster.party.map(p => p.companion).join();
+    check(party(ls[2]) === party(ls[0]), 'a client with a stale row still freezes the host\'s party', `${party(ls[2])} vs ${party(ls[0])}`);
+    check(ls[2].roster.ids.join() === r0.ids.join(), 'and the same seats');
+    check(ls[2].roster.seat === r0.ids.indexOf(ts[2].id), 'and knows its own seat');
+    ls.forEach(l => l.close()); ts.forEach(t => t.close());
+  }
+
+  console.log('§10 somebody climbs up after the party went in');
+  {
+    const steam = new FakeSteam();
+    const A = up(steam, '76561190000000091', 'A'), B = up(steam, '76561190000000092', 'B'), C = up(steam, '76561190000000093', 'C');
+    const ta = new SteamTransport('tin-camp', { net: A.bridge.net, seats: 4 });
+    const roster = { room: 'tin-camp', seed: 77, seats: 2, ids: ['76561190000000091', '76561190000000092'], names: ['A', 'B'] };
+    const sa = new Session({ transport: ta, seat: 0, seats: 2, seed: 77, host: true, roster, room: 'tin-camp', beatMs: 0 });
+    await until(() => steam.liveLobbies().length === 1);
+
+    const tb = new SteamTransport('tin-camp', { net: B.bridge.net, seats: 4 });
+    const lb = new Lobby({ transport: tb, room: 'tin-camp', companion: 'bones', kid: 'eli' });
+    let back = null;
+    lb.on('late', r => { back = r; });
+    check(await until(() => back), 'a player the roster names is told the expedition is under way');
+    check(back && back.ids.indexOf(tb.id) === 1, 'and can find their seat in it', back && back.ids.join());
+    lb.close(); tb.close();
+    await until(() => sa.lost.has(1));
+
+    const tc = new SteamTransport('tin-camp', { net: C.bridge.net, seats: 4 });
+    const lc = new Lobby({ transport: tc, room: 'tin-camp', companion: 'bones', kid: 'eli' });
+    let late = null;
+    lc.on('late', r => { late = r; });
+    check(await until(() => late), 'a stranger is told too, rather than left waiting in an empty treehouse');
+    check(late && late.ids.indexOf(tc.id) === -1, 'and has no seat');
+    lc.close(); tc.close(); sa.close();
+  }
+
+  console.log('§11 coming back to a lobby search cannot see');
+  {
+    const steam = new FakeSteam();
+    const A = up(steam, '76561190000000101', 'A'), B = up(steam, '76561190000000102', 'B');
+    const ta = new SteamTransport('far-away', { net: A.bridge.net, seats: 4 });
+    await until(() => ta.lobbyId);
+    check(!!ta.lobbyId, 'a transport learns which Steam lobby it is in', ta.lobbyId);
+    const search = steam.module;
+    // Search only reaches nearby regions; the other side of the world finds nothing.
+    const hidden = B.host.client.matchmaking.getLobbies;
+    B.host.client.matchmaking.getLobbies = async () => [];
+    const pa = peersOf(ta);
+    const tb = new SteamTransport('far-away', { net: B.bridge.net, seats: 4, lobby: ta.lobbyId });
+    check(await until(() => pa.size === 1), 'the remembered lobby id still gets them in');
+    check(steam.liveLobbies().length === 1, 'with no twin room made', steam.liveLobbies().length);
+    B.host.client.matchmaking.getLobbies = hidden;
+    void search;
+    ta.close(); tb.close();
+  }
+
+  console.log('§12 a packet that beats the member list');
+  {
+    const steam = new FakeSteam();
+    const A = up(steam, '76561190000000111', 'A'), B = up(steam, '76561190000000112', 'B');
+    const ta = new SteamTransport('race-den', { net: A.bridge.net, seats: 4 });
+    await until(() => ta.lobbyId);
+    let got = 0;
+    ta.onMessage(() => { got++; });
+    // Steam asks about the session before A's member list has B on it.
+    A.host._onSessionRequest(BigInt(B.p.id));
+    check(!A.p.accepted.has(B.p.id), 'a session from somebody not in the room is not taken yet');
+    const tb = new SteamTransport('race-den', { net: B.bridge.net, seats: 4 });
+    await until(() => tb.known.size === 1);
+    check(await until(() => A.p.accepted.has(B.p.id)), 'and IS taken once they turn up, since Steam only asks once');
+    tb.send({ hello: 1 });
+    check(await until(() => got === 1), 'so their first message arrives');
+    ta.close(); tb.close();
+  }
+
+  console.log('§13 a player drops out from under a running expedition');
+  {
+    const { ts } = await threeInARoom('owl-swing', '7656119000000012');
+    const ids = ts.map(t => t.id).sort();
+    const roster = { room: 'owl-swing', seed: 5, seats: 3, ids, names: ['P1', 'P2', 'P3'] };
+    const bySeat = ids.map(id => ts.find(t => t.id === id));
+    const ss = bySeat.map((t, seat) => new Session({ transport: t, seat, seats: 3, seed: 5, host: seat === 0, roster, room: 'owl-swing', beatMs: 0 }));
+    const seen = [];
+    ss[0].on('presence', e => seen.push(e));
+    let gone = null;
+    ss[2].on('gone', e => { gone = e; });
+    // Seat 2 is on turn 4 and seat 1 was last seen on turn 3, which holds the barrier.
+    ss[0]._note(1, 3, 0);
+    ss[0]._note(2, 4, 0);
+    ss[0].run = { combat: { turn: 4 } };
+    check(ss[0]._barrierTurn() === 3, 'a seat a turn behind holds the barrier', ss[0]._barrierTurn());
+    bySeat[1].close();
+    check(await until(() => ss[0].lost.has(1)), 'leaving the Steam lobby reaches the table at once');
+    check(seen.some(e => e.seat === 1 && e.here === false), 'and is announced');
+    check(ss[0]._barrierTurn() === 3, 'noticing does not move the barrier: the table may still choose to wait');
+    ss[0].dropSeat(1);
+    check(ss[0].gone.has(1) && ss[0]._barrierTurn() === 4, 'choosing to play on lifts it', ss[0]._barrierTurn());
+    check(await until(() => gone && gone.seat === 1 && ss[2].gone.has(1)), 'on the other machine too');
+    ss[0].dropSeat(1);
+    check(ss[0].log.filter(m => m.act === 'seat.gone').length === 1, 'asking twice says it once');
+
+    // Silence, as opposed to leaving: a machine that froze stays in the lobby.
+    ss[2]._heardAt.set(0, -1e9);
+    ss[2]._tick();
+    check(ss[2].lost.has(0), 'a seat silent for too long is reported too');
+    ss[2]._heard(0);
+    check(!ss[2].lost.has(0), 'and clears the moment it speaks');
+    ss[0].close(); ss[2].close();
+  }
+
+  console.log('§14 a lost message is asked for again');
+  {
+    const { ts } = await threeInARoom('moss-hollow', '7656119000000013');
+    const ids = ts.map(t => t.id).sort();
+    const roster = { room: 'moss-hollow', seed: 6, seats: 3, ids, names: [] };
+    const bySeat = ids.map(id => ts.find(t => t.id === id));
+    const ss = bySeat.map((t, seat) => new Session({ transport: t, seat, seats: 3, seed: 6, roster, room: 'moss-hollow', beatMs: 0 }));
+    const applied = [];
+    ss[2].on('input', m => { applied.push(m.seq); });
+    const m1 = ss[0].input({ t: 'room', act: 'room.done' });
+    await until(() => ss[2].log.length === 1);
+    // Steam lost the next one on its way to seat 2, only.
+    const lost = { ...m1, seq: 2 };
+    ss[0]._seq = 2;
+    ss[0]._accept(lost);
+    ss[0].beat();
+    await until(() => (ss[2]._horizon.get(0) || {}).seq === 2);
+    check(ss[2].log.length === 1, 'the beat says seat 2 is missing an input', ss[2].log.length);
+    ss[2]._tick();
+    ss[2]._gapSince.set(0, -1e9);
+    ss[2]._tick();
+    check(await until(() => ss[2].log.length === 2), 'it asks, and the table sends it again');
+    await until(() => applied.length === 2);
+    check(applied.join() === '1,2', 'applied once each, in order', applied.join());
+    ss[1]._sendLog(ss[1].log, null);
+    await sleep(40);
+    check(ss[2].log.length === 2, 'and a second copy changes nothing', ss[2].log.length);
+    ss.forEach(s => s.close());
+  }
+
+  console.log('§15 climbing back in');
+  {
+    const steam = new FakeSteam();
+    const A = up(steam, '76561190000000141', 'A'), B = up(steam, '76561190000000142', 'B');
+    const ta = new SteamTransport('acorn-den', { net: A.bridge.net, seats: 4 });
+    await until(() => ta.lobbyId);
+    const roster = { room: 'acorn-den', seed: 9, seats: 2, ids: [A.p.id, B.p.id], names: ['A', 'B'] };
+    const big = 'x'.repeat(600 * 1024);          // past a chunk, past what one message should carry
+    const sa = new Session({ transport: ta, seat: 0, seats: 2, seed: 9, host: true, roster, room: 'acorn-den', beatMs: 0 });
+    sa.run = { snapshot: () => ({ seed: 9, big }), pendingVote: { nodeId: 'n1', votes: { 0: 'n2' } } };
+    sa.input({ t: 'room', act: 'room.done' });
+    await sa.settled();
+    const tb = new SteamTransport('acorn-den', { net: B.bridge.net, seats: 4, lobby: ta.lobbyId });
+    await until(() => tb.known.size === 1);
+    const sb = new Session({ transport: tb, seat: 1, seats: 2, seed: 9, roster, room: 'acorn-den', rejoining: true, beatMs: 0 });
+    let pack = null;
+    sb.on('state', p => { pack = p; });
+    sb.requestState();
+    check(await until(() => pack, 3000), 'the table answers with the expedition, in chunks');
+    check(pack && pack.snapshot.big.length === big.length, 'whole', pack && pack.snapshot.big.length);
+    check(pack && pack.pendingVote.votes[0] === 'n2', 'with the open ballot a save leaves out');
+    // Something happens at the table while the answer is on its way.
+    const applied = [];
+    sb.on('input', m => { applied.push(m.act); });
+    sa.input({ t: 'room', act: 'map.vote', id: 'n2' });
+    await until(() => sb._buffered.length === 1);
+    check(applied.length === 0, 'an input arriving before the answer waits');
+    sb.adopt(pack);
+    await sb.settled();
+    check(applied.join() === 'map.vote', 'and is applied after it, once', applied.join());
+    check(sb.log.length === 2 && sb._applied === 2, 'the log is the table\'s', `${sb.log.length}/${sb._applied}`);
+    check(sb.input({ t: 'room', act: 'seat.back' }).seq === 1, 'and their own next input carries on their own count');
+    sa.close(); sb.close();
+  }
+
+  console.log('§16 the out-of-sync check');
+  {
+    const steam = new FakeSteam();
+    const A = up(steam, '76561190000000151', 'A'), B = up(steam, '76561190000000152', 'B');
+    const ta = new SteamTransport('swing-den', { net: A.bridge.net, seats: 4 });
+    await until(() => ta.lobbyId);
+    const tb = new SteamTransport('swing-den', { net: B.bridge.net, seats: 4 });
+    await until(() => ta.known.size === 1 && tb.known.size === 1);
+    const sa = new Session({ transport: ta, seat: 0, seats: 2, seed: 1, beatMs: 0 });
+    const sb = new Session({ transport: tb, seat: 1, seats: 2, seed: 1, beatMs: 0 });
+    const rooms = { a: 'same', b: 'same' };
+    sa.run = { _partyDigest: () => rooms.a };
+    sb.run = { _partyDigest: () => rooms.b };
+    sa.publishRoomDigest('n1');
+    await until(() => sb._digests.has('room:n1:0'));
+    sb.publishRoomDigest('n1');
+    await sleep(30);
+    check(sa.inSync && sb.inSync, 'two machines that agree stay quiet');
+    rooms.b = 'different';
+    // Whichever machine gets there second makes the comparison.
+    sa.publishRoomDigest('n2');
+    await until(() => sb._digests.has('room:n2:0'));
+    let told = 0;
+    sb.on('diverge', () => { told++; });
+    sb.publishRoomDigest('n2');
+    check(!sb.inSync && told === 1, 'two that do not are told, on the slower machine');
+    check(await until(() => !sa.inSync), 'and on the faster one');
+    sa.close(); sb.close();
+  }
+
+  console.log('§17 two players act at the same moment');
+  {
+    const { ts } = await threeInARoom('torch-swing', '7656119000000016');
+    const ids = ts.map(t => t.id).sort();
+    const bySeat = ids.map(id => ts.find(t => t.id === id));
+    const combat = { turn: 1 };
+    const ss = bySeat.map((t, seat) => {
+      const s = new Session({ transport: t, seat, seats: 3, seed: 3, roster: { ids }, room: 'torch-swing', beatMs: 0 });
+      s.run = { combat };
+      return s;
+    });
+    await sleep(30);
+    ss.forEach(s => s.beat());
+    await sleep(30);
+    const orders = ss.map(() => []);
+    ss.forEach((s, i) => s.on('input', m => { orders[i].push(`${m.seat}.${m.seq}`); }));
+    const name = (o) => o.join(' ');
+
+    // All three let go of a Trick before any of them has heard the others.
+    const issued = ss.map(s => s.input({ t: 'play', pile: 'hand', index: 0 }));
+    check(orders.every(o => o.length === 0), 'nobody applies their own Trick the instant they play it');
+    let landed = false;
+    ss[2].whenApplied(issued[2]).then(() => { landed = true; });
+    await until(() => orders.every(o => o.length === 3));
+    check(orders.every(o => o.length === 3), 'all three land everywhere', orders.map(name).join(' / '));
+    check(new Set(orders.map(name)).size === 1, 'in the SAME order on every machine', orders.map(name).join(' / '));
+    await until(() => landed);
+    check(landed, 'and a player\'s own screen is told when theirs has landed');
+
+    // A later Trick by the same people, overlapping differently.
+    orders.forEach(o => { o.length = 0; });
+    ss[2].input({ t: 'play', pile: 'hand', index: 0 });
+    await sleep(1);
+    ss[0].input({ t: 'play', pile: 'hand', index: 0 });
+    ss[1].input({ t: 'play', pile: 'hand', index: 0 });
+    await until(() => orders.every(o => o.length === 3));
+    check(new Set(orders.map(name)).size === 1, 'whatever the arrival order', orders.map(name).join(' / '));
+    const clean = ss.every(s => !s.log.some(m => m.t === 'play' && s.log.indexOf(m) >= s._applied));
+    check(clean, 'with nothing left behind');
+
+    // A silent seat holds this up, and the table can decide to stop waiting.
+    orders.forEach(o => { o.length = 0; });
+    bySeat[2].close();
+    const held = ss[0].input({ t: 'play', pile: 'hand', index: 0 });
+    ss[1].beat();
+    await sleep(60);
+    check(orders[0].length === 0, 'a Trick waits on a seat that has stopped answering');
+    ss[0].dropSeat(2);
+    await ss[0].whenApplied(held);
+    check(orders[0].length >= 1, 'until the table plays on without them', name(orders[0]));
+    ss[0].close(); ss[1].close();
+  }
+
   for (const l of all) l.host.shutdown();
   console.log(`\nRESULT: ${passed} passed, ${failed} failed`);
   process.exit(failed ? 1 : 0);

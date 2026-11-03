@@ -1,0 +1,25 @@
+create a composite image of sprites of the following enemies in a turn based ccg. make sure the final image has a truly transparent background. Make sure the images are good quality and will 2D animate well (nothing in mid-action pose, extra floating parts around it, etc.). Make sure the enemies match the visual style of the included menu screen with companion characters from another part of the game:
+
+1. The Midnight Fountain (Level/Region 5)
+A large garden fountain surrounded by statues and climbing plants.
+Water flows upward.
+Reflections move independently.
+Spectral figures appear briefly within the falling water.
+Stone figures around the basin subtly change posture as the fountain acts.
+
+2. Headstone Walker (Level/Region 6)
+A weathered gravestone sliding or hopping slowly across the ground while dirt shifts beneath it.
+
+3. Epitaph Spirit (Level/Region 6)
+Pale ghost emerging directly from engraved writing on a tombstone, with letters still floating through its body.
+
+4. Mourning Candle (Level/Region 6)
+Tall black funeral candle drifting above the ground with wax flowing upward and a blue spectral flame.
+
+5. Funeral Veil (Level/Region 6)
+Long black mourning veil floating as if worn by an invisible figure, occasionally forming the outline of a head and shoulders.
+
+6. gargoyle (Level/Region 6)
+Small cemetery statue that changes posture whenever nobody is watching it directly.
+Production requirements: Create one static composite, one complete enemy design per numbered entry, with clear empty margins separating every enemy. Use the attached UI/selectCompanion.png as the primary visual reference and the accepted source sheets as rendering/style references only. Do not generate animation frames or sequences. All enemies face LEFT toward the players in neutral stable resting poses, no mid-action gesture or attack. Preserve each described identity; action wording above is character context, not a request to depict the action. Keep props held, supported, attached, contained, or touching the core design; omit loose particle effects and orbiting fragments. For inherently grouped enemies, keep the group compact and contained within its own distinct cell. No cropped silhouettes, merged enemies, stray anatomy, halos/matte fringes, text, labels, borders, floors, shadows detached from the sprite, or background scene. Cute, readable and spooky but not threatening; match the accepted art's rich material texture, soft dimensional shading and warm whimsical detail. Output PNG with genuine transparent alpha outside the sprites, never a painted checkerboard or solid-color background. Keep the character itself legible and sufficiently opaque; translucent ghost bodies may have partial alpha. The roster descriptions are quoted from the current original MM Enemies document, not the separate revised roster.
+Exactly 6 enemy designs in this batch.

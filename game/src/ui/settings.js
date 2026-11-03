@@ -28,6 +28,7 @@
 import { Modal, confirmModal, kitButton } from './modal.js';
 import { roomBehind } from './hang.js';
 import { formatSeed } from './portrait.js';
+import { BASE_ANIMATION_RATE } from '../core/motion.js';
 
 /**
  * The whole surface, declared once. The panel is generated from this, so a new
@@ -137,7 +138,7 @@ export function applySettings(ctx = {}) {
 
   const speed = clamp(Number(s.speed) || 1, 0.25, 3);
   const fast = s.fastMode ? 1.6 : 1;
-  root.style.setProperty('--anim-scale', String((1 / (speed * fast)).toFixed(4)));
+  root.style.setProperty('--anim-scale', String((1 / (BASE_ANIMATION_RATE * speed * fast)).toFixed(4)));
 
   const clock = ctx.clock || (typeof window !== 'undefined' ? window.MM?.clock : null);
   if (clock) clock.scale = speed * fast;
@@ -327,7 +328,10 @@ export async function openSettings(ctx = {}) {
       if (party) {
         const ok = await confirmModal({
           title: 'Quit the expedition?',
-          body: 'This is a party expedition. Leaving ends it for everyone in the house, '
+          body: ctx.run?.session?.remote
+            ? 'Your friends can wait for you or play on without you. Press Continue on the '
+              + 'title screen to climb back in.'
+            : 'This is a party expedition. Leaving ends it for everyone in the house, '
               + 'and it will be waiting on the title screen for whoever started it.',
           confirm: 'Save and quit', cancel: 'Keep going', host: ctx.dom,
         });

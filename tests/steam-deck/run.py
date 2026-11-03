@@ -135,6 +135,9 @@ MEASURE = r"""
     const wanted = el.matches(INTERACTIVE) || carriesText(el);
     if (!wanted) { spillDecor.push(entry); continue; }
     // Horizontal overflow is never acceptable — nothing here scrolls sideways.
+    // Pannable blueprint content is intentionally larger than the viewport.
+    // Real wheel, drag and focus navigation are covered in tests/blueprint.
+    if (el.closest('.map-screen--plan .map-sheet')) { reachableByScroll.push(entry); continue; }
     if (overX <= 4) {
       const sc = scrollerFor(el);
       if (sc) {
@@ -251,7 +254,7 @@ async def main(a):
         os.makedirs(shot_dir, exist_ok=True)
 
     async with async_playwright() as p:
-        browser = await p.chromium.launch(args=[
+        browser = await p.chromium.launch(channel=os.environ.get("PLAYWRIGHT_CHANNEL"), args=[
             "--use-gl=angle", "--use-angle=default", "--enable-unsafe-swiftshader",
             "--autoplay-policy=no-user-gesture-required",
         ])

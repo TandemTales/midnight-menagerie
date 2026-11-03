@@ -1,0 +1,21 @@
+create a composite image of sprites of the following enemies in a turn based ccg. make sure the final image has a truly transparent background. Make sure the images are good quality and will 2D animate well (nothing in mid-action pose, extra floating parts around it, etc.). Make sure the enemies match the visual style of the included menu screen with companion characters from another part of the game:
+
+1. Garden Shears (Level/Region 5)
+Oversized pruning shears floating under invisible control, opening and closing as they move through the air.
+
+2. Topiary Hound (Level/Region 5)
+Carefully trimmed hedge shaped like a dog, moving stiffly while leaves shake loose from its body.
+
+3. Topiary Hare (Level/Region 5)
+Small elegant rabbit shaped shrub that darts between planters and freezes perfectly still when watched.
+
+4. Garden Statue (Level/Region 5)
+Small stone garden figure that changes pose whenever nobody is looking directly at it.
+
+5. Vine Curtain (Level/Region 5)
+Dense hanging vines parting, wrapping, and sweeping sideways as though controlled by unseen hands.
+
+6. Fountain Spirit (Level/Region 5)
+Translucent figure formed entirely from water rising briefly from a decorative fountain before collapsing back into it.
+Production requirements: Create one static composite, one complete enemy design per numbered entry, with clear empty margins separating every enemy. Use the attached UI/selectCompanion.png as the primary visual reference and the accepted source sheets as rendering/style references only. Do not generate animation frames or sequences. All enemies face LEFT toward the players in neutral stable resting poses, no mid-action gesture or attack. Preserve each described identity; action wording above is character context, not a request to depict the action. Keep props held, supported, attached, contained, or touching the core design; omit loose particle effects and orbiting fragments. For inherently grouped enemies, keep the group compact and contained within its own distinct cell. No cropped silhouettes, merged enemies, stray anatomy, halos/matte fringes, text, labels, borders, floors, shadows detached from the sprite, or background scene. Cute, readable and spooky but not threatening; match the accepted art's rich material texture, soft dimensional shading and warm whimsical detail. Output PNG with genuine transparent alpha outside the sprites, never a painted checkerboard or solid-color background. Keep the character itself legible and sufficiently opaque; translucent ghost bodies may have partial alpha. The roster descriptions are quoted from the current original MM Enemies document, not the separate revised roster.
+Exactly 6 enemy designs in this batch.

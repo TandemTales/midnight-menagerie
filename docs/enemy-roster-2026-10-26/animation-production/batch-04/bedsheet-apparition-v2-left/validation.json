@@ -1,0 +1,121 @@
+{
+  "enemy": "bedsheet-apparition",
+  "technical_passed": true,
+  "errors": [],
+  "clips": {
+    "idle": {
+      "frames": 60,
+      "fps": 30,
+      "duration_seconds": 2.0,
+      "unique_visible_frames": 59,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 0.27482507909305215,
+      "max_adjacent_premultiplied_MAE": 0.2894579652607571,
+      "preview_frames": 60,
+      "preview_duration_ms": 2000,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "loop_boundary": true
+      },
+      "passed": true
+    },
+    "attack": {
+      "frames": 48,
+      "fps": 30,
+      "duration_seconds": 1.6,
+      "unique_visible_frames": 47,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 0.0,
+      "max_adjacent_premultiplied_MAE": 3.112795973966843,
+      "preview_frames": 48,
+      "preview_duration_ms": 1600,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "returns_exactly_to_first_pose": true
+      },
+      "passed": true
+    },
+    "hurt": {
+      "frames": 24,
+      "fps": 30,
+      "duration_seconds": 0.8,
+      "unique_visible_frames": 23,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 0.0,
+      "max_adjacent_premultiplied_MAE": 5.905884826261232,
+      "preview_frames": 24,
+      "preview_duration_ms": 800,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "returns_exactly_to_first_pose": true
+      },
+      "passed": true
+    },
+    "defeat": {
+      "frames": 45,
+      "fps": 30,
+      "duration_seconds": 1.5,
+      "unique_visible_frames": 45,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 48.5455882951325,
+      "max_adjacent_premultiplied_MAE": 3.2719198987374885,
+      "preview_frames": 45,
+      "preview_duration_ms": 1500,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "nonlooping_final_hold": true,
+        "settles_into_folded_cloth": true,
+        "hem_remains_grounded": true
+      },
+      "passed": true
+    }
+  },
+  "shared_ready_pose": {
+    "attack": true,
+    "hurt": true,
+    "defeat": true
+  },
+  "method": "Source-painted cloth mesh with separate head lean, body inflation, hem ripple and hem-anchored collapse. A small translucent breath puff travels left. Original holes and cloth folds are retained. Disconnected alpha speckles removed in derivative only.",
+  "visual_gate": "Chronological contacts inspected separately; full-speed intended-size visual review pending. Browser URL-policy denial respected; no browser attempt or alternate surface used.",
+  "integration": "No game registry or gameplay test performed."
+}

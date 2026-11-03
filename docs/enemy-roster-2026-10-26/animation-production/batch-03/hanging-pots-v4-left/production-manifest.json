@@ -1,0 +1,21 @@
+{
+  "enemy": "hanging-pots",
+  "source": "docs\\enemy-roster-2026-10-26\\art-production\\hanging-pots-original.png",
+  "source_sha256": "c1feefa634b2031c0a82d3ffe7ee0fa473e2db47d3b0f83e89d31565fe324a42",
+  "method": "Three separate source-painted pots rotating about individual handle joints beneath authentic fixed rack/hook occluders. Premultiplied alpha sampling. No whole-rack motion.",
+  "actions": {
+    "idle": "Three small phase-offset suspended sways.",
+    "attack": "Lead pot anticipates with a tilt; three staggered short swings answer as a kitchen rhythm, settling through a tiny final clink.",
+    "hurt": "Immediate alternating recoil, two diminishing rebounds, return to rest.",
+    "defeat": "Handles slip in sequence; each pot sinks and dissolves, leaving the stationary empty rack and hooks."
+  },
+  "quality_gate": "technical_pass_visual_review_pending",
+  "orientation": {
+    "required": "screen-left",
+    "method": "Reflect the complete unlettered rack and pots so bowl openings face left; staggered anticipations move right and strike swings move left after reflection. No anatomy or handed tool is mirrored. Pivot stays at the cell center.",
+    "horizontal_reflection": true,
+    "status": "left_in_inspected_keyposes"
+  },
+  "delivery_receipt": "batch-03/hanging-pots-v4-left/saved-assets.json",
+  "review_limits": "All decoded packing/timing checks passed and chronological poses inspected. Full-speed intended-size visual approval and game integration remain unverified."
+}

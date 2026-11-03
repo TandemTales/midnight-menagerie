@@ -166,7 +166,7 @@ export const ACHIEVEMENTS = [
   },
   {
     id: 'reach-heart', name: 'The Heart of the House', tier: TIER.gold,
-    desc: 'Reach the last room.',
+    desc: 'Enter the Heart of the House.',
     on: 'run:region', when: (p) => p.region === 'heart',
     requires: 'heart',
   },

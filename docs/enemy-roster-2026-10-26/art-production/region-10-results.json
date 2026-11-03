@@ -1,0 +1,870 @@
+{
+  "region": 10,
+  "entries": [
+    {
+      "level": 10,
+      "region": "Ballroom and Velvet Suites",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Masquerade Mask",
+      "existing_animation": false,
+      "description": "Floating ornate ballroom mask with trailing ribbons and a crisp side profile. Coyly hides behind its own ribbon before peeking from the wrong side.",
+      "animation": "2D animation Idle ribbon sway; tell tilt; action side peek; resolve stately float.",
+      "signature": "Signature Single narrow half-mask with trailing ribbon, not the elite\u2019s feathered full face.",
+      "production_id": "masquerade-mask",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\masquerade-mask.webp",
+      "source_path": "animations\\sprites\\enemies\\masqueradeMask.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            207,
+            209
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 27406,
+          "partial_alpha_pixels": 14950,
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            206,
+            209
+          ],
+          "sha256": "9480dafb6387fa5d5c39b6bcbadf616a3b0ca5b9fae98a9eb10cc5c57ed43284"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 46578,
+          "partial_alpha_pixels": 18051,
+          "visible_bbox_alpha64": [
+            28,
+            22,
+            233,
+            231
+          ],
+          "sha256": "d15d596391e97e76700bff3ea508eca5c3a00d28e3b9d2999fb1c9b1030e97a5"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1117520,
+          "partial_alpha_pixels": 454664,
+          "visible_bbox_alpha64": [
+            137,
+            108,
+            1142,
+            1128
+          ],
+          "sha256": "e84739e455b1d1890ffaf9b96fd7dd9bfe645ea5dec58b81f528d3835ee1d1b9"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\masquerade-mask-original.png",
+        "visual": "Reviewed single ornate half-mask, distinct side profile and trailing ribbons, no full-face plume, whole silhouette within margins, gentle coy expression.",
+        "runtime_metadata": {
+          "file": "masquerade-mask.webp",
+          "w": 207,
+          "h": 209,
+          "source": "masqueradeMask.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 10,
+      "region": "Ballroom and Velvet Suites",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Waltzing Shoes",
+      "existing_animation": false,
+      "description": "A pair of elegant formal shoes dancing by themselves in synchronized side stepping motions. Continues a dance step after the music stops, suggesting a rhythmic nuisance.",
+      "animation": "2D animation Idle heel tap; tell toe lift; action three-step shuffle; resolve polite heel click.",
+      "signature": "Signature Two glossy pointed shoes; upright formal dance, not scuttling bedroom slippers.",
+      "production_id": "waltzing-shoes",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\waltzing-shoes.webp",
+      "source_path": "animations\\sprites\\enemies\\waltzingShoes.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            226,
+            180
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 22045,
+          "partial_alpha_pixels": 17788,
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            226,
+            180
+          ],
+          "sha256": "ed51658aade0c0a969341c4272825e1b84532c7067f81d542fb3f5fcd2c95125"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 44843,
+          "partial_alpha_pixels": 19846,
+          "visible_bbox_alpha64": [
+            18,
+            39,
+            243,
+            219
+          ],
+          "sha256": "a9ee6d992a192f4224fe85a49a19b09717481bf941597e0d34bb4ced957a4991"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1081082,
+          "partial_alpha_pixels": 490804,
+          "visible_bbox_alpha64": [
+            87,
+            193,
+            1188,
+            1071
+          ],
+          "sha256": "0c11e14156595c7714ad234bea3b82e631f81793c8e784fd81674a2f914ea5dd"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\waltzing-shoes-original.png",
+        "visual": "Reviewed two glossy pointed formal shoes, ornate trim and plum ribbons; distinct silhouettes, transparent cutout, no visible cropping, no body or limbs.",
+        "runtime_metadata": {
+          "file": "waltzing-shoes.webp",
+          "w": 226,
+          "h": 180,
+          "source": "waltzingShoes.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 10,
+      "region": "Ballroom and Velvet Suites",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Candelabra",
+      "existing_animation": false,
+      "description": "Tall brass candelabra gliding across the floor with blue flames bending and flaring as it moves. Bows its branches and makes its flames dance in a formal sequence, insisting everyone match the party rhythm.",
+      "animation": "2D animation Idle flame sway; tell branches bow; action three flames dip in sequence; resolve proud straighten.",
+      "signature": "Signature Wide branching brass stand, contrasting the graveyard\u2019s single slender candle.",
+      "production_id": "candelabra",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\candelabra.webp",
+      "source_path": "animations\\sprites\\enemies\\candelabra.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            179,
+            247
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 29841,
+          "partial_alpha_pixels": 13293,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            179,
+            246
+          ],
+          "sha256": "d4a34db44861158122e25a48796cd68b7a4396e3c0ed6aaa572cae4bc22a82b9"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 46084,
+          "partial_alpha_pixels": 18373,
+          "visible_bbox_alpha64": [
+            42,
+            5,
+            221,
+            251
+          ],
+          "sha256": "8de4e0f27ed51ff64d70bfefde1821dbc3d29a94b5acbbd117b43e7c8c32b3a9"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1111782,
+          "partial_alpha_pixels": 460086,
+          "visible_bbox_alpha64": [
+            209,
+            27,
+            1079,
+            1230
+          ],
+          "sha256": "ed49c784ed4fb691c67509b8e3200ebf1360209e9f4c6618630730a5e3170379"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\candelabra-v2-original.png",
+        "visual": "Reviewed tall branching brass stand with exactly three plain blue flames, complete base and flame tips. No face. First five-candle variant retained but rejected.",
+        "runtime_metadata": {
+          "file": "candelabra.webp",
+          "w": 179,
+          "h": 247,
+          "source": "candelabra.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 10,
+      "region": "Ballroom and Velvet Suites",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Serving Tray",
+      "existing_animation": false,
+      "description": "Floating silver tray carrying glasses and covered dishes, tilted by unseen hands. Offers an empty glass with elaborate courtesy and expects a thank-you.",
+      "animation": "2D animation Idle level float; tell cloche lifts; action tray tilts; resolve graceful retreat.",
+      "signature": "Signature Flat silver oval with one dome and glass; not kitchen orbiting tools.",
+      "production_id": "serving-tray",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\serving-tray.webp",
+      "source_path": "animations\\sprites\\enemies\\servingTray.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            255,
+            153
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 20091,
+          "partial_alpha_pixels": 18231,
+          "visible_bbox_alpha64": [
+            1,
+            1,
+            255,
+            152
+          ],
+          "sha256": "9f909dc09475f2e38907799d0c7e84c11f36459e6f3c4a28a7599171b0fc304c"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 45638,
+          "partial_alpha_pixels": 19205,
+          "visible_bbox_alpha64": [
+            2,
+            68,
+            256,
+            219
+          ],
+          "sha256": "45848bce713146b2c4c7b247ea7d0c6fa4f0c2bac0bc0f39e0d39506082276ae"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1107881,
+          "partial_alpha_pixels": 464089,
+          "visible_bbox_alpha64": [
+            9,
+            332,
+            1253,
+            1074
+          ],
+          "sha256": "251ac230859d9c319944cc4cf04c020a1588ff6b9e62f649bf149280383bfbe2"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\serving-tray-v2-original.png",
+        "visual": "Reviewed flat floating oval silver tray with one cloche and empty glass, no visible hands or person. Complete handles lie within canvas alpha bounds. Original rejected for visible ghost hands retained.",
+        "runtime_metadata": {
+          "file": "serving-tray.webp",
+          "w": 255,
+          "h": 153,
+          "source": "servingTray.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 10,
+      "region": "Ballroom and Velvet Suites",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Ghost Guest",
+      "existing_animation": false,
+      "description": "Refined translucent party guest in old formalwear, drifting with a drink in hand. Tries to tell the same anecdote again, pausing for a laugh that never comes.",
+      "animation": "2D animation Idle goblet swirl; tell raised finger; action small speech puff; resolve bemused bow.",
+      "signature": "Signature Short round party guest, not imposing host or tall shadow silhouette.",
+      "production_id": "ghost-guest",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\ghost-guest.webp",
+      "source_path": "animations\\sprites\\enemies\\ghostGuest.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            174,
+            219
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 18701,
+          "partial_alpha_pixels": 18804,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            174,
+            219
+          ],
+          "sha256": "14c771b1c0a1c36d8a04034f4f91d3c6c6b1d4397b357822b015f2c1e88028de"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 44956,
+          "partial_alpha_pixels": 19979,
+          "visible_bbox_alpha64": [
+            49,
+            17,
+            223,
+            236
+          ],
+          "sha256": "6100e03025be5a0e4690df5f8a0c376b309573a285f69d8b6ac4e72114f8a019"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1082723,
+          "partial_alpha_pixels": 489618,
+          "visible_bbox_alpha64": [
+            243,
+            86,
+            1091,
+            1156
+          ],
+          "sha256": "2204013d8004bf514ee683a1c2c83558c834774921398b69a355c8b1c17c862f"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\ghost-guest-original.png",
+        "visual": "Reviewed short round translucent party guest with goblet, kindly face and conversational gesture; complete silhouette and no visible anatomy defects.",
+        "runtime_metadata": {
+          "file": "ghost-guest.webp",
+          "w": 174,
+          "h": 219,
+          "source": "ghostGuest.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 10,
+      "region": "Ballroom and Velvet Suites",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Violin Poltergeist",
+      "existing_animation": false,
+      "description": "Violin and bow moving together under invisible control in quick musical gestures. Plays one melodramatic wrong note to interrupt the room.",
+      "animation": "2D animation Idle bow hover; tell bow draws back; action short bow stroke; resolve string wobble.",
+      "signature": "Signature Asymmetric violin and diagonal bow, with no visible performer.",
+      "production_id": "violin-poltergeist",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\violin-poltergeist.webp",
+      "source_path": "animations\\sprites\\enemies\\violinPoltergeist.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            199,
+            232
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 29442,
+          "partial_alpha_pixels": 16260,
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            198,
+            232
+          ],
+          "sha256": "d9d63317e40f5d606f281a0307451dea632d359d137382c6fca6e878112961a2"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 46417,
+          "partial_alpha_pixels": 18653,
+          "visible_bbox_alpha64": [
+            26,
+            11,
+            223,
+            243
+          ],
+          "sha256": "9f175efaeda8769191036340825ad17efafc85b22d6d26a81218e629a170fee5"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1112896,
+          "partial_alpha_pixels": 459538,
+          "visible_bbox_alpha64": [
+            125,
+            55,
+            1090,
+            1189
+          ],
+          "sha256": "9d27601f89f0301c94d978f5b27e90d9f3679414df82c996dbab3e25432de730"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\violin-poltergeist-original.png",
+        "visual": "Reviewed ornate warm wooden violin with four strings, pegs and one diagonal bow, no visible player or hands; complete silhouette and margins.",
+        "runtime_metadata": {
+          "file": "violin-poltergeist.webp",
+          "w": 199,
+          "h": 232,
+          "source": "violinPoltergeist.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 10,
+      "region": "Ballroom and Velvet Suites",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Top Hat Shade",
+      "existing_animation": false,
+      "description": "A neat shadow figure defined mostly by a top hat, shoulders, and gloved hands. Tips its hat but briefly leaves its shadow behind.",
+      "animation": "2D animation Idle hat bob; tell tip; action silhouette offset; resolve reunite.",
+      "signature": "Signature Compact hat-and-shoulder cutout; exaggerated politeness rather than looming menace.",
+      "production_id": "top-hat-shade",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\top-hat-shade.webp",
+      "source_path": "animations\\sprites\\enemies\\topHatShade.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            188,
+            232
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 19657,
+          "partial_alpha_pixels": 23114,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            188,
+            232
+          ],
+          "sha256": "e8d686bd21d563344ca3b5b3811496917cccab99351f3ebed1c40d353586d3ca"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 40189,
+          "partial_alpha_pixels": 24502,
+          "visible_bbox_alpha64": [
+            34,
+            12,
+            222,
+            244
+          ],
+          "sha256": "172163a27878a26030d6aa4248d09dc3fea40fd679b5b54f46d3897f8b5dc5d5"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 980173,
+          "partial_alpha_pixels": 591655,
+          "visible_bbox_alpha64": [
+            167,
+            60,
+            1087,
+            1195
+          ],
+          "sha256": "f55266e984ac60a815f373ab130a541a4368d2f8e89bbdb7c125f3c50c8b86b6"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\top-hat-shade-original.png",
+        "visual": "Reviewed compact faceless hat-and-shoulder shade with two gloved hands, polite hat-tip, no tall full body; complete silhouette.",
+        "runtime_metadata": {
+          "file": "top-hat-shade.webp",
+          "w": 188,
+          "h": 232,
+          "source": "topHatShade.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 10,
+      "region": "Ballroom and Velvet Suites",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Grand Masque",
+      "existing_animation": false,
+      "description": "A broad full-face festival mask with an oversized crescent of feathers and layered jewel drops. Performs three grand expressions in a rigid ceremonial order, making the room follow its mood.",
+      "animation": "2D animation Idle plume bounce; tell center jewel glows; action fixed expression plate changes and feather fan; resolve curtain-like ribbons settle.",
+      "signature": "Signature Wide feather fan and formal expression sequence, unlike regular half-mask\u2019s shy lateral peeks.",
+      "production_id": "grand-masque",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\grand-masque.webp",
+      "source_path": "animations\\sprites\\enemies\\grandMasque.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            443,
+            503
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 103447,
+          "partial_alpha_pixels": 117747,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            443,
+            503
+          ],
+          "sha256": "bf853f30e6880885dbbc7691dccc6d6754ce03e509a6d0e96d6c97ae9af4e759"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 135548,
+          "partial_alpha_pixels": 124961,
+          "visible_bbox_alpha64": [
+            35,
+            5,
+            478,
+            508
+          ],
+          "sha256": "1a6750e94c98c4cb1db0f21aca1602993997618e05d925eddbc3195eea8ec6d3"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 812571,
+          "partial_alpha_pixels": 759677,
+          "visible_bbox_alpha64": [
+            87,
+            12,
+            1170,
+            1243
+          ],
+          "sha256": "717345dfc8ce311ec996602d9126b0ca49776a3303c19baccd91171234c6d690"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\grand-masque-original.png",
+        "visual": "Reviewed broad complete full-face festival mask with oversized feather crescent and jewel drops, calm expression, distinct from regular half-mask, no visible clipping.",
+        "runtime_metadata": {
+          "file": "grand-masque.webp",
+          "w": 443,
+          "h": 503,
+          "source": "grandMasque.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 10,
+      "region": "Ballroom and Velvet Suites",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Eternal Dance",
+      "existing_animation": false,
+      "description": "Two translucent ballroom dancers joined in one clear crescent pose, one coat and one bell-shaped skirt. Carries on the same elegant waltz, inviting everyone to keep its measured rhythm.",
+      "animation": "2D animation Idle shared sway; tell held bow; action short three-step side loop; resolve pause together.",
+      "signature": "Signature Paired connected figures; no full spin, rear view or independent crowd animation.",
+      "production_id": "eternal-dance",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\eternal-dance.webp",
+      "source_path": "animations\\sprites\\enemies\\eternalDance.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            396,
+            461
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 91063,
+          "partial_alpha_pixels": 90228,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            395,
+            461
+          ],
+          "sha256": "042122022b0ecd1a56c0246cd3b4808a0aef4551a4ab64138169dbd56916cfd4"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 162826,
+          "partial_alpha_pixels": 98053,
+          "visible_bbox_alpha64": [
+            66,
+            21,
+            461,
+            482
+          ],
+          "sha256": "f2ef4ef27f627a22766f56d0978d25765d5dbe2bb093eafa1337960601eeadfd"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 969961,
+          "partial_alpha_pixels": 602350,
+          "visible_bbox_alpha64": [
+            163,
+            52,
+            1130,
+            1181
+          ],
+          "sha256": "3d5765a19984cb97900d4e0031abcad9ce49a9747e2851344e31283fb22542f9"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\eternal-dance-original.png",
+        "visual": "Reviewed exactly two friendly translucent whole dancers, joined hands and waist hold, formal coat and bell skirt; readable paired silhouette and coherent anatomy.",
+        "runtime_metadata": {
+          "file": "eternal-dance.webp",
+          "w": 396,
+          "h": 461,
+          "source": "eternalDance.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 10,
+      "region": "Ballroom and Velvet Suites",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Velvet Host",
+      "existing_animation": false,
+      "description": "A round-shouldered faceless figure in rich velvet, balancing a tall goblet and folded napkin. Offers impeccable hospitality in the wrong order and repeatedly asks everyone to remain seated.",
+      "animation": "2D animation Idle sleeve sway; tell napkin unfolds; action trayless presentation gesture; resolve satisfied bow.",
+      "signature": "Signature Broad velvet torso and goblet silhouette; formal service, not the boss\u2019s conducting.",
+      "production_id": "velvet-host",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\velvet-host.webp",
+      "source_path": "animations\\sprites\\enemies\\velvetHost.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            371,
+            410
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 63242,
+          "partial_alpha_pixels": 87760,
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            370,
+            409
+          ],
+          "sha256": "5d66dc4cb410a839a845f39e0531850c40d8bc954e7803c4af8e92cce895f7d1"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 170037,
+          "partial_alpha_pixels": 90999,
+          "visible_bbox_alpha64": [
+            82,
+            57,
+            452,
+            465
+          ],
+          "sha256": "fc6e94bbd4b32a31e912f7c09964b159f0c89ea7f1050326bbd432807f95d1d7"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1020407,
+          "partial_alpha_pixels": 551614,
+          "visible_bbox_alpha64": [
+            201,
+            139,
+            1108,
+            1139
+          ],
+          "sha256": "62110149c4270de1031a532cb5b2615fca244c9762ae7eb29bb104db091fbaf0"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\velvet-host-original.png",
+        "visual": "Reviewed broad stout faceless velvet host with one tall goblet and folded napkin, no hat or baton; complete silhouette and hands.",
+        "runtime_metadata": {
+          "file": "velvet-host.webp",
+          "w": 371,
+          "h": 410,
+          "source": "velvetHost.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 10,
+      "region": "Ballroom and Velvet Suites",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Master of Revels",
+      "existing_animation": false,
+      "description": "A supernatural host in burgundy formalwear with high collar, long sash and short conductor\u2019s baton; a smiling porcelain-like half-face. Conducts the party\u2019s last dance, then enthusiastically calls for an encore. Every gesture is showmanship rather than a threat.",
+      "animation": "2D animation Idle baton count; tell deep bow; action three broad conducting poses with ribbon follow-through; resolve delighted applause.",
+      "signature": "Signature Crimson vertical conductor silhouette, contrasting the elite Host\u2019s broad velvet service pose.",
+      "production_id": "master-of-revels",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\master-of-revels.webp",
+      "source_path": "animations\\sprites\\enemies\\masterOfRevels.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            592,
+            997
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 363498,
+          "partial_alpha_pixels": 225782,
+          "visible_bbox_alpha64": [
+            1,
+            1,
+            592,
+            996
+          ],
+          "sha256": "d02e7f71b533e8c0cea2e3b96450fcfe8e0dd6e7561c305fabc1814436c92a8c"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 798625,
+          "partial_alpha_pixels": 249007,
+          "visible_bbox_alpha64": [
+            263,
+            14,
+            854,
+            1009
+          ],
+          "sha256": "675c734f5cc8d7a2209af896f42d71858259854bb95b5ce19ea2010a04b32aec"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1197251,
+          "partial_alpha_pixels": 374714,
+          "visible_bbox_alpha64": [
+            322,
+            17,
+            1045,
+            1236
+          ],
+          "sha256": "869ed670ec9781bfd23fd573975d610355ffa6ac494186312905f74d7f6740df"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\master-of-revels-original.png",
+        "visual": "Reviewed tall crimson conductor with smiling porcelain half-face, high collar, long sash and short baton; complete whole figure, welcoming pose, coherent anatomy.",
+        "runtime_metadata": {
+          "file": "master-of-revels.webp",
+          "w": 592,
+          "h": 997,
+          "source": "masterOfRevels.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    }
+  ],
+  "counts": {
+    "existing": 0,
+    "new": 11,
+    "pending": 0,
+    "blocked": 0
+  },
+  "review": "Full generated images and final regional contact sheet visually inspected; all identities distinct, complete and suitable for requested still-art delivery."
+}

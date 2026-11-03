@@ -1,0 +1,121 @@
+{
+  "results": [
+    {
+      "viewport": [
+        1280,
+        800
+      ],
+      "cards": [
+        {
+          "name": "Shake It Loose",
+          "lines": 6,
+          "scrollable": false,
+          "rulesHeight": 184.476318359375,
+          "contentHeight": 184.08208247045775,
+          "fontSize": 16.972992010835426,
+          "clipped": [],
+          "covered": []
+        },
+        {
+          "name": "Bury It",
+          "lines": 5,
+          "scrollable": false,
+          "rulesHeight": 184.476318359375,
+          "contentHeight": 184.0821367580088,
+          "fontSize": 16.972997016331657,
+          "clipped": [],
+          "covered": []
+        },
+        {
+          "name": "Treat Stash",
+          "lines": 13,
+          "scrollable": false,
+          "rulesHeight": 184.476318359375,
+          "contentHeight": 184.0821367580088,
+          "fontSize": 16.972997016331657,
+          "clipped": [],
+          "covered": []
+        },
+        {
+          "name": "Dig Like Crazy",
+          "lines": 7,
+          "scrollable": false,
+          "rulesHeight": 184.476318359375,
+          "contentHeight": 184.08210961423327,
+          "fontSize": 16.972994513583544,
+          "clipped": [],
+          "covered": []
+        },
+        {
+          "name": "Boomerang Bone",
+          "lines": 7,
+          "scrollable": false,
+          "rulesHeight": 184.476318359375,
+          "contentHeight": 184.0821367580088,
+          "fontSize": 16.972997016331657,
+          "clipped": [],
+          "covered": []
+        }
+      ]
+    },
+    {
+      "viewport": [
+        1600,
+        900
+      ],
+      "cards": [
+        {
+          "name": "Shake It Loose",
+          "lines": 6,
+          "scrollable": false,
+          "rulesHeight": 190.64215087890625,
+          "contentHeight": 190.5892155554987,
+          "fontSize": 17.05152555080537,
+          "clipped": [],
+          "covered": []
+        },
+        {
+          "name": "Bury It",
+          "lines": 5,
+          "scrollable": false,
+          "rulesHeight": 190.64215087890625,
+          "contentHeight": 190.58918836039882,
+          "fontSize": 17.05152311772993,
+          "clipped": [],
+          "covered": []
+        },
+        {
+          "name": "Treat Stash",
+          "lines": 14,
+          "scrollable": false,
+          "rulesHeight": 190.64215087890625,
+          "contentHeight": 190.58913397019907,
+          "fontSize": 17.05151825157904,
+          "clipped": [],
+          "covered": []
+        },
+        {
+          "name": "Dig Like Crazy",
+          "lines": 7,
+          "scrollable": false,
+          "rulesHeight": 190.64215087890625,
+          "contentHeight": 190.5892155554987,
+          "fontSize": 17.05152555080537,
+          "clipped": [],
+          "covered": []
+        },
+        {
+          "name": "Boomerang Bone",
+          "lines": 7,
+          "scrollable": false,
+          "rulesHeight": 190.64215087890625,
+          "contentHeight": 190.58924275059854,
+          "fontSize": 17.051527983880813,
+          "clipped": [],
+          "covered": []
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

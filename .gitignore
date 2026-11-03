@@ -17,3 +17,21 @@ animations/kids/SS_*.png
 # The enemies' sheets (2026-09-13 on) are the same call: 917MB of them by 09-14,
 # in a subfolder neither rule above reaches.
 animations/sprites/enemies/animations/SS_*.png
+
+# Local safety copies and reference photographs, far too large for the repo (2.2 GB and
+# 270 MB on 2026-11-03). Text in the review folders is still tracked.
+docs/rollbacks/
+docs/ingame-narrative-2026-10-27/**/*.jpg
+docs/ingame-narrative-2026-10-27/**/*.png
+docs/enemy-roster-2026-10-26/**/*.jpg
+docs/enemy-roster-2026-10-26/**/*.png
+docs/enemy-sprites-2026-10-27/**/*.jpg
+docs/enemy-sprites-2026-10-27/**/*.png
+# Source paintings: what the game hangs is built from these and lives under game/assets/ui.
+game/assets/Portrait Paintings/
+# Scratch images and PDFs from helper scripts; the scripts themselves are tracked.
+tmp/*.png
+tmp/pdfs/
+tmp/__pycache__/
+docs/enemy-sprites-2026-10-27/**/*.zip
+docs/enemy-roster-2026-10-26/**/*.webp

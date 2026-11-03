@@ -1,0 +1,95 @@
+{
+  "round": 52,
+  "status": "complete; unanimously selected build validated and applied as working changes",
+  "winner": "TOURMALINE",
+  "votes": [
+    "TOURMALINE",
+    "TOURMALINE"
+  ],
+  "selection": "independent blind image-only votes",
+  "system_scores_descriptive_only": {
+    "judge1": {
+      "ONYX": 7.9,
+      "ALEXANDRITE": 8.1,
+      "IOLITE": 8,
+      "TOURMALINE": 8.2
+    },
+    "judge2": {
+      "TOURMALINE": 8.2,
+      "IOLITE": 8,
+      "ALEXANDRITE": 8.1,
+      "ONYX": 7.9
+    }
+  },
+  "base": "36c2361ed552c3d5f2ced2771bd55cb0723cc2ca",
+  "comparison_captures": "CAPTURES-r52.json",
+  "all_fit_thresholds_met": false,
+  "applied_to_main": true,
+  "main_committed_or_pushed": false,
+  "evidence_root": "D:\\UILOOP\\r52-20261029",
+  "selected_commit": "489d9ef007e6bbb91528212c257a25bf1a9f6e4a",
+  "comparison_source": "e58a947fad49e4ecaffdeeac4ff2d99fa90af66f",
+  "validated_captures": "VALIDATED-CAPTURES-r52.json",
+  "applied_files_byte_verified": 46,
+  "main_index_preserved": true,
+  "browser_gates": [
+    {
+      "gate": "chrome/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "steam-deck/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "gamepad/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "events/check.py",
+      "exit": 0
+    },
+    {
+      "gate": "gameover-keeps/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "seams/proof.py",
+      "exit": 0
+    },
+    {
+      "gate": "combat-scene/seam.py",
+      "exit": 0
+    }
+  ],
+  "selected_post_review_repair_required": false,
+  "static_checks": {
+    "scene_css_conflicts": 0,
+    "undefined_css_tokens": 0,
+    "seam_sites": 9110,
+    "unchanged_local_Map_false_positives": 4,
+    "syntax": "pass",
+    "endings": "pass"
+  },
+  "combat_proofs": {
+    "cases": 16,
+    "full_lifetimes": 96,
+    "frames": 5477,
+    "ink_cases": 10,
+    "max_ink_overflow_px": 0,
+    "ordinary_crowded_max_seconds": 5.158,
+    "repeats_seconds": [
+      9.3565,
+      4.8227
+    ],
+    "layout_p95_ms": 1.8,
+    "layout_max_ms": 4.0,
+    "frame_p95_range_ms": [
+      13.6,
+      38.1
+    ],
+    "frame_max_ms": 97.5,
+    "idle_and_owner_teardown": "pass"
+  },
+  "next_brief": "BRIEF-r53.md"
+}

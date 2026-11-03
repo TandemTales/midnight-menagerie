@@ -1,0 +1,8 @@
+{
+  "status": "not_verified",
+  "action": "Launch headless Playwright and inspect local animation-gallery.html playback, controls and screenshot",
+  "outcome": "Command produced no result or screenshot and was stopped with Ctrl-C; exit code 1. Browser stage is uncertain. No approval denial was reported.",
+  "browser_runtime_fps_verified": false,
+  "gallery_controls_verified": false,
+  "scope": "Local diagnostic preview only; no game or external website."
+}

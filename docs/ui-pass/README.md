@@ -1,4 +1,67 @@
+**Paused at the user's request:** Round56 is saved at a safe test boundary. Two builds are complete; the third has completed its initial interactions, queue, text-boundary, resize/removal and normal memorial checks. All owned browsers and servers are stopped. Main remains the validated Round55 build. Resume from [the checkpoint](ROUND-r56-2026-10-29.md), keeping **10% remaining** in reserve. Latest usage check: 18% remaining.
+
+**Timing correction discovered in Round56:** Earlier native ABBA runs retained per-frame caption style queries. See the [protocol erratum](TIMING-ERRATUM-r56.md); raw evidence and functional passes are preserved.
+
 # The UI pass — builds judged blind against Josh's samples
+
+**Current, 2026-11-03:** Round56 ONYX is complete and applied as working
+changes. All seven parent browser gates pass, on its own tree and on main; 105 of
+106 applied files match the tested build, gameover.css is merged with main's pet
+rules, and main's index is preserved. No main commit/push.
+See [results](RESULTS-r56.json), [validated images](VALIDATED-CAPTURES-r56.json)
+and [checkpoint](ROUND-r56-2026-10-29.md). Continue the full loop at Round57; stop at10% remaining.
+
+Round55 IOLITE is complete and applied as working
+changes. All seven parent browser gates pass; all75 applied files
+match the tested build and main's index is preserved. No main commit/push.
+See [results](RESULTS-r55.json), [validated images](VALIDATED-CAPTURES-r55.json)
+and [checkpoint](ROUND-r55-2026-10-29.md).
+
+Round54 PERIDOT is complete and applied as working
+changes. All seven parent browser gates pass; all86 applied files
+match the tested build and main's index is preserved. No main commit/push.
+See [results](RESULTS-r54.json), [validated images](VALIDATED-CAPTURES-r54.json)
+and [checkpoint](ROUND-r54-2026-10-29.md).
+
+Round53 FLUORITE is complete and applied in the prior baseline. Both reviewers
+chose it (8.6/8.6); seven parent gates and109-file byte verification passed.
+See [results](RESULTS-r53.json) and [validated images](VALIDATED-CAPTURES-r53.json).
+
+Round52 TOURMALINE is complete and applied in the prior baseline. Both reviewers
+chose it (8.2/8.2); seven parent gates and46-file byte verification passed.
+See [results](RESULTS-r52.json) and [validated images](VALIDATED-CAPTURES-r52.json).
+
+Round51 SPINEL is complete and applied. Both reviewers chose it (8.25/8.0).
+Its animated-text repair and seven browser gates passed; all52 files were byte-
+verified with main index preserved. Original comparison images remain immutable.
+See [results](RESULTS-r51.json) and [validated captures](VALIDATED-CAPTURES-r51.json).
+
+Round50 is complete and applied as working changes.
+Both blind reviewers chose GARNET (7.8/8.1). All seven browser gates pass;
+the selected build also fixes repeated queued labels after an owner leaves.
+All32 applied files match the tested build; main's index and existing work
+are preserved, with no main commit/push. See [results](RESULTS-r50.json),
+[validated images](VALIDATED-CAPTURES-r50.json), and [round51 brief](BRIEF-r51.md).
+Continue the full loop until reference-fit9 or3% remaining.
+
+Round49 is complete and applied as working changes.
+RUBY won both blind votes (7.6 and7.8). Its label-clearance and memorial
+repairs passed the full seven-gate browser battery; all33 selected files
+were byte-verified after integration. Main's index and existing work are
+preserved; no main commit or push. See [results](RESULTS-r49.json),
+[validated images](VALIDATED-CAPTURES-r49.json), and the [round50 brief](BRIEF-r50.md).
+Continue the full three-build/two-blind-review loop, stopping at3% remaining.
+
+Round48 is complete and applied as working changes.
+HELIODOR won two of three blind votes (mean6.83 versus baseline5.45); all
+seven browser gates pass. The static seam audit has four unchanged local-Map
+false positives. Existing user changes and the Git index were preserved;
+this update is not a claim that main was committed or pushed. See
+[results](RESULTS-r48.json), [checkpoint](ROUND-r48-2026-10-29.md), and the
+[round49 brief](BRIEF-r49.md). Round49's two blind judges unanimously chose
+RUBY; required repairs and full regression validation are now complete.
+See its [checkpoint](ROUND-r49-2026-10-29.md).
+Continue the full loop, stopping at3% remaining.
 
 Josh's ask, 2026-09-12: "create a loop to perfect the UI of the game to look like
 the included samples in midnight menagerie/UI, as well as the backgrounds looking

@@ -49,8 +49,19 @@
  * Seats renumber freely while people are still arriving — that is what (1) is
  * for. The moment `start()` is called they stop, because a seat index is what
  * every input is stamped with and what every tie breaks on. A player who joins
- * after that is not a fifth Kid; they are a spectator or a rejoin, and rejoin is
- * `session.rejoin()`, which replays the log against the seat they already had.
+ * after that is not a fifth Kid: a running Session answers them with
+ * `lobby:started`, and this lobby tells its screen through `late`. If the roster
+ * names them they climb back in; if it does not, the party has gone without them.
+ *
+ * ── The host's GO carries the table ─────────────────────────────────────────
+ *
+ * Deriving the roster on every client is only sound if every client holds the
+ * same rows when GO lands, and on a real wire they need not: messages are ordered
+ * per sender, not across senders. A friend changes Kid and readies, the host sees
+ * that and presses Go, and a third player can hear the host before they hear the
+ * friend. Two machines then build two parties from one seed. So GO carries the
+ * rows the host could see, and everybody freezes THOSE. It is the one fact in
+ * this protocol that is sent rather than derived, and the lobby is not lockstep.
  */
 
 // The engine's own constant, never a literal — `scenes/select.js` generates its
@@ -62,7 +73,8 @@ import { MAX_PARTY } from '../combat/engine.js';
 const LOBBY = Object.freeze({
   HERE: 'lobby:here',      // { companion, kid, name, ready }  I am here, this is me
   ASK: 'lobby:ask',        // {}                               who is here?
-  GO: 'lobby:go',          // { at }                           everyone start
+  GO: 'lobby:go',          // { at, players }                  everyone start, with this table
+  STARTED: 'lobby:started', // { to, roster }                  too late: the party went in
 });
 
 /**
@@ -117,10 +129,13 @@ export class Lobby {
          you brought, so every seat's travels rather than only seat 0's. */
       pack: Array.isArray(o.pack) ? o.pack.slice() : null,
       entry: !!o.entry,
+      /* Set on a player coming back to an expedition from a save, so two who come
+         back to a house nobody is in can work out who opens it. */
+      back: o.back || null,
     };
     /** id -> { id, companion, kid, name, ready } */
     this._peers = new Map([[this.me.id, this.me]]);
-    this._listeners = { change: new Set(), start: new Set() };
+    this._listeners = { change: new Set(), start: new Set(), late: new Set() };
     this._offs = [];
 
     if (this.transport) {
@@ -198,13 +213,25 @@ export class Lobby {
    *
    * Every client calls this and every client computes the same answer, because
    * every field of it is derived from the sorted peer list and the room code.
-   * Nothing is sent to agree it; `LOBBY.GO` only tells the others to call this
-   * too, and a client that starts a beat later gets the identical roster.
+   * Called with the host's rows when `LOBBY.GO` lands; see the header for why.
+   *
+   * @param {object[]} [table] the rows to freeze, in place of this client's own
    */
-  start() {
+  start(table = null) {
     if (this.roster) return this.roster;
+    if (Array.isArray(table) && table.length) {
+      this._peers = new Map(table.map(p => [p.id, p]));
+      if (!this._peers.has(this.me.id)) {
+        /* The host could not see us when they pressed the button. */
+        this.started = true;
+        this._emit('late', { ids: table.map(p => p.id), names: table.map(p => p.name || '') });
+        return null;
+      }
+    }
     const players = this.players.slice(0, this.cap);
     this.roster = {
+      room: this.room,
+      names: players.map(p => p.name || ''),
       seat: players.findIndex(p => p.id === this.me.id),
       seats: players.length,
       seed: this.seed,
@@ -232,8 +259,9 @@ export class Lobby {
 
   /** Tell the room to start, and start. Only meaningful from the host. */
   go() {
-    this._say(LOBBY.GO, { at: Date.now() });
-    return this.start();
+    const table = this.players.slice(0, this.cap);
+    this._say(LOBBY.GO, { at: Date.now(), players: table });
+    return this.start(table);
   }
 
   /* ── wire ─────────────────────────────────────────────────────────────── */
@@ -263,6 +291,7 @@ export class Lobby {
       name: this.me.name, ready: this.me.ready,
       haunt: this.me.haunt | 0, freed: this.me.freed || [],
       pack: this.me.pack || null, entry: !!this.me.entry,
+      back: this.me.back || null,
     });
   }
 
@@ -276,6 +305,7 @@ export class Lobby {
           name: m.name || '', ready: !!m.ready,
           haunt: m.haunt | 0, freed: Array.isArray(m.freed) ? m.freed : [],
           pack: Array.isArray(m.pack) ? m.pack : null, entry: !!m.entry,
+          back: m.back || null,
         });
         this._emit('change');
         break;
@@ -286,7 +316,13 @@ export class Lobby {
         this._announce();
         break;
       case LOBBY.GO:
-        this.start();
+        this.start(m.players);
+        break;
+      case LOBBY.STARTED:
+        if (m.to === this.me.id && m.roster) {
+          this.started = true;
+          this._emit('late', m.roster);
+        }
         break;
       default: break;
     }

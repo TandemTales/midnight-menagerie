@@ -1,0 +1,18 @@
+--- a/game/src/fx/combatfx.js
++++ b/game/src/fx/combatfx.js
+@@ -364,8 +364,14 @@
+     const blocked=new Set();
+     for(const entry of [...this.wordQueue]){
+       if(blocked.has(entry.o.actorId))continue;
++      const fresh=entry.o.refreshBounds?.();
++      // Despawned owners have no place for pending presentation. Retire the
++      // entry once instead of repeatedly spawning an unowned label on retry.
++      if(fresh&&!fresh.actor){
++        this.wordQueue.splice(this.wordQueue.indexOf(entry),1);continue;
++      }
+       this._retryWord=true;this._lastWordFit=false;
+-      this.number(entry.x,entry.y,entry.text,{...entry.o,...entry.o.refreshBounds?.()});
++      this.number(entry.x,entry.y,entry.text,{...entry.o,...fresh});
+       this._retryWord=false;
+       if(this._lastWordFit)this.wordQueue.splice(this.wordQueue.indexOf(entry),1);
+       else blocked.add(entry.o.actorId);

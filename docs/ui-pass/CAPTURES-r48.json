@@ -1,0 +1,342 @@
+{
+  "ONYX": {
+    "source": "aac9affa29925a6ec1cfebaf2b01862aeab6881f",
+    "images": [
+      {
+        "file": "rest.png",
+        "sha256": "a21f49eb28cf3ebbc7c6804e6acc7505a08a053a16a3489934e32b20c848e0c5",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "rest-1280.png",
+        "sha256": "0e0623259db9adb5b5c7e9eb0c650f29e92e6a4fdcf2c945882687c0b6aa42cf",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "event.png",
+        "sha256": "f3812a192ef65a95bf704454692b6f527c1e16adb1b1c44ad9ba89b3fc8bb2ba",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "event-1280.png",
+        "sha256": "a37d54588dd157293459a014fcb71cba8a434163029daf7d5e51140b76b70e9e",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "gameover.png",
+        "sha256": "39e1c0ae1846e24b2a37d9bc9fbd659aaffb28e8c18595301de8e8c1f98a6c63",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "gameover-1280.png",
+        "sha256": "7d8dfb49ae1d1006f13e437bc372199d36f2c5894ba54ed8e5feb42730b4f600",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "shop.png",
+        "sha256": "a81697e13274e205eb2dcfe11ee5898bf84bd07492eaa3cf6e3dc2d4c7cf2d17",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "shop-1280.png",
+        "sha256": "e5be19f91cd260aa4899c19e8e1769b80ebb4c10822e7843b81c6fdc13851e19",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "combat-floaters.png",
+        "sha256": "4edf78002576e02bafc813737bb21b595da7700a03a28cd5f6f5328fe3d9f620",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "combat-floaters-1280.png",
+        "sha256": "8697c3c73cc248f34e6b58fb3ae4df1b1a720c158853bb0bbb64c50aeb9ce095",
+        "size": [
+          1280,
+          800
+        ]
+      }
+    ]
+  },
+  "AMETRINE": {
+    "source": "c1ae732e",
+    "images": [
+      {
+        "file": "rest.png",
+        "sha256": "1edcf5c63f6707350af9c9b19e8780b60afa9afac6dcda9f923e4ac5ff3ec7c7",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "rest-1280.png",
+        "sha256": "49ec6d2b21d5fb74bedee1433c234f2be6772126453fabbcf32d8dc7ccd5cfa0",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "event.png",
+        "sha256": "6ad687cf7a76873e8346daa5edcd60eca619befcbece6cea670d50ae8f8c7be1",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "event-1280.png",
+        "sha256": "5df6eb01f99601dc0ea44f136b4620173e699acf53aa4b37258dc35b7d0420f2",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "gameover.png",
+        "sha256": "9fc079dd2219838988d64a5efad08f57f44b178fabb325f688a3445e9237126b",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "gameover-1280.png",
+        "sha256": "f01b37d0680d628bf05434baaf4599b23c39578129275a421b088637bcb30ad1",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "shop.png",
+        "sha256": "20c9ad3cbb5c1c5a91ae6b07dbc29946165f76326cb81a2ec3b5e86a7ade67ab",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "shop-1280.png",
+        "sha256": "85080dddca51db7c9279f9c8cfb55a8a1f3e8f8113c810b75a524cd0fe3e97c8",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "combat-floaters.png",
+        "sha256": "67308673f839177747fe863e13b76f8c29b59abad4a40d4edc70434ba73584a0",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "combat-floaters-1280.png",
+        "sha256": "6f62b4e0ceb8182ab2959425a639b739a6b7ff18489c5581f06f857784f75b1c",
+        "size": [
+          1280,
+          800
+        ]
+      }
+    ]
+  },
+  "HELIODOR": {
+    "source": "09e1986f",
+    "images": [
+      {
+        "file": "rest.png",
+        "sha256": "f7c0624fd3a43498c905d7a400ce09ea5c498b22d561bf7ba996e0bbdda7b0cd",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "rest-1280.png",
+        "sha256": "1a93dac91faae4ec75ac32da82ce7dc87c3025e9667a32a8241f4d364e14493b",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "event.png",
+        "sha256": "9716bf9be4e9c091da7a8ff6e9abcc2506663ac5331da4bd915708ec022df001",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "event-1280.png",
+        "sha256": "be0f4f9bd8fe341d2d657e829da15340bc57e4010ac479871eec34378e7a8c10",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "gameover.png",
+        "sha256": "124ed7cdb3afe72de77d83f714f82d2988731e8cb27920663aeca0b354062d04",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "gameover-1280.png",
+        "sha256": "5f65f9d1d6036845bff625c957c420b7c7f9b7f7011bffb7e734fb6ae1cf8508",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "shop.png",
+        "sha256": "c043ba635186b64beeb790979a5a65a14e5002376af0236dfa3d813310d84b97",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "shop-1280.png",
+        "sha256": "d448c25193cb876007877b450c1d794018a9a20e4a941ecb811cd728322b21dd",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "combat-floaters.png",
+        "sha256": "769ac9e4d3faad10142065aaa88c0572cefb2d4aa61860d3c12c3007fad6a28d",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "combat-floaters-1280.png",
+        "sha256": "a503c52b37dba4fe33af2241aa618ef9ecaf3c1457e43a583d2a80e64a2abaca",
+        "size": [
+          1280,
+          800
+        ]
+      }
+    ]
+  },
+  "IOLITE": {
+    "source": "4d2f6a75fbae91366c00a091d46dfa3390ec681b",
+    "images": [
+      {
+        "file": "rest.png",
+        "sha256": "3f24d40bed7873355647e14b761281eabcfd1b9a18cdab845bcde52e8aa8da90",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "rest-1280.png",
+        "sha256": "61a5205900a4a5c75cdbb994c53b4f5dcfecdb2ca080481301067642bd7791d8",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "event.png",
+        "sha256": "2cbfb42d1ede08fdfeaffe9c43fd806a90c3cc8c79900ef12bb02c7bd4f275da",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "event-1280.png",
+        "sha256": "a507033ad1a179c4e7a626e576618a12a815c4a49c9de2629e8c83bccfec1e14",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "gameover.png",
+        "sha256": "6e4012676d0addd8b356fc851b6550432fb34cd576a37380ef203a7068b4c3bd",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "gameover-1280.png",
+        "sha256": "bc20db0252b1b2b31e2a2245d5e9750db952aca0f69a66382ca9b66e9ca0fa1b",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "shop.png",
+        "sha256": "6656fe06b4bd8522473f4efc7e9afa99d8edd6dabc6f4d502986b3f35f739ed5",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "shop-1280.png",
+        "sha256": "83f4e15ba23472e59cc74077fd400bcc4c99022edbe25efca966e7df9246aeac",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      {
+        "file": "combat-floaters.png",
+        "sha256": "82914e11a95a1ea83b73927149ce78641c10fc787f8b7802f6ce87011db54386",
+        "size": [
+          1600,
+          900
+        ]
+      },
+      {
+        "file": "combat-floaters-1280.png",
+        "sha256": "a1a9fa1b3524e28bf7100809d3d579597eceeadce705780e9d5ad66abc03c226",
+        "size": [
+          1280,
+          800
+        ]
+      }
+    ]
+  }
+}

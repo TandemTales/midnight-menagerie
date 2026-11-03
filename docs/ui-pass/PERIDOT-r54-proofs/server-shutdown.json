@@ -1,0 +1,19 @@
+{
+  "before": {
+    "command": "\"C:\\Users\\Josh\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" D:/UILOOP/r54-20261029/b/tools/devserver.py 9542",
+    "pid": 36676,
+    "listeners": [
+      {
+        "LocalPort": 9542,
+        "OwningProcess": 36676
+      },
+      {
+        "LocalPort": 9542,
+        "OwningProcess": 36676
+      }
+    ]
+  },
+  "portClear": true,
+  "pidAbsent": true,
+  "stopped": true
+}

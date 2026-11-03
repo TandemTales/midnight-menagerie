@@ -218,8 +218,8 @@
   margin: calc(var(--cart-h) * .05) 0 0;
 }
 /* a long question steps its lettering down instead of stretching the plaque */
-.mm-modal--kit .mm-modal__title[data-len="mid"]  { font-size: clamp(21px, 1.85vw, 29px); }
-.mm-modal--kit .mm-modal__title[data-len="long"] { font-size: clamp(17px, 1.4vw, 22px); letter-spacing: .03em; }
+.mm-modal--kit .mm-modal__title[data-len="mid"]  { --reading-size: clamp(21px, 1.85vw, 29px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+.mm-modal--kit .mm-modal__title[data-len="long"] { --reading-size: clamp(17px, 1.4vw, 22px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .03em; }
 .mm-modal--kit .mm-modal__subtitle { max-width: min(58ch, 38rem); }
 
 /* the body sits inside the panel's inner double rule, its gilt scrollbar too */

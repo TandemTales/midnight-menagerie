@@ -1,0 +1,484 @@
+{
+  "judge": 2,
+  "inspected": {
+    "references": 4,
+    "captures": 40,
+    "references_first": true,
+    "order": [
+      "KUNZITE",
+      "PERIDOT",
+      "MORGANITE",
+      "AMETRINE"
+    ],
+    "capture_order": [
+      "rest",
+      "rest-1280",
+      "event",
+      "event-1280",
+      "gameover",
+      "gameover-1280",
+      "shop",
+      "shop-1280",
+      "combat-floaters",
+      "combat-floaters-1280"
+    ]
+  },
+  "method": "Viewed all four references first, then each of forty candidate PNGs individually using original-detail image viewing, in the exact supplied order. No contact sheets, source, identities, prior reviews, browser, network, or interaction testing. Paired scores conservatively account for both sizes. Large type and scrollable content are accepted; physical reading boundaries are judged visually. Standalone preview banners and unchanged combat room, actors, and hand art are excluded from comparative judgment. Combat background scores describe the visible surrounding integration and do not drive ranking. Scores are absolute against the reference paintings: 9 requires the same painted hand, not a relative improvement. Small ranking differences reflect visible rim, lettering, and rail treatment rather than a claim of a major redesign.",
+  "candidates": {
+    "KUNZITE": {
+      "system_overall": 8.2,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.4,
+            "palette": 8.8,
+            "typography": 8.1,
+            "material": 7.8,
+            "background": 8.2,
+            "composition": 8.4,
+            "readability": 8.7,
+            "coherence": 8.2
+          },
+          "overall": 8.2,
+          "fits_between_samples": false,
+          "worst_problem": "The lower-right Fort Choices rail reads as a heavy gray stone slab laid across delicate gold choice frames.",
+          "size_notes": {
+            "1600x900": "The fort painting is a strong focal scene; the gray rail and repeated straight bright panel edges feel harder and less carved than the references.",
+            "1280x800": "The fort and three choices remain legible; the rail's blocky gray face is conspicuous beneath the warm purple panels."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.5,
+            "palette": 8.8,
+            "typography": 8.2,
+            "material": 8,
+            "background": 8.5,
+            "composition": 8.5,
+            "readability": 8.8,
+            "coherence": 8.3
+          },
+          "overall": 8.3,
+          "fits_between_samples": false,
+          "worst_problem": "The bottom Story Register rail has a thick flat stone face that does not convincingly join the carved wooden lectern.",
+          "size_notes": {
+            "1600x900": "The parchment, drop cap, portraits, and window light stage a coherent story object; the heavy lower slab interrupts that object.",
+            "1280x800": "The large paper remains readable and the lower choice passes behind a clear edge; the stone rail looks detached from the warm pedestal."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.5,
+            "palette": 8.8,
+            "typography": 8.1,
+            "material": 8,
+            "background": 8.4,
+            "composition": 8.7,
+            "readability": 8.7,
+            "coherence": 8.4
+          },
+          "overall": 8.4,
+          "fits_between_samples": false,
+          "worst_problem": "The full-width Memorial Record slab dominates the lower composition with gray block texture and weak joins to the finer panel frames.",
+          "size_notes": {
+            "1600x900": "The portraits, extinguished candle, progress, featured card, and deck list form a convincing memorial hierarchy; the broad gray base is too architectural for the surrounding fine rims.",
+            "1280x800": "The memorial hierarchy survives at the smaller size; the third deck row meets a visible ledge, while the long gray base remains disproportionately heavy."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.7,
+            "palette": 9,
+            "typography": 8.2,
+            "material": 8.5,
+            "background": 8.9,
+            "composition": 9,
+            "readability": 8.9,
+            "coherence": 8.6
+          },
+          "overall": 8.6,
+          "fits_between_samples": false,
+          "worst_problem": "The gray Shop Shelves rail at the bottom looks like a separate stone interface strip beneath the wooden curtain stage.",
+          "size_notes": {
+            "1600x900": "The moth portrait, hanging price tags, three cards, and draped stall form strong painted staging; the bottom rail changes material abruptly.",
+            "1280x800": "Cards, tags, and merchant remain balanced and legible; the rail still has a broad gray slab face disconnected from the wooden shelf."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.6,
+            "typography": 8.1,
+            "material": 7.3,
+            "background": 8,
+            "composition": 8.2,
+            "readability": 8.8,
+            "coherence": 8
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "The upper condition plaques are mostly thin gold outlines around near-black fields rather than worn dimensional objects.",
+          "size_notes": {
+            "1600x900": "Colored words and plus signs are clear, with generous plaque ends; the left owner's centered label spans a loosely arranged row of three conditions.",
+            "1280x800": "The stacked left conditions and right enemy conditions are distinct and readable; their thin, uniformly lit rims still look applied over the scene."
+          }
+        }
+      }
+    },
+    "PERIDOT": {
+      "system_overall": 8.5,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.7,
+            "palette": 8.9,
+            "typography": 8.2,
+            "material": 8.3,
+            "background": 8.2,
+            "composition": 8.6,
+            "readability": 8.8,
+            "coherence": 8.5
+          },
+          "overall": 8.5,
+          "fits_between_samples": false,
+          "worst_problem": "The main lavender title still has a mechanically consistent bright bevel instead of the references' irregular carved letter faces.",
+          "size_notes": {
+            "1600x900": "The narrow carved brown reading rail belongs more naturally with the fort frame and choice panels; localized title wear is still too restrained.",
+            "1280x800": "The carved rail remains proportionate and three choices read clearly; the title's uniform outline is apparent at its displayed size."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.8,
+            "palette": 8.9,
+            "typography": 8.3,
+            "material": 8.4,
+            "background": 8.5,
+            "composition": 8.7,
+            "readability": 8.9,
+            "coherence": 8.6
+          },
+          "overall": 8.6,
+          "fits_between_samples": false,
+          "worst_problem": "The lower parchment boundary is a uniformly bright straight line with insufficient paper thickness and contact shadow above the carved rail.",
+          "size_notes": {
+            "1600x900": "The lectern and carved frieze share a convincing warm material family, and the story typography has a strong drop-cap hierarchy.",
+            "1280x800": "The shorter visible paper area is clearly bounded rather than broadly faded; the exposed choice still looks like it meets a straight digital cut above the rail."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.8,
+            "palette": 8.9,
+            "typography": 8.2,
+            "material": 8.4,
+            "background": 8.4,
+            "composition": 8.8,
+            "readability": 8.8,
+            "coherence": 8.6
+          },
+          "overall": 8.6,
+          "fits_between_samples": false,
+          "worst_problem": "The repeated purple deck-row plaques on the right have flat face lighting and sharp regular rims compared with the painted central memorial.",
+          "size_notes": {
+            "1600x900": "The narrow carved Memorial Record base supports the full portrait-to-card-to-deck hierarchy without the gray slab's weight.",
+            "1280x800": "Portraits, progress, discoveries, resets, featured card, and deck remain distinguishable; the partially visible third row is physically bounded but its rim treatment stays uniform."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.9,
+            "palette": 9,
+            "typography": 8.3,
+            "material": 8.7,
+            "background": 8.9,
+            "composition": 9,
+            "readability": 8.9,
+            "coherence": 8.8
+          },
+          "overall": 8.8,
+          "fits_between_samples": false,
+          "worst_problem": "The long bottom Shop Shelves frieze repeats evenly and lacks convincing joints where it meets the illustrated stage ends.",
+          "size_notes": {
+            "1600x900": "The carved bottom rail harmonizes with the warm shelf and purple curtain; the merchant and card display remain the clearest complete stage.",
+            "1280x800": "Three cards, merchant, hanging tags, and carved rail retain strong balance; uniform title bevels and repeated rail carving prevent reference-level hand-painted unity."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 8.2,
+            "palette": 8.6,
+            "typography": 8.1,
+            "material": 7.5,
+            "background": 8,
+            "composition": 8.2,
+            "readability": 8.9,
+            "coherence": 8.1
+          },
+          "overall": 8.1,
+          "fits_between_samples": false,
+          "worst_problem": "The upper condition fields remain almost black and flat, so their fine rims read as label outlines rather than worn plaques.",
+          "size_notes": {
+            "1600x900": "The plus signs are clear and remain inside the condition plates; the subtly heavier ends offer containment but little painted depth.",
+            "1280x800": "The two owner groups are clearly separated with readable colored conditions; additional face texture and localized rim lighting are still needed."
+          }
+        }
+      }
+    },
+    "MORGANITE": {
+      "system_overall": 8.3,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.6,
+            "palette": 8.9,
+            "typography": 7.9,
+            "material": 8.2,
+            "background": 8.2,
+            "composition": 8.6,
+            "readability": 8.8,
+            "coherence": 8.4
+          },
+          "overall": 8.4,
+          "fits_between_samples": false,
+          "worst_problem": "The upper title's smooth pale lavender faces and consistent light outlines lack the reference's irregular carved surfaces.",
+          "size_notes": {
+            "1600x900": "The dark brown reading rail has restrained central ornament and a convincing narrow gold lip; title faces remain smoother than the painted surroundings.",
+            "1280x800": "The fort and choices stay balanced; the rail is restrained, but its long bright upper strip has little localized change in light."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.7,
+            "palette": 8.9,
+            "typography": 8,
+            "material": 8.3,
+            "background": 8.5,
+            "composition": 8.7,
+            "readability": 8.8,
+            "coherence": 8.5
+          },
+          "overall": 8.5,
+          "fits_between_samples": false,
+          "worst_problem": "The large title is evenly filled and outlined, visibly smoother than the carved lectern and gold ornamental frame.",
+          "size_notes": {
+            "1600x900": "The brown lower rail and central flourish support the parchment without a massive slab; the broad bright top lip is still very straight and uniform.",
+            "1280x800": "The paper and first choice remain legible with an identifiable physical lower edge; title-face irregularity and paper-to-ledge contact are weak."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.7,
+            "palette": 8.9,
+            "typography": 8,
+            "material": 8.3,
+            "background": 8.4,
+            "composition": 8.8,
+            "readability": 8.7,
+            "coherence": 8.5
+          },
+          "overall": 8.5,
+          "fits_between_samples": false,
+          "worst_problem": "The right deck-list boundary darkens the partial third row before the physical rail, weakening the sense that the row passes cleanly behind it.",
+          "size_notes": {
+            "1600x900": "The complete memorial arrangement remains successful, and the slim decorated base is restrained; smooth title lettering still feels mechanically embossed.",
+            "1280x800": "The third deck row loses clarity above the rail while the surrounding list remains sharp; this is a boundary-treatment issue, not evidence that further content is inaccessible."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.8,
+            "palette": 9,
+            "typography": 8,
+            "material": 8.6,
+            "background": 8.9,
+            "composition": 9,
+            "readability": 8.9,
+            "coherence": 8.7
+          },
+          "overall": 8.7,
+          "fits_between_samples": false,
+          "worst_problem": "The upper shop title has flat lavender face color and a regular bright outline against much more richly painted curtains and merchandise.",
+          "size_notes": {
+            "1600x900": "The dark rail with a small center flourish is restrained and the shop staging remains strong; long uniform gold highlights still feel applied.",
+            "1280x800": "Merchant, cards, and tags remain clearly staged; the rail face works quietly, but title rendering remains smoother than the reference lettering."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.6,
+            "typography": 8.1,
+            "material": 7.3,
+            "background": 8,
+            "composition": 8.2,
+            "readability": 8.8,
+            "coherence": 8
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "The upper colored condition text sits in fine outlined black labels with little visible face depth or localized wear.",
+          "size_notes": {
+            "1600x900": "All conditions and plus signs are readable, and ownership labels are present; the left row is broad while the plaques remain thin.",
+            "1280x800": "Stacked conditions remain distinct with clear plus signs; uniform thin gold contours and flat black fields do not reach the sample cartouches' material depth."
+          }
+        }
+      }
+    },
+    "AMETRINE": {
+      "system_overall": 8,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.5,
+            "palette": 8.9,
+            "typography": 7.7,
+            "material": 8,
+            "background": 8.2,
+            "composition": 8.5,
+            "readability": 8.8,
+            "coherence": 8.2
+          },
+          "overall": 8.2,
+          "fits_between_samples": false,
+          "worst_problem": "The main title's flat pale faces and uniform outline look typeset above the richly painted fort and ornaments.",
+          "size_notes": {
+            "1600x900": "The purple rail and center ornament fit the palette, but its bright continuous upper strip and broad flat face feel less like carved furniture.",
+            "1280x800": "The right choices remain readable and the rail remains a clear boundary; title surfaces and rail lighting are still too even."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.6,
+            "palette": 8.9,
+            "typography": 7.9,
+            "material": 8.1,
+            "background": 8.5,
+            "composition": 8.6,
+            "readability": 8.8,
+            "coherence": 8.3
+          },
+          "overall": 8.3,
+          "fits_between_samples": false,
+          "worst_problem": "The smooth lavender headline and glossy red bookmark read as clean overlaid shapes beside the textured paper and carved lectern.",
+          "size_notes": {
+            "1600x900": "The parchment hierarchy and illustrated room remain convincing; the purple bottom rail has less material connection to the brown lectern.",
+            "1280x800": "The first option remains clear and the next is visibly behind the lower edge; the bookmark and title lack the surroundings' texture and localized lighting."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.5,
+            "palette": 8.9,
+            "typography": 7.8,
+            "material": 7.9,
+            "background": 8.4,
+            "composition": 8.6,
+            "readability": 8,
+            "coherence": 8.1
+          },
+          "overall": 8.1,
+          "fits_between_samples": false,
+          "worst_problem": "The right-hand third deck row dissolves across a broad band before reaching the Final Tricks rail, making a physical list look airbrushed away.",
+          "size_notes": {
+            "1600x900": "The memorial hierarchy is complete, but the third row's lower half visibly fades while still above the rail.",
+            "1280x800": "The third row is mostly erased in the space above the rail; the visible broad dissolve damages physical continuity without implying anything about scrolling access."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.7,
+            "palette": 9,
+            "typography": 7.8,
+            "material": 8.4,
+            "background": 8.9,
+            "composition": 9,
+            "readability": 8.9,
+            "coherence": 8.5
+          },
+          "overall": 8.5,
+          "fits_between_samples": false,
+          "worst_problem": "The smooth lavender market title is materially flatter than the painted merchant, curtains, and cards beneath it.",
+          "size_notes": {
+            "1600x900": "Successful merchant-and-card staging is preserved; the long purple bottom rail has a continuous bright top strip with little shaped wear.",
+            "1280x800": "The three cards and price tags are clear, and the rail is proportionate; title faces and the rail's purple field remain visually uniform."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 7.7,
+            "palette": 8.6,
+            "typography": 8,
+            "material": 6.9,
+            "background": 8,
+            "composition": 8,
+            "readability": 7.7,
+            "coherence": 7.5
+          },
+          "overall": 7.5,
+          "fits_between_samples": false,
+          "worst_problem": "The condition plaque flourishes run into the leading plus signs and extend under the type, so the lettering is not cleanly seated inside a dimensional face.",
+          "size_notes": {
+            "1600x900": "The large colored words remain identifiable, but thin decorative strokes intrude into the plus-sign area and the plaques have almost no internal breathing room.",
+            "1280x800": "The plus signs at the starts of Weak, Dexterity, Regen, and enemy conditions are tangled with gold ends; cramped containment is more apparent in the stacked layout."
+          }
+        }
+      }
+    }
+  },
+  "ranking": {
+    "rest": [
+      "PERIDOT",
+      "MORGANITE",
+      "KUNZITE",
+      "AMETRINE"
+    ],
+    "event": [
+      "PERIDOT",
+      "MORGANITE",
+      "KUNZITE",
+      "AMETRINE"
+    ],
+    "gameover": [
+      "PERIDOT",
+      "MORGANITE",
+      "KUNZITE",
+      "AMETRINE"
+    ],
+    "shop": [
+      "PERIDOT",
+      "MORGANITE",
+      "KUNZITE",
+      "AMETRINE"
+    ],
+    "combat-floaters": [
+      "PERIDOT",
+      "KUNZITE",
+      "MORGANITE",
+      "AMETRINE"
+    ]
+  },
+  "winner": "PERIDOT",
+  "winner_fixes": [
+    "Rest, event, gameover, and shop title cartouches: retain the large lettering but paint irregular lavender face planes, localized chips, and varying bevel thickness; the repeated crisp outlines still look uniformly embossed.",
+    "Combat, upper condition plaques: add a visible worn face and shallow side depth inside the shaped gold rims, with highlights following the curves instead of reading as a thin outlined label.",
+    "Combat, upper-left group at 1600x900: bring the Maya Chen & Bones owner plaque into a clearer shared physical grouping with all three conditions while preserving their large type and clear plus signs.",
+    "Event, lower paper-to-rail boundary: add a narrow cast shadow and visible paper thickness so the second choice passes behind a physical ledge rather than a bright horizontal cutoff.",
+    "Gameover, right final-deck panel: give the row-to-reading-rail boundary a tight occlusion shadow and match its end joints to the vertical frame, preserving the full memorial hierarchy.",
+    "Rest, right choice panels: replace the broad uniform top-edge glow with smaller worn highlights that follow each corner and medallion, and give the pale pillow icon the same painted texture as the fort.",
+    "Shop, bottom Shop Shelves rail: interrupt the evenly repeated carved frieze with believable joints and localized wear, and seat its ends into the curtain-stage supports.",
+    "Event, red bookmark at the upper-right paper edge: add cloth grain, a folded edge, and nearby warm/cool lighting so it matches the illustrated lectern."
+  ],
+  "grafts": [
+    {
+      "from": "MORGANITE",
+      "screen": "rest",
+      "idea": "Use the restrained central flourish and darker rail face as a way to break up a continuous carved frieze, while retaining PERIDOT's physical ledge depth."
+    },
+    {
+      "from": "KUNZITE",
+      "screen": "combat-floaters",
+      "idea": "Keep the generous shaped plaque ends outside the large colored lettering; these give plus signs and words more breathing room than AMETRINE's ornament-crossed ends."
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "created_utc": "2026-10-27T00:12:06.736999+00:00",
+  "path": "docs/enemy-roster-2026-10-26/animation-production/review-reels/batch-04-left-30fps.mp4",
+  "sha256": "719148bc909b7e902814ad1e20be389b53dce69c6d1ac737ff25a56e00f29877",
+  "bytes": 288169,
+  "fps": 30,
+  "decoded_frames": 267,
+  "duration_seconds": 8.9,
+  "stream": {
+    "ffmpeg_version": "7.1-essentials_build-www.gyan.dev built with gcc 14.2.0 (Rev1, Built by MSYS2 project)",
+    "codec": "h264",
+    "pix_fmt": "yuv420p(progressive)",
+    "fps": 30.0,
+    "source_size": [
+      960,
+      540
+    ],
+    "size": [
+      960,
+      540
+    ],
+    "rotate": 0,
+    "duration": 8.9
+  },
+  "inputs": [
+    {
+      "enemy": "bedsheet-apparition",
+      "state": "idle",
+      "path": "game/assets/sprites/enemy-clips/bedsheet-apparition/idle.webp",
+      "sha256": "fb25e92ed375db857b4b77f21e3e53dab40629d28a4b4c5a06eedec27cd6e4f3",
+      "frames": 60,
+      "fps": 30
+    },
+    {
+      "enemy": "bedsheet-apparition",
+      "state": "attack",
+      "path": "game/assets/sprites/enemy-clips/bedsheet-apparition/attack.webp",
+      "sha256": "a3c741152fda844e1d4ac278278f1137d2bc3b386f2052487aefa97a15d25aa5",
+      "frames": 48,
+      "fps": 30
+    },
+    {
+      "enemy": "bedsheet-apparition",
+      "state": "hurt",
+      "path": "game/assets/sprites/enemy-clips/bedsheet-apparition/hurt.webp",
+      "sha256": "40abbb1d031fea670472f31dd2e5105c5158cbada16fac0f9a0945b1eaca41ba",
+      "frames": 24,
+      "fps": 30
+    },
+    {
+      "enemy": "bedsheet-apparition",
+      "state": "defeat",
+      "path": "game/assets/sprites/enemy-clips/bedsheet-apparition/defeat.webp",
+      "sha256": "6953f8c2dd32a40737da405df1c75c8e8c915e0f7a049f490369bb596beec01f",
+      "frames": 45,
+      "fps": 30
+    },
+    {
+      "enemy": "topiary-hare",
+      "state": "idle",
+      "path": "game/assets/sprites/enemy-clips/topiary-hare/idle.webp",
+      "sha256": "11c360f062325ddd3024872f5e3942581c8798c5145fb3f28243aca5e8ec15da",
+      "frames": 60,
+      "fps": 30
+    },
+    {
+      "enemy": "topiary-hare",
+      "state": "attack",
+      "path": "game/assets/sprites/enemy-clips/topiary-hare/attack.webp",
+      "sha256": "6cc316d54a2268703e29d2ac5838bf88961a25dfc02f0e4ef18acf69c202788c",
+      "frames": 48,
+      "fps": 30
+    },
+    {
+      "enemy": "topiary-hare",
+      "state": "hurt",
+      "path": "game/assets/sprites/enemy-clips/topiary-hare/hurt.webp",
+      "sha256": "edcdc378a98c3d1d523b03df10bdb39c9f7551a786dad07c75f15748f4a7549e",
+      "frames": 24,
+      "fps": 30
+    },
+    {
+      "enemy": "topiary-hare",
+      "state": "defeat",
+      "path": "game/assets/sprites/enemy-clips/topiary-hare/defeat.webp",
+      "sha256": "f0acd4b31e178f6d58c44966715c693f87ecf760039c47337a47eb1aa51f25b8",
+      "frames": 45,
+      "fps": 30
+    }
+  ],
+  "timeline": [
+    {
+      "state": "idle",
+      "frames": 120,
+      "authored_frames": 60,
+      "repetitions": 2
+    },
+    {
+      "state": "attack",
+      "frames": 48
+    },
+    {
+      "state": "hurt",
+      "frames": 24
+    },
+    {
+      "state": "defeat",
+      "frames": 45
+    },
+    {
+      "state": "defeat endpoint review hold",
+      "frames": 30
+    }
+  ],
+  "verification": "Every encoded frame decoded; exact source sequence, count, 30 fps and nominal 200/unit scale verified. Selected chronological frames inspected. Full-speed human visual review pending; no browser navigation or game runtime test."
+}

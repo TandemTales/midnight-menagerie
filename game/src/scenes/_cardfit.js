@@ -52,7 +52,10 @@ export function fitCardToSlot(view, slot, { legibleAt = 0, rulesPx = null } = {}
      the Deck's 1280 under a --rules-k capped at 1.4. */
   if (rulesPx && view.fitRules && view.el) {
     const cpx = w / 224;
-    const [lo, hi] = rulesPx;
+    const type = getComputedStyle(view.el);
+    const floor = parseFloat(type.getPropertyValue('--card-reading-floor')) || 14;
+    const cap = parseFloat(type.getPropertyValue('--card-reading-cap')) || 17;
+    const lo = Math.max(rulesPx[0], floor), hi = Math.max(rulesPx[1], cap);
     view.el.classList.add('is-board-fit');
     view.fitRules(176, 116, { lo: lo / cpx, hi: Math.max(lo, hi) / cpx });
   }

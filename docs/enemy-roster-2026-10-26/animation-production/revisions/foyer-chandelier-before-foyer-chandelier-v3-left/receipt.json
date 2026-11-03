@@ -1,0 +1,61 @@
+{
+  "created_utc": "2026-10-26T23:06:50.326348+00:00",
+  "enemy": "foyer-chandelier",
+  "states": [
+    "idle",
+    "attack",
+    "hurt",
+    "defeat"
+  ],
+  "method": "Fixed ceiling rose; crown and chain pendulum; three separately hinged source crystals; five visible source flame regions. Premultiplied-alpha source-art rig.",
+  "validation": "batch-02/foyer-chandelier/validation.json",
+  "quality_gate": "technical_pass_visual_review_pending",
+  "files": [
+    {
+      "path": "animations/sprites/enemies/animations/SS_foyerChandelier_idle.png",
+      "sha256": "5df7e49f6b5fd9750ed7e0a4e8c74498f95dd7fb7f4f9981a8000207927b430b",
+      "bytes": 10027247
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/foyer-chandelier/idle.webp",
+      "sha256": "c9b7612ac37b2d7a1f2c8cd018d440148aba1b9f26acea4cc832420355db10ac",
+      "bytes": 4907372
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_foyerChandelier_attack.png",
+      "sha256": "9164417df30ccdd304e8d33bbc7ea7d0e7755206847abb84d454f7c1624e44fe",
+      "bytes": 8399132
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/foyer-chandelier/attack.webp",
+      "sha256": "c85a7f3f9137e2b12696e4b8524c26327dbe4c4a26ada6879a7f84f4e628ae5f",
+      "bytes": 4103430
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_foyerChandelier_hurt.png",
+      "sha256": "c6a8997bad87ef618f0fadf4a2cd7c213d62abd27083251921066812cec573a4",
+      "bytes": 4201891
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/foyer-chandelier/hurt.webp",
+      "sha256": "42e308485749494502bc615b6850e8acc91ce7bc5bcae506b27d47b6d12f4556",
+      "bytes": 2034852
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_foyerChandelier_defeat.png",
+      "sha256": "04faf28644cf1002e8548f42ca922933829bbaba7476984bb9ef94e66da46370",
+      "bytes": 7308664
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/foyer-chandelier/defeat.webp",
+      "sha256": "a36bc45b2336465fc43c5a00e2a0523b3db7475ef35f469a1858403862e06a89",
+      "bytes": 3546480
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/foyer-chandelier/index.json",
+      "sha256": "82572123f39344ff1abde9c2847b9f9babdc6ad3302b85b5869df10842ac9a29",
+      "bytes": 2470
+    }
+  ],
+  "complete": true
+}

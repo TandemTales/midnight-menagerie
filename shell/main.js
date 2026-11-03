@@ -108,7 +108,34 @@ function lobbyFromArgv(argv) {
 const SMOKE = process.argv.includes('--smoke');
 
 let win = null;
-const steam = new SteamHost({ appId: readAppId(), send: (ch, payload) => win?.webContents.send(ch, payload) });
+const APP_ID = readAppId();
+const RELEASE = (() => {
+  try { return JSON.parse(fs.readFileSync(path.join(__dirname, 'release.json'), 'utf8')); }
+  catch { return {}; }
+})();
+const steam = new SteamHost({ appId: APP_ID, demo: !!RELEASE.demo, send: (ch, payload) => win?.webContents.send(ch, payload) });
+
+/* A package launched by double-click, not through Steam, has no way to reach
+   anybody: Steam restarts it properly. Never in the repo or a smoke run, where a
+   restart would throw away the developer's session. */
+if (PACKAGED && APP_ID && !SMOKE) {
+  try {
+    if (require('steamworks.js').restartAppIfNecessary(APP_ID)) app.exit(0);
+  } catch (e) { console.warn('[steam] could not check how the game was launched', e); }
+}
+
+/* THE STEAM OVERLAY: Shift+Tab, and the friends picker `Invite a friend` opens.
+   It has to be asked for before Electron is ready. It runs the GPU inside the main
+   process (`in-process-gpu`), so a package opts out with `--no-steam-overlay`, or
+   by `"overlay": false` in release.json, if a machine turns out not to like that. */
+function overlayWanted() {
+  if (!PACKAGED || !APP_ID || SMOKE || process.argv.includes('--no-steam-overlay')) return false;
+  return RELEASE.overlay !== false;
+}
+if (overlayWanted()) {
+  try { require('steamworks.js').electronEnableSteamOverlay(); }
+  catch (e) { console.warn('[steam] overlay', e); }
+}
 
 // One window. A second launch (Steam "Join Game" while we are already up)
 // hands its arguments here instead of opening another copy of the game.
@@ -132,7 +159,8 @@ if (!app.requestSingleInstanceLock()) {
       width: 1280, height: 800, minWidth: 960, minHeight: 600,
       show: !SMOKE,
       backgroundColor: '#0b0912',
-      title: 'Midnight Menagerie',
+      title: RELEASE.demo ? 'Midnight Menagerie Demo' : 'Midnight Menagerie',
+      icon: path.join(__dirname, 'icon.ico'),
       autoHideMenuBar: true,
       webPreferences: {
         preload: path.join(__dirname, 'preload.js'),

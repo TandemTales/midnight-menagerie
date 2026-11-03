@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "foyer: no required guess; either test order; close/reopen; focus retention; change idea; earned guardian response",
+    "lampworks: no required guess; either test order; close/reopen; focus retention; change idea; earned guardian response",
+    "attic-observatory: no required guess; either test order; close/reopen; focus retention; change idea; earned guardian response",
+    "archive reports only recorded idea/tests; no physical checks away from location"
+  ],
+  "pageErrors": []
+}

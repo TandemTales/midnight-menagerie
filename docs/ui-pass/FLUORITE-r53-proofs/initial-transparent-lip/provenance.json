@@ -1,0 +1,30 @@
+{
+  "source": "cb4dccad45d374ce311a18f03581e1c7b96fc033",
+  "defect": "Rail lower bed lacked opaque material; event parchment showed through below narrow brass strip.",
+  "images": [
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-transparent-lip\\event-1280.png",
+      "sha256": "2304da77b7f8f17aa92884a2edc0287f620230e87e3785d9bfbcc5cb6589a54b"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-transparent-lip\\event.png",
+      "sha256": "3d60112219cf6ccdb8f6af97d4e6d62fa0093a01e3af0d70a4c05263c4dd8731"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-transparent-lip\\gameover-1280.png",
+      "sha256": "7d406e4e961f80f3618717d04be5f7b3631789fa478d1aa689eaa08dba4e617d"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-transparent-lip\\gameover.png",
+      "sha256": "a3b66e93a481df4d2c52fc7f2e42830ca58a19a288b8633cb252b4f036ad2d7c"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-transparent-lip\\rest-1280.png",
+      "sha256": "b2348064b26110ed19b9e8284baeb8e9aa16d03d0f8f41bb904847590f2aea81"
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-transparent-lip\\rest.png",
+      "sha256": "60b99875551cc7b6855bd657301e178e12d38503713a09959579eb3c58708241"
+    }
+  ]
+}

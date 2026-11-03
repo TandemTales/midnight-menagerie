@@ -1,0 +1,51 @@
+{
+  "source": "7269f14a63ac58f8e3556ec208c24048c5839d70",
+  "base": "035efe6f43bfe09f4eb267e0cc931b009179b283",
+  "sceneCSS": {
+    "exit": 0,
+    "conflicts": 0,
+    "log": "scene-css.log"
+  },
+  "tokens": {
+    "exit": 0,
+    "undefined": 0,
+    "log": "tokens.log"
+  },
+  "endings": {
+    "exit": 0,
+    "repaired": 0,
+    "log": "endings.log",
+    "note": "Run before final packaging; no ending normalizer touched measured files."
+  },
+  "pythonCompile": {
+    "exit": 0,
+    "paths": [
+      "tests/ui-r56-onyx",
+      "tools/prep_r56_onyx.py"
+    ]
+  },
+  "productionJSChanged": [],
+  "portableChecks": {
+    "source": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+    "laterGameChanges": "Three paint override removals only; no layout or algorithm changes.",
+    "offlineLayoutExit": 0,
+    "envelopeExit": 0,
+    "animatedSamples": 16000,
+    "numericMotionPreserved": true,
+    "lifecycleUnitExit": 0,
+    "lifecycleUnits": 3
+  },
+  "seams": {
+    "reports": 4,
+    "unchanged": "game/src/state/floorplan.js local Map calls",
+    "raw": "seams.json"
+  },
+  "productionChangedPaths": [
+    "game/src/scenes/combat.css",
+    "game/src/scenes/event.css",
+    "game/src/scenes/gameover.css",
+    "game/src/scenes/rest.css",
+    "game/src/scenes/shop.css",
+    "game/src/ui/kit.css"
+  ]
+}

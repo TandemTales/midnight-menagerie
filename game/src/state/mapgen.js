@@ -14,6 +14,9 @@
  */
 import { RNG, hashSeed } from '../core/rng.js';
 import { NodeType, REGION_ORDER, TERMS } from '../data/schema.js';
+// The floorplan generator imports this module's tables back; ESM resolves the
+// cycle because neither side touches the other's bindings until call time.
+import { generatePlanMap } from './floorplan.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Room tags, straight from the design doc's room lists.
@@ -529,12 +532,44 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const key = (r, c) => `${r}:${c}`;
 
 /**
+ * WHICH MAP THE HOUSE DRAWS.
+ *
+ *   'plan'     (default, 2026-10-27) the wing is a real FLOORPLAN: rooms that
+ *              share walls, a door wherever the route goes, hallways for the
+ *              long ways round, and a few secret passages. `state/floorplan.js`.
+ *   'classic'  the layered lattice laid over the traced section drawing — the
+ *              map as it stood at tag `map-classic-2026-10-27`, kept whole and
+ *              byte-identical below so it can be switched straight back.
+ *
+ * Switch with `localStorage['mm.mapStyle'] = 'classic'` (or the `mapstyle=`
+ * deep-link key, which map.js writes through), or pass `opts.style`. Both
+ * Kids in a co-op run must be on the same style or they generate different
+ * wings from the same seed.
+ */
+export const MAP_STYLES = Object.freeze(['plan', 'classic']);
+export function mapStyle() {
+  try {
+    const v = globalThis.localStorage?.getItem('mm.mapStyle');
+    if (MAP_STYLES.includes(v)) return v;
+  } catch { /* storage blocked: the default */ }
+  return 'plan';
+}
+
+/**
  * @param {string} regionId  slug from REGION_ORDER
  * @param {number|string} seed
- * @param {{hauntLevel?:number, companion?:string, rescued?:string[]}} [opts]
- * @returns {{regionId,seed,rows,lanes,nodes,edges,bossId,startIds,hazards,meta}}
+ * @param {{hauntLevel?:number, companion?:string, rescued?:string[], style?:string}} [opts]
+ * @returns {{regionId,seed,rows,lanes,nodes,edges,bossId,startIds,hazards,meta,plan?}}
  */
 export function generateRegionMap(regionId, seed = 1, opts = {}) {
+  const style = MAP_STYLES.includes(opts.style) ? opts.style : mapStyle();
+  return style === 'classic'
+    ? generateClassicMap(regionId, seed, opts)
+    : generatePlanMap(regionId, seed, opts);
+}
+
+/** The classic lattice. Frozen: see `generateRegionMap`. */
+export function generateClassicMap(regionId, seed = 1, opts = {}) {
   const { hauntLevel = 0, companion = null, rescued = [] } = opts;
   const meta = regionMeta(regionId);
   regionId = meta.slug;
@@ -751,7 +786,7 @@ export function generateRegionMap(regionId, seed = 1, opts = {}) {
 
   const open = all.filter(n => !n.type);
   const n0 = open.length;
-  const wantRescue = !!(companion === null || !rescued.includes(meta.companion)) && !!meta.companion;
+  const wantRescue = false; // Pets are freed by their zone boss, never a side room.
 
   // Two wings should never feel like the same wing.  The recipe is a base share
   // of the rooms plus a die roll, and then a CHARACTER that leans the whole
@@ -1078,7 +1113,7 @@ const ROOM_PLACE = [(west) => (west ? 'West ' : 'East ')];
 /** After that: the words a house uses for two rooms of the same kind. */
 const ROOM_KIND = ['Second ', 'Little ', 'Old ', 'Back ', 'Front ', 'Inner ', 'Far '];
 
-function assignRoomNames(regionId, all, boss, rng, lanes, rows) {
+export function assignRoomNames(regionId, all, boss, rng, lanes, rows) {
   const rooms = ROOMS[regionId] || ROOMS['foyer'];
   const usable = rooms.filter(r => r.tag !== 'bo');
   const uses = new Map();      // room name -> times used

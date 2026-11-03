@@ -1,0 +1,166 @@
+{
+  "coverage": {
+    "existing": 31,
+    "new": 155,
+    "pending": 0,
+    "blocked": 1,
+    "total": 187
+  },
+  "accepted_files_checked": 372,
+  "source_original_prompt_checks": 155,
+  "errors": [],
+  "protected_files_checked": 375,
+  "changed_protected_files": [],
+  "mandatory_animated_identities": 29,
+  "regions": [
+    {
+      "level": 1,
+      "region": "Forgotten Foyer",
+      "existing": 7,
+      "new": 4,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 2,
+      "region": "Forgotten Nursery",
+      "existing": 8,
+      "new": 3,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 3,
+      "region": "Sleeping Quarters",
+      "existing": 5,
+      "new": 6,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 4,
+      "region": "Kitchens and Cellars",
+      "existing": 7,
+      "new": 3,
+      "pending": 0,
+      "blocked": 1
+    },
+    {
+      "level": 5,
+      "region": "Impossible Greenhouse",
+      "existing": 4,
+      "new": 7,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 6,
+      "region": "Mansion Graveyard",
+      "existing": 0,
+      "new": 11,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 7,
+      "region": "Grand Study and Library",
+      "existing": 0,
+      "new": 11,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 8,
+      "region": "Moonlit Attic and Observatory",
+      "existing": 0,
+      "new": 11,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 9,
+      "region": "Lampworks",
+      "existing": 0,
+      "new": 11,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 10,
+      "region": "Ballroom and Velvet Suites",
+      "existing": 0,
+      "new": 11,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 11,
+      "region": "Crypt and Ossuary",
+      "existing": 0,
+      "new": 11,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 12,
+      "region": "Withered Hedge Maze",
+      "existing": 0,
+      "new": 11,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 13,
+      "region": "Secret Passages",
+      "existing": 0,
+      "new": 11,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 14,
+      "region": "Bathhouse and Rain Wing",
+      "existing": 0,
+      "new": 11,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 15,
+      "region": "Kennels and Animal Ward",
+      "existing": 0,
+      "new": 11,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 16,
+      "region": "Moon Courtyard and Pumpkin Grounds",
+      "existing": 0,
+      "new": 11,
+      "pending": 0,
+      "blocked": 0
+    },
+    {
+      "level": 17,
+      "region": "Heart of the House",
+      "existing": 0,
+      "new": 11,
+      "pending": 0,
+      "blocked": 0
+    }
+  ],
+  "blockers": [
+    {
+      "name": "Spectral Scullion",
+      "action": "Generate separate Spectral Scullion sprite using built-in imagegen",
+      "target": "animations\\sprites\\enemies\\spectralScullion.png",
+      "outcome": "denied",
+      "reason": "HTTP400 image_generation_user_error moderation_blocked; moderation_stage output; categories other; no image payload returned",
+      "request_id": "c49ad1f6-4178-418a-b8ec-ea7bb5ccec89",
+      "retry": "Not retried. Continued independent sprites."
+    }
+  ],
+  "tool_mode": "Built-in imagegen only",
+  "game_integration": "Not performed; no registries, gameplay, code or animations changed."
+}

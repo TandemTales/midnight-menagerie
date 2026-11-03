@@ -1,0 +1,1193 @@
+{
+  "passed": true,
+  "clips": 118,
+  "frame_samples": 5067,
+  "refresh_rates": [
+    60,
+    144
+  ],
+  "negative_control_rejected": true,
+  "results": [
+    {
+      "enemy": "ancient-topiary",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "ancient-topiary",
+      "state": "defeat",
+      "frames": 31,
+      "fps": 30,
+      "duration": 1.0333333333333334,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "ancient-topiary",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "ancient-topiary",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "blanket-blob",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "blanket-blob",
+      "state": "defeat",
+      "frames": 23,
+      "fps": 30,
+      "duration": 0.7666666666666667,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "blanket-blob",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "blanket-blob",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "blanket-creeper",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "blanket-creeper",
+      "state": "defeat",
+      "frames": 29,
+      "fps": 30,
+      "duration": 0.9666666666666667,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "blanket-creeper",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "blanket-creeper",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "blanket-hydra",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "blanket-hydra",
+      "state": "defeat",
+      "frames": 25,
+      "fps": 30,
+      "duration": 0.8333333333333334,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "blanket-hydra",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "blanket-hydra",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "butler",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "butler",
+      "state": "cast",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "butler",
+      "state": "defeat",
+      "frames": 30,
+      "fps": 30,
+      "duration": 1,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "butler",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "butler",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "button-baby",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "button-baby",
+      "state": "defeat",
+      "frames": 35,
+      "fps": 30,
+      "duration": 1.1666666666666667,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "button-baby",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "button-baby",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "candy-clump",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "candy-clump",
+      "state": "defeat",
+      "frames": 22,
+      "fps": 30,
+      "duration": 0.7333333333333333,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "candy-clump",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "candy-clump",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "carnivorous-conservatory",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "carnivorous-conservatory",
+      "state": "defeat",
+      "frames": 23,
+      "fps": 30,
+      "duration": 0.7666666666666667,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "carnivorous-conservatory",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "carnivorous-conservatory",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "coatrack-crawler",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "coatrack-crawler",
+      "state": "defeat",
+      "frames": 34,
+      "fps": 30,
+      "duration": 1.1333333333333333,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "coatrack-crawler",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "coatrack-crawler",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "compost-colossus",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "compost-colossus",
+      "state": "defeat",
+      "frames": 27,
+      "fps": 30,
+      "duration": 0.9,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "compost-colossus",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "compost-colossus",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "confectioner",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "confectioner",
+      "state": "defeat",
+      "frames": 33,
+      "fps": 30,
+      "duration": 1.1,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "confectioner",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "confectioner",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "creeping-ivy",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "creeping-ivy",
+      "state": "defeat",
+      "frames": 47,
+      "fps": 30,
+      "duration": 1.5666666666666667,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "creeping-ivy",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "creeping-ivy",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "door-greeter",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "door-greeter",
+      "state": "defeat",
+      "frames": 22,
+      "fps": 30,
+      "duration": 0.7333333333333333,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "door-greeter",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "door-greeter",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "dough-blob",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "dough-blob",
+      "state": "defeat",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "dough-blob",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "dough-blob",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "dust-bunny",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "dust-bunny",
+      "state": "defeat",
+      "frames": 38,
+      "fps": 30,
+      "duration": 1.2666666666666666,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "dust-bunny",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "dust-bunny",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "governess",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "governess",
+      "state": "cast",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "governess",
+      "state": "defeat",
+      "frames": 32,
+      "fps": 30,
+      "duration": 1.0666666666666667,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "governess",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "governess",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "jack-in-the-box",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "jack-in-the-box",
+      "state": "defeat",
+      "frames": 11,
+      "fps": 30,
+      "duration": 0.36666666666666664,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "jack-in-the-box",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "jack-in-the-box",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "jam-jar",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "jam-jar",
+      "state": "defeat",
+      "frames": 15,
+      "fps": 30,
+      "duration": 0.5,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "jam-jar",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "jam-jar",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "lost-luggage",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "lost-luggage",
+      "state": "defeat",
+      "frames": 23,
+      "fps": 30,
+      "duration": 0.7666666666666667,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "lost-luggage",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "lost-luggage",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "oven-maw",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "oven-maw",
+      "state": "defeat",
+      "frames": 34,
+      "fps": 30,
+      "duration": 1.1333333333333333,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "oven-maw",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "oven-maw",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "pantry-mimic",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "pantry-mimic",
+      "state": "defeat",
+      "frames": 22,
+      "fps": 30,
+      "duration": 0.7333333333333333,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "pantry-mimic",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "pantry-mimic",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "patchwork-giant",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "patchwork-giant",
+      "state": "defeat",
+      "frames": 19,
+      "fps": 30,
+      "duration": 0.6333333333333333,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "patchwork-giant",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "patchwork-giant",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "patchwork-soldier",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "patchwork-soldier",
+      "state": "defeat",
+      "frames": 24,
+      "fps": 30,
+      "duration": 0.8,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "patchwork-soldier",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "patchwork-soldier",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "red-carpet-runner",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "red-carpet-runner",
+      "state": "defeat",
+      "frames": 21,
+      "fps": 30,
+      "duration": 0.7,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "red-carpet-runner",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "red-carpet-runner",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "slipper-skitter",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "slipper-skitter",
+      "state": "defeat",
+      "frames": 13,
+      "fps": 30,
+      "duration": 0.43333333333333335,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "slipper-skitter",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "slipper-skitter",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "sugar-golem",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "sugar-golem",
+      "state": "defeat",
+      "frames": 29,
+      "fps": 30,
+      "duration": 0.9666666666666667,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "sugar-golem",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "sugar-golem",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "the-wardrobe",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "the-wardrobe",
+      "state": "defeat",
+      "frames": 25,
+      "fps": 30,
+      "duration": 0.8333333333333334,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "the-wardrobe",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "the-wardrobe",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "toy-chest",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "toy-chest",
+      "state": "defeat",
+      "frames": 41,
+      "fps": 30,
+      "duration": 1.3666666666666667,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "toy-chest",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "toy-chest",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "wardrobe-guest",
+      "state": "attack",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "wardrobe-guest",
+      "state": "defeat",
+      "frames": 19,
+      "fps": 30,
+      "duration": 0.6333333333333333,
+      "loop": false,
+      "hold": true,
+      "passed": true
+    },
+    {
+      "enemy": "wardrobe-guest",
+      "state": "hurt",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": false,
+      "hold": false,
+      "passed": true
+    },
+    {
+      "enemy": "wardrobe-guest",
+      "state": "idle",
+      "frames": 48,
+      "fps": 30,
+      "duration": 1.6,
+      "loop": true,
+      "hold": false,
+      "passed": true
+    }
+  ],
+  "method": "Actual runtime modules executed in Node VM with local JSON fetch and decoded-image/UI I/O adapters. Real EnemyView._tickClip feeds real ClipPlayer. No browser or full game rendered test."
+}

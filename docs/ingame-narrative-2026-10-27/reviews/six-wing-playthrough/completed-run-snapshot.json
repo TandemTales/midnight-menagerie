@@ -1,0 +1,5108 @@
+{
+  "storyMemory": false,
+  "version": 1,
+  "seed": 21972029,
+  "companion": "marmalade",
+  "kid": "maya",
+  "hauntLevel": 0,
+  "backpack": [
+    "notebook",
+    "thermos",
+    "first-aid-tin",
+    "pet-treats"
+  ],
+  "courage": 71,
+  "maxCourage": 91,
+  "energyMax": 3,
+  "lostThings": 925,
+  "snacks": [
+    {
+      "id": "cold-milk",
+      "name": "Cold Milk",
+      "base": 45,
+      "desc": "Remove all debuffs.",
+      "effect": {
+        "cleanse": true
+      }
+    },
+    {
+      "id": "gummy-bat",
+      "name": "Gummy Bat",
+      "base": 45,
+      "desc": "Recover 12 Courage.",
+      "effect": {
+        "heal": 12
+      },
+      "price": 53
+    }
+  ],
+  "deck": [
+    {
+      "uid": "c1",
+      "id": "marmalade/scratch",
+      "upgraded": false,
+      "name": "Scratch"
+    },
+    {
+      "uid": "c2",
+      "id": "marmalade/scratch",
+      "upgraded": false,
+      "name": "Scratch"
+    },
+    {
+      "uid": "c3",
+      "id": "marmalade/scratch",
+      "upgraded": false,
+      "name": "Scratch"
+    },
+    {
+      "uid": "c4",
+      "id": "marmalade/scratch",
+      "upgraded": false,
+      "name": "Scratch"
+    },
+    {
+      "uid": "c5",
+      "id": "marmalade/scratch",
+      "upgraded": false,
+      "name": "Scratch"
+    },
+    {
+      "uid": "c7",
+      "id": "marmalade/curl-up",
+      "upgraded": false,
+      "name": "Curl Up"
+    },
+    {
+      "uid": "c8",
+      "id": "marmalade/curl-up",
+      "upgraded": false,
+      "name": "Curl Up"
+    },
+    {
+      "uid": "c9",
+      "id": "marmalade/curl-up",
+      "upgraded": false,
+      "name": "Curl Up"
+    },
+    {
+      "uid": "cb",
+      "id": "marmalade/rattle-the-chandelier",
+      "upgraded": true,
+      "name": "Rattle the Chandelier"
+    },
+    {
+      "uid": "cc",
+      "id": "marmalade/graveyard-pounce",
+      "upgraded": true,
+      "name": "Graveyard Pounce"
+    },
+    {
+      "uid": "cd",
+      "id": "marmalade/perch-up-high",
+      "upgraded": true,
+      "name": "Perch Up High"
+    },
+    {
+      "uid": "ce",
+      "id": "marmalade/steal-their-shadow",
+      "upgraded": true,
+      "name": "Steal Their Shadow"
+    },
+    {
+      "uid": "cf",
+      "id": "marmalade/knock-it-over",
+      "upgraded": false,
+      "name": "Knock It Over"
+    },
+    {
+      "uid": "cg",
+      "id": "marmalade/predators-patience",
+      "upgraded": true,
+      "name": "Predator\u2019s Patience"
+    },
+    {
+      "uid": "ch",
+      "id": "marmalade/fluff-up",
+      "upgraded": true,
+      "name": "Fluff Up"
+    },
+    {
+      "uid": "ci",
+      "id": "marmalade/ricochet-cat",
+      "upgraded": true,
+      "name": "Ricochet Cat"
+    },
+    {
+      "uid": "cj",
+      "id": "marmalade/now-you-see-me",
+      "upgraded": false,
+      "name": "Now You See Me"
+    },
+    {
+      "uid": "ck",
+      "id": "marmalade/ghoststep",
+      "upgraded": false,
+      "name": "Ghoststep"
+    },
+    {
+      "uid": "cv",
+      "id": "marmalade/hiss-and-hit",
+      "upgraded": true,
+      "name": "Hiss and Hit"
+    },
+    {
+      "uid": "cw",
+      "id": "marmalade/perfect-landing",
+      "upgraded": false,
+      "name": "Perfect Landing"
+    },
+    {
+      "uid": "cx",
+      "id": "marmalade/everywhere-at-once",
+      "upgraded": true,
+      "name": "Everywhere at Once"
+    },
+    {
+      "uid": "cy",
+      "id": "marmalade/frenzied-zoomies",
+      "upgraded": true,
+      "name": "Frenzied Zoomies"
+    },
+    {
+      "uid": "cz",
+      "id": "marmalade/nine-lived-nerve",
+      "upgraded": false,
+      "name": "Nine-Lived Nerve"
+    },
+    {
+      "uid": "c10",
+      "id": "marmalade/rattle-the-chandelier",
+      "upgraded": true,
+      "name": "Rattle the Chandelier"
+    },
+    {
+      "uid": "c11",
+      "id": "marmalade/wall-bounce",
+      "upgraded": true,
+      "name": "Wall Bounce"
+    },
+    {
+      "uid": "c12",
+      "id": "marmalade/catastrophe",
+      "upgraded": true,
+      "name": "Catastrophe"
+    },
+    {
+      "uid": "c13",
+      "id": "marmalade/ghoststep",
+      "upgraded": false,
+      "name": "Ghoststep"
+    },
+    {
+      "uid": "c14",
+      "id": "marmalade/borrowed-life",
+      "upgraded": false,
+      "name": "Borrowed Life"
+    },
+    {
+      "uid": "c1f",
+      "id": "marmalade/fluff-up",
+      "upgraded": true,
+      "name": "Fluff Up"
+    },
+    {
+      "uid": "c1g",
+      "id": "marmalade/now-you-see-me",
+      "upgraded": false,
+      "name": "Now You See Me"
+    }
+  ],
+  "keepsakes": [
+    {
+      "id": "pocket-flashlight",
+      "name": "Pocket Flashlight",
+      "desc": "At the end of every Scuffle, recover 6 Courage.",
+      "rarity": "starter",
+      "counter": 45,
+      "forged": false,
+      "icon": "torch"
+    },
+    {
+      "id": "chalk-stub",
+      "name": "Chalk Stub",
+      "desc": "Unsurveyed rooms on the blueprint show what they really are.",
+      "rarity": "common",
+      "counter": null,
+      "forged": false,
+      "icon": "chalk"
+    },
+    {
+      "id": "black-ribbon",
+      "name": "Black Ribbon",
+      "desc": "Once each Scuffle, when an enemy hides or leaves the battlefield, your Attack Tricks deal 3 more damage for the rest of the fight.",
+      "rarity": "boss",
+      "counter": null,
+      "forged": false,
+      "icon": "ribbon"
+    },
+    {
+      "id": "lucky-button",
+      "name": "Lucky Button",
+      "desc": "Rare Trick rewards appear noticeably more often.",
+      "rarity": "common",
+      "counter": null,
+      "forged": false,
+      "icon": "button"
+    },
+    {
+      "id": "brass-bookmark",
+      "name": "Brass Bookmark",
+      "desc": "The first time each Scuffle one of your Tricks is marked or made to cost more, draw 1 Trick.",
+      "rarity": "rare",
+      "counter": null,
+      "forged": false,
+      "icon": "bookmark"
+    },
+    {
+      "id": "empty-goblet",
+      "name": "The Empty Goblet",
+      "desc": "The first time each Scuffle you lose Courage to one of your own effects, gain 8 Guard.",
+      "rarity": "boss",
+      "counter": 17,
+      "forged": false,
+      "icon": "goblet"
+    },
+    {
+      "id": "bowl-with-your-name",
+      "name": "Bowl With Your Name On It",
+      "desc": "Recover 3 Courage at the start of every Scuffle.",
+      "rarity": "event",
+      "counter": 24,
+      "forged": false,
+      "icon": "bowl"
+    },
+    {
+      "id": "house-slippers",
+      "name": "House Slippers",
+      "desc": "The first attack against you each Scuffle deals 3 less damage.",
+      "rarity": "common",
+      "counter": 18,
+      "forged": false,
+      "icon": "slipper"
+    },
+    {
+      "id": "tin-of-sardines",
+      "name": "Tin of Sardines",
+      "desc": "Whenever an enemy is defeated, recover 3 Courage. Something always comes to eat.",
+      "rarity": "uncommon",
+      "counter": 63,
+      "forged": false,
+      "icon": "tin"
+    },
+    {
+      "id": "bent-garden-fork",
+      "name": "Bent Garden Fork",
+      "desc": "The first time each Scuffle an enemy recovers Courage, deal 3 damage to it.",
+      "rarity": "boss",
+      "counter": 5,
+      "forged": false,
+      "icon": "fork"
+    },
+    {
+      "id": "butterfly-net",
+      "name": "Butterfly Net",
+      "desc": "Every 10th Trick you play in a Scuffle, draw 2.",
+      "rarity": "common",
+      "counter": 5,
+      "forged": false,
+      "icon": "net"
+    },
+    {
+      "id": "lantern-of-the-lamplighter",
+      "name": "Lamplighter's Wick",
+      "desc": "Your first Trick each turn costs 1 less. You start every Scuffle with 5 fewer Courage.",
+      "rarity": "boss",
+      "counter": 83,
+      "forged": false,
+      "icon": "wick"
+    },
+    {
+      "id": "welcome-mat",
+      "name": "Welcome Mat",
+      "desc": "Gain 4 Guard at the start of every Scuffle.",
+      "rarity": "common",
+      "counter": 11,
+      "forged": false,
+      "icon": "mat"
+    },
+    {
+      "id": "nightlight",
+      "name": "Nightlight",
+      "desc": "Attacks that would deal 5 or less damage to you deal 1 instead.",
+      "rarity": "uncommon",
+      "counter": null,
+      "forged": false,
+      "icon": "nightlight"
+    },
+    {
+      "id": "brass-service-bell",
+      "name": "Brass Service Bell",
+      "desc": "The first time each Scuffle you end a turn with 0 Nerve, draw 1 extra Trick next turn.",
+      "rarity": "common",
+      "counter": 8,
+      "forged": false,
+      "icon": "bell"
+    },
+    {
+      "id": "bent-sickle",
+      "name": "Bent Sickle",
+      "desc": "Once each turn, when you defeat something with 10 or more damage to spare, gain 4 Guard and draw 1.",
+      "rarity": "boss",
+      "counter": null,
+      "forged": false,
+      "icon": "sickle"
+    },
+    {
+      "id": "hollow-birdcage",
+      "name": "Hollow Birdcage",
+      "desc": "Whenever an enemy is defeated, draw 1 Trick and gain 4 Guard.",
+      "rarity": "rare",
+      "counter": 10,
+      "forged": false,
+      "icon": "cage"
+    },
+    {
+      "id": "bathhouse-slippers",
+      "name": "Bathhouse Slippers",
+      "desc": "Your first Trick each turn ignores any increase to its Nerve cost.",
+      "rarity": "boss",
+      "counter": null,
+      "forged": false,
+      "icon": "slippers"
+    }
+  ],
+  "region": "heart",
+  "regionIndex": 5,
+  "route": [
+    "foyer",
+    "attic-observatory",
+    "kitchens-cellars",
+    "greenhouse",
+    "kennels",
+    "heart"
+  ],
+  "wings": 6,
+  "pendingWing": null,
+  "lastWingVote": {
+    "winner": "heart",
+    "from": "kennels",
+    "votes": {
+      "0": "heart"
+    },
+    "tally": {
+      "heart": 1
+    },
+    "rolled": false,
+    "entry": false
+  },
+  "wing": 6,
+  "depth": 90,
+  "map": {
+    "regionId": "heart",
+    "seed": 21972029,
+    "rows": 15,
+    "lanes": 6,
+    "character": "plan",
+    "nodes": [
+      {
+        "id": "heart-0-0",
+        "row": 0,
+        "col": 0,
+        "type": "scuffle",
+        "next": [
+          "heart-1-0",
+          "heart-1-1"
+        ],
+        "x": 0.11379,
+        "y": 0.2797,
+        "roomName": "Quiet Kennels",
+        "roomTag": "sc",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 0,
+          "tier": "early",
+          "roomTag": "sc",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-0-1",
+        "row": 0,
+        "col": 1,
+        "type": "scuffle",
+        "next": [
+          "heart-1-1",
+          "heart-1-2"
+        ],
+        "x": 0.11379,
+        "y": 0.3901,
+        "roomName": "Pulse Passage",
+        "roomTag": "sc",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 0,
+          "tier": "early",
+          "roomTag": "sc",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-0-2",
+        "row": 0,
+        "col": 2,
+        "type": "scuffle",
+        "next": [
+          "heart-1-2",
+          "heart-1-3"
+        ],
+        "x": 0.11379,
+        "y": 0.50099,
+        "roomName": "Threshold Hall",
+        "roomTag": "sc",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 0,
+          "tier": "early",
+          "roomTag": "sc",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-0-3",
+        "row": 0,
+        "col": 3,
+        "type": "scuffle",
+        "next": [
+          "heart-1-3",
+          "heart-1-4"
+        ],
+        "x": 0.11379,
+        "y": 0.61139,
+        "roomName": "House Nursery",
+        "roomTag": "sc",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 0,
+          "tier": "early",
+          "roomTag": "sc",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-1-0",
+        "row": 1,
+        "col": 0,
+        "type": "scuffle",
+        "next": [
+          "heart-2-0"
+        ],
+        "x": 0.17069,
+        "y": 0.22327,
+        "roomName": "Impossible Door",
+        "roomTag": "cn",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 1,
+          "tier": "early",
+          "roomTag": "cn",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-1-1",
+        "row": 1,
+        "col": 1,
+        "type": "scuffle",
+        "next": [
+          "heart-2-0",
+          "heart-2-1"
+        ],
+        "x": 0.17069,
+        "y": 0.33911,
+        "roomName": "Inner Stair",
+        "roomTag": "cn",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 1,
+          "tier": "early",
+          "roomTag": "cn",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-1-2",
+        "row": 1,
+        "col": 2,
+        "type": "scuffle",
+        "next": [
+          "heart-2-1",
+          "heart-2-2"
+        ],
+        "x": 0.17069,
+        "y": 0.44554,
+        "roomName": "Observation Room",
+        "roomTag": "cu",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 1,
+          "tier": "early",
+          "roomTag": "cu",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-1-3",
+        "row": 1,
+        "col": 3,
+        "type": "scuffle",
+        "next": [
+          "heart-2-2",
+          "heart-2-3"
+        ],
+        "x": 0.17069,
+        "y": 0.55198,
+        "roomName": "Voice Chamber",
+        "roomTag": "cu",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 1,
+          "tier": "early",
+          "roomTag": "cu",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-1-4",
+        "row": 1,
+        "col": 4,
+        "type": "scuffle",
+        "next": [
+          "heart-2-3"
+        ],
+        "x": 0.17069,
+        "y": 0.66782,
+        "roomName": "Memory Room",
+        "roomTag": "cu",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 1,
+          "tier": "early",
+          "roomTag": "cu",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-2-0",
+        "row": 2,
+        "col": 0,
+        "type": "curiosity",
+        "next": [
+          "heart-3-0",
+          "heart-3-1"
+        ],
+        "x": 0.22512,
+        "y": 0.27723,
+        "roomName": "Hall of Collars",
+        "roomTag": "cl",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 2,
+          "tier": "early",
+          "roomTag": "cl",
+          "hazard": null,
+          "scene": "event"
+        }
+      },
+      {
+        "id": "heart-2-1",
+        "row": 2,
+        "col": 1,
+        "type": "unknown",
+        "next": [
+          "heart-3-1",
+          "heart-3-2"
+        ],
+        "x": 0.22512,
+        "y": 0.39257,
+        "roomName": "Ancestral Gallery",
+        "roomTag": "cl",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 2,
+          "tier": "early",
+          "roomTag": "cl",
+          "hazard": null,
+          "scene": "event"
+        },
+        "revealed": "curiosity"
+      },
+      {
+        "id": "heart-2-2",
+        "row": 2,
+        "col": 2,
+        "type": "unknown",
+        "next": [
+          "heart-3-2",
+          "heart-3-3"
+        ],
+        "x": 0.22512,
+        "y": 0.49851,
+        "roomName": "Hall of Names",
+        "roomTag": "cl",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 2,
+          "tier": "early",
+          "roomTag": "cl",
+          "hazard": null,
+          "scene": "event"
+        },
+        "revealed": "shop"
+      },
+      {
+        "id": "heart-2-3",
+        "row": 2,
+        "col": 3,
+        "type": "unknown",
+        "next": [
+          "heart-3-3",
+          "heart-3-4"
+        ],
+        "x": 0.22512,
+        "y": 0.61386,
+        "roomName": "New Arrival Ward",
+        "roomTag": "cl",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 2,
+          "tier": "early",
+          "roomTag": "cl",
+          "hazard": null,
+          "scene": "event"
+        },
+        "revealed": "curiosity"
+      },
+      {
+        "id": "heart-3-0",
+        "row": 3,
+        "col": 0,
+        "type": "scuffle",
+        "next": [
+          "heart-4-0"
+        ],
+        "x": 0.27438,
+        "y": 0.21535,
+        "roomName": "Inner Sanctuary",
+        "roomTag": "bs",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 3,
+          "tier": "early",
+          "roomTag": "bs",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-3-1",
+        "row": 3,
+        "col": 1,
+        "type": "scuffle",
+        "next": [
+          "heart-4-0",
+          "heart-4-1"
+        ],
+        "x": 0.27438,
+        "y": 0.33218,
+        "roomName": "Sanctuary Garden",
+        "roomTag": "bf",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 3,
+          "tier": "early",
+          "roomTag": "bf",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-3-2",
+        "row": 3,
+        "col": 2,
+        "type": "scuffle",
+        "next": [
+          "heart-4-1",
+          "heart-4-2"
+        ],
+        "x": 0.27438,
+        "y": 0.44554,
+        "roomName": "Menagerie Hall",
+        "roomTag": "cl",
+        "hazard": "paw-prints",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 3,
+          "tier": "early",
+          "roomTag": "cl",
+          "hazard": "paw-prints",
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-3-3",
+        "row": 3,
+        "col": 3,
+        "type": "scuffle",
+        "next": [
+          "heart-4-2",
+          "heart-4-3"
+        ],
+        "x": 0.27438,
+        "y": 0.55891,
+        "roomName": "Buttons Vault",
+        "roomTag": "tr",
+        "hazard": "paw-prints",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 3,
+          "tier": "early",
+          "roomTag": "tr",
+          "hazard": "paw-prints",
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-3-4",
+        "row": 3,
+        "col": 4,
+        "type": "curiosity",
+        "next": [
+          "heart-4-3"
+        ],
+        "x": 0.27438,
+        "y": 0.67574,
+        "roomName": "Pet Holding Ward",
+        "roomTag": "st",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 3,
+          "tier": "early",
+          "roomTag": "st",
+          "hazard": null,
+          "scene": "event"
+        }
+      },
+      {
+        "id": "heart-4-0",
+        "row": 4,
+        "col": 0,
+        "type": "safe",
+        "next": [
+          "heart-5-0",
+          "heart-5-1"
+        ],
+        "x": 0.32709,
+        "y": 0.28267,
+        "roomName": "Transformation Gallery",
+        "roomTag": "bs",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 4,
+          "tier": "mid",
+          "roomTag": "bs",
+          "hazard": null,
+          "scene": "rest"
+        }
+      },
+      {
+        "id": "heart-4-1",
+        "row": 4,
+        "col": 1,
+        "type": "unknown",
+        "next": [
+          "heart-5-1"
+        ],
+        "x": 0.32709,
+        "y": 0.3901,
+        "roomName": "West Inner Stair",
+        "roomTag": "cn",
+        "hazard": "paw-prints",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 4,
+          "tier": "mid",
+          "roomTag": "cn",
+          "hazard": "paw-prints",
+          "scene": "event"
+        },
+        "revealed": "curiosity"
+      },
+      {
+        "id": "heart-4-2",
+        "row": 4,
+        "col": 2,
+        "type": "safe",
+        "next": [
+          "heart-5-2",
+          "heart-5-3"
+        ],
+        "x": 0.32709,
+        "y": 0.50099,
+        "roomName": "West Sanctuary Garden",
+        "roomTag": "bf",
+        "hazard": "paw-prints",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 4,
+          "tier": "mid",
+          "roomTag": "bf",
+          "hazard": "paw-prints",
+          "scene": "rest"
+        }
+      },
+      {
+        "id": "heart-4-3",
+        "row": 4,
+        "col": 3,
+        "type": "scuffle",
+        "next": [
+          "heart-5-3",
+          "heart-5-4"
+        ],
+        "x": 0.32709,
+        "y": 0.60842,
+        "roomName": "East House Nursery",
+        "roomTag": "sc",
+        "hazard": "paw-prints",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 4,
+          "tier": "mid",
+          "roomTag": "sc",
+          "hazard": "paw-prints",
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-5-0",
+        "row": 5,
+        "col": 0,
+        "type": "shop",
+        "next": [
+          "heart-6-0"
+        ],
+        "x": 0.38079,
+        "y": 0.22772,
+        "roomName": "West Memory Room",
+        "roomTag": "cu",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 5,
+          "tier": "mid",
+          "roomTag": "cu",
+          "hazard": null,
+          "scene": "shop"
+        }
+      },
+      {
+        "id": "heart-5-1",
+        "row": 5,
+        "col": 1,
+        "type": "curiosity",
+        "next": [
+          "heart-6-0",
+          "heart-6-1"
+        ],
+        "x": 0.38079,
+        "y": 0.33366,
+        "roomName": "West Observation Room",
+        "roomTag": "cu",
+        "hazard": "sagging",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 5,
+          "tier": "mid",
+          "roomTag": "cu",
+          "hazard": "sagging",
+          "scene": "event"
+        }
+      },
+      {
+        "id": "heart-5-2",
+        "row": 5,
+        "col": 2,
+        "type": "scuffle",
+        "next": [
+          "heart-6-1",
+          "heart-6-2"
+        ],
+        "x": 0.38079,
+        "y": 0.44554,
+        "roomName": "West Quiet Kennels",
+        "roomTag": "sc",
+        "hazard": "sagging",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 5,
+          "tier": "mid",
+          "roomTag": "sc",
+          "hazard": "sagging",
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-5-3",
+        "row": 5,
+        "col": 3,
+        "type": "scuffle",
+        "next": [
+          "heart-6-2",
+          "heart-6-3"
+        ],
+        "x": 0.38079,
+        "y": 0.55743,
+        "roomName": "East Threshold Hall",
+        "roomTag": "sc",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 5,
+          "tier": "mid",
+          "roomTag": "sc",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-5-4",
+        "row": 5,
+        "col": 4,
+        "type": "scuffle",
+        "next": [
+          "heart-6-3"
+        ],
+        "x": 0.38079,
+        "y": 0.66337,
+        "roomName": "East Pulse Passage",
+        "roomTag": "sc",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 5,
+          "tier": "mid",
+          "roomTag": "sc",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-6-0",
+        "row": 6,
+        "col": 0,
+        "type": "scuffle",
+        "next": [
+          "heart-7-0",
+          "heart-7-1"
+        ],
+        "x": 0.4303,
+        "y": 0.25396,
+        "roomName": "West Impossible Door",
+        "roomTag": "cn",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 6,
+          "tier": "mid",
+          "roomTag": "cn",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-6-1",
+        "row": 6,
+        "col": 1,
+        "type": "scuffle",
+        "next": [
+          "heart-7-1",
+          "heart-7-2"
+        ],
+        "x": 0.4303,
+        "y": 0.38911,
+        "roomName": "West Voice Chamber",
+        "roomTag": "cu",
+        "hazard": "sagging",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 6,
+          "tier": "mid",
+          "roomTag": "cu",
+          "hazard": "sagging",
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-6-2",
+        "row": 6,
+        "col": 2,
+        "type": "curiosity",
+        "next": [
+          "heart-7-2",
+          "heart-7-3"
+        ],
+        "x": 0.4303,
+        "y": 0.50198,
+        "roomName": "West Hall of Names",
+        "roomTag": "cl",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 6,
+          "tier": "mid",
+          "roomTag": "cl",
+          "hazard": null,
+          "scene": "event"
+        }
+      },
+      {
+        "id": "heart-6-3",
+        "row": 6,
+        "col": 3,
+        "type": "unknown",
+        "next": [
+          "heart-7-3",
+          "heart-7-4"
+        ],
+        "x": 0.4303,
+        "y": 0.63713,
+        "roomName": "East New Arrival Ward",
+        "roomTag": "cl",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 6,
+          "tier": "mid",
+          "roomTag": "cl",
+          "hazard": null,
+          "scene": "event"
+        },
+        "revealed": "scuffle"
+      },
+      {
+        "id": "heart-7-0",
+        "row": 7,
+        "col": 0,
+        "type": "curiosity",
+        "next": [
+          "heart-8-0"
+        ],
+        "x": 0.47882,
+        "y": 0.1901,
+        "roomName": "West Ancestral Gallery",
+        "roomTag": "cl",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 7,
+          "tier": "mid",
+          "roomTag": "cl",
+          "hazard": null,
+          "scene": "event"
+        }
+      },
+      {
+        "id": "heart-7-1",
+        "row": 7,
+        "col": 1,
+        "type": "unknown",
+        "next": [
+          "heart-8-0",
+          "heart-8-1"
+        ],
+        "x": 0.47882,
+        "y": 0.31733,
+        "roomName": "West Hall of Collars",
+        "roomTag": "cl",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 7,
+          "tier": "mid",
+          "roomTag": "cl",
+          "hazard": null,
+          "scene": "event"
+        },
+        "revealed": "shop"
+      },
+      {
+        "id": "heart-7-2",
+        "row": 7,
+        "col": 2,
+        "type": "scuffle",
+        "next": [
+          "heart-8-1",
+          "heart-8-2"
+        ],
+        "x": 0.47882,
+        "y": 0.44554,
+        "roomName": "West Pet Holding Ward",
+        "roomTag": "st",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 7,
+          "tier": "mid",
+          "roomTag": "st",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-7-3",
+        "row": 7,
+        "col": 3,
+        "type": "scuffle",
+        "next": [
+          "heart-8-2",
+          "heart-8-3",
+          "heart-9-3"
+        ],
+        "passage": true,
+        "x": 0.47882,
+        "y": 0.57376,
+        "roomName": "East Buttons Vault",
+        "roomTag": "tr",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 7,
+          "tier": "mid",
+          "roomTag": "tr",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-7-4",
+        "row": 7,
+        "col": 4,
+        "type": "treasure",
+        "next": [
+          "heart-8-3"
+        ],
+        "x": 0.47882,
+        "y": 0.70099,
+        "roomName": "East Menagerie Hall",
+        "roomTag": "cl",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 7,
+          "tier": "mid",
+          "roomTag": "cl",
+          "hazard": null,
+          "scene": "reward"
+        }
+      },
+      {
+        "id": "heart-8-0",
+        "row": 8,
+        "col": 0,
+        "type": "treasure",
+        "next": [
+          "heart-9-0",
+          "heart-9-1"
+        ],
+        "x": 0.52956,
+        "y": 0.25693,
+        "roomName": "West Transformation Gallery",
+        "roomTag": "bs",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 8,
+          "tier": "mid",
+          "roomTag": "bs",
+          "hazard": null,
+          "scene": "reward"
+        }
+      },
+      {
+        "id": "heart-8-1",
+        "row": 8,
+        "col": 1,
+        "type": "bigScare",
+        "next": [
+          "heart-9-1",
+          "heart-9-2"
+        ],
+        "x": 0.52956,
+        "y": 0.38515,
+        "roomName": "West Inner Sanctuary",
+        "roomTag": "bs",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 8,
+          "tier": "mid",
+          "roomTag": "bs",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-8-2",
+        "row": 8,
+        "col": 2,
+        "type": "treasure",
+        "next": [
+          "heart-9-2",
+          "heart-9-3"
+        ],
+        "x": 0.52956,
+        "y": 0.49752,
+        "roomName": "Little Buttons Vault",
+        "roomTag": "tr",
+        "hazard": "long-shadows",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 8,
+          "tier": "mid",
+          "roomTag": "tr",
+          "hazard": "long-shadows",
+          "scene": "reward"
+        }
+      },
+      {
+        "id": "heart-8-3",
+        "row": 8,
+        "col": 3,
+        "type": "scuffle",
+        "next": [
+          "heart-9-4"
+        ],
+        "x": 0.52956,
+        "y": 0.64257,
+        "roomName": "Inner Pulse Passage",
+        "roomTag": "sc",
+        "hazard": "long-shadows",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 8,
+          "tier": "mid",
+          "roomTag": "sc",
+          "hazard": "long-shadows",
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-9-0",
+        "row": 9,
+        "col": 0,
+        "type": "bigScare",
+        "next": [
+          "heart-10-0"
+        ],
+        "x": 0.58498,
+        "y": 0.20693,
+        "roomName": "Far Transformation Gallery",
+        "roomTag": "bs",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 9,
+          "tier": "mid",
+          "roomTag": "bs",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-9-1",
+        "row": 9,
+        "col": 1,
+        "type": "scuffle",
+        "next": [
+          "heart-10-0",
+          "heart-10-1"
+        ],
+        "x": 0.58498,
+        "y": 0.33119,
+        "roomName": "Inner Threshold Hall",
+        "roomTag": "sc",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 9,
+          "tier": "mid",
+          "roomTag": "sc",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-9-2",
+        "row": 9,
+        "col": 2,
+        "type": "scuffle",
+        "next": [
+          "heart-10-1",
+          "heart-10-2"
+        ],
+        "x": 0.58498,
+        "y": 0.44554,
+        "roomName": "Old Quiet Kennels",
+        "roomTag": "sc",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 9,
+          "tier": "mid",
+          "roomTag": "sc",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-9-3",
+        "row": 9,
+        "col": 3,
+        "type": "bigScare",
+        "next": [
+          "heart-10-2",
+          "heart-10-3"
+        ],
+        "x": 0.58498,
+        "y": 0.5599,
+        "roomName": "Little Inner Sanctuary",
+        "roomTag": "bs",
+        "hazard": "long-shadows",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 9,
+          "tier": "mid",
+          "roomTag": "bs",
+          "hazard": "long-shadows",
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-9-4",
+        "row": 9,
+        "col": 4,
+        "type": "treasure",
+        "next": [
+          "heart-10-3"
+        ],
+        "x": 0.58498,
+        "y": 0.68416,
+        "roomName": "Old Hall of Collars",
+        "roomTag": "cl",
+        "hazard": "long-shadows",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 9,
+          "tier": "mid",
+          "roomTag": "cl",
+          "hazard": "long-shadows",
+          "scene": "reward"
+        }
+      },
+      {
+        "id": "heart-10-0",
+        "row": 10,
+        "col": 0,
+        "type": "safe",
+        "next": [
+          "heart-11-0",
+          "heart-11-1"
+        ],
+        "x": 0.64138,
+        "y": 0.27277,
+        "roomName": "Little Sanctuary Garden",
+        "roomTag": "bf",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 10,
+          "tier": "late",
+          "roomTag": "bf",
+          "hazard": null,
+          "scene": "rest"
+        }
+      },
+      {
+        "id": "heart-10-1",
+        "row": 10,
+        "col": 1,
+        "type": "bigScare",
+        "next": [
+          "heart-11-1",
+          "heart-11-2"
+        ],
+        "x": 0.64138,
+        "y": 0.38663,
+        "roomName": "Back House Nursery",
+        "roomTag": "sc",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 10,
+          "tier": "late",
+          "roomTag": "sc",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-10-2",
+        "row": 10,
+        "col": 2,
+        "type": "treasure",
+        "next": [
+          "heart-11-2",
+          "heart-11-3"
+        ],
+        "x": 0.64138,
+        "y": 0.50446,
+        "roomName": "Little New Arrival Ward",
+        "roomTag": "cl",
+        "hazard": "long-shadows",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 10,
+          "tier": "late",
+          "roomTag": "cl",
+          "hazard": "long-shadows",
+          "scene": "reward"
+        }
+      },
+      {
+        "id": "heart-10-3",
+        "row": 10,
+        "col": 3,
+        "type": "safe",
+        "next": [
+          "heart-11-3",
+          "heart-11-4"
+        ],
+        "x": 0.64138,
+        "y": 0.61832,
+        "roomName": "Front Memory Room",
+        "roomTag": "cu",
+        "hazard": "long-shadows",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 10,
+          "tier": "late",
+          "roomTag": "cu",
+          "hazard": "long-shadows",
+          "scene": "rest"
+        }
+      },
+      {
+        "id": "heart-11-0",
+        "row": 11,
+        "col": 0,
+        "type": "bigScare",
+        "next": [
+          "heart-12-0"
+        ],
+        "x": 0.69729,
+        "y": 0.21386,
+        "roomName": "Back Impossible Door",
+        "roomTag": "cn",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 11,
+          "tier": "late",
+          "roomTag": "cn",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-11-1",
+        "row": 11,
+        "col": 1,
+        "type": "curiosity",
+        "next": [
+          "heart-12-0",
+          "heart-12-1"
+        ],
+        "x": 0.69729,
+        "y": 0.32871,
+        "roomName": "Little Voice Chamber",
+        "roomTag": "cu",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 11,
+          "tier": "late",
+          "roomTag": "cu",
+          "hazard": null,
+          "scene": "event"
+        }
+      },
+      {
+        "id": "heart-11-2",
+        "row": 11,
+        "col": 2,
+        "type": "curiosity",
+        "next": [
+          "heart-12-1",
+          "heart-12-2"
+        ],
+        "x": 0.69729,
+        "y": 0.44554,
+        "roomName": "Little Observation Room",
+        "roomTag": "cu",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 11,
+          "tier": "late",
+          "roomTag": "cu",
+          "hazard": null,
+          "scene": "event"
+        }
+      },
+      {
+        "id": "heart-11-3",
+        "row": 11,
+        "col": 3,
+        "type": "bigScare",
+        "next": [
+          "heart-12-2",
+          "heart-12-3"
+        ],
+        "x": 0.69729,
+        "y": 0.56238,
+        "roomName": "Far Inner Stair",
+        "roomTag": "cn",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 11,
+          "tier": "late",
+          "roomTag": "cn",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-11-4",
+        "row": 11,
+        "col": 4,
+        "type": "scuffle",
+        "next": [
+          "heart-12-3"
+        ],
+        "x": 0.69729,
+        "y": 0.67723,
+        "roomName": "Far Ancestral Gallery",
+        "roomTag": "cl",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 11,
+          "tier": "late",
+          "roomTag": "cl",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-12-0",
+        "row": 12,
+        "col": 0,
+        "type": "scuffle",
+        "next": [
+          "heart-13-0"
+        ],
+        "x": 0.75616,
+        "y": 0.27624,
+        "roomName": "Far Pet Holding Ward",
+        "roomTag": "st",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 12,
+          "tier": "late",
+          "roomTag": "st",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-12-1",
+        "row": 12,
+        "col": 1,
+        "type": "bigScare",
+        "next": [
+          "heart-13-0",
+          "heart-13-1"
+        ],
+        "x": 0.75616,
+        "y": 0.3901,
+        "roomName": "Back Hall of Names",
+        "roomTag": "cl",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 12,
+          "tier": "late",
+          "roomTag": "cl",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-12-2",
+        "row": 12,
+        "col": 2,
+        "type": "scuffle",
+        "next": [
+          "heart-13-2"
+        ],
+        "x": 0.75616,
+        "y": 0.50099,
+        "roomName": "Inner Menagerie Hall",
+        "roomTag": "cl",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 12,
+          "tier": "late",
+          "roomTag": "cl",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-12-3",
+        "row": 12,
+        "col": 3,
+        "type": "safe",
+        "next": [
+          "heart-13-2"
+        ],
+        "x": 0.75616,
+        "y": 0.61485,
+        "roomName": "Far Sanctuary Garden",
+        "roomTag": "bf",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 12,
+          "tier": "late",
+          "roomTag": "bf",
+          "hazard": null,
+          "scene": "rest"
+        }
+      },
+      {
+        "id": "heart-13-0",
+        "row": 13,
+        "col": 0,
+        "type": "safe",
+        "next": [
+          "heart-boss"
+        ],
+        "x": 0.81182,
+        "y": 0.33267,
+        "roomName": "Old Voice Chamber",
+        "roomTag": "cu",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 13,
+          "tier": "late",
+          "roomTag": "cu",
+          "hazard": null,
+          "scene": "rest"
+        }
+      },
+      {
+        "id": "heart-13-1",
+        "row": 13,
+        "col": 1,
+        "type": "scuffle",
+        "next": [
+          "heart-boss"
+        ],
+        "x": 0.81182,
+        "y": 0.44554,
+        "roomName": "Second Quiet Kennels",
+        "roomTag": "sc",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 13,
+          "tier": "late",
+          "roomTag": "sc",
+          "hazard": null,
+          "scene": "combat"
+        }
+      },
+      {
+        "id": "heart-13-2",
+        "row": 13,
+        "col": 2,
+        "type": "treasure",
+        "next": [
+          "heart-boss"
+        ],
+        "x": 0.81182,
+        "y": 0.55842,
+        "roomName": "Far Buttons Vault",
+        "roomTag": "tr",
+        "visited": false,
+        "payload": {
+          "region": "heart",
+          "depth": 13,
+          "tier": "late",
+          "roomTag": "tr",
+          "hazard": null,
+          "scene": "reward"
+        }
+      },
+      {
+        "id": "heart-boss",
+        "row": 14,
+        "col": 2.5,
+        "type": "boss",
+        "next": [],
+        "x": 0.88424,
+        "y": 0.44554,
+        "roomName": "Heart Chamber",
+        "roomTag": "bo",
+        "visited": true,
+        "payload": {
+          "region": "heart",
+          "depth": 14,
+          "tier": "late",
+          "roomTag": "bo",
+          "hazard": null,
+          "scene": "combat",
+          "boss": "The Heart"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "heart-0-0",
+        "to": "heart-1-0",
+        "kind": "door",
+        "via": [
+          [
+            286,
+            254
+          ]
+        ]
+      },
+      {
+        "from": "heart-0-0",
+        "to": "heart-1-1",
+        "kind": "door",
+        "via": [
+          [
+            286,
+            314
+          ]
+        ]
+      },
+      {
+        "from": "heart-0-1",
+        "to": "heart-1-1",
+        "kind": "door",
+        "via": [
+          [
+            286,
+            371
+          ]
+        ]
+      },
+      {
+        "from": "heart-0-1",
+        "to": "heart-1-2",
+        "kind": "door",
+        "via": [
+          [
+            286,
+            425
+          ]
+        ]
+      },
+      {
+        "from": "heart-0-2",
+        "to": "heart-1-2",
+        "kind": "door",
+        "via": [
+          [
+            286,
+            475
+          ]
+        ]
+      },
+      {
+        "from": "heart-0-2",
+        "to": "heart-1-3",
+        "kind": "door",
+        "via": [
+          [
+            286,
+            533
+          ]
+        ]
+      },
+      {
+        "from": "heart-0-3",
+        "to": "heart-1-3",
+        "kind": "door",
+        "via": [
+          [
+            286,
+            586
+          ]
+        ]
+      },
+      {
+        "from": "heart-0-3",
+        "to": "heart-1-4",
+        "kind": "door",
+        "via": [
+          [
+            286,
+            645
+          ]
+        ]
+      },
+      {
+        "from": "heart-1-0",
+        "to": "heart-2-0",
+        "kind": "door",
+        "via": [
+          [
+            407,
+            253
+          ]
+        ]
+      },
+      {
+        "from": "heart-1-1",
+        "to": "heart-2-0",
+        "kind": "door",
+        "via": [
+          [
+            407,
+            314
+          ]
+        ]
+      },
+      {
+        "from": "heart-1-1",
+        "to": "heart-2-1",
+        "kind": "door",
+        "via": [
+          [
+            407,
+            370
+          ]
+        ]
+      },
+      {
+        "from": "heart-1-2",
+        "to": "heart-2-1",
+        "kind": "door",
+        "via": [
+          [
+            407,
+            423
+          ]
+        ]
+      },
+      {
+        "from": "heart-1-2",
+        "to": "heart-2-2",
+        "kind": "door",
+        "via": [
+          [
+            407,
+            474
+          ]
+        ]
+      },
+      {
+        "from": "heart-1-3",
+        "to": "heart-2-2",
+        "kind": "door",
+        "via": [
+          [
+            407,
+            533
+          ]
+        ]
+      },
+      {
+        "from": "heart-1-3",
+        "to": "heart-2-3",
+        "kind": "door",
+        "via": [
+          [
+            407,
+            585
+          ]
+        ]
+      },
+      {
+        "from": "heart-1-4",
+        "to": "heart-2-3",
+        "kind": "door",
+        "via": [
+          [
+            407,
+            653
+          ]
+        ]
+      },
+      {
+        "from": "heart-2-0",
+        "to": "heart-3-0",
+        "kind": "door",
+        "via": [
+          [
+            507,
+            243
+          ]
+        ]
+      },
+      {
+        "from": "heart-2-0",
+        "to": "heart-3-1",
+        "kind": "door",
+        "via": [
+          [
+            507,
+            305
+          ]
+        ]
+      },
+      {
+        "from": "heart-2-1",
+        "to": "heart-3-1",
+        "kind": "door",
+        "via": [
+          [
+            507,
+            366
+          ]
+        ]
+      },
+      {
+        "from": "heart-2-1",
+        "to": "heart-3-2",
+        "kind": "door",
+        "via": [
+          [
+            507,
+            419
+          ]
+        ]
+      },
+      {
+        "from": "heart-2-2",
+        "to": "heart-3-2",
+        "kind": "door",
+        "via": [
+          [
+            507,
+            481
+          ]
+        ]
+      },
+      {
+        "from": "heart-2-2",
+        "to": "heart-3-3",
+        "kind": "door",
+        "via": [
+          [
+            507,
+            533
+          ]
+        ]
+      },
+      {
+        "from": "heart-2-3",
+        "to": "heart-3-3",
+        "kind": "door",
+        "via": [
+          [
+            507,
+            595
+          ]
+        ]
+      },
+      {
+        "from": "heart-2-3",
+        "to": "heart-3-4",
+        "kind": "door",
+        "via": [
+          [
+            507,
+            654
+          ]
+        ]
+      },
+      {
+        "from": "heart-3-0",
+        "to": "heart-4-0",
+        "kind": "door",
+        "via": [
+          [
+            607,
+            255
+          ]
+        ]
+      },
+      {
+        "from": "heart-3-1",
+        "to": "heart-4-0",
+        "kind": "door",
+        "via": [
+          [
+            607,
+            304
+          ]
+        ]
+      },
+      {
+        "from": "heart-3-1",
+        "to": "heart-4-1",
+        "kind": "door",
+        "via": [
+          [
+            607,
+            367
+          ]
+        ]
+      },
+      {
+        "from": "heart-3-2",
+        "to": "heart-4-1",
+        "kind": "door",
+        "via": [
+          [
+            607,
+            419
+          ]
+        ]
+      },
+      {
+        "from": "heart-3-2",
+        "to": "heart-4-2",
+        "kind": "door",
+        "via": [
+          [
+            607,
+            475
+          ]
+        ]
+      },
+      {
+        "from": "heart-3-3",
+        "to": "heart-4-2",
+        "kind": "door",
+        "via": [
+          [
+            607,
+            531
+          ]
+        ]
+      },
+      {
+        "from": "heart-3-3",
+        "to": "heart-4-3",
+        "kind": "door",
+        "via": [
+          [
+            607,
+            593
+          ]
+        ]
+      },
+      {
+        "from": "heart-3-4",
+        "to": "heart-4-3",
+        "kind": "door",
+        "via": [
+          [
+            607,
+            645
+          ]
+        ]
+      },
+      {
+        "from": "heart-4-0",
+        "to": "heart-5-0",
+        "kind": "door",
+        "via": [
+          [
+            721,
+            257
+          ]
+        ]
+      },
+      {
+        "from": "heart-4-0",
+        "to": "heart-5-1",
+        "kind": "door",
+        "via": [
+          [
+            721,
+            312
+          ]
+        ]
+      },
+      {
+        "from": "heart-4-1",
+        "to": "heart-5-1",
+        "kind": "door",
+        "via": [
+          [
+            721,
+            364
+          ]
+        ]
+      },
+      {
+        "from": "heart-4-2",
+        "to": "heart-5-2",
+        "kind": "door",
+        "via": [
+          [
+            721,
+            476
+          ]
+        ]
+      },
+      {
+        "from": "heart-4-2",
+        "to": "heart-5-3",
+        "kind": "door",
+        "via": [
+          [
+            721,
+            535
+          ]
+        ]
+      },
+      {
+        "from": "heart-4-3",
+        "to": "heart-5-3",
+        "kind": "door",
+        "via": [
+          [
+            721,
+            588
+          ]
+        ]
+      },
+      {
+        "from": "heart-4-3",
+        "to": "heart-5-4",
+        "kind": "door",
+        "via": [
+          [
+            721,
+            642
+          ]
+        ]
+      },
+      {
+        "from": "heart-5-0",
+        "to": "heart-6-0",
+        "kind": "door",
+        "via": [
+          [
+            825,
+            238
+          ]
+        ]
+      },
+      {
+        "from": "heart-5-1",
+        "to": "heart-6-0",
+        "kind": "door",
+        "via": [
+          [
+            825,
+            311
+          ]
+        ]
+      },
+      {
+        "from": "heart-5-1",
+        "to": "heart-6-1",
+        "kind": "door",
+        "via": [
+          [
+            825,
+            362
+          ]
+        ]
+      },
+      {
+        "from": "heart-5-2",
+        "to": "heart-6-1",
+        "kind": "door",
+        "via": [
+          [
+            825,
+            417
+          ]
+        ]
+      },
+      {
+        "from": "heart-5-2",
+        "to": "heart-6-2",
+        "kind": "door",
+        "via": [
+          [
+            825,
+            479
+          ]
+        ]
+      },
+      {
+        "from": "heart-5-3",
+        "to": "heart-6-2",
+        "kind": "door",
+        "via": [
+          [
+            825,
+            535
+          ]
+        ]
+      },
+      {
+        "from": "heart-5-3",
+        "to": "heart-6-3",
+        "kind": "door",
+        "via": [
+          [
+            825,
+            593
+          ]
+        ]
+      },
+      {
+        "from": "heart-5-4",
+        "to": "heart-6-3",
+        "kind": "door",
+        "via": [
+          [
+            825,
+            652
+          ]
+        ]
+      },
+      {
+        "from": "heart-6-0",
+        "to": "heart-7-0",
+        "kind": "door",
+        "via": [
+          [
+            922,
+            216
+          ]
+        ]
+      },
+      {
+        "from": "heart-6-0",
+        "to": "heart-7-1",
+        "kind": "door",
+        "via": [
+          [
+            922,
+            290
+          ]
+        ]
+      },
+      {
+        "from": "heart-6-1",
+        "to": "heart-7-1",
+        "kind": "door",
+        "via": [
+          [
+            922,
+            363
+          ]
+        ]
+      },
+      {
+        "from": "heart-6-1",
+        "to": "heart-7-2",
+        "kind": "door",
+        "via": [
+          [
+            922,
+            417
+          ]
+        ]
+      },
+      {
+        "from": "heart-6-2",
+        "to": "heart-7-2",
+        "kind": "door",
+        "via": [
+          [
+            922,
+            483
+          ]
+        ]
+      },
+      {
+        "from": "heart-6-2",
+        "to": "heart-7-3",
+        "kind": "door",
+        "via": [
+          [
+            922,
+            540
+          ]
+        ]
+      },
+      {
+        "from": "heart-6-3",
+        "to": "heart-7-3",
+        "kind": "door",
+        "via": [
+          [
+            922,
+            615
+          ]
+        ]
+      },
+      {
+        "from": "heart-6-3",
+        "to": "heart-7-4",
+        "kind": "door",
+        "via": [
+          [
+            922,
+            694
+          ]
+        ]
+      },
+      {
+        "from": "heart-7-0",
+        "to": "heart-8-0",
+        "kind": "door",
+        "via": [
+          [
+            1022,
+            225
+          ]
+        ]
+      },
+      {
+        "from": "heart-7-1",
+        "to": "heart-8-0",
+        "kind": "door",
+        "via": [
+          [
+            1022,
+            298
+          ]
+        ]
+      },
+      {
+        "from": "heart-7-1",
+        "to": "heart-8-1",
+        "kind": "door",
+        "via": [
+          [
+            1022,
+            363
+          ]
+        ]
+      },
+      {
+        "from": "heart-7-2",
+        "to": "heart-8-1",
+        "kind": "door",
+        "via": [
+          [
+            1022,
+            420
+          ]
+        ]
+      },
+      {
+        "from": "heart-7-2",
+        "to": "heart-8-2",
+        "kind": "door",
+        "via": [
+          [
+            1022,
+            475
+          ]
+        ]
+      },
+      {
+        "from": "heart-7-3",
+        "to": "heart-8-2",
+        "kind": "door",
+        "via": [
+          [
+            1022,
+            533
+          ]
+        ]
+      },
+      {
+        "from": "heart-7-3",
+        "to": "heart-8-3",
+        "kind": "door",
+        "via": [
+          [
+            1022,
+            618
+          ]
+        ]
+      },
+      {
+        "from": "heart-7-3",
+        "to": "heart-9-3",
+        "kind": "hall",
+        "via": [
+          [
+            1022,
+            572
+          ],
+          [
+            1128,
+            572
+          ]
+        ]
+      },
+      {
+        "from": "heart-7-4",
+        "to": "heart-8-3",
+        "kind": "door",
+        "via": [
+          [
+            1022,
+            677
+          ]
+        ]
+      },
+      {
+        "from": "heart-8-0",
+        "to": "heart-9-0",
+        "kind": "door",
+        "via": [
+          [
+            1128,
+            227
+          ]
+        ]
+      },
+      {
+        "from": "heart-8-0",
+        "to": "heart-9-1",
+        "kind": "door",
+        "via": [
+          [
+            1128,
+            302
+          ]
+        ]
+      },
+      {
+        "from": "heart-8-1",
+        "to": "heart-9-1",
+        "kind": "door",
+        "via": [
+          [
+            1128,
+            360
+          ]
+        ]
+      },
+      {
+        "from": "heart-8-1",
+        "to": "heart-9-2",
+        "kind": "door",
+        "via": [
+          [
+            1128,
+            423
+          ]
+        ]
+      },
+      {
+        "from": "heart-8-2",
+        "to": "heart-9-2",
+        "kind": "door",
+        "via": [
+          [
+            1128,
+            477
+          ]
+        ]
+      },
+      {
+        "from": "heart-8-2",
+        "to": "heart-9-3",
+        "kind": "door",
+        "via": [
+          [
+            1128,
+            531
+          ]
+        ]
+      },
+      {
+        "from": "heart-8-3",
+        "to": "heart-9-4",
+        "kind": "door",
+        "via": [
+          [
+            1128,
+            679
+          ]
+        ]
+      },
+      {
+        "from": "heart-9-0",
+        "to": "heart-10-0",
+        "kind": "door",
+        "via": [
+          [
+            1247,
+            244
+          ]
+        ]
+      },
+      {
+        "from": "heart-9-1",
+        "to": "heart-10-0",
+        "kind": "door",
+        "via": [
+          [
+            1247,
+            305
+          ]
+        ]
+      },
+      {
+        "from": "heart-9-1",
+        "to": "heart-10-1",
+        "kind": "door",
+        "via": [
+          [
+            1247,
+            359
+          ]
+        ]
+      },
+      {
+        "from": "heart-9-2",
+        "to": "heart-10-1",
+        "kind": "door",
+        "via": [
+          [
+            1247,
+            424
+          ]
+        ]
+      },
+      {
+        "from": "heart-9-2",
+        "to": "heart-10-2",
+        "kind": "door",
+        "via": [
+          [
+            1247,
+            478
+          ]
+        ]
+      },
+      {
+        "from": "heart-9-3",
+        "to": "heart-10-2",
+        "kind": "door",
+        "via": [
+          [
+            1247,
+            534
+          ]
+        ]
+      },
+      {
+        "from": "heart-9-3",
+        "to": "heart-10-3",
+        "kind": "door",
+        "via": [
+          [
+            1247,
+            597
+          ]
+        ]
+      },
+      {
+        "from": "heart-9-4",
+        "to": "heart-10-3",
+        "kind": "door",
+        "via": [
+          [
+            1247,
+            656
+          ]
+        ]
+      },
+      {
+        "from": "heart-10-0",
+        "to": "heart-11-0",
+        "kind": "door",
+        "via": [
+          [
+            1357,
+            245
+          ]
+        ]
+      },
+      {
+        "from": "heart-10-0",
+        "to": "heart-11-1",
+        "kind": "door",
+        "via": [
+          [
+            1357,
+            303
+          ]
+        ]
+      },
+      {
+        "from": "heart-10-1",
+        "to": "heart-11-1",
+        "kind": "door",
+        "via": [
+          [
+            1357,
+            359
+          ]
+        ]
+      },
+      {
+        "from": "heart-10-1",
+        "to": "heart-11-2",
+        "kind": "door",
+        "via": [
+          [
+            1357,
+            419
+          ]
+        ]
+      },
+      {
+        "from": "heart-10-2",
+        "to": "heart-11-2",
+        "kind": "door",
+        "via": [
+          [
+            1357,
+            484
+          ]
+        ]
+      },
+      {
+        "from": "heart-10-2",
+        "to": "heart-11-3",
+        "kind": "door",
+        "via": [
+          [
+            1357,
+            542
+          ]
+        ]
+      },
+      {
+        "from": "heart-10-3",
+        "to": "heart-11-3",
+        "kind": "door",
+        "via": [
+          [
+            1357,
+            598
+          ]
+        ]
+      },
+      {
+        "from": "heart-10-3",
+        "to": "heart-11-4",
+        "kind": "door",
+        "via": [
+          [
+            1357,
+            652
+          ]
+        ]
+      },
+      {
+        "from": "heart-11-0",
+        "to": "heart-12-0",
+        "kind": "door",
+        "via": [
+          [
+            1474,
+            248
+          ]
+        ]
+      },
+      {
+        "from": "heart-11-1",
+        "to": "heart-12-0",
+        "kind": "door",
+        "via": [
+          [
+            1474,
+            310
+          ]
+        ]
+      },
+      {
+        "from": "heart-11-1",
+        "to": "heart-12-1",
+        "kind": "door",
+        "via": [
+          [
+            1474,
+            364
+          ]
+        ]
+      },
+      {
+        "from": "heart-11-2",
+        "to": "heart-12-1",
+        "kind": "door",
+        "via": [
+          [
+            1474,
+            417
+          ]
+        ]
+      },
+      {
+        "from": "heart-11-2",
+        "to": "heart-12-2",
+        "kind": "door",
+        "via": [
+          [
+            1474,
+            485
+          ]
+        ]
+      },
+      {
+        "from": "heart-11-3",
+        "to": "heart-12-2",
+        "kind": "door",
+        "via": [
+          [
+            1474,
+            538
+          ]
+        ]
+      },
+      {
+        "from": "heart-11-3",
+        "to": "heart-12-3",
+        "kind": "door",
+        "via": [
+          [
+            1474,
+            593
+          ]
+        ]
+      },
+      {
+        "from": "heart-11-4",
+        "to": "heart-12-3",
+        "kind": "door",
+        "via": [
+          [
+            1474,
+            652
+          ]
+        ]
+      },
+      {
+        "from": "heart-12-0",
+        "to": "heart-13-0",
+        "kind": "door",
+        "via": [
+          [
+            1596,
+            312
+          ]
+        ]
+      },
+      {
+        "from": "heart-12-1",
+        "to": "heart-13-0",
+        "kind": "door",
+        "via": [
+          [
+            1596,
+            365
+          ]
+        ]
+      },
+      {
+        "from": "heart-12-1",
+        "to": "heart-13-1",
+        "kind": "door",
+        "via": [
+          [
+            1596,
+            420
+          ]
+        ]
+      },
+      {
+        "from": "heart-12-2",
+        "to": "heart-13-2",
+        "kind": "door",
+        "via": [
+          [
+            1596,
+            535
+          ]
+        ]
+      },
+      {
+        "from": "heart-12-3",
+        "to": "heart-13-2",
+        "kind": "door",
+        "via": [
+          [
+            1596,
+            593
+          ]
+        ]
+      },
+      {
+        "from": "heart-13-0",
+        "to": "heart-boss",
+        "kind": "door",
+        "via": [
+          [
+            1700,
+            336
+          ]
+        ]
+      },
+      {
+        "from": "heart-13-1",
+        "to": "heart-boss",
+        "kind": "door",
+        "via": [
+          [
+            1700,
+            450
+          ]
+        ]
+      },
+      {
+        "from": "heart-13-2",
+        "to": "heart-boss",
+        "kind": "door",
+        "via": [
+          [
+            1700,
+            564
+          ]
+        ]
+      }
+    ],
+    "bossId": "heart-boss",
+    "startIds": [
+      "heart-0-0",
+      "heart-0-1",
+      "heart-0-2",
+      "heart-0-3"
+    ],
+    "hazards": [
+      {
+        "id": "paw-prints",
+        "kind": "boon",
+        "name": "Fresh Paw Prints",
+        "rule": "A trail runs through here. Every room inside the marked area also yields a Clue for your Kid.",
+        "note": "tracks logged, not yet followed",
+        "glyph": "paw",
+        "rows": [
+          3,
+          4
+        ],
+        "cols": [
+          1,
+          3
+        ],
+        "nodeIds": [
+          "heart-3-2",
+          "heart-3-3",
+          "heart-4-1",
+          "heart-4-2",
+          "heart-4-3"
+        ],
+        "rect": {
+          "x0": 0.22938000000000003,
+          "x1": 0.37209,
+          "y0": 0.3301,
+          "y1": 0.66842
+        }
+      },
+      {
+        "id": "sagging",
+        "kind": "hazard",
+        "name": "The Floor Sags",
+        "rule": "Entering any room inside the marked area costs 3 Courage. The boards remember your weight.",
+        "note": "joists unsound \u2014 do not crowd",
+        "glyph": "beam",
+        "rows": [
+          5,
+          6
+        ],
+        "cols": [
+          1,
+          2
+        ],
+        "nodeIds": [
+          "heart-5-1",
+          "heart-5-2",
+          "heart-6-1"
+        ],
+        "rect": {
+          "x0": 0.33579000000000003,
+          "x1": 0.4753,
+          "y0": 0.27366,
+          "y1": 0.50554
+        }
+      },
+      {
+        "id": "long-shadows",
+        "kind": "hazard",
+        "name": "Long Shadows",
+        "rule": "Guard you gain is halved while you are inside the marked area. Your defence is worth less in the dark.",
+        "note": "no daylight reaches these rooms",
+        "glyph": "shadow",
+        "rows": [
+          8,
+          10
+        ],
+        "cols": [
+          2,
+          4
+        ],
+        "nodeIds": [
+          "heart-8-2",
+          "heart-8-3",
+          "heart-9-3",
+          "heart-9-4",
+          "heart-10-2",
+          "heart-10-3"
+        ],
+        "rect": {
+          "x0": 0.48456000000000005,
+          "x1": 0.68638,
+          "y0": 0.43752,
+          "y1": 0.7441599999999999
+        }
+      }
+    ],
+    "meta": {
+      "slug": "heart",
+      "name": "The Heart of the House",
+      "boss": "The Heart",
+      "companion": "",
+      "section": 17,
+      "lanes": 6,
+      "rows": 15,
+      "form": "Impossible interior \u00b7 a plan folded into an organ",
+      "index": 17,
+      "roman": "XVII"
+    },
+    "plan": {
+      "v": 1,
+      "style": "stone",
+      "sheet": {
+        "w": 2030,
+        "h": 1010
+      },
+      "box": {
+        "x0": 176,
+        "y0": 133,
+        "x1": 1890,
+        "y1": 767
+      },
+      "cols": [
+        176,
+        286,
+        407,
+        507,
+        607,
+        721,
+        825,
+        922,
+        1022,
+        1128,
+        1247,
+        1357,
+        1474,
+        1596,
+        1700
+      ],
+      "rooms": [
+        {
+          "id": "heart-0-0",
+          "row": 0,
+          "tag": "sc",
+          "name": "Quiet Kennels",
+          "type": "scuffle",
+          "x0": 176,
+          "x1": 286,
+          "y0": 227,
+          "y1": 338
+        },
+        {
+          "id": "heart-0-1",
+          "row": 0,
+          "tag": "sc",
+          "name": "Pulse Passage",
+          "type": "scuffle",
+          "x0": 176,
+          "x1": 286,
+          "y0": 338,
+          "y1": 450
+        },
+        {
+          "id": "heart-0-2",
+          "row": 0,
+          "tag": "sc",
+          "name": "Threshold Hall",
+          "type": "scuffle",
+          "x0": 176,
+          "x1": 286,
+          "y0": 450,
+          "y1": 562
+        },
+        {
+          "id": "heart-0-3",
+          "row": 0,
+          "tag": "sc",
+          "name": "House Nursery",
+          "type": "scuffle",
+          "x0": 176,
+          "x1": 286,
+          "y0": 562,
+          "y1": 673
+        },
+        {
+          "id": "heart-1-0",
+          "row": 1,
+          "tag": "cn",
+          "name": "Impossible Door",
+          "type": "scuffle",
+          "x0": 286,
+          "x1": 407,
+          "y0": 162,
+          "y1": 289
+        },
+        {
+          "id": "heart-1-1",
+          "row": 1,
+          "tag": "cn",
+          "name": "Inner Stair",
+          "type": "scuffle",
+          "x0": 286,
+          "x1": 407,
+          "y0": 289,
+          "y1": 396
+        },
+        {
+          "id": "heart-1-2",
+          "row": 1,
+          "tag": "cu",
+          "name": "Observation Room",
+          "type": "scuffle",
+          "x0": 286,
+          "x1": 407,
+          "y0": 396,
+          "y1": 504
+        },
+        {
+          "id": "heart-1-3",
+          "row": 1,
+          "tag": "cu",
+          "name": "Voice Chamber",
+          "type": "scuffle",
+          "x0": 286,
+          "x1": 407,
+          "y0": 504,
+          "y1": 611
+        },
+        {
+          "id": "heart-1-4",
+          "row": 1,
+          "tag": "cu",
+          "name": "Memory Room",
+          "type": "scuffle",
+          "x0": 286,
+          "x1": 407,
+          "y0": 611,
+          "y1": 738
+        },
+        {
+          "id": "heart-2-0",
+          "row": 2,
+          "tag": "cl",
+          "name": "Hall of Collars",
+          "type": "curiosity",
+          "x0": 407,
+          "x1": 507,
+          "y0": 217,
+          "y1": 343
+        },
+        {
+          "id": "heart-2-1",
+          "row": 2,
+          "tag": "cl",
+          "name": "Ancestral Gallery",
+          "type": "unknown",
+          "x0": 407,
+          "x1": 507,
+          "y0": 343,
+          "y1": 450
+        },
+        {
+          "id": "heart-2-2",
+          "row": 2,
+          "tag": "cl",
+          "name": "Hall of Names",
+          "type": "unknown",
+          "x0": 407,
+          "x1": 507,
+          "y0": 450,
+          "y1": 557
+        },
+        {
+          "id": "heart-2-3",
+          "row": 2,
+          "tag": "cl",
+          "name": "New Arrival Ward",
+          "type": "unknown",
+          "x0": 407,
+          "x1": 507,
+          "y0": 557,
+          "y1": 683
+        },
+        {
+          "id": "heart-3-0",
+          "row": 3,
+          "tag": "bs",
+          "name": "Inner Sanctuary",
+          "type": "scuffle",
+          "x0": 507,
+          "x1": 607,
+          "y0": 157,
+          "y1": 278
+        },
+        {
+          "id": "heart-3-1",
+          "row": 3,
+          "tag": "bf",
+          "name": "Sanctuary Garden",
+          "type": "scuffle",
+          "x0": 507,
+          "x1": 607,
+          "y0": 278,
+          "y1": 393
+        },
+        {
+          "id": "heart-3-2",
+          "row": 3,
+          "tag": "cl",
+          "name": "Menagerie Hall",
+          "type": "scuffle",
+          "x0": 507,
+          "x1": 607,
+          "y0": 393,
+          "y1": 507
+        },
+        {
+          "id": "heart-3-3",
+          "row": 3,
+          "tag": "tr",
+          "name": "Buttons Vault",
+          "type": "scuffle",
+          "x0": 507,
+          "x1": 607,
+          "y0": 507,
+          "y1": 622
+        },
+        {
+          "id": "heart-3-4",
+          "row": 3,
+          "tag": "st",
+          "name": "Pet Holding Ward",
+          "type": "curiosity",
+          "x0": 507,
+          "x1": 607,
+          "y0": 622,
+          "y1": 743
+        },
+        {
+          "id": "heart-4-0",
+          "row": 4,
+          "tag": "bs",
+          "name": "Transformation Gallery",
+          "type": "safe",
+          "x0": 607,
+          "x1": 721,
+          "y0": 233,
+          "y1": 338
+        },
+        {
+          "id": "heart-4-1",
+          "row": 4,
+          "tag": "cn",
+          "name": "West Inner Stair",
+          "type": "unknown",
+          "x0": 607,
+          "x1": 721,
+          "y0": 338,
+          "y1": 450
+        },
+        {
+          "id": "heart-4-2",
+          "row": 4,
+          "tag": "bf",
+          "name": "West Sanctuary Garden",
+          "type": "safe",
+          "x0": 607,
+          "x1": 721,
+          "y0": 450,
+          "y1": 562
+        },
+        {
+          "id": "heart-4-3",
+          "row": 4,
+          "tag": "sc",
+          "name": "East House Nursery",
+          "type": "scuffle",
+          "x0": 607,
+          "x1": 721,
+          "y0": 562,
+          "y1": 667
+        },
+        {
+          "id": "heart-5-0",
+          "row": 5,
+          "tag": "cu",
+          "name": "West Memory Room",
+          "type": "shop",
+          "x0": 721,
+          "x1": 825,
+          "y0": 177,
+          "y1": 283
+        },
+        {
+          "id": "heart-5-1",
+          "row": 5,
+          "tag": "cu",
+          "name": "West Observation Room",
+          "type": "curiosity",
+          "x0": 721,
+          "x1": 825,
+          "y0": 283,
+          "y1": 391
+        },
+        {
+          "id": "heart-5-2",
+          "row": 5,
+          "tag": "sc",
+          "name": "West Quiet Kennels",
+          "type": "scuffle",
+          "x0": 721,
+          "x1": 825,
+          "y0": 391,
+          "y1": 509
+        },
+        {
+          "id": "heart-5-3",
+          "row": 5,
+          "tag": "sc",
+          "name": "East Threshold Hall",
+          "type": "scuffle",
+          "x0": 721,
+          "x1": 825,
+          "y0": 509,
+          "y1": 617
+        },
+        {
+          "id": "heart-5-4",
+          "row": 5,
+          "tag": "sc",
+          "name": "East Pulse Passage",
+          "type": "scuffle",
+          "x0": 721,
+          "x1": 825,
+          "y0": 617,
+          "y1": 723
+        },
+        {
+          "id": "heart-6-0",
+          "row": 6,
+          "tag": "cn",
+          "name": "West Impossible Door",
+          "type": "scuffle",
+          "x0": 825,
+          "x1": 922,
+          "y0": 177,
+          "y1": 336
+        },
+        {
+          "id": "heart-6-1",
+          "row": 6,
+          "tag": "cu",
+          "name": "West Voice Chamber",
+          "type": "scuffle",
+          "x0": 825,
+          "x1": 922,
+          "y0": 336,
+          "y1": 450
+        },
+        {
+          "id": "heart-6-2",
+          "row": 6,
+          "tag": "cl",
+          "name": "West Hall of Names",
+          "type": "curiosity",
+          "x0": 825,
+          "x1": 922,
+          "y0": 450,
+          "y1": 564
+        },
+        {
+          "id": "heart-6-3",
+          "row": 6,
+          "tag": "cl",
+          "name": "East New Arrival Ward",
+          "type": "unknown",
+          "x0": 825,
+          "x1": 922,
+          "y0": 564,
+          "y1": 723
+        },
+        {
+          "id": "heart-7-0",
+          "row": 7,
+          "tag": "cl",
+          "name": "West Ancestral Gallery",
+          "type": "curiosity",
+          "x0": 922,
+          "x1": 1022,
+          "y0": 133,
+          "y1": 251
+        },
+        {
+          "id": "heart-7-1",
+          "row": 7,
+          "tag": "cl",
+          "name": "West Hall of Collars",
+          "type": "unknown",
+          "x0": 922,
+          "x1": 1022,
+          "y0": 251,
+          "y1": 390
+        },
+        {
+          "id": "heart-7-2",
+          "row": 7,
+          "tag": "st",
+          "name": "West Pet Holding Ward",
+          "type": "scuffle",
+          "x0": 922,
+          "x1": 1022,
+          "y0": 390,
+          "y1": 510
+        },
+        {
+          "id": "heart-7-3",
+          "row": 7,
+          "tag": "tr",
+          "name": "East Buttons Vault",
+          "type": "scuffle",
+          "x0": 922,
+          "x1": 1022,
+          "y0": 510,
+          "y1": 649
+        },
+        {
+          "id": "heart-7-4",
+          "row": 7,
+          "tag": "cl",
+          "name": "East Menagerie Hall",
+          "type": "treasure",
+          "x0": 922,
+          "x1": 1022,
+          "y0": 649,
+          "y1": 767
+        },
+        {
+          "id": "heart-8-0",
+          "row": 8,
+          "tag": "bs",
+          "name": "West Transformation Gallery",
+          "type": "treasure",
+          "x0": 1022,
+          "x1": 1128,
+          "y0": 191,
+          "y1": 328
+        },
+        {
+          "id": "heart-8-1",
+          "row": 8,
+          "tag": "bs",
+          "name": "West Inner Sanctuary",
+          "type": "bigScare",
+          "x0": 1022,
+          "x1": 1128,
+          "y0": 328,
+          "y1": 450
+        },
+        {
+          "id": "heart-8-2",
+          "row": 8,
+          "tag": "tr",
+          "name": "Little Buttons Vault",
+          "type": "treasure",
+          "x0": 1022,
+          "x1": 1128,
+          "y0": 450,
+          "y1": 555
+        },
+        {
+          "id": "heart-8-3",
+          "row": 8,
+          "tag": "sc",
+          "name": "Inner Pulse Passage",
+          "type": "scuffle",
+          "x0": 1022,
+          "x1": 1128,
+          "y0": 589,
+          "y1": 709
+        },
+        {
+          "id": "heart-9-0",
+          "row": 9,
+          "tag": "bs",
+          "name": "Far Transformation Gallery",
+          "type": "bigScare",
+          "x0": 1128,
+          "x1": 1247,
+          "y0": 147,
+          "y1": 271
+        },
+        {
+          "id": "heart-9-1",
+          "row": 9,
+          "tag": "sc",
+          "name": "Inner Threshold Hall",
+          "type": "scuffle",
+          "x0": 1128,
+          "x1": 1247,
+          "y0": 271,
+          "y1": 398
+        },
+        {
+          "id": "heart-9-2",
+          "row": 9,
+          "tag": "sc",
+          "name": "Old Quiet Kennels",
+          "type": "scuffle",
+          "x0": 1128,
+          "x1": 1247,
+          "y0": 398,
+          "y1": 502
+        },
+        {
+          "id": "heart-9-3",
+          "row": 9,
+          "tag": "bs",
+          "name": "Little Inner Sanctuary",
+          "type": "bigScare",
+          "x0": 1128,
+          "x1": 1247,
+          "y0": 502,
+          "y1": 629
+        },
+        {
+          "id": "heart-9-4",
+          "row": 9,
+          "tag": "cl",
+          "name": "Old Hall of Collars",
+          "type": "treasure",
+          "x0": 1128,
+          "x1": 1247,
+          "y0": 629,
+          "y1": 753
+        },
+        {
+          "id": "heart-10-0",
+          "row": 10,
+          "tag": "bf",
+          "name": "Little Sanctuary Garden",
+          "type": "safe",
+          "x0": 1247,
+          "x1": 1357,
+          "y0": 220,
+          "y1": 331
+        },
+        {
+          "id": "heart-10-1",
+          "row": 10,
+          "tag": "sc",
+          "name": "Back House Nursery",
+          "type": "bigScare",
+          "x0": 1247,
+          "x1": 1357,
+          "y0": 331,
+          "y1": 450
+        },
+        {
+          "id": "heart-10-2",
+          "row": 10,
+          "tag": "cl",
+          "name": "Little New Arrival Ward",
+          "type": "treasure",
+          "x0": 1247,
+          "x1": 1357,
+          "y0": 450,
+          "y1": 569
+        },
+        {
+          "id": "heart-10-3",
+          "row": 10,
+          "tag": "cu",
+          "name": "Front Memory Room",
+          "type": "safe",
+          "x0": 1247,
+          "x1": 1357,
+          "y0": 569,
+          "y1": 680
+        },
+        {
+          "id": "heart-11-0",
+          "row": 11,
+          "tag": "cn",
+          "name": "Back Impossible Door",
+          "type": "bigScare",
+          "x0": 1357,
+          "x1": 1474,
+          "y0": 156,
+          "y1": 276
+        },
+        {
+          "id": "heart-11-1",
+          "row": 11,
+          "tag": "cu",
+          "name": "Little Voice Chamber",
+          "type": "curiosity",
+          "x0": 1357,
+          "x1": 1474,
+          "y0": 276,
+          "y1": 388
+        },
+        {
+          "id": "heart-11-2",
+          "row": 11,
+          "tag": "cu",
+          "name": "Little Observation Room",
+          "type": "curiosity",
+          "x0": 1357,
+          "x1": 1474,
+          "y0": 388,
+          "y1": 512
+        },
+        {
+          "id": "heart-11-3",
+          "row": 11,
+          "tag": "cn",
+          "name": "Far Inner Stair",
+          "type": "bigScare",
+          "x0": 1357,
+          "x1": 1474,
+          "y0": 512,
+          "y1": 624
+        },
+        {
+          "id": "heart-11-4",
+          "row": 11,
+          "tag": "cl",
+          "name": "Far Ancestral Gallery",
+          "type": "scuffle",
+          "x0": 1357,
+          "x1": 1474,
+          "y0": 624,
+          "y1": 744
+        },
+        {
+          "id": "heart-12-0",
+          "row": 12,
+          "tag": "st",
+          "name": "Far Pet Holding Ward",
+          "type": "scuffle",
+          "x0": 1474,
+          "x1": 1596,
+          "y0": 220,
+          "y1": 338
+        },
+        {
+          "id": "heart-12-1",
+          "row": 12,
+          "tag": "cl",
+          "name": "Back Hall of Names",
+          "type": "bigScare",
+          "x0": 1474,
+          "x1": 1596,
+          "y0": 338,
+          "y1": 450
+        },
+        {
+          "id": "heart-12-2",
+          "row": 12,
+          "tag": "cl",
+          "name": "Inner Menagerie Hall",
+          "type": "scuffle",
+          "x0": 1474,
+          "x1": 1596,
+          "y0": 450,
+          "y1": 562
+        },
+        {
+          "id": "heart-12-3",
+          "row": 12,
+          "tag": "bf",
+          "name": "Far Sanctuary Garden",
+          "type": "safe",
+          "x0": 1474,
+          "x1": 1596,
+          "y0": 562,
+          "y1": 680
+        },
+        {
+          "id": "heart-13-0",
+          "row": 13,
+          "tag": "cu",
+          "name": "Old Voice Chamber",
+          "type": "safe",
+          "x0": 1596,
+          "x1": 1700,
+          "y0": 279,
+          "y1": 393
+        },
+        {
+          "id": "heart-13-1",
+          "row": 13,
+          "tag": "sc",
+          "name": "Second Quiet Kennels",
+          "type": "scuffle",
+          "x0": 1596,
+          "x1": 1700,
+          "y0": 393,
+          "y1": 507
+        },
+        {
+          "id": "heart-13-2",
+          "row": 13,
+          "tag": "tr",
+          "name": "Far Buttons Vault",
+          "type": "treasure",
+          "x0": 1596,
+          "x1": 1700,
+          "y0": 507,
+          "y1": 621
+        },
+        {
+          "id": "heart-boss",
+          "row": 14,
+          "tag": "bo",
+          "name": "Heart Chamber",
+          "type": "boss",
+          "x0": 1700,
+          "x1": 1890,
+          "y0": 261,
+          "y1": 639
+        }
+      ],
+      "halls": [
+        {
+          "from": "heart-7-3",
+          "to": "heart-9-3",
+          "t": 8,
+          "x0": 1022,
+          "x1": 1128,
+          "y0": 555,
+          "y1": 589,
+          "y": 572
+        }
+      ],
+      "doors": [
+        {
+          "x": 286,
+          "y": 254,
+          "from": "heart-0-0",
+          "to": "heart-1-0",
+          "kind": "door"
+        },
+        {
+          "x": 286,
+          "y": 314,
+          "from": "heart-0-0",
+          "to": "heart-1-1",
+          "kind": "door"
+        },
+        {
+          "x": 286,
+          "y": 371,
+          "from": "heart-0-1",
+          "to": "heart-1-1",
+          "kind": "door"
+        },
+        {
+          "x": 286,
+          "y": 425,
+          "from": "heart-0-1",
+          "to": "heart-1-2",
+          "kind": "door"
+        },
+        {
+          "x": 286,
+          "y": 475,
+          "from": "heart-0-2",
+          "to": "heart-1-2",
+          "kind": "door"
+        },
+        {
+          "x": 286,
+          "y": 533,
+          "from": "heart-0-2",
+          "to": "heart-1-3",
+          "kind": "door"
+        },
+        {
+          "x": 286,
+          "y": 586,
+          "from": "heart-0-3",
+          "to": "heart-1-3",
+          "kind": "door"
+        },
+        {
+          "x": 286,
+          "y": 645,
+          "from": "heart-0-3",
+          "to": "heart-1-4",
+          "kind": "door"
+        },
+        {
+          "x": 407,
+          "y": 253,
+          "from": "heart-1-0",
+          "to": "heart-2-0",
+          "kind": "door"
+        },
+        {
+          "x": 407,
+          "y": 314,
+          "from": "heart-1-1",
+          "to": "heart-2-0",
+          "kind": "door"
+        },
+        {
+          "x": 407,
+          "y": 370,
+          "from": "heart-1-1",
+          "to": "heart-2-1",
+          "kind": "door"
+        },
+        {
+          "x": 407,
+          "y": 423,
+          "from": "heart-1-2",
+          "to": "heart-2-1",
+          "kind": "door"
+        },
+        {
+          "x": 407,
+          "y": 474,
+          "from": "heart-1-2",
+          "to": "heart-2-2",
+          "kind": "door"
+        },
+        {
+          "x": 407,
+          "y": 533,
+          "from": "heart-1-3",
+          "to": "heart-2-2",
+          "kind": "door"
+        },
+        {
+          "x": 407,
+          "y": 585,
+          "from": "heart-1-3",
+          "to": "heart-2-3",
+          "kind": "door"
+        },
+        {
+          "x": 407,
+          "y": 653,
+          "from": "heart-1-4",
+          "to": "heart-2-3",
+          "kind": "door"
+        },
+        {
+          "x": 507,
+          "y": 243,
+          "from": "heart-2-0",
+          "to": "heart-3-0",
+          "kind": "door"
+        },
+        {
+          "x": 507,
+          "y": 305,
+          "from": "heart-2-0",
+          "to": "heart-3-1",
+          "kind": "door"
+        },
+        {
+          "x": 507,
+          "y": 366,
+          "from": "heart-2-1",
+          "to": "heart-3-1",
+          "kind": "door"
+        },
+        {
+          "x": 507,
+          "y": 419,
+          "from": "heart-2-1",
+          "to": "heart-3-2",
+          "kind": "door"
+        },
+        {
+          "x": 507,
+          "y": 481,
+          "from": "heart-2-2",
+          "to": "heart-3-2",
+          "kind": "door"
+        },
+        {
+          "x": 507,
+          "y": 533,
+          "from": "heart-2-2",
+          "to": "heart-3-3",
+          "kind": "door"
+        },
+        {
+          "x": 507,
+          "y": 595,
+          "from": "heart-2-3",
+          "to": "heart-3-3",
+          "kind": "door"
+        },
+        {
+          "x": 507,
+          "y": 654,
+          "from": "heart-2-3",
+          "to": "heart-3-4",
+          "kind": "door"
+        },
+        {
+          "x": 607,
+          "y": 255,
+          "from": "heart-3-0",
+          "to": "heart-4-0",
+          "kind": "door"
+        },
+        {
+          "x": 607,
+          "y": 304,
+          "from": "heart-3-1",
+          "to": "heart-4-0",
+          "kind": "door"
+        },
+        {
+          "x": 607,
+          "y": 367,
+          "from": "heart-3-1",
+          "to": "heart-4-1",
+          "kind": "door"
+        },
+        {
+          "x": 607,
+          "y": 419,
+          "from": "heart-3-2",
+          "to": "heart-4-1",
+          "kind": "door"
+        },
+        {
+          "x": 607,
+          "y": 475,
+          "from": "heart-3-2",
+          "to": "heart-4-2",
+          "kind": "door"
+        },
+        {
+          "x": 607,
+          "y": 531,
+          "from": "heart-3-3",
+          "to": "heart-4-2",
+          "kind": "door"
+        },
+        {
+          "x": 607,
+          "y": 593,
+          "from": "heart-3-3",
+          "to": "heart-4-3",
+          "kind": "door"
+        },
+        {
+          "x": 607,
+          "y": 645,
+          "from": "heart-3-4",
+          "to": "heart-4-3",
+          "kind": "door"
+        },
+        {
+          "x": 721,
+          "y": 257,
+          "from": "heart-4-0",
+          "to": "heart-5-0",
+          "kind": "door"
+        },
+        {
+          "x": 721,
+          "y": 312,
+          "from": "heart-4-0",
+          "to": "heart-5-1",
+          "kind": "door"
+        },
+        {
+          "x": 721,
+          "y": 364,
+          "from": "heart-4-1",
+          "to": "heart-5-1",
+          "kind": "door"
+        },
+        {
+          "x": 721,
+          "y": 476,
+          "from": "heart-4-2",
+          "to": "heart-5-2",
+          "kind": "door"
+        },
+        {
+          "x": 721,
+          "y": 535,
+          "from": "heart-4-2",
+          "to": "heart-5-3",
+          "kind": "door"
+        },
+        {
+          "x": 721,
+          "y": 588,
+          "from": "heart-4-3",
+          "to": "heart-5-3",
+          "kind": "door"
+        },
+        {
+          "x": 721,
+          "y": 642,
+          "from": "heart-4-3",
+          "to": "heart-5-4",
+          "kind": "door"
+        },
+        {
+          "x": 825,
+          "y": 238,
+          "from": "heart-5-0",
+          "to": "heart-6-0",
+          "kind": "door"
+        },
+        {
+          "x": 825,
+          "y": 311,
+          "from": "heart-5-1",
+          "to": "heart-6-0",
+          "kind": "door"
+        },
+        {
+          "x": 825,
+          "y": 362,
+          "from": "heart-5-1",
+          "to": "heart-6-1",
+          "kind": "door"
+        },
+        {
+          "x": 825,
+          "y": 417,
+          "from": "heart-5-2",
+          "to": "heart-6-1",
+          "kind": "door"
+        },
+        {
+          "x": 825,
+          "y": 479,
+          "from": "heart-5-2",
+          "to": "heart-6-2",
+          "kind": "door"
+        },
+        {
+          "x": 825,
+          "y": 535,
+          "from": "heart-5-3",
+          "to": "heart-6-2",
+          "kind": "door"
+        },
+        {
+          "x": 825,
+          "y": 593,
+          "from": "heart-5-3",
+          "to": "heart-6-3",
+          "kind": "door"
+        },
+        {
+          "x": 825,
+          "y": 652,
+          "from": "heart-5-4",
+          "to": "heart-6-3",
+          "kind": "door"
+        },
+        {
+          "x": 922,
+          "y": 216,
+          "from": "heart-6-0",
+          "to": "heart-7-0",
+          "kind": "door"
+        },
+        {
+          "x": 922,
+          "y": 290,
+          "from": "heart-6-0",
+          "to": "heart-7-1",
+          "kind": "door"
+        },
+        {
+          "x": 922,
+          "y": 363,
+          "from": "heart-6-1",
+          "to": "heart-7-1",
+          "kind": "door"
+        },
+        {
+          "x": 922,
+          "y": 417,
+          "from": "heart-6-1",
+          "to": "heart-7-2",
+          "kind": "door"
+        },
+        {
+          "x": 922,
+          "y": 483,
+          "from": "heart-6-2",
+          "to": "heart-7-2",
+          "kind": "door"
+        },
+        {
+          "x": 922,
+          "y": 540,
+          "from": "heart-6-2",
+          "to": "heart-7-3",
+          "kind": "door"
+        },
+        {
+          "x": 922,
+          "y": 615,
+          "from": "heart-6-3",
+          "to": "heart-7-3",
+          "kind": "door"
+        },
+        {
+          "x": 922,
+          "y": 694,
+          "from": "heart-6-3",
+          "to": "heart-7-4",
+          "kind": "door"
+        },
+        {
+          "x": 1022,
+          "y": 225,
+          "from": "heart-7-0",
+          "to": "heart-8-0",
+          "kind": "door"
+        },
+        {
+          "x": 1022,
+          "y": 298,
+          "from": "heart-7-1",
+          "to": "heart-8-0",
+          "kind": "door"
+        },
+        {
+          "x": 1022,
+          "y": 363,
+          "from": "heart-7-1",
+          "to": "heart-8-1",
+          "kind": "door"
+        },
+        {
+          "x": 1022,
+          "y": 420,
+          "from": "heart-7-2",
+          "to": "heart-8-1",
+          "kind": "door"
+        },
+        {
+          "x": 1022,
+          "y": 475,
+          "from": "heart-7-2",
+          "to": "heart-8-2",
+          "kind": "door"
+        },
+        {
+          "x": 1022,
+          "y": 533,
+          "from": "heart-7-3",
+          "to": "heart-8-2",
+          "kind": "door"
+        },
+        {
+          "x": 1022,
+          "y": 618,
+          "from": "heart-7-3",
+          "to": "heart-8-3",
+          "kind": "door"
+        },
+        {
+          "x": 1022,
+          "y": 677,
+          "from": "heart-7-4",
+          "to": "heart-8-3",
+          "kind": "door"
+        },
+        {
+          "x": 1128,
+          "y": 227,
+          "from": "heart-8-0",
+          "to": "heart-9-0",
+          "kind": "door"
+        },
+        {
+          "x": 1128,
+          "y": 302,
+          "from": "heart-8-0",
+          "to": "heart-9-1",
+          "kind": "door"
+        },
+        {
+          "x": 1128,
+          "y": 360,
+          "from": "heart-8-1",
+          "to": "heart-9-1",
+          "kind": "door"
+        },
+        {
+          "x": 1128,
+          "y": 423,
+          "from": "heart-8-1",
+          "to": "heart-9-2",
+          "kind": "door"
+        },
+        {
+          "x": 1128,
+          "y": 477,
+          "from": "heart-8-2",
+          "to": "heart-9-2",
+          "kind": "door"
+        },
+        {
+          "x": 1128,
+          "y": 531,
+          "from": "heart-8-2",
+          "to": "heart-9-3",
+          "kind": "door"
+        },
+        {
+          "x": 1128,
+          "y": 679,
+          "from": "heart-8-3",
+          "to": "heart-9-4",
+          "kind": "door"
+        },
+        {
+          "x": 1247,
+          "y": 244,
+          "from": "heart-9-0",
+          "to": "heart-10-0",
+          "kind": "door"
+        },
+        {
+          "x": 1247,
+          "y": 305,
+          "from": "heart-9-1",
+          "to": "heart-10-0",
+          "kind": "door"
+        },
+        {
+          "x": 1247,
+          "y": 359,
+          "from": "heart-9-1",
+          "to": "heart-10-1",
+          "kind": "door"
+        },
+        {
+          "x": 1247,
+          "y": 424,
+          "from": "heart-9-2",
+          "to": "heart-10-1",
+          "kind": "door"
+        },
+        {
+          "x": 1247,
+          "y": 478,
+          "from": "heart-9-2",
+          "to": "heart-10-2",
+          "kind": "door"
+        },
+        {
+          "x": 1247,
+          "y": 534,
+          "from": "heart-9-3",
+          "to": "heart-10-2",
+          "kind": "door"
+        },
+        {
+          "x": 1247,
+          "y": 597,
+          "from": "heart-9-3",
+          "to": "heart-10-3",
+          "kind": "door"
+        },
+        {
+          "x": 1247,
+          "y": 656,
+          "from": "heart-9-4",
+          "to": "heart-10-3",
+          "kind": "door"
+        },
+        {
+          "x": 1357,
+          "y": 245,
+          "from": "heart-10-0",
+          "to": "heart-11-0",
+          "kind": "door"
+        },
+        {
+          "x": 1357,
+          "y": 303,
+          "from": "heart-10-0",
+          "to": "heart-11-1",
+          "kind": "door"
+        },
+        {
+          "x": 1357,
+          "y": 359,
+          "from": "heart-10-1",
+          "to": "heart-11-1",
+          "kind": "door"
+        },
+        {
+          "x": 1357,
+          "y": 419,
+          "from": "heart-10-1",
+          "to": "heart-11-2",
+          "kind": "door"
+        },
+        {
+          "x": 1357,
+          "y": 484,
+          "from": "heart-10-2",
+          "to": "heart-11-2",
+          "kind": "door"
+        },
+        {
+          "x": 1357,
+          "y": 542,
+          "from": "heart-10-2",
+          "to": "heart-11-3",
+          "kind": "door"
+        },
+        {
+          "x": 1357,
+          "y": 598,
+          "from": "heart-10-3",
+          "to": "heart-11-3",
+          "kind": "door"
+        },
+        {
+          "x": 1357,
+          "y": 652,
+          "from": "heart-10-3",
+          "to": "heart-11-4",
+          "kind": "door"
+        },
+        {
+          "x": 1474,
+          "y": 248,
+          "from": "heart-11-0",
+          "to": "heart-12-0",
+          "kind": "door"
+        },
+        {
+          "x": 1474,
+          "y": 310,
+          "from": "heart-11-1",
+          "to": "heart-12-0",
+          "kind": "door"
+        },
+        {
+          "x": 1474,
+          "y": 364,
+          "from": "heart-11-1",
+          "to": "heart-12-1",
+          "kind": "door"
+        },
+        {
+          "x": 1474,
+          "y": 417,
+          "from": "heart-11-2",
+          "to": "heart-12-1",
+          "kind": "door"
+        },
+        {
+          "x": 1474,
+          "y": 485,
+          "from": "heart-11-2",
+          "to": "heart-12-2",
+          "kind": "door"
+        },
+        {
+          "x": 1474,
+          "y": 538,
+          "from": "heart-11-3",
+          "to": "heart-12-2",
+          "kind": "door"
+        },
+        {
+          "x": 1474,
+          "y": 593,
+          "from": "heart-11-3",
+          "to": "heart-12-3",
+          "kind": "door"
+        },
+        {
+          "x": 1474,
+          "y": 652,
+          "from": "heart-11-4",
+          "to": "heart-12-3",
+          "kind": "door"
+        },
+        {
+          "x": 1596,
+          "y": 312,
+          "from": "heart-12-0",
+          "to": "heart-13-0",
+          "kind": "door"
+        },
+        {
+          "x": 1596,
+          "y": 365,
+          "from": "heart-12-1",
+          "to": "heart-13-0",
+          "kind": "door"
+        },
+        {
+          "x": 1596,
+          "y": 420,
+          "from": "heart-12-1",
+          "to": "heart-13-1",
+          "kind": "door"
+        },
+        {
+          "x": 1596,
+          "y": 535,
+          "from": "heart-12-2",
+          "to": "heart-13-2",
+          "kind": "door"
+        },
+        {
+          "x": 1596,
+          "y": 593,
+          "from": "heart-12-3",
+          "to": "heart-13-2",
+          "kind": "door"
+        },
+        {
+          "x": 1022,
+          "y": 572,
+          "from": "heart-7-3",
+          "to": "heart-9-3",
+          "kind": "hall",
+          "w": 34
+        },
+        {
+          "x": 1128,
+          "y": 572,
+          "from": "heart-7-3",
+          "to": "heart-9-3",
+          "kind": "hall",
+          "w": 34
+        },
+        {
+          "x": 1700,
+          "y": 336,
+          "from": "heart-13-0",
+          "to": "heart-boss",
+          "kind": "boss"
+        },
+        {
+          "x": 1700,
+          "y": 450,
+          "from": "heart-13-1",
+          "to": "heart-boss",
+          "kind": "boss"
+        },
+        {
+          "x": 1700,
+          "y": 564,
+          "from": "heart-13-2",
+          "to": "heart-boss",
+          "kind": "boss"
+        },
+        {
+          "x": 176,
+          "y": 283,
+          "from": null,
+          "to": "heart-0-0",
+          "kind": "front"
+        },
+        {
+          "x": 176,
+          "y": 394,
+          "from": null,
+          "to": "heart-0-1",
+          "kind": "front"
+        },
+        {
+          "x": 176,
+          "y": 506,
+          "from": null,
+          "to": "heart-0-2",
+          "kind": "front"
+        },
+        {
+          "x": 176,
+          "y": 618,
+          "from": null,
+          "to": "heart-0-3",
+          "kind": "front"
+        }
+      ],
+      "secrets": [],
+      "entries": {
+        "heart-0-0": [
+          176,
+          283
+        ],
+        "heart-0-1": [
+          176,
+          394
+        ],
+        "heart-0-2": [
+          176,
+          506
+        ],
+        "heart-0-3": [
+          176,
+          618
+        ]
+      }
+    }
+  },
+  "currentNodeId": "heart-boss",
+  "visitedIds": [
+    "heart-0-0",
+    "heart-1-0",
+    "heart-2-0",
+    "heart-3-0",
+    "heart-4-0",
+    "heart-5-1",
+    "heart-6-0",
+    "heart-7-0",
+    "heart-8-0",
+    "heart-9-1",
+    "heart-10-0",
+    "heart-11-1",
+    "heart-12-0",
+    "heart-13-0",
+    "heart-boss"
+  ],
+  "pathIds": [
+    "heart-0-0",
+    "heart-1-0",
+    "heart-2-0",
+    "heart-3-0",
+    "heart-4-0",
+    "heart-5-1",
+    "heart-6-0",
+    "heart-7-0",
+    "heart-8-0",
+    "heart-9-1",
+    "heart-10-0",
+    "heart-11-1",
+    "heart-12-0",
+    "heart-13-0",
+    "heart-boss"
+  ],
+  "rescued": [
+    "drizzle",
+    "wink",
+    "taffy",
+    "brambleboo",
+    "mossbit",
+    "wisp"
+  ],
+  "companionsFreed": [
+    "drizzle",
+    "wink",
+    "taffy",
+    "brambleboo",
+    "mossbit",
+    "wisp"
+  ],
+  "cluesFound": 65,
+  "freedRoster": [
+    "drizzle",
+    "wink",
+    "taffy",
+    "brambleboo",
+    "mossbit",
+    "wisp"
+  ],
+  "held": {
+    "region": "heart",
+    "companion": null
+  },
+  "seenEvents": [
+    "the-house-register",
+    "moths-cousin",
+    "the-lost-and-found",
+    "the-collar",
+    "the-photograph",
+    "the-mended-thing",
+    "the-portrait-that-follows",
+    "the-feeding-room",
+    "the-dumbwaiter",
+    "the-stair-cat",
+    "scratching-behind-the-wall",
+    "the-cat-flap",
+    "the-open-window",
+    "the-umbrella-fort",
+    "the-nights-arithmetic"
+  ],
+  "encounterHistory": [
+    "ht-2",
+    "ht-1",
+    "ht-5",
+    "ht-9",
+    "ht-7",
+    "ht-14",
+    "ht-boss"
+  ],
+  "removalPrice": 115,
+  "shopsVisited": 2,
+  "pity": 20,
+  "kids": [
+    {
+      "seat": 0,
+      "companion": "marmalade",
+      "kid": "maya",
+      "name": null,
+      "backpack": [
+        "notebook",
+        "thermos",
+        "first-aid-tin",
+        "pet-treats"
+      ],
+      "courage": 71,
+      "maxCourage": 91,
+      "energyMax": 3,
+      "lostThings": 925,
+      "snacks": [
+        {
+          "id": "cold-milk",
+          "name": "Cold Milk",
+          "base": 45,
+          "desc": "Remove all debuffs.",
+          "effect": {
+            "cleanse": true
+          }
+        },
+        {
+          "id": "gummy-bat",
+          "name": "Gummy Bat",
+          "base": 45,
+          "desc": "Recover 12 Courage.",
+          "effect": {
+            "heal": 12
+          },
+          "price": 53
+        }
+      ],
+      "snackCap": 3,
+      "deck": [
+        {
+          "uid": "c1",
+          "id": "marmalade/scratch",
+          "upgraded": false,
+          "name": "Scratch"
+        },
+        {
+          "uid": "c2",
+          "id": "marmalade/scratch",
+          "upgraded": false,
+          "name": "Scratch"
+        },
+        {
+          "uid": "c3",
+          "id": "marmalade/scratch",
+          "upgraded": false,
+          "name": "Scratch"
+        },
+        {
+          "uid": "c4",
+          "id": "marmalade/scratch",
+          "upgraded": false,
+          "name": "Scratch"
+        },
+        {
+          "uid": "c5",
+          "id": "marmalade/scratch",
+          "upgraded": false,
+          "name": "Scratch"
+        },
+        {
+          "uid": "c7",
+          "id": "marmalade/curl-up",
+          "upgraded": false,
+          "name": "Curl Up"
+        },
+        {
+          "uid": "c8",
+          "id": "marmalade/curl-up",
+          "upgraded": false,
+          "name": "Curl Up"
+        },
+        {
+          "uid": "c9",
+          "id": "marmalade/curl-up",
+          "upgraded": false,
+          "name": "Curl Up"
+        },
+        {
+          "uid": "cb",
+          "id": "marmalade/rattle-the-chandelier",
+          "upgraded": true,
+          "name": "Rattle the Chandelier"
+        },
+        {
+          "uid": "cc",
+          "id": "marmalade/graveyard-pounce",
+          "upgraded": true,
+          "name": "Graveyard Pounce"
+        },
+        {
+          "uid": "cd",
+          "id": "marmalade/perch-up-high",
+          "upgraded": true,
+          "name": "Perch Up High"
+        },
+        {
+          "uid": "ce",
+          "id": "marmalade/steal-their-shadow",
+          "upgraded": true,
+          "name": "Steal Their Shadow"
+        },
+        {
+          "uid": "cf",
+          "id": "marmalade/knock-it-over",
+          "upgraded": false,
+          "name": "Knock It Over"
+        },
+        {
+          "uid": "cg",
+          "id": "marmalade/predators-patience",
+          "upgraded": true,
+          "name": "Predator\u2019s Patience"
+        },
+        {
+          "uid": "ch",
+          "id": "marmalade/fluff-up",
+          "upgraded": true,
+          "name": "Fluff Up"
+        },
+        {
+          "uid": "ci",
+          "id": "marmalade/ricochet-cat",
+          "upgraded": true,
+          "name": "Ricochet Cat"
+        },
+        {
+          "uid": "cj",
+          "id": "marmalade/now-you-see-me",
+          "upgraded": false,
+          "name": "Now You See Me"
+        },
+        {
+          "uid": "ck",
+          "id": "marmalade/ghoststep",
+          "upgraded": false,
+          "name": "Ghoststep"
+        },
+        {
+          "uid": "cv",
+          "id": "marmalade/hiss-and-hit",
+          "upgraded": true,
+          "name": "Hiss and Hit"
+        },
+        {
+          "uid": "cw",
+          "id": "marmalade/perfect-landing",
+          "upgraded": false,
+          "name": "Perfect Landing"
+        },
+        {
+          "uid": "cx",
+          "id": "marmalade/everywhere-at-once",
+          "upgraded": true,
+          "name": "Everywhere at Once"
+        },
+        {
+          "uid": "cy",
+          "id": "marmalade/frenzied-zoomies",
+          "upgraded": true,
+          "name": "Frenzied Zoomies"
+        },
+        {
+          "uid": "cz",
+          "id": "marmalade/nine-lived-nerve",
+          "upgraded": false,
+          "name": "Nine-Lived Nerve"
+        },
+        {
+          "uid": "c10",
+          "id": "marmalade/rattle-the-chandelier",
+          "upgraded": true,
+          "name": "Rattle the Chandelier"
+        },
+        {
+          "uid": "c11",
+          "id": "marmalade/wall-bounce",
+          "upgraded": true,
+          "name": "Wall Bounce"
+        },
+        {
+          "uid": "c12",
+          "id": "marmalade/catastrophe",
+          "upgraded": true,
+          "name": "Catastrophe"
+        },
+        {
+          "uid": "c13",
+          "id": "marmalade/ghoststep",
+          "upgraded": false,
+          "name": "Ghoststep"
+        },
+        {
+          "uid": "c14",
+          "id": "marmalade/borrowed-life",
+          "upgraded": false,
+          "name": "Borrowed Life"
+        },
+        {
+          "uid": "c1f",
+          "id": "marmalade/fluff-up",
+          "upgraded": true,
+          "name": "Fluff Up"
+        },
+        {
+          "uid": "c1g",
+          "id": "marmalade/now-you-see-me",
+          "upgraded": false,
+          "name": "Now You See Me"
+        }
+      ],
+      "keepsakes": [
+        {
+          "id": "pocket-flashlight",
+          "name": "Pocket Flashlight",
+          "desc": "At the end of every Scuffle, recover 6 Courage.",
+          "rarity": "starter",
+          "counter": 45,
+          "forged": false,
+          "icon": "torch"
+        },
+        {
+          "id": "chalk-stub",
+          "name": "Chalk Stub",
+          "desc": "Unsurveyed rooms on the blueprint show what they really are.",
+          "rarity": "common",
+          "counter": null,
+          "forged": false,
+          "icon": "chalk"
+        },
+        {
+          "id": "black-ribbon",
+          "name": "Black Ribbon",
+          "desc": "Once each Scuffle, when an enemy hides or leaves the battlefield, your Attack Tricks deal 3 more damage for the rest of the fight.",
+          "rarity": "boss",
+          "counter": null,
+          "forged": false,
+          "icon": "ribbon"
+        },
+        {
+          "id": "lucky-button",
+          "name": "Lucky Button",
+          "desc": "Rare Trick rewards appear noticeably more often.",
+          "rarity": "common",
+          "counter": null,
+          "forged": false,
+          "icon": "button"
+        },
+        {
+          "id": "brass-bookmark",
+          "name": "Brass Bookmark",
+          "desc": "The first time each Scuffle one of your Tricks is marked or made to cost more, draw 1 Trick.",
+          "rarity": "rare",
+          "counter": null,
+          "forged": false,
+          "icon": "bookmark"
+        },
+        {
+          "id": "empty-goblet",
+          "name": "The Empty Goblet",
+          "desc": "The first time each Scuffle you lose Courage to one of your own effects, gain 8 Guard.",
+          "rarity": "boss",
+          "counter": 17,
+          "forged": false,
+          "icon": "goblet"
+        },
+        {
+          "id": "bowl-with-your-name",
+          "name": "Bowl With Your Name On It",
+          "desc": "Recover 3 Courage at the start of every Scuffle.",
+          "rarity": "event",
+          "counter": 24,
+          "forged": false,
+          "icon": "bowl"
+        },
+        {
+          "id": "house-slippers",
+          "name": "House Slippers",
+          "desc": "The first attack against you each Scuffle deals 3 less damage.",
+          "rarity": "common",
+          "counter": 18,
+          "forged": false,
+          "icon": "slipper"
+        },
+        {
+          "id": "tin-of-sardines",
+          "name": "Tin of Sardines",
+          "desc": "Whenever an enemy is defeated, recover 3 Courage. Something always comes to eat.",
+          "rarity": "uncommon",
+          "counter": 63,
+          "forged": false,
+          "icon": "tin"
+        },
+        {
+          "id": "bent-garden-fork",
+          "name": "Bent Garden Fork",
+          "desc": "The first time each Scuffle an enemy recovers Courage, deal 3 damage to it.",
+          "rarity": "boss",
+          "counter": 5,
+          "forged": false,
+          "icon": "fork"
+        },
+        {
+          "id": "butterfly-net",
+          "name": "Butterfly Net",
+          "desc": "Every 10th Trick you play in a Scuffle, draw 2.",
+          "rarity": "common",
+          "counter": 5,
+          "forged": false,
+          "icon": "net"
+        },
+        {
+          "id": "lantern-of-the-lamplighter",
+          "name": "Lamplighter's Wick",
+          "desc": "Your first Trick each turn costs 1 less. You start every Scuffle with 5 fewer Courage.",
+          "rarity": "boss",
+          "counter": 83,
+          "forged": false,
+          "icon": "wick"
+        },
+        {
+          "id": "welcome-mat",
+          "name": "Welcome Mat",
+          "desc": "Gain 4 Guard at the start of every Scuffle.",
+          "rarity": "common",
+          "counter": 11,
+          "forged": false,
+          "icon": "mat"
+        },
+        {
+          "id": "nightlight",
+          "name": "Nightlight",
+          "desc": "Attacks that would deal 5 or less damage to you deal 1 instead.",
+          "rarity": "uncommon",
+          "counter": null,
+          "forged": false,
+          "icon": "nightlight"
+        },
+        {
+          "id": "brass-service-bell",
+          "name": "Brass Service Bell",
+          "desc": "The first time each Scuffle you end a turn with 0 Nerve, draw 1 extra Trick next turn.",
+          "rarity": "common",
+          "counter": 8,
+          "forged": false,
+          "icon": "bell"
+        },
+        {
+          "id": "bent-sickle",
+          "name": "Bent Sickle",
+          "desc": "Once each turn, when you defeat something with 10 or more damage to spare, gain 4 Guard and draw 1.",
+          "rarity": "boss",
+          "counter": null,
+          "forged": false,
+          "icon": "sickle"
+        },
+        {
+          "id": "hollow-birdcage",
+          "name": "Hollow Birdcage",
+          "desc": "Whenever an enemy is defeated, draw 1 Trick and gain 4 Guard.",
+          "rarity": "rare",
+          "counter": 10,
+          "forged": false,
+          "icon": "cage"
+        },
+        {
+          "id": "bathhouse-slippers",
+          "name": "Bathhouse Slippers",
+          "desc": "Your first Trick each turn ignores any increase to its Nerve cost.",
+          "rarity": "boss",
+          "counter": null,
+          "forged": false,
+          "icon": "slippers"
+        }
+      ],
+      "pity": 20,
+      "removalPrice": 115,
+      "pendingReward": null,
+      "roomDone": "heart-13-0"
+    }
+  ],
+  "localSeat": 0,
+  "pendingReward": null,
+  "pendingEvent": null,
+  "pendingShop": null,
+  "pendingCombat": null,
+  "roomDone": false,
+  "curiosityHealUsed": true,
+  "stats": {
+    "scuffles": 39,
+    "bigScares": 0,
+    "curiosities": 15,
+    "safeRooms": 0,
+    "shops": 2,
+    "treasures": 5,
+    "cardsPlayed": 537,
+    "damageDealt": 5442,
+    "turns": 198,
+    "depth": 90,
+    "cardsTaken": 20,
+    "cardsSkipped": 25,
+    "clues": 65
+  },
+  "result": "victory",
+  "killedBy": null,
+  "startedAt": 1793175368013,
+  "uidSeq": 82,
+  "scene": "gameover"
+}

@@ -1,0 +1,304 @@
+{
+  "layoutP95ms": 1.600000023841858,
+  "layoutMaxMs": 2.5999999940395355,
+  "ordinaryCrowdedMaxDrainMs": 5166.0999999940395,
+  "frameP95MaxMs": 48.400000005960464,
+  "frameMaxMs": 96,
+  "priorSelectedTimings": {
+    "layoutP95ms": 1.399999976158142,
+    "layoutMaxMs": 2.5,
+    "ordinaryCrowdedMaxDrainMs": 5166.4000000059605,
+    "frameP95MaxMs": 46.5,
+    "frameMaxMs": 96.59999999403954
+  },
+  "cases": [
+    {
+      "width": 1280,
+      "kind": "boss",
+      "mode": "0",
+      "peak": 6,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 14.199999988079071,
+      "latestOnsetMs": 878.5,
+      "drainMs": 2407.699999988079,
+      "layoutP95ms": 2,
+      "layoutMaxMs": 2,
+      "frameTimes": {
+        "max": 73.7000000178814,
+        "p95": 32.900000005960464
+      },
+      "failures": 0
+    },
+    {
+      "width": 1280,
+      "kind": "crowd",
+      "mode": "0",
+      "peak": 3,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 10.199999988079071,
+      "latestOnsetMs": 3633.399999976158,
+      "drainMs": 5166.0999999940395,
+      "layoutP95ms": 1.7999999821186066,
+      "layoutMaxMs": 2.399999976158142,
+      "frameTimes": {
+        "max": 76.80000001192093,
+        "p95": 21.599999994039536
+      },
+      "failures": 0
+    },
+    {
+      "width": 1280,
+      "kind": "crowd",
+      "mode": "1",
+      "peak": 2,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 7.5999999940395355,
+      "latestOnsetMs": 3609,
+      "drainMs": 5147.0999999940395,
+      "layoutP95ms": 1.0999999940395355,
+      "layoutMaxMs": 1.699999988079071,
+      "frameTimes": {
+        "max": 75,
+        "p95": 27.599999994039536
+      },
+      "failures": 0
+    },
+    {
+      "width": 1280,
+      "kind": "crowd",
+      "mode": "2",
+      "peak": 2,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 8.5,
+      "latestOnsetMs": 3593.0999999940395,
+      "drainMs": 5134.4000000059605,
+      "layoutP95ms": 1.199999988079071,
+      "layoutMaxMs": 1.300000011920929,
+      "frameTimes": {
+        "max": 70.2000000178814,
+        "p95": 18.799999982118607
+      },
+      "failures": 0
+    },
+    {
+      "width": 1280,
+      "kind": "crowd",
+      "mode": "3",
+      "peak": 2,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 11.200000017881393,
+      "latestOnsetMs": 3622.0999999940395,
+      "drainMs": 5161.5999999940395,
+      "layoutP95ms": 1.300000011920929,
+      "layoutMaxMs": 2.2000000178813934,
+      "frameTimes": {
+        "max": 77.60000002384186,
+        "p95": 24.80000001192093
+      },
+      "failures": 0
+    },
+    {
+      "width": 1280,
+      "kind": "crowd",
+      "mode": "all",
+      "peak": 4,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 10,
+      "latestOnsetMs": 2242,
+      "drainMs": 3780.2000000178814,
+      "layoutP95ms": 1.4000000059604645,
+      "layoutMaxMs": 1.4000000059604645,
+      "frameTimes": {
+        "max": 70.80000001192093,
+        "p95": 21.80000001192093
+      },
+      "failures": 0
+    },
+    {
+      "width": 1280,
+      "kind": "crowd",
+      "mode": "repeats",
+      "peak": 1,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 8.099999994039536,
+      "latestOnsetMs": 7803.4000000059605,
+      "drainMs": 9347.40000000596,
+      "layoutP95ms": 0.5999999940395355,
+      "layoutMaxMs": 1.2000000178813934,
+      "frameTimes": {
+        "max": 76.60000002384186,
+        "p95": 24.899999976158142
+      },
+      "failures": 0
+    },
+    {
+      "width": 1280,
+      "kind": "crowd",
+      "mode": "all-long",
+      "peak": 4,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 8.900000005960464,
+      "latestOnsetMs": 2223.5999999940395,
+      "drainMs": 3765.0999999940395,
+      "layoutP95ms": 2.5999999940395355,
+      "layoutMaxMs": 2.5999999940395355,
+      "frameTimes": {
+        "max": 29.400000005960464,
+        "p95": 17.599999994039536
+      },
+      "failures": 0
+    },
+    {
+      "width": 1600,
+      "kind": "boss",
+      "mode": "0",
+      "peak": 6,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 6.800000011920929,
+      "latestOnsetMs": 847.5999999940395,
+      "drainMs": 2391.699999988079,
+      "layoutP95ms": 1.199999988079071,
+      "layoutMaxMs": 1.199999988079071,
+      "frameTimes": {
+        "max": 71.40000000596046,
+        "p95": 43.19999998807907
+      },
+      "failures": 0
+    },
+    {
+      "width": 1600,
+      "kind": "crowd",
+      "mode": "0",
+      "peak": 5,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 9.200000017881393,
+      "latestOnsetMs": 1543.6000000238419,
+      "drainMs": 3076.600000023842,
+      "layoutP95ms": 1.2000000178813934,
+      "layoutMaxMs": 1.2000000178813934,
+      "frameTimes": {
+        "max": 83.90000000596046,
+        "p95": 25
+      },
+      "failures": 0
+    },
+    {
+      "width": 1600,
+      "kind": "crowd",
+      "mode": "1",
+      "peak": 5,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 8.599999994039536,
+      "latestOnsetMs": 1553.199999988079,
+      "drainMs": 3082.099999964237,
+      "layoutP95ms": 1.600000023841858,
+      "layoutMaxMs": 1.600000023841858,
+      "frameTimes": {
+        "max": 87.40000000596046,
+        "p95": 28.5
+      },
+      "failures": 0
+    },
+    {
+      "width": 1600,
+      "kind": "crowd",
+      "mode": "2",
+      "peak": 5,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 7.0999999940395355,
+      "latestOnsetMs": 1541,
+      "drainMs": 3085.5,
+      "layoutP95ms": 1,
+      "layoutMaxMs": 1,
+      "frameTimes": {
+        "max": 81.2999999821186,
+        "p95": 32.599999994039536
+      },
+      "failures": 0
+    },
+    {
+      "width": 1600,
+      "kind": "crowd",
+      "mode": "3",
+      "peak": 5,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 14.900000005960464,
+      "latestOnsetMs": 1532.199999988079,
+      "drainMs": 3066.399999976158,
+      "layoutP95ms": 2,
+      "layoutMaxMs": 2,
+      "frameTimes": {
+        "max": 83.69999998807907,
+        "p95": 41.80000001192093
+      },
+      "failures": 0
+    },
+    {
+      "width": 1600,
+      "kind": "crowd",
+      "mode": "all",
+      "peak": 6,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 9.600000023841858,
+      "latestOnsetMs": 877.0999999940395,
+      "drainMs": 2412,
+      "layoutP95ms": 0.7999999821186066,
+      "layoutMaxMs": 0.7999999821186066,
+      "frameTimes": {
+        "max": 77.2000000178814,
+        "p95": 32.80000001192093
+      },
+      "failures": 0
+    },
+    {
+      "width": 1600,
+      "kind": "crowd",
+      "mode": "repeats",
+      "peak": 2,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 9.300000011920929,
+      "latestOnsetMs": 3295.800000011921,
+      "drainMs": 4842.9000000059605,
+      "layoutP95ms": 0.9000000059604645,
+      "layoutMaxMs": 0.9000000059604645,
+      "frameTimes": {
+        "max": 96,
+        "p95": 28.600000023841858
+      },
+      "failures": 0
+    },
+    {
+      "width": 1600,
+      "kind": "crowd",
+      "mode": "all-long",
+      "peak": 6,
+      "delivered": 6,
+      "expired": 6,
+      "firstOnsetMs": 8.599999994039536,
+      "latestOnsetMs": 834.3000000119209,
+      "drainMs": 2374.199999988079,
+      "layoutP95ms": 1.0999999940395355,
+      "layoutMaxMs": 1.0999999940395355,
+      "frameTimes": {
+        "max": 76.10000002384186,
+        "p95": 48.400000005960464
+      },
+      "failures": 0
+    }
+  ]
+}

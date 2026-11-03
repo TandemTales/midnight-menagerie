@@ -154,10 +154,10 @@
 /* the stars and the moon on their threads from the beam, either side of the
    plaque, their cards turning in the air over the stage */
 .lo-charm { top: calc(var(--lo-beam) - 2px); margin-left: calc(var(--charm-w) / -2); }
-.lo-charm--1 { left: 30.8vw; --charm-w: clamp(34px, 2.9vw, 48px); --charm-len: 12vh; animation-delay: -1.2s; }
-.lo-charm--2 { left: 35.6vw; --charm-w: clamp(42px, 3.5vw, 58px); --charm-len: 13.2vh; --charm-sway: 2.5deg; animation-delay: -3.4s; }
-.lo-charm--3 { left: 64.4vw; --charm-w: clamp(30px, 2.5vw, 42px); --charm-len: 13.6vh; animation-delay: -5.1s; }
-.lo-charm--4 { left: 69.4vw; --charm-w: clamp(36px, 3vw, 50px); --charm-len: 10.5vh; animation-delay: -2.2s; }
+.lo-charm--1 { left: 30.8vw; --charm-w: clamp(34px, 2.9vw, 48px); --charm-len: 12vh; animation-delay: calc(-1.2s * var(--anim-scale)); }
+.lo-charm--2 { left: 35.6vw; --charm-w: clamp(42px, 3.5vw, 58px); --charm-len: 13.2vh; --charm-sway: 2.5deg; animation-delay: calc(-3.4s * var(--anim-scale)); }
+.lo-charm--3 { left: 64.4vw; --charm-w: clamp(30px, 2.5vw, 42px); --charm-len: 13.6vh; animation-delay: calc(-5.1s * var(--anim-scale)); }
+.lo-charm--4 { left: 69.4vw; --charm-w: clamp(36px, 3vw, 50px); --charm-len: 10.5vh; animation-delay: calc(-2.2s * var(--anim-scale)); }
 .lo-vig {
   position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background:
@@ -362,7 +362,7 @@
 }
 .lo-plate__k {
   font-family: var(--font-display); font-weight: 700;
-  font-size: 11px; line-height: 1.2; letter-spacing: .32em; text-transform: uppercase;
+  --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.2; letter-spacing: .32em; text-transform: uppercase;
   padding-left: .32em;
   color: var(--kit-gold);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 24%, transparent);
@@ -375,7 +375,7 @@
      the body serif, mixed case, in the plates' warm gold — so the longest
      pair ("whispering-torchlight") still fits the plate */
   font-family: var(--font-body); font-weight: 600;
-  font-size: clamp(23px, 1.85vw, 30px); line-height: 1.2;
+  --reading-size: clamp(23px, 1.85vw, 30px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.2;
   letter-spacing: .03em; text-align: center;
   color: var(--kit-name);
   caret-color: var(--kit-gold-hi);
@@ -401,7 +401,7 @@
   justify-self: center;
   margin: clamp(2px, .8vh, 8px) 0 0;
   padding-inline: calc(var(--rib-h) * .95);
-  font-size: clamp(11px, 1.05vw, 15px);
+  --reading-size: clamp(11px, 1.05vw, 15px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   gap: .55em;
 }
 .lo-seed__v { font-family: var(--font-num); letter-spacing: .03em; margin-left: .5em; }
@@ -432,7 +432,7 @@
   opacity: 0;
   transition: opacity var(--t-base) var(--ease-out);
 }
-.lo__enter:not(:disabled)::before, .lo__go.is-ready::before { opacity: 1; animation: lo-ready 2.6s var(--ease-soft) infinite; }
+.lo__enter:not(:disabled)::before, .lo__go.is-ready::before { opacity: 1; animation: lo-ready calc(2.6s * var(--anim-scale)) var(--ease-soft) infinite; }
 @keyframes lo-ready { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 
 /* ── the room: who is up here ─────────────────────────────────────────────── */
@@ -465,7 +465,7 @@
   position: absolute; left: 50%; top: 0; z-index: 6;
   transform: translate(-50%, 0);
   font-family: var(--font-num); font-weight: 600;
-  font-size: calc(var(--md) * .42); line-height: 1;
+  --reading-size: calc(var(--md) * .42); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
 }
@@ -543,7 +543,7 @@
   margin: 0; padding: 0 18px;
   border: 0; background: none;
   font-family: var(--font-body); font-weight: 600;
-  font-size: clamp(17px, 1.3vw, 21px); line-height: 1.2;
+  --reading-size: clamp(17px, 1.3vw, 21px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.2;
   text-align: center; text-align-last: center;
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
@@ -595,7 +595,7 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 .lo__code {
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(20px, 1.62vw, 26px); line-height: 1.25;
+  --reading-size: clamp(20px, 1.62vw, 26px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.25;
   letter-spacing: .05em;
   font-variant-ligatures: none;
   color: #ecd29a;
@@ -720,12 +720,12 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 .lo-view__plate .kit-plate__epithet,
 .lo-foot .kit-btn .lo-go__words > em {
-  font-size: 13.5px; line-height: 1.12; letter-spacing: .02em;
+  --reading-size: 13.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.12; letter-spacing: .02em;
   color: var(--kit-text); opacity: 1;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 6px rgba(0, 0, 0, .6);
 }
 @media (min-height: 861px) {
-  .lo-view__plate .kit-plate__epithet, .lo-foot .kit-btn .lo-go__words > em { font-size: 14.5px; }
+  .lo-view__plate .kit-plate__epithet, .lo-foot .kit-btn .lo-go__words > em { --reading-size: 14.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 }
 
 /* the ladder, pulled up: it hangs a few rungs from the shelf's edge and ends
@@ -805,7 +805,7 @@
 
 /* PASSWORD, cut thicker */
 .lo-plate:not(.lo-plate--pick) > .lo-plate__k {
-  font-size: 12.5px; letter-spacing: .28em;
+  --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .28em;
   color: var(--kit-gold-hi);
   -webkit-text-stroke: .45px currentColor;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 30%, transparent), 0 0 8px color-mix(in srgb, var(--kit-candle) 25%, transparent);
@@ -821,4 +821,23 @@
     radial-gradient(60% 75% at 50% 62%, rgb(255 176 92 / .28), rgb(255 150 70 / .09) 60%, transparent 85%),
     radial-gradient(30% 60% at 92% 50%, rgb(255 176 92 / .14), transparent 80%);
   box-shadow: inset 0 0 14px rgb(255 168 84 / .16);
+}
+
+/* A message in place of a room: rejoining, or arriving too late. The body takes the
+   board's middle, so the foot stays at the foot as it does in the room itself. */
+.lo-notice {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lo-notice__words {
+  max-width: 34em;
+  margin: 0;
+  padding: 1.1em 1.6em;
+  font-size: 18px;
+  line-height: 1.4;
+  text-align: center;
+  color: #f1e4c6;
 }

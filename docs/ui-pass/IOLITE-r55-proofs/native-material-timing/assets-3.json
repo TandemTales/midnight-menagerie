@@ -1,0 +1,27 @@
+{
+  "variant": "inherited",
+  "resources": [
+    {
+      "url": "http://localhost:9552/game/assets/ui/r54-peridot/worn-plaque-v1.webp",
+      "responseURL": "http://localhost:9552/game/assets/ui/r54-peridot/worn-plaque-v1.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 5654,
+      "expectedSHA256": "367813500fe21a7ea5f713e746e96eb47f6e91915e3be1f006b2459c3ce991e0",
+      "actualSHA256": "367813500fe21a7ea5f713e746e96eb47f6e91915e3be1f006b2459c3ce991e0",
+      "width": 240,
+      "height": 64
+    },
+    {
+      "url": "http://localhost:9552/game/assets/ui/r55-iolite/enamel-plaque.webp",
+      "responseURL": "http://localhost:9552/game/assets/ui/r55-iolite/enamel-plaque.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 6722,
+      "expectedSHA256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443",
+      "actualSHA256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443",
+      "width": 240,
+      "height": 64
+    }
+  ]
+}

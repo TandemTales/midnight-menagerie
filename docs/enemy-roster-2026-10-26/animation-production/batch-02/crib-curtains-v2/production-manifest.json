@@ -1,0 +1,13 @@
+{
+  "enemy": "crib-curtains",
+  "source": "docs\\enemy-roster-2026-10-26\\art-production\\crib-curtains-original.png",
+  "source_sha256": "aee4d8fc416ecf3763c566b80a0cc3d62ef78e8e03fa81977ae5d4d22b733693",
+  "method": "Two independently deformed authentic cloth panels, fixed rod/rings, local tieback lift and traveling hem deformation. Premultiplied alpha interpolation. No generic whole-image transform.",
+  "actions": {
+    "idle": "Small phase-offset hem sway; attachments fixed.",
+    "attack": "Panels gather inward in anticipation, tiebacks lift, panels part broadly and recover.",
+    "hurt": "Inward flinch, briefly compressed folds and an asymmetric hem flutter, then recover.",
+    "defeat": "Both panels bow and sag, then independently dissolve from the empty curtain rod; hold the remaining rod/rings."
+  },
+  "quality_gate": "Pending per-frame technical and visual sequence review; no browser attempt."
+}

@@ -1,0 +1,99 @@
+{
+  "checks": [
+    {
+      "name": "interactions",
+      "exit": 0,
+      "seconds": 83.656,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/interactions.log",
+      "reused": true
+    },
+    {
+      "name": "queue",
+      "exit": 0,
+      "seconds": 167.905,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/queue.log",
+      "reused": false
+    },
+    {
+      "name": "ink",
+      "exit": 0,
+      "seconds": 57.809,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/ink.log",
+      "reused": false
+    },
+    {
+      "name": "idle",
+      "exit": 0,
+      "seconds": 27.268,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/idle.log",
+      "reused": false
+    },
+    {
+      "name": "lifecycle",
+      "exit": 0,
+      "seconds": 27.376,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/lifecycle.log",
+      "reused": false
+    },
+    {
+      "name": "memorial",
+      "exit": 0,
+      "seconds": 27.85,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/memorial.log",
+      "reused": false
+    },
+    {
+      "name": "memorial-long",
+      "exit": 0,
+      "seconds": 44.058,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/memorial-long.log",
+      "reused": false
+    },
+    {
+      "name": "keepsakes",
+      "exit": 0,
+      "seconds": 25.223,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/keepsakes.log",
+      "reused": false
+    },
+    {
+      "name": "event-boundary",
+      "exit": 0,
+      "seconds": 39.471,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/event-boundary.log",
+      "reused": false
+    },
+    {
+      "name": "shop-rules",
+      "exit": 0,
+      "seconds": 28.218,
+      "visual_source_commit": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+      "evidence": "IOLITE-r55-proofs/shop-rules.log",
+      "reused": false
+    }
+  ],
+  "extra": [
+    "memorial-geometry.json",
+    "long-quantities-1280.json",
+    "long-quantities-1600.json",
+    "native-material-timing/proof.json",
+    "condition-pixels/proof.json"
+  ],
+  "canonicalSource": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+  "interactionReuseProof": {
+    "from": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+    "to": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+    "changedGamePaths": [],
+    "gameTree": "07ba7c793aacc6fac47243a0a044571e47b03ab4"
+  },
+  "failedChecks": []
+}

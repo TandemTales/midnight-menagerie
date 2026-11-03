@@ -1,0 +1,488 @@
+{
+  "judge": 2,
+  "inspected": {
+    "references": 4,
+    "captures": 40,
+    "references_first": true,
+    "order": [
+      "FLUORITE",
+      "CITRINE",
+      "BERYL",
+      "SARDONYX"
+    ],
+    "capture_order": [
+      "rest",
+      "rest-1280",
+      "event",
+      "event-1280",
+      "gameover",
+      "gameover-1280",
+      "shop",
+      "shop-1280",
+      "combat-floaters",
+      "combat-floaters-1280"
+    ]
+  },
+  "method": "Blind final-pixel review. Viewed all four supplied references before individually viewing all forty candidate captures in the supplied candidate and capture orders. Each screen score conservatively considers both sizes. Scores reflect the references' painted gold, lavender lettering, dark textile grounds, and physically joined ornament rather than incremental improvement. Intentional large type and scrolling are preserved; partial content behind a visible reading boundary is not treated as inaccessible. No interaction conclusions. Standalone preview banners and unchanged combat room, actor, and hand art were excluded; combat background scores concern the visible supporting grounds for the judged overlay labels, not the room painting. No candidate identities inferred. No screen reaches the same-hand 9 threshold.",
+  "candidates": {
+    "FLUORITE": {
+      "system_overall": 8.6,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.7,
+            "palette": 9,
+            "typography": 8.3,
+            "material": 8.5,
+            "background": 8.2,
+            "composition": 8.7,
+            "readability": 9.2,
+            "coherence": 8.5
+          },
+          "overall": 8.5,
+          "fits_between_samples": false,
+          "worst_problem": "The top title's pale, uniformly beveled letters need irregular lavender face wear and deeper carved interiors to belong with the reference lettering.",
+          "size_notes": {
+            "1600x900": "The framed blanket fort is a strong warm focal painting; shaped gold-rimmed outcome badges fit the choice boards, but the long dark board faces remain visually repetitive.",
+            "1280x800": "The three visible choice boards retain generous readable text; the fitted lower rail makes continuation evident, although its purple face reads more like a separate strip than the boards' joinery."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.8,
+            "palette": 9,
+            "typography": 8.3,
+            "material": 8.6,
+            "background": 8.5,
+            "composition": 8.8,
+            "readability": 9.1,
+            "coherence": 8.6
+          },
+          "overall": 8.6,
+          "fits_between_samples": false,
+          "worst_problem": "The lower Story Register rail needs a more convincing narrow recess and contact shadow where the paper disappears behind its upper edge.",
+          "size_notes": {
+            "1600x900": "The paper, illuminated initial, moon medallion, portraits, and candlelit stand create a coherent reading object; the clean red bookmark is conspicuously smooth beside worn paper.",
+            "1280x800": "The large first choice remains legible and the lower continuation is visibly framed; the purple rail face feels applied across the stand rather than grown from its carved material."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.8,
+            "palette": 9,
+            "typography": 8.3,
+            "material": 8.5,
+            "background": 8.6,
+            "composition": 8.7,
+            "readability": 9,
+            "coherence": 8.6
+          },
+          "overall": 8.6,
+          "fits_between_samples": false,
+          "worst_problem": "The right-hand final-deck rows need worn edge highlights and a physical lower recess instead of dissolving their last visible row into the panel.",
+          "size_notes": {
+            "1600x900": "The memorial portrait pair, extinguished candle, central full card and explanation, and discovery column establish a strong complete hierarchy; mottled purple rows are materially richer than smooth pill faces.",
+            "1280x800": "The central card and its two-line explanation remain readable; two complete deck rows are clear, but the next row fades into a broad dark band above the Final Tricks lip."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.9,
+            "palette": 9.2,
+            "typography": 8.4,
+            "material": 8.9,
+            "background": 9.2,
+            "composition": 9.2,
+            "readability": 9.2,
+            "coherence": 8.8
+          },
+          "overall": 8.8,
+          "fits_between_samples": false,
+          "worst_problem": "The title at the top still has a uniform pale bevel that lacks the painted lavender grain of the reference's display lettering.",
+          "size_notes": {
+            "1600x900": "The draped stall, luminous moth portrait, hanging prices, and large framed cards are convincingly staged; the long purple bottom rail is heavier than the shelf it supports.",
+            "1280x800": "At the smaller size the three cards and merchant remain well proportioned and readable; the wide rail retains a clear edge but its center ornament feels decorative rather than structurally joined."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 8.5,
+            "palette": 8.8,
+            "typography": 8.4,
+            "material": 8,
+            "background": 8.2,
+            "composition": 8.6,
+            "readability": 9.1,
+            "coherence": 8.4
+          },
+          "overall": 8.4,
+          "fits_between_samples": false,
+          "worst_problem": "The top condition plaques need more substantial worn backing and edge depth so the crisp colored lettering feels seated in an object rather than laid over a gold underline.",
+          "size_notes": {
+            "1600x900": "Coral and cyan conditions are distinct and crisp; the player owner label sits above the middle of a broad three-condition row, making the grouping less immediate than the enemy stack.",
+            "1280x800": "The stacked left and right conditions make ownership easier to read; thin plaques remain very clean and their side curls crowd the leading plus signs."
+          }
+        }
+      }
+    },
+    "CITRINE": {
+      "system_overall": 8.3,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.6,
+            "palette": 9,
+            "typography": 8.3,
+            "material": 8,
+            "background": 8.2,
+            "composition": 8.7,
+            "readability": 9.2,
+            "coherence": 8.2
+          },
+          "overall": 8.2,
+          "fits_between_samples": false,
+          "worst_problem": "The outcome badges at the right of each choice have clean purple faces that need visible wear and shaded thickness following their shaped rims.",
+          "size_notes": {
+            "1600x900": "The fort portrait and choice layout are balanced; diagonal tonal bands across the long boards feel smoother and more synthetic than the surrounding painted cloth.",
+            "1280x800": "Three readable choices fit above a compact brown rail; the shaped badges are clear, but the repeating smooth purple faces do not match the tactile fort fabric."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.7,
+            "palette": 9,
+            "typography": 8.3,
+            "material": 8.5,
+            "background": 8.5,
+            "composition": 8.8,
+            "readability": 9,
+            "coherence": 8.5
+          },
+          "overall": 8.5,
+          "fits_between_samples": false,
+          "worst_problem": "The paper-to-rail seam at the bottom of the story needs a clearer fitted recess instead of a straight slice across the next choice's lettering.",
+          "size_notes": {
+            "1600x900": "The lectern, paper folds, initial, portraits, and candles form a strong composition; the brown rail is restrained but its label sits on top as a separate plaque.",
+            "1280x800": "The first option is clear and the continuation cue is explicit; the next line is cut directly at the rail's upper edge without much visible depth."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.6,
+            "palette": 9,
+            "typography": 8.3,
+            "material": 8,
+            "background": 8.6,
+            "composition": 8.7,
+            "readability": 9,
+            "coherence": 8.2
+          },
+          "overall": 8.2,
+          "fits_between_samples": false,
+          "worst_problem": "The smooth purple final-deck rows on the right need aged surface variation and worn metal edges matching the central memorial surround.",
+          "size_notes": {
+            "1600x900": "The full central card and explanatory caption have excellent hierarchy; the thin outlines and unbroken smooth purple deck-row interiors look much newer than the carved central display.",
+            "1280x800": "Portraits, record headings, and full card explanation remain legible; the third-row outline fades above the smaller rail, weakening the physical boundary."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.8,
+            "palette": 9.2,
+            "typography": 8.4,
+            "material": 8.8,
+            "background": 9.2,
+            "composition": 9.2,
+            "readability": 9.2,
+            "coherence": 8.7
+          },
+          "overall": 8.7,
+          "fits_between_samples": false,
+          "worst_problem": "The long lower rail needs more convincing joined end caps and local wear to feel part of the shop's carved shelf.",
+          "size_notes": {
+            "1600x900": "The moth portrait, curtain canopy, large cards, and hanging price tags are strong; the brown bottom strip is quiet enough to preserve the merchandise focus.",
+            "1280x800": "Cards retain clear art, names, and rules, with comfortable separation; the bottom rail looks like a long flat decorative band despite its small central carving."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 8.3,
+            "palette": 8.4,
+            "typography": 8.2,
+            "material": 7.8,
+            "background": 8.1,
+            "composition": 8.6,
+            "readability": 8.4,
+            "coherence": 8
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "The enemy's top Strength plaque needs stronger local text contrast and an opaque worn backing; its letters are much dimmer than adjacent conditions.",
+          "size_notes": {
+            "1600x900": "The player conditions remain legible, but the enemy Strength label is notably dark and Vulnerable is also less crisp than Bristle against the busy wall.",
+            "1280x800": "Stacked groups clarify local owners, yet Strength still appears faded and the very thin gold boundaries do not give the colored conditions much material support."
+          }
+        }
+      }
+    },
+    "BERYL": {
+      "system_overall": 8.5,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.7,
+            "palette": 9,
+            "typography": 8.4,
+            "material": 8.3,
+            "background": 8.2,
+            "composition": 8.8,
+            "readability": 9.2,
+            "coherence": 8.4
+          },
+          "overall": 8.4,
+          "fits_between_samples": false,
+          "worst_problem": "The large choice faces and their outcome badges need less uniformly smooth purple shading and more local painted wear around the text.",
+          "size_notes": {
+            "1600x900": "The compact worn gold Fort Choices lip has a convincing solid edge and does not overpower the boards; the fort and choice hierarchy are strong.",
+            "1280x800": "The low-profile gold lip preserves clear space below the third choice; the title is crisply beveled but still lacks the irregular carved faces of the reference."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.8,
+            "palette": 9,
+            "typography": 8.4,
+            "material": 8.8,
+            "background": 8.5,
+            "composition": 8.9,
+            "readability": 9.1,
+            "coherence": 8.7
+          },
+          "overall": 8.7,
+          "fits_between_samples": false,
+          "worst_problem": "The top title and illuminated initial need more painted irregularity so their clean letter faces match the surrounding aged reading object.",
+          "size_notes": {
+            "1600x900": "The slender battered gold lip and visible lower edge give the paper a more convincing physical stop; the large paper and lectern remain the primary focal object.",
+            "1280x800": "The narrow lip sits well against the page and stand; the continuation is visible without a bulky fascia, though the next option's cut line could use a darker, narrower contact seam."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.7,
+            "palette": 9,
+            "typography": 8.4,
+            "material": 8.1,
+            "background": 8.6,
+            "composition": 8.6,
+            "readability": 9,
+            "coherence": 8.3
+          },
+          "overall": 8.3,
+          "fits_between_samples": false,
+          "worst_problem": "The right-hand deck rows need visibly worn faces and a clean recessed ending instead of smooth purple bands fading above the gold lip.",
+          "size_notes": {
+            "1600x900": "The compact gold rails have restrained visual weight, and the central card remains dominant; the stacked Wings Explored label is less harmonious within its broad panel.",
+            "1280x800": "The complete card explanation remains readable and the narrow memorial rail is well scaled; the right rows look smooth and the partial third row dissolves before reaching the lip."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 9,
+            "palette": 9.2,
+            "typography": 8.5,
+            "material": 9,
+            "background": 9.2,
+            "composition": 9.3,
+            "readability": 9.2,
+            "coherence": 8.9
+          },
+          "overall": 8.9,
+          "fits_between_samples": false,
+          "worst_problem": "The main lavender title needs irregular surface highlights and stronger interior carving to reach the references' same-hand finish.",
+          "size_notes": {
+            "1600x900": "The slim worn gold lower lip complements the carved shelf without competing with the moth and merchandise; the curtain backdrop and hanging tags are particularly successful.",
+            "1280x800": "The compact rail preserves breathing room below the merchandise while all three cards remain clearly staged; the title is polished and clean rather than visibly painted."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 8.6,
+            "palette": 8.8,
+            "typography": 8.4,
+            "material": 8,
+            "background": 8.2,
+            "composition": 8.6,
+            "readability": 9.1,
+            "coherence": 8.4
+          },
+          "overall": 8.4,
+          "fits_between_samples": false,
+          "worst_problem": "The upper condition plaques need a thicker worn face and some interior padding so bright text does not sit directly against the fine gold edges.",
+          "size_notes": {
+            "1600x900": "The colored text is crisp, and all six conditions have readable backing; the player owner plaque is centered over a broad horizontal spread rather than attached to a single compact grouping.",
+            "1280x800": "The vertical groups make ownership clear; gold side tips still push close to the plus signs and the smooth thin plaque faces feel less painted than the reference nameplates."
+          }
+        }
+      }
+    },
+    "SARDONYX": {
+      "system_overall": 7.9,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 7.8,
+            "palette": 8.9,
+            "typography": 7.5,
+            "material": 7.8,
+            "background": 8.2,
+            "composition": 8.6,
+            "readability": 9.1,
+            "coherence": 7.8
+          },
+          "overall": 7.8,
+          "fits_between_samples": false,
+          "worst_problem": "The rectangular outcome tags in the upper-right of each choice need shaped silhouettes and fitted texture instead of cropped ornamental purple rectangles.",
+          "size_notes": {
+            "1600x900": "The warm fort portrait and generous choice layout work well, but the flat lavender title and rectangular tags read as overlays on an otherwise richly framed scene.",
+            "1280x800": "Outcome text remains readable; the bulky lower rail has oversized horizontally spread carving and a plain rectangular label that conflicts with nearby cartouches."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 9,
+            "typography": 7.5,
+            "material": 8.3,
+            "background": 8.5,
+            "composition": 8.6,
+            "readability": 9,
+            "coherence": 8.1
+          },
+          "overall": 8.1,
+          "fits_between_samples": false,
+          "worst_problem": "The lower Story Register fascia needs proportionate carving and a shaped nameplate; its stretched leafwork and plain rectangular label clash with the lectern.",
+          "size_notes": {
+            "1600x900": "Paper, initial, portrait paintings, and moon crest make a handsome reading scene, but the flat lavender headline and broad lower carving break the material consistency.",
+            "1280x800": "The large first choice is clear and the paper has visible aging; the rail's large central gold flourish dominates the narrow reading lip."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 7.8,
+            "palette": 8.8,
+            "typography": 7.5,
+            "material": 7.5,
+            "background": 8.6,
+            "composition": 8.5,
+            "readability": 9,
+            "coherence": 7.8
+          },
+          "overall": 7.8,
+          "fits_between_samples": false,
+          "worst_problem": "The final-deck list on the right needs worn textured faces instead of glossy black gradient rows.",
+          "size_notes": {
+            "1600x900": "The complete central card and explanation are strong and the extinguished candle supports the memorial mood; shiny black rows and the stretched bottom carving look like a different UI material.",
+            "1280x800": "The central hierarchy remains clear, but glossy rows, rectangular rail labels, and a broad ornate footer pull attention away from the memorial card."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.2,
+            "palette": 9.1,
+            "typography": 7.8,
+            "material": 8.6,
+            "background": 9.2,
+            "composition": 9,
+            "readability": 9.2,
+            "coherence": 8.3
+          },
+          "overall": 8.3,
+          "fits_between_samples": false,
+          "worst_problem": "The bottom Shop Shelves fascia needs smaller, proportionate carving and a shaped label integrated into its edge.",
+          "size_notes": {
+            "1600x900": "The merchandise, draped canopy, moth portrait, and hanging prices remain excellent; the low footer's horizontally spread gold leafwork is much larger in scale than the shelf carvings.",
+            "1280x800": "The three cards and merchant remain well balanced; the flat title and bright lavender Tricks lettering on gold introduce a less engraved treatment than the references."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.3,
+            "typography": 7.2,
+            "material": 7.4,
+            "background": 8,
+            "composition": 8.6,
+            "readability": 8,
+            "coherence": 7.6
+          },
+          "overall": 7.6,
+          "fits_between_samples": false,
+          "worst_problem": "The top conditions need crisp colored letter edges and opaque worn supports; the current soft glow blurs the text and weakens the Strength label.",
+          "size_notes": {
+            "1600x900": "Ownership labels are sharp enough, but the six large colored conditions look noticeably soft and the enemy Strength label is dim against its background.",
+            "1280x800": "Stacked conditions make the groups clear, yet fuzzy halos still reduce letter definition and the fine gold underlines are weak material anchors."
+          }
+        }
+      }
+    }
+  },
+  "ranking": {
+    "rest": [
+      "FLUORITE",
+      "BERYL",
+      "CITRINE",
+      "SARDONYX"
+    ],
+    "event": [
+      "BERYL",
+      "FLUORITE",
+      "CITRINE",
+      "SARDONYX"
+    ],
+    "gameover": [
+      "FLUORITE",
+      "BERYL",
+      "CITRINE",
+      "SARDONYX"
+    ],
+    "shop": [
+      "BERYL",
+      "FLUORITE",
+      "CITRINE",
+      "SARDONYX"
+    ],
+    "combat-floaters": [
+      "FLUORITE",
+      "BERYL",
+      "CITRINE",
+      "SARDONYX"
+    ]
+  },
+  "winner": "FLUORITE",
+  "winner_fixes": [
+    "Rest, event, gameover, and shop: repaint the large upper lavender title faces with irregular pale edge catches, dark inner bevels, and subtle chips, retaining the current letter size and spacing.",
+    "Combat-floaters, upper status groups: give each condition a worn aubergine backing with a readable gold edge thickness and move the side curls clear of the leading plus signs; retain the crisp cyan and coral colors.",
+    "Gameover, right final-deck list: retain the mottled row texture, add localized wear on its shaped rims, and replace the broad dissolve on the last visible row with a narrow shadow where rows pass behind the fitted lip.",
+    "Event, bottom of the reading sheet: narrow the rail face and paint a continuous paper-to-lip contact shadow with joined corner ends so the paper clearly sits recessed in the stand.",
+    "Rest, right choice boards: vary local warm edge light and cloth wear across the long panels, and fit each outcome badge's texture tightly to its shaped silhouette.",
+    "Rest, event, gameover, and shop, lower rails: use proportionate small center ornaments and believable end joints; avoid making the full-width purple fascia heavier than the frame it belongs to.",
+    "Shop, title and shelf trim: preserve the curtain staging, merchant portrait, card size, and hanging prices while bringing the rail's worn metal and the title's carved finish to the same tactile standard."
+  ],
+  "grafts": [
+    {
+      "from": "BERYL",
+      "screen": "event",
+      "idea": "Use the narrow battered gold reading lip and visible lower edge as the model for a more fitted paper recess; preserve FLUORITE's richer face texture elsewhere."
+    },
+    {
+      "from": "BERYL",
+      "screen": "shop",
+      "idea": "Use the lower rail's restrained height and compact end treatment so the merchandise shelf remains the focus."
+    },
+    {
+      "from": "CITRINE",
+      "screen": "rest",
+      "idea": "Borrow the quieter brown rail face as a color cue for connecting choice-board trim to the room's wood, while retaining FLUORITE's textured badges."
+    }
+  ]
+}

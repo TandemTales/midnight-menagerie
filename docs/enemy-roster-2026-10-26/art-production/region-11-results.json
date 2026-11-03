@@ -1,0 +1,870 @@
+{
+  "region": 11,
+  "entries": [
+    {
+      "level": 11,
+      "region": "Crypt and Ossuary",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Floating Coffin",
+      "existing_animation": false,
+      "description": "One upright hexagonal coffin lid, plum lacquer, brass handles and a softly glowing seam; never a mouth. A fussy usher, it politely blocks the wrong aisle. Intent idea: brief protection.",
+      "animation": "2D animation Idle: hover. Tell: handles lift. Action: pivot broadside, trace a pale shield. Resolve: handles bow.",
+      "signature": "Signature A single solid shield silhouette; no coffin occupant, portal or wheeled furniture.",
+      "production_id": "floating-coffin",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\floating-coffin.webp",
+      "source_path": "animations\\sprites\\enemies\\floatingCoffin.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            109,
+            231
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 7117,
+          "partial_alpha_pixels": 17673,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            108,
+            231
+          ],
+          "sha256": "058266d9d84b84c4372fd412598f3349863b72531e3ffc3cedb5170fef12f561"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 46861,
+          "partial_alpha_pixels": 18286,
+          "visible_bbox_alpha64": [
+            72,
+            9,
+            180,
+            240
+          ],
+          "sha256": "4c3967dc7b7705204c8ad60fb3397afa4a225cd4acfbf8414670890cce27f7b1"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1134884,
+          "partial_alpha_pixels": 437320,
+          "visible_bbox_alpha64": [
+            353,
+            47,
+            883,
+            1175
+          ],
+          "sha256": "762000b372c6f98a06f64b227abe30bdfb26917cc2a597ca5f253d4f711176f3"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\floating-coffin-original.png",
+        "visual": "Reviewed single solid upright hexagonal plum coffin-lid shield with brass handles and glowing seam; no occupant, mouth, face or portal.",
+        "runtime_metadata": {
+          "file": "floating-coffin.webp",
+          "w": 109,
+          "h": 231,
+          "source": "floatingCoffin.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 11,
+      "region": "Crypt and Ossuary",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Funeral Urn",
+      "existing_animation": false,
+      "description": "A squat lilac memorial urn with curled handles and an oversized, slightly crooked lid. An interrupted snoozer puffs out one annoyed spectral sigh, then tucks it back inside. Intent idea: weaken an upcoming effect.",
+      "animation": "2D animation Idle: lid trembles. Tell: lid tilts. Action: emit one curling puff. Resolve: puff retracts; lid settles.",
+      "signature": "Signature Round, closed vessel; no emerging humanoid, face or boiling food.",
+      "production_id": "funeral-urn",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\funeral-urn.webp",
+      "source_path": "animations\\sprites\\enemies\\funeralUrn.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            188,
+            205
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 16202,
+          "partial_alpha_pixels": 21605,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            187,
+            205
+          ],
+          "sha256": "b4ccf5d80c5d39bd991f4a4f08e4c45ed8368526a907b22fe80d60b32f560ad6"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 41879,
+          "partial_alpha_pixels": 22924,
+          "visible_bbox_alpha64": [
+            36,
+            26,
+            223,
+            231
+          ],
+          "sha256": "7243a74a66fb6aacd01a3ba316a0f03c15bd641dd99bedfbc1fce242e7485e12"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1021096,
+          "partial_alpha_pixels": 550443,
+          "visible_bbox_alpha64": [
+            177,
+            129,
+            1094,
+            1128
+          ],
+          "sha256": "08f79ad9c63126e6389adcfbab87e38ac52c4f551561b6542c7473908dd2f586"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\funeral-urn-original.png",
+        "visual": "Reviewed squat lilac urn, curled handles and crooked lid, one small vapor curl; no face or emerging humanoid. Complete cutout.",
+        "runtime_metadata": {
+          "file": "funeral-urn.webp",
+          "w": 188,
+          "h": 205,
+          "source": "funeralUrn.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 11,
+      "region": "Crypt and Ossuary",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Bone Chimes",
+      "existing_animation": false,
+      "description": "Five clean, rounded, stylized ivory bones suspended from a small crescent bracket; no skull, flesh or anatomical assembly. They insist on finishing their tiny bedtime tune. One bone rings before being touched. Intent idea: a delayed repeat.",
+      "animation": "2D animation Idle: gentle sway. Tell: one bone glows. Action: sequential clacks and note dots. Resolve: strings straighten.",
+      "signature": "Signature Small hanging comb silhouette, dominated by sound rather than a skeletal creature.",
+      "production_id": "bone-chimes",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\bone-chimes.webp",
+      "source_path": "animations\\sprites\\enemies\\boneChimes.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            179,
+            240
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 28502,
+          "partial_alpha_pixels": 13043,
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            179,
+            239
+          ],
+          "sha256": "605f6a7d50cba801ff10405a1fa1c9db2b75c438cfd4a8a12d2c963c4ad8df5a"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 47113,
+          "partial_alpha_pixels": 17008,
+          "visible_bbox_alpha64": [
+            41,
+            7,
+            220,
+            245
+          ],
+          "sha256": "b77ebda9a49b01ef9dfac01b9c2589b407d10fa46fc07581a9fd524b9d0f4a96"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1141164,
+          "partial_alpha_pixels": 430275,
+          "visible_bbox_alpha64": [
+            204,
+            33,
+            1075,
+            1201
+          ],
+          "sha256": "4a950a76c8f7317b2b36a5d2587e5e53bd9c2c6a892975770dd77ce0fa99fa6f"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\bone-chimes-original.png",
+        "visual": "Reviewed five clean rounded ivory bone chimes on a crescent bracket, nonanatomical decorative arrangement, no skull or face. All pieces visible.",
+        "runtime_metadata": {
+          "file": "bone-chimes.webp",
+          "w": 179,
+          "h": 240,
+          "source": "boneChimes.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 11,
+      "region": "Crypt and Ossuary",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Mourning Fan",
+      "existing_animation": false,
+      "description": "An open, pearl-edged black pleated fan, hovering upright with a short ivory handle. An invisible mourner fans away sighs with exaggerated disapproval; its breeze blows its own tassel the wrong way. Intent idea: soften a strong effect.",
+      "animation": "2D animation Idle: slow tilt. Tell: folds compress. Action: two brisk sweeps, crescent draft. Resolve: snap elegantly open.",
+      "signature": "Signature Broad crescent with rigid folding ribs, not another floating veil or shroud.",
+      "production_id": "mourning-fan",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\mourning-fan.webp",
+      "source_path": "animations\\sprites\\enemies\\mourningFan.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            241,
+            199
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 25759,
+          "partial_alpha_pixels": 21244,
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            241,
+            198
+          ],
+          "sha256": "c9c71f0679544d1d2636528b8a4bbcbc870407f3386319d5ce35dd30f600f4f2"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 42190,
+          "partial_alpha_pixels": 22390,
+          "visible_bbox_alpha64": [
+            12,
+            33,
+            252,
+            231
+          ],
+          "sha256": "c9ff90d4248afee30b9a762284684cb109657838b9f0550e6669fcd76654cd7d"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1018124,
+          "partial_alpha_pixels": 554054,
+          "visible_bbox_alpha64": [
+            57,
+            162,
+            1231,
+            1135
+          ],
+          "sha256": "e7856501dc999a8b1cc705c3ea1cd535331f29705919c11f049e1eb67353e298"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\mourning-fan-original.png",
+        "visual": "Reviewed broad black pleated fan, rigid ribs, pearl border, short ivory handle and one tassel; no figure or hand; complete open-fan silhouette.",
+        "runtime_metadata": {
+          "file": "mourning-fan.webp",
+          "w": 241,
+          "h": 199,
+          "source": "mourningFan.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 11,
+      "region": "Crypt and Ossuary",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Censer Swinger",
+      "existing_animation": false,
+      "description": "A pierced bronze incense sphere hanging beneath a triangular chain yoke, violet light visible through its holes. It perfumes visitors who never asked, leaving one neat smoke ring hanging sideways. Intent idea: obscure the next intent briefly.",
+      "animation": "2D animation Idle: pendulum sway. Tell: holes brighten. Action: short swing and ring puff. Resolve: ring shrinks into sphere.",
+      "signature": "Signature Compact metal pendulum; fragrance, not flame or a vapor person, supplies its personality.",
+      "production_id": "censer-swinger",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\censer-swinger.webp",
+      "source_path": "animations\\sprites\\enemies\\censerSwinger.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            153,
+            243
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 24183,
+          "partial_alpha_pixels": 12258,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            151,
+            243
+          ],
+          "sha256": "c49815b77a35a5d4c589f3e5edf2dcbb29f8b8ac587e2823a74dee27cc9023df"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 48550,
+          "partial_alpha_pixels": 16248,
+          "visible_bbox_alpha64": [
+            73,
+            5,
+            224,
+            248
+          ],
+          "sha256": "6fbd09b4607e06e5528119fc4bc3c4088ced4e4016eb3cec11147b41a0bd4f9c"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1168526,
+          "partial_alpha_pixels": 403870,
+          "visible_bbox_alpha64": [
+            360,
+            27,
+            1096,
+            1214
+          ],
+          "sha256": "cb5aa7df1d5ef9479745150da70127affd174c1af9602cbe08d783c39fee5e04"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\censer-swinger-original.png",
+        "visual": "Reviewed pierced bronze incense sphere beneath triangular chains and ring, violet perforations and plain smoke ring; no flame face or body, full cutout.",
+        "runtime_metadata": {
+          "file": "censer-swinger.webp",
+          "w": 153,
+          "h": 243,
+          "source": "censerSwinger.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 11,
+      "region": "Crypt and Ossuary",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Mortuary Measure",
+      "existing_animation": false,
+      "description": "An ivory folding measuring rule bent into a crooked zigzag, with tiny brass joint caps. An unseen tailor measures everyone's patience, extending beyond its own last mark. Intent idea: prepare a larger next effect.",
+      "animation": "2D animation Idle: joint taps. Tell: markings glow. Action: unfold three segments; luminous extra mark appears. Resolve: concertina shut.",
+      "signature": "Signature Angular articulated ruler; no arm, crawling anatomy, weapon or humanoid body.",
+      "production_id": "mortuary-measure",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\mortuary-measure.webp",
+      "source_path": "animations\\sprites\\enemies\\mortuaryMeasure.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            210,
+            219
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 31667,
+          "partial_alpha_pixels": 14186,
+          "visible_bbox_alpha64": [
+            1,
+            1,
+            210,
+            218
+          ],
+          "sha256": "fa6973eeecb9f492e738386b82f7c942a4e1cfd072ee9ba341f61b66a2bd31ff"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 47512,
+          "partial_alpha_pixels": 17887,
+          "visible_bbox_alpha64": [
+            28,
+            20,
+            237,
+            237
+          ],
+          "sha256": "ecc51289f5248172438872a15b9c4252146fd5f8c1f33198b9d198b92e2152ab"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1136507,
+          "partial_alpha_pixels": 435968,
+          "visible_bbox_alpha64": [
+            137,
+            97,
+            1159,
+            1158
+          ],
+          "sha256": "0a3887688b6796046865264f890cf614e524ed9ea87b05ceda740ed10bca6a9c"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\mortuary-measure-original.png",
+        "visual": "Reviewed ivory segmented folding rule in open zigzag with brass joints and measurement ticks, no anatomy or weapon; whole shape visible.",
+        "runtime_metadata": {
+          "file": "mortuary-measure.webp",
+          "w": 210,
+          "h": 219,
+          "source": "mortuaryMeasure.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 11,
+      "region": "Crypt and Ossuary",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Bier Trestle",
+      "existing_animation": false,
+      "description": "A low violet-padded wooden trestle, two broad folding supports and brass corner caps; nothing rests on it. It keeps offering a seat, then politely forgetting how tall seats are. Intent idea: alternate a sturdy and vulnerable stance.",
+      "animation": "2D animation Idle: cushion dimples. Tell: hinges glow. Action: supports fold; cushion floats unchanged. Resolve: legs unfold beneath it.",
+      "signature": "Signature Low geometric support and impossible stationary cushion, not a bed, chair or coffin cart.",
+      "production_id": "bier-trestle",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\bier-trestle.webp",
+      "source_path": "animations\\sprites\\enemies\\bierTrestle.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            230,
+            135
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 13612,
+          "partial_alpha_pixels": 16742,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            230,
+            135
+          ],
+          "sha256": "1e17ad68fc86dc0f41bb3fb75870be67dcb323ad5f711ff79ee11bb12b05bf7a"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 46908,
+          "partial_alpha_pixels": 17932,
+          "visible_bbox_alpha64": [
+            13,
+            69,
+            243,
+            204
+          ],
+          "sha256": "aa249de09431ad399d57683ed6a2f125452ba3bf7656adf12776c2ff95325855"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1138699,
+          "partial_alpha_pixels": 433354,
+          "visible_bbox_alpha64": [
+            64,
+            339,
+            1190,
+            998
+          ],
+          "sha256": "74b2d12b2d9e1a07a169c0e3167df10cc329e600e1030d7791b61bdff29cca28"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\bier-trestle-original.png",
+        "visual": "Reviewed empty violet padded low trestle with two broad folding wooden supports and brass corners; no backrest, wheels or resting occupant, complete silhouette.",
+        "runtime_metadata": {
+          "file": "bier-trestle.webp",
+          "w": 230,
+          "h": 135,
+          "source": "bierTrestle.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 11,
+      "region": "Crypt and Ossuary",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Coffin Bearers",
+      "existing_animation": false,
+      "description": "Two short translucent porters share one shallow, closed ceremonial casket. Broad capelets and mismatched tall hats make a single low, horizontal sprite group. They keep courteously disagreeing over which end should lead; the casket continues level while both bow. Intent idea: alternating support and interruption.",
+      "animation": "2D animation Idle: synchronized bob. Tell: hats tip opposite ways. Action: casket glides one body-width as porters briefly lag behind. Resolve: both catch up and bow. Keep the casket rigid.",
+      "signature": "Signature A comic two-person carrying ritual, not another moving lid or coffin full of surprises.",
+      "production_id": "coffin-bearers",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\coffin-bearers.webp",
+      "source_path": "animations\\sprites\\enemies\\coffinBearers.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            497,
+            327
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 88341,
+          "partial_alpha_pixels": 73044,
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            497,
+            327
+          ],
+          "sha256": "5810665b9a4704f61adcd0fc7639c001b2c7ae6f24191d7237d16642b254e607"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 182058,
+          "partial_alpha_pixels": 78952,
+          "visible_bbox_alpha64": [
+            6,
+            92,
+            502,
+            419
+          ],
+          "sha256": "96815f4205d08d9bc946f03c6b4f00b49b6d9a7b9880b1f740520b55907d189f"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1089473,
+          "partial_alpha_pixels": 482603,
+          "visible_bbox_alpha64": [
+            15,
+            226,
+            1229,
+            1025
+          ],
+          "sha256": "5cbd42a038dab4bd3a8687b6f2b80ae018ac2b4575ee012f5eee19ae0e430331"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\coffin-bearers-original.png",
+        "visual": "Reviewed two short friendly translucent porters with mismatched hats and capelets, one shallow closed casket level between them, coherent holding pose. Solid alpha bounds retain complete silhouettes with clear margins; no occupant.",
+        "runtime_metadata": {
+          "file": "coffin-bearers.webp",
+          "w": 497,
+          "h": 327,
+          "source": "coffinBearers.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 11,
+      "region": "Crypt and Ossuary",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Epitaph Press",
+      "existing_animation": false,
+      "description": "A squat cast-iron embossing press with a broad open throat, oversized hooked lever and one small stack of blank memorial ribbons. The overparticular machine labels every visitor 'PLEASE WAIT'; the lettering lifts away before the ribbon leaves the bed. Intent idea: apply a brief delay.",
+      "animation": "2D animation Idle: lever gives tiny impatient ticks. Tell: platen lights violet. Action: one downward stamp releases a single floating label. Resolve: ribbon slides back; lever rises. Use one label effect.",
+      "signature": "Signature Heavy lever-and-platen silhouette; not a cabinet, writing desk, barrel press or autonomous pile of paper.",
+      "production_id": "epitaph-press",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\epitaph-press.webp",
+      "source_path": "animations\\sprites\\enemies\\epitaphPress.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            437,
+            464
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 107750,
+          "partial_alpha_pixels": 93563,
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            437,
+            463
+          ],
+          "sha256": "ecdb51859b386da0ccbb27b69e236d9ae80c0a1313f89e6f3bc532907d0a16de"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 163652,
+          "partial_alpha_pixels": 97037,
+          "visible_bbox_alpha64": [
+            57,
+            21,
+            493,
+            484
+          ],
+          "sha256": "b202bf94116d35f6cd0dba4ba0a4454641f822b840f87d57b6d57de9701070d7"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 983173,
+          "partial_alpha_pixels": 588615,
+          "visible_bbox_alpha64": [
+            139,
+            53,
+            1207,
+            1186
+          ],
+          "sha256": "d59ab76471a1b9a4da4c5ab587251f8865227b5da5f1834a186cfd6780287301"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\epitaph-press-v2-original.png",
+        "visual": "Reviewed squat cast-iron embossing press with oversized hooked lever and violet platen, clean blank memorial ribbons in idle pose. Original misspelled label variant retained but rejected; corrected idle has no lettering.",
+        "runtime_metadata": {
+          "file": "epitaph-press.webp",
+          "w": 437,
+          "h": 464,
+          "source": "epitaphPress.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 11,
+      "region": "Crypt and Ossuary",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Mourning Standard",
+      "existing_animation": false,
+      "description": "A broad, diamond-ended black processional banner hangs from a rigid bronze crossbar and spearless pole. A silver border frames two embroidered shoeprints. It solemnly rehearses a procession nobody attends; the prints march upward through the fabric and reappear at its hem. Intent idea: several small delayed pulses.",
+      "animation": "2D animation Idle: tassels sway. Tell: silver border glows. Action: two footprint sprites climb on a masked loop. Resolve: prints return to their original stitched positions. Pole and banner remain rigid.",
+      "signature": "Signature A ceremonial heraldic object with animated embroidery, not a floating shroud, human outline or visible crowd.",
+      "production_id": "mourning-standard",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\mourning-standard.webp",
+      "source_path": "animations\\sprites\\enemies\\mourningStandard.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            210,
+            472
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 62607,
+          "partial_alpha_pixels": 35554,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            210,
+            472
+          ],
+          "sha256": "656ea1b3215d76ef98eefbff96d0cfcfeaeed96a49b44c98736366058b7d700e"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 223568,
+          "partial_alpha_pixels": 37617,
+          "visible_bbox_alpha64": [
+            151,
+            15,
+            361,
+            487
+          ],
+          "sha256": "d44e08abd34b6d7885703647efcb540773366dffeb8b6284186d07767d5234c6"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1342502,
+          "partial_alpha_pixels": 229626,
+          "visible_bbox_alpha64": [
+            370,
+            37,
+            884,
+            1192
+          ],
+          "sha256": "10140ab35ed6a57df6d78008e6c9d2d8f743433bedefe8b79ff751ab36d139a7"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\mourning-standard-original.png",
+        "visual": "Reviewed spearless pole and crossbar, black pointed banner with silver border and exactly two embroidered shoeprints, no human or crowd, complete silhouette.",
+        "runtime_metadata": {
+          "file": "mourning-standard.webp",
+          "w": 210,
+          "h": 472,
+          "source": "mourningStandard.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    },
+    {
+      "level": 11,
+      "region": "Crypt and Ossuary",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Undertaker",
+      "existing_animation": false,
+      "description": "A tall translucent funeral director: bent stovepipe hat, round spectacles, swallowtail coat and oversized white gloves. A measuring ribbon hangs like a watch chain; violet light outlines his kindly, distracted profile. He mistakes visitors for guests awaiting a perfectly organized rest and gently insists they take a number. Intent idea: alternate protection and postponement.",
+      "animation": "2D animation Idle: inspect cuffs. Tell: raise a numbered token. Action: spread hands; three violet markers align into a barrier. Resolve: markers bow and fade; he checks an empty pocket. One rig and three identical markers; no room-wide furniture sequence.",
+      "signature": "Signature His stoop, bent hat and fussy poses distinguish him from lantern-and-key servants and the Butler.",
+      "production_id": "undertaker",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\undertaker.webp",
+      "source_path": "animations\\sprites\\enemies\\undertaker.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            448,
+            988
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 255731,
+          "partial_alpha_pixels": 186659,
+          "visible_bbox_alpha64": [
+            3,
+            5,
+            445,
+            986
+          ],
+          "sha256": "e4f36bc6dd467a600f9d670ec790aea3a15dad850aa2c1eac0528e4df624fc09"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 799654,
+          "partial_alpha_pixels": 248688,
+          "visible_bbox_alpha64": [
+            311,
+            13,
+            753,
+            994
+          ],
+          "sha256": "2abdb5501f454e72e9aab1add3052dc83737db0c412142df698d24e3c490f4b1"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1199933,
+          "partial_alpha_pixels": 372443,
+          "visible_bbox_alpha64": [
+            381,
+            16,
+            922,
+            1217
+          ],
+          "sha256": "c4c73e215bb6214749efffa7c6bc96d3cb47147003fc29eb17267eb807798527"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\undertaker-original.png",
+        "visual": "Reviewed kindly stooped translucent director with bent stovepipe hat, round spectacles, swallowtail coat, oversized white gloves and measuring ribbon. Cuff-checking idle pose, coherent anatomy, complete hat and feet.",
+        "runtime_metadata": {
+          "file": "undertaker.webp",
+          "w": 448,
+          "h": 988,
+          "source": "undertaker.png"
+        },
+        "workflow": "Built-in imagegen; PNG tier-sized using Lanczos; existing isolated build_enemy_still; no registry changes."
+      },
+      "blocker": null
+    }
+  ],
+  "counts": {
+    "existing": 0,
+    "new": 11,
+    "pending": 0,
+    "blocked": 0
+  },
+  "review": "Full generated images and final regional contact sheet visually inspected; all identities distinct, complete and suitable for requested still-art delivery."
+}

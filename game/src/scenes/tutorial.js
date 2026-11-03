@@ -78,10 +78,19 @@ export function shouldPlayOpening() {
   return !(Array.isArray(seen) && seen.includes(OPENING_ID));
 }
 
-/** Remember that it has been played, or deliberately skipped. */
-function markOpeningSeen() {
+/** Remember completion or skip; only completion delivers the search orientation. */
+function markOpeningSeen(completed = false) {
   const seen = Array.isArray(Save.data.seenTutorials) ? Save.data.seenTutorials : (Save.data.seenTutorials = []);
-  if (!seen.includes(OPENING_ID)) { seen.push(OPENING_ID); Save.save(); }
+  let changed = false;
+  if (!seen.includes(OPENING_ID)) { seen.push(OPENING_ID); changed = true; }
+  // The full opening already explains the missing pets and their separate
+  // Companion. Mark that orientation delivered before the first map route.
+  // A skip must leave SEARCH-RECAP eligible, even though it marks opening seen.
+  if (completed && !Save.data.narrative.seen['SEARCH-RECAP']) {
+    Save.data.narrative.seen['SEARCH-RECAP'] = true;
+    changed = true;
+  }
+  if (changed) Save.save();
 }
 
 /**
@@ -216,7 +225,8 @@ export class TutorialScene extends Scene {
        destroyed while it runs. `scenes/combat.js` reads nothing from here — it
        only knows to come back to `tutorial` with `step=after`. */
     const carried = ctx.tutorial || {};
-    this.kid = params.kid || carried.kid || null;
+    const requestedKid = params.kid || carried.kid;
+    this.kid = KIDS.some((kid) => kid.slug === requestedKid) ? requestedKid : null;
     this.seed = Number(params.seed || carried.seed) || (Date.now() % 0x7fffffff);
     ctx.tutorial = { kid: this.kid, seed: this.seed };
 
@@ -256,6 +266,7 @@ export class TutorialScene extends Scene {
        front of you again. */
     const at = params.step ? PAGES.findIndex((p) => p.id === params.step) : -1;
     this.i = at >= 0 ? at : (carried.after ? FIRST_AFTER : 0);
+    if (!this.kid) this.i = 0;
     if (this.kid && this.i === 0) this.i = 1;          // a Kid was handed in
     this._render(true);
     bus.emit('tutorial:ready', { page: PAGES[this.i].id, kid: this.kid });
@@ -494,12 +505,12 @@ export class TutorialScene extends Scene {
     on(this._panel.querySelector('.tut-next'), 'click', () => this._advance());
 
     on(window, 'keydown', (e) => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
       if (e.key === 'Escape') { e.preventDefault(); this._skip(); return; }
       /* Enter and Space turn the page, but NOT while the Kid strip has focus —
          there they choose, and `rovingFocus` has already claimed them. */
       if (e.key === 'Enter' || e.key === ' ') {
-        if (document.activeElement && document.activeElement.closest('.tut-hots')) return;
+        if (document.activeElement && document.activeElement.closest('button, input, select, textarea, a')) return;
         /* On the board the page does not turn: the tick does. Falling through
            to `_advance` here let Space skip the pick entirely. */
         if (this._page().kind === 'pick') {
@@ -782,8 +793,7 @@ export class TutorialScene extends Scene {
     this.ctx.tutorial = { kid: this.kid, seed: this.seed, after: true };
     try { this.ctx.audio?.play?.('ui:begin'); } catch {}
     /* THE REAL COMBAT SCENE. `foyer-1` is one Dust Bunny — `data/encounters.js`
-       tier 'early', the gentlest thing in the house — at a fixed seed so the
-       coached fight is the same fight for everybody who is taught it. */
+       tier 'early', the gentlest thing in the house — using the session seed. The opening hand is a normal shuffled hand. */
     this.ctx.scenes.go('combat', {
       tutorial: '1',
       encounter: 'foyer-1',
@@ -797,7 +807,7 @@ export class TutorialScene extends Scene {
 
   /** The expedition proper. Marmalade, the Kid they chose, and the same seed. */
   _begin() {
-    markOpeningSeen();
+    markOpeningSeen(true);
     const kid = this.kid || KIDS[0].slug;
     const payload = {
       companion: 'marmalade', kid, seed: this.seed, haunt: 0,

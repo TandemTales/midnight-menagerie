@@ -85,7 +85,7 @@
   will-change: transform, opacity;
 }
 .pf:hover .pf__shimmer,
-.pf.is-shimmering .pf__shimmer { animation: pf-sheen 1.5s var(--ease-soft) 1; }
+.pf.is-shimmering .pf__shimmer { animation: pf-sheen calc(1.5s * var(--anim-scale)) var(--ease-soft) 1; }
 @keyframes pf-sheen {
   0%   { opacity: 0;  transform: translate3d(-42%, 0, 0); }
   18%  { opacity: 1; }
@@ -144,7 +144,7 @@
   position: absolute; left: 50%; top: -22px;
   width: 22px; height: 46px; margin-left: -11px;
   transform-origin: 50% 100%;
-  animation: flame-sway 2.9s var(--ease-soft) infinite;
+  animation: flame-sway calc(2.9s * var(--anim-scale)) var(--ease-soft) infinite;
 }
 .orn-candle__flame i, .orn-candle__flame b {
   position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
@@ -164,7 +164,7 @@
   position: absolute; left: 50%; top: -78px; width: 260px; height: 260px;
   margin-left: -130px; pointer-events: none;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--flame-glow) 26%, transparent), transparent 72%);
-  animation: flame-breathe 3.7s var(--ease-soft) infinite;
+  animation: flame-breathe calc(3.7s * var(--anim-scale)) var(--ease-soft) infinite;
 }
 @keyframes flame-sway {
   0%, 100% { transform: rotate(-2.5deg) scaleY(1); }
@@ -207,15 +207,15 @@
 .mm-logo__ring--in   { stroke: color-mix(in srgb, var(--brass-300) 52%, transparent); stroke-width: 1.6; }
 .mm-logo__ring--hair { stroke: color-mix(in srgb, var(--arcane-300) 26%, transparent); stroke-width: .9; }
 
-.mm-logo__stars circle { fill: var(--spectre-100); opacity: .8; animation: twinkle 4.6s ease-in-out infinite; }
-.mm-logo__stars circle:nth-child(2n) { animation-delay: -1.4s; }
-.mm-logo__stars circle:nth-child(3n) { animation-delay: -2.7s; }
+.mm-logo__stars circle { fill: var(--spectre-100); opacity: .8; animation: twinkle calc(4.6s * var(--anim-scale)) ease-in-out infinite; }
+.mm-logo__stars circle:nth-child(2n) { animation-delay: calc(-1.4s * var(--anim-scale)); }
+.mm-logo__stars circle:nth-child(3n) { animation-delay: calc(-2.7s * var(--anim-scale)); }
 @keyframes twinkle { 0%,100% { opacity: .22; } 50% { opacity: .95; } }
 
 .mm-logo__bats { color: color-mix(in oklab, var(--ink-900) 78%, var(--arcane-500)); }
-.mm-logo__bats > g { animation: bat-bob 5.2s var(--ease-soft) infinite; transform-box: fill-box; }
-.mm-logo__bats > g:nth-child(2) { animation-duration: 6.4s; animation-delay: -1.8s; }
-.mm-logo__bats > g:nth-child(3) { animation-duration: 4.4s; animation-delay: -3.1s; }
+.mm-logo__bats > g { animation: bat-bob calc(5.2s * var(--anim-scale)) var(--ease-soft) infinite; transform-box: fill-box; }
+.mm-logo__bats > g:nth-child(2) { animation-duration: calc(6.4s * var(--anim-scale)); animation-delay: calc(-1.8s * var(--anim-scale)); }
+.mm-logo__bats > g:nth-child(3) { animation-duration: calc(4.4s * var(--anim-scale)); animation-delay: calc(-3.1s * var(--anim-scale)); }
 @keyframes bat-bob {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   30%      { transform: translateY(-4px) rotate(-3deg); }
@@ -252,12 +252,12 @@
     drop-shadow(0 0 calc(var(--logo-w) * .046) color-mix(in srgb, var(--arcane-400) 40%, transparent));
 }
 .mm-logo__top {
-  font-size: calc(var(--logo-w) * .0715);
+  --reading-size: calc(var(--logo-w) * .0715); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: calc(var(--logo-w) * .0148);
   text-indent: calc(var(--logo-w) * .0148);
 }
 .mm-logo__main {
-  font-size: calc(var(--logo-w) * .1105);
+  --reading-size: calc(var(--logo-w) * .1105); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: calc(var(--logo-w) * .0012);
 }
 
@@ -268,7 +268,7 @@
   display: flex; align-items: center; gap: .7em;
   padding: calc(var(--logo-w) * .008) calc(var(--logo-w) * .036);
   font-family: var(--font-display);
-  font-size: calc(var(--logo-w) * .026);
+  --reading-size: calc(var(--logo-w) * .026); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: calc(var(--logo-w) * .0038);
   text-transform: uppercase;
   color: var(--brass-100);
@@ -288,11 +288,7 @@
    per pet. The class names are kept because select/clubhouse/gameover all size
    their boxes with them.
 
-   `object-fit: cover` matters: the polaroid crops a 4:3 photograph to a square
-   and the run-end ledger crops it again. Without it the pet is letterboxed
-   inside its own frame, which is the one thing a photograph must never look
-   like. The intrinsic width/height are set on the element in JS so the box is
-   the right shape before the bitmap arrives — no layout shift on first paint. */
+   Pet artwork includes its own film print; always show its complete edges. */
 .kidpf, .petpic {
   display: block;
   width: 100%; height: 100%;
@@ -300,6 +296,7 @@
   object-position: 50% 42%;
   background: var(--ink-900);
 }
+.petpic { object-fit: contain; object-position: center; background: transparent; }
 /* The full painting is 3:4 and the child stands in the upper two thirds of it;
    any box shorter than 3:4 must crop off the floor, not the face. The square
    thumbnail is already a head crop and wants no further bias. */
@@ -317,4 +314,4 @@
    object-position for a particular frame are fine: neither is layout. */
 .kid-tile__pf, .go-who__kid { aspect-ratio: 1; overflow: hidden; }
 .go-pet__snap  { aspect-ratio: auto; }
-.go-pet__snap .petpic { aspect-ratio: 4 / 3; }
+.go-pet__snap .petpic { aspect-ratio: 1122 / 1402; }

@@ -1,0 +1,108 @@
+{
+  "updated_utc": "2026-10-27T04:35:36.276161+00:00",
+  "status": "paused_by_user_new_assets_rolled_back",
+  "reason": "User requested rollback of generated new enemy art; completed recoverably. New production remains paused.",
+  "saved_provisional_enemies": 0,
+  "saved_provisional_actions": 0,
+  "final_approved_actions": 0,
+  "unproduced_usable_actions": 0,
+  "dependency_blocked_actions": 4,
+  "preserved_legacy_enemies": 29,
+  "preserved_legacy_actions": 118,
+  "legacy_left_derivative_actions_saved": 4,
+  "legacy_left_corrections_remaining_actions": 89,
+  "latest_saved_stage": null,
+  "staged_not_delivered": [],
+  "settled_operation": {
+    "target": "Sleepwalking Ghost selected-pose connection inspection",
+    "outcome": "Completed successfully after pause request; four inspected poses each had one main opaque component. This is not full clip validation or visual approval."
+  },
+  "still_running_operations": [],
+  "last_preservation_check": {
+    "checked_utc": "2026-10-27T04:34:05.876721+00:00",
+    "archive": {
+      "files": 1326,
+      "bytes": 2269705574,
+      "errors": []
+    },
+    "original_before_generation_baseline": {
+      "checked": 367,
+      "unchanged": 338,
+      "authorized_timing": 29,
+      "authorized_archived": 0,
+      "failed": [],
+      "passed": true
+    },
+    "animation_start_baseline_including_generated_stills": {
+      "checked": 3408,
+      "unchanged": 3069,
+      "authorized_timing": 29,
+      "authorized_archived": 310,
+      "failed": [],
+      "passed": true
+    },
+    "oven_maw_legacy_derivatives": {
+      "checked": 9,
+      "failed": []
+    },
+    "references": {
+      "generated_registered_ids": [],
+      "active_literal_hits": []
+    },
+    "static_checks": {
+      "passed": 828,
+      "failed": []
+    },
+    "passed": true
+  },
+  "library_delivery": "Both previously requested Library reels remain saved; no duplicate upload. See library-delivery-status.json.",
+  "authorities": [
+    "enemy-action-matrix.json",
+    "animation-deliveries.json",
+    "CHECKPOINT.json"
+  ],
+  "resume": "No automatic resume. Archived files can be restored only on a new user instruction; see restoration manifest.",
+  "timing_maintenance": {
+    "completed_utc": "2026-10-27T01:03:17.881806+00:00",
+    "status": "completed_timing_only_new_production_remains_paused",
+    "legacy_enemies": 29,
+    "legacy_clips": 118,
+    "fps": 30,
+    "source_occupied_frames_per_sheet": 81,
+    "runtime_frames_preserved": 5067,
+    "runtime_test": "legacy-30fps-2026-10-27/runtime-test.json",
+    "report": "legacy-30fps-2026-10-27/REPORT.txt",
+    "changes": "legacy-30fps-2026-10-27/changes.json",
+    "image_pixels_unchanged": true,
+    "new_provisional_clips_unchanged": 50,
+    "orientation_work": "Still paused. Unselected Oven Maw left derivatives retain their historical timing; apply 30fps if later integrated.",
+    "subsequent_cleanup": "155 generated still pairs and 50 provisional clips subsequently archived by user request; legacy 118 timing changes retained."
+  },
+  "cleanup_maintenance": {
+    "status": "completed_verified_new_enemy_assets_archived_production_paused",
+    "completed_utc": "2026-10-27T04:35:36.276161+00:00",
+    "archive_root": "docs/rollbacks/2026-10-27-new-enemy-art/assets",
+    "manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json",
+    "files_archived": 1326,
+    "bytes_archived": 2269705574,
+    "new_still_pairs_archived": 155,
+    "new_animation_enemies_archived": 12,
+    "new_provisional_actions_archived": 50,
+    "active_new_stills": 0,
+    "active_new_actions": 0,
+    "preserved_original_still_pairs": 51,
+    "preserved_legacy_enemies": 29,
+    "preserved_legacy_actions": 118,
+    "legacy_fps": 30,
+    "dust_bunny_left_facing": true,
+    "oven_maw_legacy_derivatives_preserved": 4,
+    "production_remains_paused": true,
+    "still_running_operations": [],
+    "validation": "docs/rollbacks/2026-10-27-new-enemy-art/archive-validation.json",
+    "no_permanent_deletion": true,
+    "limitations": "No browser/full-game visual playback or release build. Two unmatched rig-reference crops retained; diagnostic JPG/PNG report images retained. Library attachments unchanged."
+  },
+  "archived_provisional_enemies": 12,
+  "archived_provisional_actions": 50,
+  "paused_unproduced_actions": 613
+}

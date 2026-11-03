@@ -1,0 +1,1 @@
+Aborted preflight rerun: UTF8 production-edit script failed before changing any source, but PowerShell continued. Owned runtime42344, probe18280 and verified descendants stopped promptly. Original complete failed proof remains in initial-expanded-padding. This partial rerun is not validation. Source503c853a.

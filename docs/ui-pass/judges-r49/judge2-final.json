@@ -1,0 +1,550 @@
+{
+  "judge": "judge2",
+  "scope": {
+    "method": "Independent blind image-only review; only named PNGs inspected with view_image. No code, notes, metadata, other reviews, browser or game consulted.",
+    "reference_images_reviewed": 4,
+    "candidate_images_reviewed": 40,
+    "total_images_reviewed": 44,
+    "screen_pairs": 20,
+    "sizes": [
+      "1600x900",
+      "1280x800"
+    ],
+    "references": [
+      "UI/title.png",
+      "UI/mainMenu.png",
+      "UI/selectCompanion.png",
+      "UI/selectKid.png"
+    ],
+    "exclusions": "Standalone preview banner, hung painting identity/placement, unchanged combat room/actors/plates/hand/HUD artwork excluded. Combat background scored neutral 5 and excluded from holistic scores and ranking.",
+    "limitations": "Still images cannot establish interaction passes or inaccessible unseen content. Visible clipping and continuation cues assessed. Enlarged text accepted as intentional; fixes preserve information and text scale."
+  },
+  "review_order": [
+    "references:title.png",
+    "references:mainMenu.png",
+    "references:selectCompanion.png",
+    "references:selectKid.png",
+    "OPAL",
+    "RUBY",
+    "LAPIS",
+    "CITRINE"
+  ],
+  "image_order_per_candidate": [
+    "rest.png",
+    "rest-1280.png",
+    "event.png",
+    "event-1280.png",
+    "gameover.png",
+    "gameover-1280.png",
+    "shop.png",
+    "shop-1280.png",
+    "combat-floaters.png",
+    "combat-floaters-1280.png"
+  ],
+  "reference_standard": "References combine sculptural, irregular gold relief, restrained purple enamel, coherent painted textures, object weight, local candle highlights and generous dark recesses. Mere gold borders and matching purple do not achieve the same painted hand.",
+  "candidates": {
+    "OPAL": {
+      "system_overall": 7,
+      "system_coherence": 7.2,
+      "rest": {
+        "ornament": 7.8,
+        "palette": 8.2,
+        "typography": 7.6,
+        "material": 7.4,
+        "background": 7.8,
+        "composition": 7.6,
+        "readability": 7.7,
+        "coherence": 7.6,
+        "overall": 7.6,
+        "fits_between_samples": false,
+        "worst_problem": "At both sizes the fort cutout is surrounded by enlarged blurry ornamental silhouettes inside its frame; replace that floating decorative backdrop with a painted room recess and grounded shadows.",
+        "visual_observations": [
+          "Cloth has plausible folds, fringes and lantern warmth, though the surrounding blurred ornament clashes with its sharper detail.",
+          "The three visible choices read well at both sizes; centered continuation marker is detached from the right-hand board.",
+          "Glossy choice surfaces and uniformly bright metal edges are less tactile than the references."
+        ]
+      },
+      "event": {
+        "ornament": 7.8,
+        "palette": 8,
+        "typography": 7.6,
+        "material": 7.2,
+        "background": 7.8,
+        "composition": 6.8,
+        "readability": 7.1,
+        "coherence": 7.3,
+        "overall": 7.1,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280x800 the first choice's risk and gain wrap into disconnected centered fragments; enlarge/reflow the choice row's usable columns while retaining type size.",
+        "visual_observations": [
+          "Parchment and illuminated initial are convincing stylistic devices.",
+          "A huge left candle and mostly concealed supporting object weaken the book's physical reading.",
+          "At 1600x900 only the first choice is complete before the dark footer cutoff; the continuation marker helps but the board begins unnecessarily low."
+        ]
+      },
+      "gameover": {
+        "ornament": 7.7,
+        "palette": 8,
+        "typography": 7.2,
+        "material": 7,
+        "background": 7.6,
+        "composition": 5.8,
+        "readability": 6.5,
+        "coherence": 6.9,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280x800 the center exhibit devotes a large blank upper bay to nothing while the featured card is cut off below its artwork; move the exhibit content upward to expose its full rules.",
+        "visual_observations": [
+          "Serif headings and gold-edged panels establish a consistent ceremonial record.",
+          "Large blank gaps in left and central columns undermine hierarchy.",
+          "The lower record and deck rows visibly terminate under the footer; the global centered continuation cue does not distinguish which columns continue."
+        ]
+      },
+      "shop": {
+        "ornament": 7.7,
+        "palette": 7.8,
+        "typography": 7.7,
+        "material": 6.4,
+        "background": 7.3,
+        "composition": 6.6,
+        "readability": 7.8,
+        "coherence": 7,
+        "overall": 6.9,
+        "fits_between_samples": false,
+        "worst_problem": "At both sizes the broad shop backdrop is a sequence of smooth vertical gradients with a mechanically repeated valance; paint irregular cloth folds, fabric grain and coherent cast shadows.",
+        "visual_observations": [
+          "Three large cards retain readable full rules and sensible proportions.",
+          "Very broad left and inter-card voids make the shop feel like a sparse grid.",
+          "The partial next row and central continuation marker communicate more wares, but the large floating display lacks a convincing shelf or merchant presence."
+        ]
+      },
+      "combat-floaters": {
+        "ornament": 7.5,
+        "palette": 7.8,
+        "typography": 7.8,
+        "material": 7,
+        "background": 5,
+        "composition": 6.5,
+        "readability": 8.2,
+        "coherence": 7.3,
+        "overall": 7.4,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280x800 Maya's Weak is isolated to her right while her other conditions sit far left and Butler's Bristle sits over Maya; regroup each actor's named conditions into one stable side column.",
+        "visual_observations": [
+          "Owner names make attribution explicit even where positions are misleading.",
+          "No central face or health-plate occlusion is evident from the condition plaques.",
+          "The black-gold plaques fit the UI vocabulary, but large bright cyan/red letters and thin connecting ticks feel more like overlays than painted objects."
+        ]
+      }
+    },
+    "RUBY": {
+      "system_overall": 7.8,
+      "system_coherence": 7.9,
+      "rest": {
+        "ornament": 7.8,
+        "palette": 8.3,
+        "typography": 7.8,
+        "material": 8.1,
+        "background": 7.8,
+        "composition": 7.8,
+        "readability": 7.7,
+        "coherence": 8,
+        "overall": 7.9,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280x800 the third choice is cut before its mechanical consequence; reserve a bounded board viewport and a clearly separate continuation strip so the visible row edge is deliberate.",
+        "visual_observations": [
+          "The substantial brocade canopy, fringe, cushions and lantern make the fort the strongest painted object in this candidate.",
+          "Dark cavity and warm floor give the scene weight, though the characters look washed into an added glow.",
+          "Choice typography is spacious and the lower-right cue clearly says more choices exist."
+        ]
+      },
+      "event": {
+        "ornament": 8,
+        "palette": 8.2,
+        "typography": 8,
+        "material": 8,
+        "background": 7.8,
+        "composition": 7.8,
+        "readability": 8,
+        "coherence": 8,
+        "overall": 7.9,
+        "fits_between_samples": false,
+        "worst_problem": "At both sizes the parchment is front-facing while the carved support peeks out asymmetrically; show a continuous top/side lip with contact shadow so the book reads as resting on the lectern.",
+        "visual_observations": [
+          "Weathered amber paper, purple initial and visible carved purple-gold rails work together.",
+          "The book starts higher than in OPAL and the first two choices are complete at both sizes.",
+          "The lower-right continuation cue is clear, but the third row visibly runs beneath the footer boundary."
+        ]
+      },
+      "gameover": {
+        "ornament": 7.8,
+        "palette": 8,
+        "typography": 7.6,
+        "material": 7.3,
+        "background": 7.6,
+        "composition": 7.7,
+        "readability": 7.8,
+        "coherence": 7.7,
+        "overall": 7.7,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280x800 the lower-right continuation plaque covers the fourth deck row; place it in a dedicated gutter outside the scroll content.",
+        "visual_observations": [
+          "Center portraits, candle, heading and complete featured card form a much more useful vertical story.",
+          "The card rules are visible at both sizes; left statistics also use the available height well.",
+          "The purple side panels resemble rough plaster more than cloth or enamel, and the repeated flat dark deck plaques still feel mechanically tiled."
+        ]
+      },
+      "shop": {
+        "ornament": 7.8,
+        "palette": 8,
+        "typography": 7.4,
+        "material": 6.8,
+        "background": 7.4,
+        "composition": 7.7,
+        "readability": 7.9,
+        "coherence": 7.4,
+        "overall": 7.5,
+        "fits_between_samples": false,
+        "worst_problem": "At both sizes all five shop cards are stretched into tall narrow planks with large empty rule panels; preserve full rules and current text size while giving cards natural proportions through a wrapping display.",
+        "visual_observations": [
+          "Merchant, shelf, price tags and visible secondary departments make the shop legible as a place.",
+          "All five card rules are visible in both sizes, including the long Boomerang Bone text.",
+          "Curtain gradients and perfectly repeated valance folds remain a conspicuous mismatch with the rich painted frames."
+        ]
+      },
+      "combat-floaters": {
+        "ornament": 7.5,
+        "palette": 7.8,
+        "typography": 7.8,
+        "material": 7,
+        "background": 5,
+        "composition": 8,
+        "readability": 7.1,
+        "coherence": 7.5,
+        "overall": 7.3,
+        "fits_between_samples": false,
+        "worst_problem": "At both sizes the left condition stack has no owner label, leaving Maya-versus-Bones attribution ambiguous; add one small owner cartouche per group and align its connector toward the actor.",
+        "visual_observations": [
+          "Two compact outer stacks keep faces, bodies and central nameplate clear.",
+          "The right stack is spatially distinct from the left, with clean inter-plaque gaps.",
+          "The large default plaque treatment is coherent with the UI but lacks the reference's deeper painted relief; fading Strength loses contrast."
+        ]
+      }
+    },
+    "LAPIS": {
+      "system_overall": 7.3,
+      "system_coherence": 7.5,
+      "rest": {
+        "ornament": 7.8,
+        "palette": 8.2,
+        "typography": 7.8,
+        "material": 7.9,
+        "background": 7.7,
+        "composition": 7.5,
+        "readability": 7.5,
+        "coherence": 7.7,
+        "overall": 7.6,
+        "fits_between_samples": false,
+        "worst_problem": "At 1600x900 the More choices below plaque overlaps the fourth option's heading; give continuation its own strip below the board viewport.",
+        "visual_observations": [
+          "Layered brocade blankets and lantern are convincing materials.",
+          "The fort floor ends in an obvious flat oval with a broad glow, weakening contact with the room.",
+          "The first three rows are complete at both sizes; the partial fourth makes continuation apparent."
+        ]
+      },
+      "event": {
+        "ornament": 7.8,
+        "palette": 8.1,
+        "typography": 7.8,
+        "material": 7.4,
+        "background": 7.8,
+        "composition": 7.3,
+        "readability": 7.8,
+        "coherence": 7.6,
+        "overall": 7.5,
+        "fits_between_samples": false,
+        "worst_problem": "At both sizes the book conceals nearly all of its support, leaving disconnected blue and gold wedges at the sides; expose a coherent painted lectern lip and support silhouette.",
+        "visual_observations": [
+          "Amber page and cream torn-paper choices are readable and harmonious.",
+          "Two choices fit cleanly at both sizes and a third starts below.",
+          "A bright candle beside the red ribbon adds depth, but the book's rigid vertical edges and hidden base make it look suspended."
+        ]
+      },
+      "gameover": {
+        "ornament": 7.8,
+        "palette": 8,
+        "typography": 7.4,
+        "material": 7.2,
+        "background": 7.6,
+        "composition": 6.6,
+        "readability": 6.9,
+        "coherence": 7.1,
+        "overall": 6.9,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280x800 the featured card begins well below a large empty central bay and its rules are visibly cut at the footer; move the card upward instead of reducing its type.",
+        "visual_observations": [
+          "The upper portraits and candle form an effective central anchor.",
+          "Left-column vertical gaps and the central gap spend space needed by the record.",
+          "The More record below plaque sits across the lower-right deck rows, obscuring their content."
+        ]
+      },
+      "shop": {
+        "ornament": 7.8,
+        "palette": 8,
+        "typography": 7.8,
+        "material": 6.6,
+        "background": 7.4,
+        "composition": 7.4,
+        "readability": 8,
+        "coherence": 7.3,
+        "overall": 7.4,
+        "fits_between_samples": false,
+        "worst_problem": "At both sizes the shop is dominated by smooth purple gradient columns; replace them with painted fabric whose irregular folds respond to the shelf and surrounding lights.",
+        "visual_observations": [
+          "Merchant at left and three well-proportioned cards are a coherent display.",
+          "Full visible rules are readable and the next row announces continuation.",
+          "Large gaps and missing shelf contact make cards and merchant appear suspended on the curtain; the lower-right cue is clearer than a centered detached cue."
+        ]
+      },
+      "combat-floaters": {
+        "ornament": 7.5,
+        "palette": 7.8,
+        "typography": 7.8,
+        "material": 7,
+        "background": 5,
+        "composition": 7.4,
+        "readability": 6.8,
+        "coherence": 7.1,
+        "overall": 6.9,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280x800 Regen sits immediately beside Bones while Weak and Dexterity flank Maya, without labels clarifying ownership; name the group and keep all conditions within one actor-attributed stack.",
+        "visual_observations": [
+          "The side lanes avoid the central faces and health/name plate.",
+          "Large vertical separation makes simultaneous conditions feel disconnected rather than a compact group.",
+          "Their spatial order can suggest different owners on the left; the images alone cannot resolve that ambiguity."
+        ]
+      }
+    },
+    "CITRINE": {
+      "system_overall": 5.9,
+      "system_coherence": 6.2,
+      "rest": {
+        "ornament": 7.5,
+        "palette": 7.7,
+        "typography": 7.3,
+        "material": 5,
+        "background": 7.4,
+        "composition": 6.6,
+        "readability": 6.2,
+        "coherence": 6,
+        "overall": 5.9,
+        "fits_between_samples": false,
+        "worst_problem": "At both sizes the blanket fort is a flat geometric tent with uniform seams and an artificial oval glow; replace it with painted cloth draped over identifiable furniture and grounded contact shadows.",
+        "visual_observations": [
+          "Gold-purple framing matches the system but the central prop has a distinctly flatter rendering style.",
+          "Mechanical consequence text touches or crosses the lower gold borders of the first three choices.",
+          "At 1280x800 the fourth row is cut without a clear continuation cue."
+        ]
+      },
+      "event": {
+        "ornament": 7.8,
+        "palette": 8.1,
+        "typography": 7.4,
+        "material": 6.8,
+        "background": 7.8,
+        "composition": 7,
+        "readability": 6.8,
+        "coherence": 7,
+        "overall": 6.8,
+        "fits_between_samples": false,
+        "worst_problem": "At both sizes the vertical book has no convincingly visible lectern/support; add a painted sloping support and contact shadow beneath the page edge.",
+        "visual_observations": [
+          "Large page, illuminated initial and contrasting consequence colors work well.",
+          "At 1280x800 risk/gain sentences break into detached centered lines, making comparison slower.",
+          "Third choice is visibly cut at the lower boundary and no explicit continuation plaque explains it."
+        ]
+      },
+      "gameover": {
+        "ornament": 7.8,
+        "palette": 8,
+        "typography": 7.4,
+        "material": 7,
+        "background": 7.6,
+        "composition": 7.1,
+        "readability": 7.1,
+        "coherence": 7.3,
+        "overall": 7.1,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280x800 the large right-hand record plaques continue beneath the footer without a continuation cue; add a separate visible scroll indicator and keep it out of the record rows.",
+        "visual_observations": [
+          "The central full card and well-used left column provide a strong record layout.",
+          "Diagonal glare across the card softens rule text rather than adding convincing glass depth.",
+          "The right deck rows are oversized empty boxes compared with their labels, and the cutoff is visually abrupt."
+        ]
+      },
+      "shop": {
+        "ornament": 7.8,
+        "palette": 8,
+        "typography": 6.5,
+        "material": 6.5,
+        "background": 7.4,
+        "composition": 7.1,
+        "readability": 5.2,
+        "coherence": 6.5,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280x800 Boomerang Bone's rules are clipped inside the card, including the ending; increase card rule capacity through taller or wrapped cards while retaining full text and type size.",
+        "visual_observations": [
+          "The merchant and lower departments create a rich, complete shop silhouette.",
+          "Compact cards squeeze titles and rules tightly; some rule text sits immediately against type banners.",
+          "Keepsake description tags at the bottom are also visibly cut; the lack of continuation cue compounds the crowded presentation."
+        ]
+      },
+      "combat-floaters": {
+        "ornament": 7.5,
+        "palette": 7.8,
+        "typography": 7.8,
+        "material": 7,
+        "background": 5,
+        "composition": 3.4,
+        "readability": 4.2,
+        "coherence": 4.9,
+        "overall": 4.5,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280x800 the central condition column crosses actor silhouettes and the Butler name/health region, with Regen covering its left edge; move conditions into separated owner-labeled outer lanes.",
+        "visual_observations": [
+          "All six conditions read as one central pile rather than two actor groups.",
+          "The top plaques occupy the space between faces and overlap the Butler's body region.",
+          "Ornate plaque styling alone cannot compensate for ambiguous attribution and obstructed combat staging."
+        ]
+      }
+    }
+  },
+  "rankings": {
+    "rest": [
+      "RUBY",
+      "LAPIS",
+      "OPAL",
+      "CITRINE"
+    ],
+    "event": [
+      "RUBY",
+      "LAPIS",
+      "OPAL",
+      "CITRINE"
+    ],
+    "gameover": [
+      "RUBY",
+      "CITRINE",
+      "LAPIS",
+      "OPAL"
+    ],
+    "shop": [
+      "RUBY",
+      "LAPIS",
+      "OPAL",
+      "CITRINE"
+    ],
+    "combat-floaters": [
+      "OPAL",
+      "RUBY",
+      "LAPIS",
+      "CITRINE"
+    ],
+    "overall": [
+      "RUBY",
+      "LAPIS",
+      "OPAL",
+      "CITRINE"
+    ]
+  },
+  "winner": "RUBY",
+  "winner_rationale": "RUBY has the strongest coherent whole: substantial painted fort fabric, a legible supported event book, a complete featured record card, a shop that reads as a staffed counter, and separated combat condition stacks. Its full rules and explicit continuation cues generally survive both sizes. It still falls clearly below the reference's unified painted-hand standard because of synthetic curtains, elongated shop cards, weak physical support details and ambiguous condition ownership.",
+  "winner_fixes": [
+    {
+      "priority": 1,
+      "screen": "combat-floaters",
+      "size": "both",
+      "fix": "Add explicit Maya and Butler group labels, retaining the separated outer stacks and keeping all plaques clear of faces and plates. Resolve Maya-versus-Bones attribution visually."
+    },
+    {
+      "priority": 2,
+      "screen": "shop",
+      "size": "both",
+      "fix": "Replace gradient curtain columns and repeated shallow valance with irregular painted velvet folds, visible weave, shaded hems and localized candle highlights."
+    },
+    {
+      "priority": 3,
+      "screen": "shop",
+      "size": "both",
+      "fix": "Restore natural card proportions by wrapping cards into rows or changing display allocation. Preserve current type size and every rule; do not compress rule text to fit five narrow columns."
+    },
+    {
+      "priority": 4,
+      "screen": "gameover",
+      "size": "1280x800",
+      "fix": "Move the More record below plaque into a dedicated bottom gutter so it never covers the fourth deck row."
+    },
+    {
+      "priority": 5,
+      "screen": "event",
+      "size": "both",
+      "fix": "Expose a continuous carved lectern lip and enough legs/base to establish weight, with contact shadow matching the page perspective and candles."
+    },
+    {
+      "priority": 6,
+      "screen": "rest",
+      "size": "1280x800",
+      "fix": "Create a distinct lower viewport boundary and continuation gutter; avoid slicing the third option's mechanical consequence at a visually arbitrary point."
+    },
+    {
+      "priority": 7,
+      "screen": "gameover",
+      "size": "both",
+      "fix": "Give purple side panels a deliberate painted material with edge wear and light falloff; current coarse uniform texture reads as plaster behind flat tiles."
+    },
+    {
+      "priority": 8,
+      "screen": "rest",
+      "size": "both",
+      "fix": "Replace the broad character-floor glow with localized lantern light and contact shadows so the inhabitants sit naturally inside the painted fort."
+    },
+    {
+      "priority": 9,
+      "screen": "all noncombat",
+      "size": "both",
+      "fix": "Replace unornamented dark rounded utility buttons with compact painted cartouches whose relief and material match the surrounding gold-purple objects."
+    }
+  ],
+  "grafts": [
+    {
+      "from": "OPAL",
+      "to": "RUBY",
+      "screen": "combat-floaters",
+      "take": "Explicit owner names on condition plaques.",
+      "adaptation": "Use a single owner cartouche per RUBY side stack or concise per-plaque names. Do not inherit OPAL's split positioning around the actors."
+    },
+    {
+      "from": "LAPIS",
+      "to": "RUBY",
+      "screen": "shop",
+      "take": "Natural three-column card proportions with complete visible rules and a clear next row.",
+      "adaptation": "Keep RUBY's merchant and grounded shelf. Wrap the display while retaining full rules and current text scale."
+    },
+    {
+      "from": "LAPIS",
+      "to": "RUBY",
+      "screen": "rest",
+      "take": "More compact first-three-row spacing with complete visible consequences.",
+      "adaptation": "Retain RUBY's fort painting; place the continuation cue outside option content instead of inheriting LAPIS's fourth-row overlap."
+    },
+    {
+      "from": "CITRINE",
+      "to": "RUBY",
+      "screen": "shop",
+      "take": "Clear lower-department grouping for keepsakes, service and snacks.",
+      "adaptation": "Use only the departmental organization. Preserve readable full rules and provide explicit continuation; do not inherit compact clipped card panels."
+    }
+  ],
+  "judgment": "No candidate or screen pair qualifies as fits_between_samples. Stronger layout is not evidence of reference-level painted coherence. No actual scrolling or interaction was tested."
+}

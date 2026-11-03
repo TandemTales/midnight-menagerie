@@ -1,0 +1,22 @@
+# Pending browser fixture audit
+
+Independent source review, 2026-10-28. No prior editorial score was read and no new score is assigned. No browser was launched while the recorded campaign was active.
+
+## Fixture checks and changes
+
+- `tests/narrative/playthrough-fixes.py`: verified the title fixture uses a real Run rescue and saved snapshot; the lifetime set remains Bones, the active set adds Taffy, and Marmalade is the current sole starter. The expected count of two freed plus one at the clubhouse matches actual source. The seeded Kitchens map case intentionally fails if its pre-fix CSS negative control cannot reproduce an intercepted hit; it cannot claim a click regression pass from source text alone. The map uses real generated nodes and real mouse input. Companion headings and solo Kitchens are actual scene renders. Atlas holds a real plan fetch across scene exit, rather than substituting a cancellation function. The existing Dough fixture invokes real EnemyViews.
+- Added a fresh-context Ward renderer/input case to that script. The real `kn-1` encounter is selected through the application's supported hash parameters. A Node probe of the actual `CombatScene._makeEngine` with those exact parameters confirmed real content, a first hand containing Scratch, and Walking Cage / Ward pup / Cage Latch actors. The pending browser case reads the actual protected-animal label, selects Scratch with number/Up keys, cycles through every target with Tab, and plays on the latch with Up. It asserts that the Ward animal was never in the cycle and retains its health. It does not call an engine play method or inject combat actors.
+- `tests/tutorial-narrative/run.py`: Help topics, actual coach/controller actions, opening skip/completion milestones, free conversations, paid Sit, and deterministic repeat captions match the current APIs. Found a verification gap: large-text screenshots did not establish that the global setting was applied or repeat control-bound checks. Reported to the tutorial owner, who added real `applySettings`, active CSS-scale assertions, and dialog/viewport bounds assertions. These revisions still need their browser run.
+- `tests/narrative/aftermaths.py`: retained the original all-seventeen-region route test and added the missing branches for all three revised Attic, Greenhouse and Kennels choices, for 23 cases. Every case resets the isolated profile and creates a fresh Run. It checks that Short version retains all three choices; choosing commits nothing yet; full mode contains exactly the selected branch's paragraphs; short mode shows its exact recap; Continue commits only that choice and exact recap; and the boss reward remains pending.
+
+## Revised aftercare state review
+
+The Attic question secures the telescope before showing a forecast and explicitly calls it a possibility. The Greenhouse variants leave the plant's destination to the plant. Kennels variants only move the animal into another hall and preserve access to its bed/water; they do not claim a persistent pet rescue or an already-open sanctuary. Stable action IDs remain unchanged. Selected recaps match the new actions. Current repeat resolutions remain compatible with the shared result of all three branches.
+
+The narrative renderer retains choice controls in short mode, renders only `this.choice` once selected, and records that choice's ID/label/recap only when its outcome is continued. No aftercare branch adds pet state, inventory, random draws or branch-specific engine effects. Free conversation controls remain above recorded history, with the explicit statement that they do not spend Clues or a fort action. No new state/skip defect was found in these revisions.
+
+## Remaining checks
+
+Python compilation passed for all three revised browser scripts. The actual-engine probe for the new Ward fixture passed. Previously passed unchanged Ward/Dough Node suites were not redundantly rerun in this audit.
+
+After the parent releases the campaign browser, run the three suites sequentially: `python tests/narrative/playthrough-fixes.py`, `python tests/narrative/aftermaths.py`, and `python tests/tutorial-narrative/run.py`. Inspect the captured UI images. In particular, the seeded map negative control, actual keyboard Ward cycle, Atlas delayed-fetch cleanup, all revised full/short aftercare branches, and active large-text layout are pending browser evidence. These scripts are constructed regression fixtures, not a second authentic campaign or human playtest.

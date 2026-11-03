@@ -1,0 +1,1078 @@
+{
+  "level": 17,
+  "entries": [
+    {
+      "level": 17,
+      "region": "Heart of the House",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Nameplate",
+      "existing_animation": false,
+      "description": "One broad horizontal brass plaque, its oversized engraved letter-shapes softly luminous and deliberately unreadable at sprite scale. Insists the visitor has arrived under the wrong name; suggests briefly muddling a choice through mistaken identity, not transferring roles.",
+      "animation": "2D animation Idle: slight hover. Tell: letters brighten separately. Action: three letter layers swap into a new order. Resolve: brass catches one insistent glint.",
+      "signature": "Signature One mistaken household label, not the animal ward's tag-swapping display.",
+      "production_id": "nameplate",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\nameplate.webp",
+      "source_path": "animations\\sprites\\enemies\\nameplate.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            236,
+            95
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 6771,
+          "partial_alpha_pixels": 15303,
+          "alpha_bbox": [
+            0,
+            0,
+            236,
+            95
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            236,
+            95
+          ],
+          "sha256": "2e8a9ceff838fd9c422e83e213d430c5945907b87dad759db680b15cc4b66d04"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 49150,
+          "partial_alpha_pixels": 16040,
+          "alpha_bbox": [
+            4,
+            12,
+            248,
+            244
+          ],
+          "visible_bbox_alpha64": [
+            10,
+            78,
+            246,
+            173
+          ],
+          "sha256": "f868fdd733eb1b16936ee88e85ccd4f364b9304559161af2a62df5fc7428fe1b"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1186101,
+          "partial_alpha_pixels": 386310,
+          "alpha_bbox": [
+            0,
+            19,
+            1222,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            52,
+            382,
+            1203,
+            847
+          ],
+          "sha256": "9c2f75cd27013780605c11bf5d7c1f06f18308dbade0faf6f767df5a84318b68"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\nameplate-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "nameplate.webp",
+          "w": 236,
+          "h": 95,
+          "source": "nameplate.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 17,
+      "region": "Heart of the House",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "House Pulse",
+      "existing_animation": false,
+      "description": "A palm-sized open knot of bent wood, copper wire and folded wallpaper surrounding a steady blue glow. Steadies the other haunts just as the visitor gains momentum; suggests modest enemy-side recovery with a conspicuous, interruptible pulse.",
+      "animation": "2D animation Idle: slow contraction. Tell: glow gathers centrally. Action: one soft ring expands while three outer pieces separate slightly. Resolve: pieces return and glow steadies.",
+      "signature": "Signature Compact abstract heartbeat, never a transforming version of The Keeper.",
+      "production_id": "house-pulse",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\house-pulse.webp",
+      "source_path": "animations\\sprites\\enemies\\housePulse.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            167,
+            155
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 8659,
+          "partial_alpha_pixels": 16450,
+          "alpha_bbox": [
+            0,
+            0,
+            167,
+            155
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            167,
+            154
+          ],
+          "sha256": "e2308eeeec5678ed2295b5af479324842060274c2a898376cdb169aba693c086"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 47253,
+          "partial_alpha_pixels": 17507,
+          "alpha_bbox": [
+            10,
+            21,
+            225,
+            244
+          ],
+          "visible_bbox_alpha64": [
+            50,
+            49,
+            216,
+            203
+          ],
+          "sha256": "37a8f387b3779b5225d377cdb0d3eb2268d0bd19aa2adb70f57e4ab3deb880bd"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1143644,
+          "partial_alpha_pixels": 428241,
+          "alpha_bbox": [
+            0,
+            19,
+            1242,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            244,
+            240,
+            1057,
+            995
+          ],
+          "sha256": "6a79f05f6e6b47b541875b6c5710aa6102c29a0c418d28d1e0740b56dfb9dfdc"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\house-pulse-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "house-pulse.webp",
+          "w": 167,
+          "h": 155,
+          "source": "housePulse.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 17,
+      "region": "Heart of the House",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Welcome Cushion",
+      "existing_animation": false,
+      "description": "A single plump wedge-shaped cushion with piped edges and one button; an invisible elbow occasionally dimples it. Fluffs itself at the visitor's busiest moment, insisting it is time to rest; suggests a brief, clearly signaled timing nuisance.",
+      "animation": "2D animation Idle: button sinks gently. Tell: corners rise. Action: cushion compresses and releases one small puff. Resolve: elbow dimple returns.",
+      "signature": "Signature One soft wedge, with no chair, bed, face or blanket swarm.",
+      "production_id": "welcome-cushion",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\welcome-cushion.webp",
+      "source_path": "animations\\sprites\\enemies\\welcomeCushion.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            221,
+            143
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 8093,
+          "partial_alpha_pixels": 23046,
+          "alpha_bbox": [
+            0,
+            0,
+            221,
+            143
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            221,
+            143
+          ],
+          "sha256": "e70aa2631421a6be6585cea5134051c105a3413eab86fb2b6580e9b1307d6e08"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 41344,
+          "partial_alpha_pixels": 23728,
+          "alpha_bbox": [
+            18,
+            13,
+            243,
+            241
+          ],
+          "visible_bbox_alpha64": [
+            21,
+            56,
+            241,
+            199
+          ],
+          "sha256": "215526cd86bdb72314f3584de3cb288149bfed52c93ac5b4c47fd2790829064d"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1004849,
+          "partial_alpha_pixels": 566985,
+          "alpha_bbox": [
+            0,
+            20,
+            1230,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            102,
+            276,
+            1178,
+            972
+          ],
+          "sha256": "6aa866e7c6157bbd427f26ae25c700a9c4def16e3d1222a2f7461bb1d496a40e"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\welcome-cushion-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "welcome-cushion.webp",
+          "w": 221,
+          "h": 143,
+          "source": "welcomeCushion.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 17,
+      "region": "Heart of the House",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Darning Hoop",
+      "existing_animation": false,
+      "description": "A suspended wooden embroidery hoop displaying a simple stitched house; one blunt needle remains tethered to the fabric. Mends a tiny gap in its embroidered home; suggests restoring a fellow haunt's protection just when the visitor has loosened it.",
+      "animation": "2D animation Idle: loose thread sways. Tell: a stitch glows. Action: needle crosses one short seam and thread tightens. Resolve: repaired stitch dims.",
+      "signature": "Signature A fixed circular craft frame; the needle never points toward a character.",
+      "production_id": "darning-hoop",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\darning-hoop.webp",
+      "source_path": "animations\\sprites\\enemies\\darningHoop.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            167,
+            184
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 9487,
+          "partial_alpha_pixels": 20648,
+          "alpha_bbox": [
+            0,
+            0,
+            167,
+            184
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            167,
+            184
+          ],
+          "sha256": "c23ad4572d0bf0022a14d0eb82be93795bade5232074f2b8f7885f07ee8a6d0c"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 43178,
+          "partial_alpha_pixels": 21765,
+          "alpha_bbox": [
+            5,
+            4,
+            252,
+            254
+          ],
+          "visible_bbox_alpha64": [
+            50,
+            34,
+            216,
+            218
+          ],
+          "sha256": "b3dba964de386b094b77f0bcfee38f21f6ba3784807fd520dd6c7ddc482a7935"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1049975,
+          "partial_alpha_pixels": 522078,
+          "alpha_bbox": [
+            0,
+            18,
+            1240,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            245,
+            167,
+            1057,
+            1064
+          ],
+          "sha256": "1af8b7641a04ff8b4f2b770592005f43c208f0b077549cf52d685de46c2e745d"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\darning-hoop-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "darning-hoop.webp",
+          "w": 167,
+          "h": 184,
+          "source": "darningHoop.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 17,
+      "region": "Heart of the House",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Draft Stopper",
+      "existing_animation": false,
+      "description": "A long, plain stuffed fabric cylinder with square end tabs, resting low against the floor without animal features. Scoots toward any troublesome breeze; suggests damping a passing effect rather than grabbing or restraining anyone.",
+      "animation": "2D animation Idle: one end lifts. Tell: fabric bunches centrally. Action: two segments compress and slide a short distance. Resolve: cylinder straightens.",
+      "signature": "Signature A practical low fabric bar, never a snake or reaching blanket.",
+      "production_id": "draft-stopper",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\draft-stopper.webp",
+      "source_path": "animations\\sprites\\enemies\\draftStopper.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            241,
+            53
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 4778,
+          "partial_alpha_pixels": 7533,
+          "alpha_bbox": [
+            0,
+            0,
+            241,
+            53
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            241,
+            52
+          ],
+          "sha256": "37a3a4f3726a233868f986aa1d2594e4cd69ffeaa06b9eff26f9ed29862508f0"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 56926,
+          "partial_alpha_pixels": 8148,
+          "alpha_bbox": [
+            6,
+            63,
+            251,
+            197
+          ],
+          "visible_bbox_alpha64": [
+            8,
+            113,
+            249,
+            164
+          ],
+          "sha256": "826e8007602d8aecd9d4034269bc7c6a3eb1b2958f316688fd090bba5a00e20a"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1372340,
+          "partial_alpha_pixels": 199740,
+          "alpha_bbox": [
+            0,
+            41,
+            1234,
+            1236
+          ],
+          "visible_bbox_alpha64": [
+            42,
+            552,
+            1217,
+            803
+          ],
+          "sha256": "4ab903d172b1697e517eebd955f0bfc652811e48c2963789bdff9f4916f8940d"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\draft-stopper-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "draft-stopper.webp",
+          "w": 241,
+          "h": 53,
+          "source": "draftStopper.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 17,
+      "region": "Heart of the House",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Plumb Bob",
+      "existing_animation": false,
+      "description": "A polished brass teardrop on one taut thread, suspended beside a tiny bracket without a larger wall panel. Corrects a visitor's carefully altered intention because the house considers it crooked; suggests restoring an enemy cue to its usual direction.",
+      "animation": "2D animation Idle: slight pendulum swing. Tell: thread holds an impossible diagonal. Action: bob snaps gently upright with one glint. Resolve: a smaller swing resumes.",
+      "signature": "Signature One hanging teardrop; no pulley machinery, clockwork or viewing aperture.",
+      "production_id": "plumb-bob",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\plumb-bob.webp",
+      "source_path": "animations\\sprites\\enemies\\plumbBob.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            91,
+            195
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 13537,
+          "partial_alpha_pixels": 3889,
+          "alpha_bbox": [
+            0,
+            0,
+            91,
+            195
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            90,
+            195
+          ],
+          "sha256": "85f542ca70a1d355bf512c67d25acf4bc996fef2ac7ce0e8a312c950a9ed5f61"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 60664,
+          "partial_alpha_pixels": 4553,
+          "alpha_bbox": [
+            84,
+            23,
+            179,
+            222
+          ],
+          "visible_bbox_alpha64": [
+            87,
+            25,
+            176,
+            220
+          ],
+          "sha256": "6e69623d815921129f7e9a484456e70c5062bf975b0f5ad835077c5cc8f2f284"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1466301,
+          "partial_alpha_pixels": 105921,
+          "alpha_bbox": [
+            79,
+            101,
+            1168,
+            1232
+          ],
+          "visible_bbox_alpha64": [
+            425,
+            123,
+            863,
+            1077
+          ],
+          "sha256": "661b780c0a773201ced8d745dacccf1fa9ed583d177db120d49eff212c6fb8af"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\plumb-bob-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "plumb-bob.webp",
+          "w": 91,
+          "h": 195,
+          "source": "plumbBob.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 17,
+      "region": "Heart of the House",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Floorboard Knocker",
+      "existing_animation": false,
+      "description": "A short freestanding oak floorboard, slightly bowed, with a worn knot and two rounded nail heads. Answers hurried footsteps with a reassuring double knock; suggests a clearly announced interruption rather than a physical trip.",
+      "animation": "2D animation Idle: one edge flexes. Tell: board arches. Action: its ends tap twice, each releasing a small sound ring. Resolve: board lies flat.",
+      "signature": "Signature A low rigid plank whose voice is a knock, not a shadow occupant.",
+      "production_id": "floorboard-knocker",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\floorboard-knocker.webp",
+      "source_path": "animations\\sprites\\enemies\\floorboardKnocker.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            224,
+            86
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 6926,
+          "partial_alpha_pixels": 11927,
+          "alpha_bbox": [
+            0,
+            0,
+            224,
+            86
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            221,
+            86
+          ],
+          "sha256": "cfeedf9276d186dab91d4faf7cc2442f8565e0b5564495f8460f45f08c139fc2"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 52369,
+          "partial_alpha_pixels": 12756,
+          "alpha_bbox": [
+            16,
+            81,
+            246,
+            172
+          ],
+          "visible_bbox_alpha64": [
+            18,
+            83,
+            239,
+            169
+          ],
+          "sha256": "2f853661ea3605a22033861f05e383289d24ca6112164fafc3de9f9bf07c991b"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1266033,
+          "partial_alpha_pixels": 305918,
+          "alpha_bbox": [
+            49,
+            99,
+            1206,
+            1092
+          ],
+          "visible_bbox_alpha64": [
+            89,
+            408,
+            1173,
+            828
+          ],
+          "sha256": "1bf040d3b1fe7cdd41008e56572fb7b34a0ae42d9bcd269bd51da87f6ac101eb"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\floorboard-knocker-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "floorboard-knocker.webp",
+          "w": 224,
+          "h": 86,
+          "source": "floorboardKnocker.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 17,
+      "region": "Heart of the House",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Keeper's Hands",
+      "existing_animation": false,
+      "description": "Two oversized white-gloved hands joined by a short, soft blue shadow-ribbon. Their open palms and rounded fingers read as helpful household gestures, with no arms emerging from doorways. Smooths an invisible wrinkle, then politely presents the newly tidy space; suggests rearranging fellow haunts' protection without holding or trapping the visitor.",
+      "animation": "2D animation Idle: fingers relax. Tell: palms turn upward. Action: hands make one synchronized smoothing pass across their own ribbon. Resolve: fingers open and return to their original spread.",
+      "signature": "Signature Paired palm gestures, not the Ward's equipment or a grasping single hand.",
+      "production_id": "keeper-s-hands",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\keeper-s-hands.webp",
+      "source_path": "animations\\sprites\\enemies\\keeperSHands.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            478,
+            156
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 34177,
+          "partial_alpha_pixels": 39577,
+          "alpha_bbox": [
+            0,
+            0,
+            478,
+            156
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            478,
+            156
+          ],
+          "sha256": "218b9c525e9998d90df8c6e31378f042cb371c3546320a78c17fe2da197ce4a2"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 219911,
+          "partial_alpha_pixels": 41419,
+          "alpha_bbox": [
+            15,
+            61,
+            498,
+            433
+          ],
+          "visible_bbox_alpha64": [
+            17,
+            175,
+            495,
+            331
+          ],
+          "sha256": "66db9aa1560d5a9f16355275dbe6af8bbf2df24ffe3fd6b20c409a279828ca9c"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1320169,
+          "partial_alpha_pixels": 251899,
+          "alpha_bbox": [
+            0,
+            37,
+            1220,
+            1210
+          ],
+          "visible_bbox_alpha64": [
+            43,
+            429,
+            1211,
+            809
+          ],
+          "sha256": "5a14b9c7aeeca378241893cbef4af701c1876e4a9a4162b616f390012c36ef5c"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\keeper-s-hands-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "keeper-s-hands.webp",
+          "w": 478,
+          "h": 156,
+          "source": "keeperSHands.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 17,
+      "region": "Heart of the House",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Inner Stair",
+      "existing_animation": false,
+      "description": "Four broad wooden steps on one visible diagonal support, with a curled banister end and warm light beneath each tread. No doors, walking figures or miniature rooms appear. Offers a fellow haunt the same comfortable next step twice; suggests repeating its small nuisance while delaying the visitor's hurried sequence.",
+      "animation": "2D animation Idle: under-step lights breathe. Tell: top tread lifts. Action: four tread layers rise sequentially, making one compact traveling ripple. Resolve: layers reseat from bottom to top.",
+      "signature": "Signature A fixed stair silhouette with four offsets, never an unfolding maze.",
+      "production_id": "inner-stair",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\inner-stair.webp",
+      "source_path": "animations\\sprites\\enemies\\innerStair.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            373,
+            409
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 95459,
+          "partial_alpha_pixels": 56042,
+          "alpha_bbox": [
+            0,
+            0,
+            373,
+            409
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            373,
+            409
+          ],
+          "sha256": "95404f344317f08bce5fe94ebbc54c15e3349ee6f25384cc66eb349646a132ab"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 201123,
+          "partial_alpha_pixels": 59965,
+          "alpha_bbox": [
+            88,
+            16,
+            490,
+            483
+          ],
+          "visible_bbox_alpha64": [
+            91,
+            48,
+            463,
+            457
+          ],
+          "sha256": "87a278c62a74f57ad31c78688bd05606286bae6b215e862a15c4110f4346ec60"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1204675,
+          "partial_alpha_pixels": 367409,
+          "alpha_bbox": [
+            0,
+            23,
+            1230,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            222,
+            118,
+            1133,
+            1119
+          ],
+          "sha256": "a2b31a4b080c68d010e2bbb05d175411637953903caebee2b61a36912f15adbf"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\inner-stair-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "inner-stair.webp",
+          "w": 373,
+          "h": 409,
+          "source": "innerStair.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 17,
+      "region": "Heart of the House",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Waiting Hearth",
+      "existing_animation": false,
+      "description": "A compact, low fireplace with a broad mantel and three amber embers hovering above an empty grate. Rounded stonework and a folded hearth cloth make it welcoming rather than furnace-like. Keeps warmth ready for fellow haunts, even when the visitor would prefer their routine to finish; suggests storing enemy-side comfort for later.",
+      "animation": "2D animation Idle: embers bob. Tell: mantel glow gathers inward. Action: three embers align briefly above the grate and release one warm halo. Resolve: halo fades and embers spread.",
+      "signature": "Signature A stationary promise of welcome, not another boiler, lamp or burning creature.",
+      "production_id": "waiting-hearth",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\waiting-hearth.webp",
+      "source_path": "animations\\sprites\\enemies\\waitingHearth.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            449,
+            293
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 24797,
+          "partial_alpha_pixels": 105760,
+          "alpha_bbox": [
+            0,
+            0,
+            449,
+            293
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            449,
+            293
+          ],
+          "sha256": "97ccbc0657a0067606ffc725a218c6101e3b35e7e270197f402c541d36d6c9ae"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 153003,
+          "partial_alpha_pixels": 108141,
+          "alpha_bbox": [
+            13,
+            21,
+            494,
+            502
+          ],
+          "visible_bbox_alpha64": [
+            33,
+            115,
+            482,
+            408
+          ],
+          "sha256": "d033b0e32fcbe696874827bcbea3b74bcf9dbef3e7c346217601290447f4f196"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 919848,
+          "partial_alpha_pixels": 651759,
+          "alpha_bbox": [
+            0,
+            0,
+            1248,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            82,
+            282,
+            1180,
+            998
+          ],
+          "sha256": "c2f355a22e650905392924750bb6ccbd06b897520ec4856ad3a8720b8cbccb66"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\waiting-hearth-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "waiting-hearth.webp",
+          "w": 449,
+          "h": 293,
+          "source": "waitingHearth.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 17,
+      "region": "Heart of the House",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Keeper",
+      "existing_animation": false,
+      "description": "A low, broad guardian assembled from banister beams, padded upholstery, closed decorative door panels and a quilted mantle. Two warm window-eyes sit beneath a roof-ridge brow; blue light glows through the seams. Its comforting shape stays fixed throughout the encounter. The mansion shelters its own haunts too insistently, then learns to respect its guest's pace. It suggests enemy-side shelter phases followed by clear openings, never imprisonment or a predatory attack.",
+      "animation": "2D animation Idle: torso breathes. Tell: brow lowers and mantle lifts. Action: one padded forelimb extends while a short quilt awning opens over its own body. Resolve: awning folds and the guardian steps back slightly.",
+      "signature": "Signature A soft architectural guardian, not a humanoid servant, transforming collage or simulated room.",
+      "production_id": "keeper",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\keeper.webp",
+      "source_path": "animations\\sprites\\enemies\\keeper.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            917,
+            660
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 201026,
+          "partial_alpha_pixels": 403698,
+          "alpha_bbox": [
+            0,
+            0,
+            917,
+            660
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            916,
+            660
+          ],
+          "sha256": "c9eab486097ff191998bb5d6c5f4cd1dae119dd59f6974e0733c057b24838fcf"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 632525,
+          "partial_alpha_pixels": 415555,
+          "alpha_bbox": [
+            0,
+            17,
+            1011,
+            1011
+          ],
+          "visible_bbox_alpha64": [
+            61,
+            189,
+            976,
+            849
+          ],
+          "sha256": "54ba9faed7fd08db5e2b25bdd2db922b728676003a7499029647f6edfb260c73"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 948731,
+          "partial_alpha_pixels": 623444,
+          "alpha_bbox": [
+            0,
+            21,
+            1238,
+            1238
+          ],
+          "visible_bbox_alpha64": [
+            74,
+            232,
+            1195,
+            1040
+          ],
+          "sha256": "835994cee74b46d08599bffe219369241fff197afc78f8c25d5eedd31abd9c5f"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\keeper-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "keeper.webp",
+          "w": 917,
+          "h": 660,
+          "source": "keeper.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    }
+  ],
+  "counts": {
+    "existing": 0,
+    "new": 11,
+    "pending": 0,
+    "blocked": 0
+  }
+}

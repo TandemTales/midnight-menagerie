@@ -26,7 +26,7 @@ import { cardById } from '../data/cards.js';
 import { relicById } from '../data/relics.js';
 import { objectHtml, keepsakeKey } from '../ui/objects.js';
 import { houseGallery, fitHung } from '../ui/hang.js';
-import { Run } from '../state/run.js';
+import { Run, SNACKS } from '../state/run.js';
 import { act, ACT } from '../net/actions.js';
 import { INPUT } from '../net/session.js';
 import { regionMeta } from '../state/mapgen.js';
@@ -378,6 +378,7 @@ export class RoomScene extends Scene {
         <div class="rm-picker__panel kit-panel" data-medal="paw">
           <h2>${esc(o.title || 'Choose')}</h2>
           ${o.sub ? `<p class="rm-picker__sub">${esc(o.sub)}</p>` : ''}
+          ${o.preview === 'upgrade' ? '<div class="rm-picker__compare" aria-label="Trick upgrade comparison"><p>Hover over a Trick to compare before and after.</p></div>' : ''}
           <div class="rm-picker__grid" role="listbox" aria-label="${esc(o.title || 'Choose')}"></div>
           <div class="rm-picker__foot">
             <p class="rm-picker__read" aria-live="polite"></p>
@@ -389,30 +390,51 @@ export class RoomScene extends Scene {
       const read = ov.querySelector('.rm-picker__read');
       const ok = ov.querySelector('[data-ok]');
       const views = [];
+      const compare = ov.querySelector('.rm-picker__compare');
+      let comparisons = [];
+      let compared = null;
       let chosen = null;
 
       const layout = () => {
-        for (const { slot, view } of views) fitCardToSlot(view, slot);
+        for (const { slot, view } of [...views, ...comparisons]) fitCardToSlot(view, slot);
       };
 
-      /* ── the upgrade preview ──────────────────────────────────────────────
-         Exactly ONE card may wear its upgraded face at a time, plus whichever
-         one is actually chosen. Round 3 hung the preview off each slot's own
-         enter/leave AND focus/blur, so opening the picker focused slot 0 (which
-         showed `Scratch+`), and then hovering `Boo!` showed `Boo!+` without ever
-         blurring slot 0 — two `+` cards on screen with nothing selected.
-         Pointer beats focus; focus is what is left when the pointer leaves. */
       let hoverEntry = null;
       let focusEntry = null;
+      const clearComparison = () => {
+        for (const v of comparisons) v.view.destroy?.();
+        comparisons = [];
+        compared = null;
+        compare?.replaceChildren();
+      };
       const paint = () => {
-        if (o.preview !== 'upgrade') return;
+        const selected = views.find(v => v.c.uid === chosen);
+        read.textContent = selected ? this._pickerRead(selected.c, o)
+          : 'Choose a Trick, then confirm.';
+        if (!compare) return;
         const active = hoverEntry || focusEntry;
-        for (const v of views) {
-          const want = (v === active || v.c.uid === chosen) ? true : !!v.c.upgraded;
-          if (v.shown === want) continue;
-          v.shown = want;
-          try { v.view.setState({ upgraded: want }); } catch { /* card-feel owns the face */ }
+        if (active === compared) return;
+        clearComparison();
+        compared = active;
+        if (!active) {
+          compare.textContent = 'Hover over a Trick to compare before and after.';
+          return;
         }
+        for (const [label, upgraded] of [['Before', !!active.c.upgraded], ['After', true]]) {
+          const figure = el('figure', 'rm-picker__version');
+          const caption = el('figcaption', 'rm-picker__label');
+          caption.textContent = label;
+          const slot = el('div', 'rm-picker__large');
+          const view = new CardView(active.c.def, {
+            uid: `compare-${label}-${active.c.uid}`, upgraded,
+            largeText: this.largeText, reduceMotion: this.reduceMotion,
+          });
+          slot.appendChild(view.el);
+          figure.append(caption, slot);
+          compare.appendChild(figure);
+          comparisons.push({ slot, view });
+        }
+        layout();
       };
 
       for (const c of o.cards) {
@@ -429,18 +451,17 @@ export class RoomScene extends Scene {
         const entry = { slot, view, c, shown: !!c.upgraded };
         views.push(entry);
 
-        // Before / after on the real card: the Trick under the pointer (or, with
-        // no pointer, under the focus ring) shows the upgraded face in place, so
-        // the change is read on the card itself.
+        // The grid keeps its original face; the enlarged pair sits above it.
         slot.addEventListener('pointerenter', () => {
-          hoverEntry = entry; read.textContent = this._pickerRead(c, o); paint();
+          focusEntry = null; hoverEntry = entry; paint();
         });
         slot.addEventListener('pointerleave', () => {
           if (hoverEntry === entry) hoverEntry = null;
+          focusEntry = null;
           paint();
         });
         slot.addEventListener('focus', () => {
-          focusEntry = entry; read.textContent = this._pickerRead(c, o); paint();
+          focusEntry = entry; paint();
         });
         slot.addEventListener('blur', () => {
           if (focusEntry === entry) focusEntry = null;
@@ -462,6 +483,7 @@ export class RoomScene extends Scene {
       }
 
       const done = (val) => {
+        clearComparison();
         offRove?.();
         window.removeEventListener('resize', layout);
         for (const v of views) v.view.destroy?.();
@@ -476,8 +498,9 @@ export class RoomScene extends Scene {
         if (e.key === 'Enter' && chosen && document.activeElement === ok) { e.preventDefault(); done(chosen); }
       });
 
+      paint();
       this.root.appendChild(ov);
-      this._own(() => { for (const v of views) v.view.destroy?.(); ov.remove(); });
+      this._own(() => { clearComparison(); for (const v of views) v.view.destroy?.(); ov.remove(); });
       requestAnimationFrame(() => { layout(); grid.querySelector('.rm-slot')?.focus(); });
       window.addEventListener('resize', layout);
       this._own(() => window.removeEventListener('resize', layout));
@@ -485,8 +508,8 @@ export class RoomScene extends Scene {
   }
 
   _pickerRead(c, o) {
-    if (o.preview === 'upgrade') return `${c.def.name} becomes ${c.def.name}+.`;
-    return c.def.name;
+    if (o.preview === 'upgrade') return `Selected: ${c.def.name}. It will become ${c.def.name}+.`;
+    return `Selected: ${c.def.name}${c.upgraded ? '+' : ''}.`;
   }
 
   async exit() {
@@ -539,8 +562,8 @@ export class RewardScene extends RoomScene {
       eyebrow: reward.kind === 'boss' ? 'The way onward is open'
         : big ? `${TERMS.elite} cleared` : 'Room cleared',
       title: reward.kind === 'treasure' ? 'Something Left Behind'
-        : reward.kind === 'boss' ? 'The Keeper Is Down'
-          : big ? 'You Were Not Ready For That' : 'Nothing Left Standing',
+        : reward.kind === 'boss' ? 'A Little Breathing Room'
+          : big ? 'You Made It Through' : 'A Moment to Catch Your Breath',
       sub: reward.encounter ? `${reward.encounter}` : '',
     });
 
@@ -555,6 +578,8 @@ export class RewardScene extends RoomScene {
   _buildSpoils() {
     const r = this.reward;
     const k = r.keepsake ? relicById(r.keepsake) : null;
+    const snack = SNACKS.find(s => s.id === r.snack);
+    const full = this.run.snacks.length >= this.run.snackCap;
     // The spoils, the choice and the frames stand together on one stage.
     this.$stage = el('div', 'rw-stage kit-stage');
     this.$body.appendChild(this.$stage);
@@ -576,6 +601,9 @@ export class RewardScene extends RoomScene {
         <span class="rw-spoils__crest"></span>
         <span class="rw-spoils__side rw-spoils__side--r">${spoils.slice(half).join('')}</span>
       </div>
+      ${snack ? `<p class="rw-snack"><b>Snack: ${esc(full ? 'Gummy Bat' : snack.name)}</b> — ${esc(full
+        ? 'Satchel full: eat it now to recover 12 Courage.'
+        : snack.desc + ' Added to your satchel when you go on.')}</p>` : ''}
       ${k ? `
       <div class="rw-keepsake kit-panel" data-medal="star" data-rarity="${esc(k.rarity)}">
         <span class="rw-keepsake__sig kit-hw-well" aria-hidden="true">${objectHtml(keepsakeKey(k.id), { well: false })}</span>

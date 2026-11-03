@@ -1,0 +1,527 @@
+{
+  "baseline": "7fc1b303cd84aeaac93c3b16a3620a40becae372",
+  "rows": [
+    {
+      "variant": "inherited",
+      "width": 1280,
+      "labels": [
+        {
+          "text": "+3 Strength",
+          "owner": "e0",
+          "time": 0.768400000000004,
+          "duration": 1.0326795296952551,
+          "phase": 0.7440836948000312,
+          "opacity": "0.673464",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 854.5712280273438,
+            "right": 1072.628662109375,
+            "top": 93.29320526123047,
+            "bottom": 128.30679321289062
+          }
+        },
+        {
+          "text": "+2 Vulnerable",
+          "owner": "e0",
+          "time": 0.6572666666666677,
+          "duration": 1.0326795296952551,
+          "phase": 0.6364672173376263,
+          "opacity": "0.956665",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 860.0140991210938,
+            "right": 1104.185791015625,
+            "top": 137.86212158203125,
+            "bottom": 171.73789978027344
+          }
+        },
+        {
+          "text": "+4 Bristle",
+          "owner": "e0",
+          "time": 0.5369333333333343,
+          "duration": 1.0326795296952551,
+          "phase": 0.5199418773138497,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 856.5379638671875,
+            "right": 1031.2620849609375,
+            "top": 181.95262145996094,
+            "bottom": 215.6473846435547
+          }
+        },
+        {
+          "text": "+2 Weak",
+          "owner": "player",
+          "time": 0.4166000000000009,
+          "duration": 1.0326795296952551,
+          "phase": 0.403416537290073,
+          "opacity": "1",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 72.6338119506836,
+            "right": 214.96617889404297,
+            "top": 93.95262145996094,
+            "bottom": 127.64738464355469
+          }
+        },
+        {
+          "text": "+2 Dexterity",
+          "owner": "player",
+          "time": 0.28240000000000387,
+          "duration": 1.0326795296952551,
+          "phase": 0.2734633464491549,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 77.1839370727539,
+            "right": 295.4160842895508,
+            "top": 137.95262145996094,
+            "bottom": 171.6473846435547
+          }
+        },
+        {
+          "text": "+3 Regen",
+          "owner": "player",
+          "time": 0.16666666666666666,
+          "duration": 1.0326795296952551,
+          "phase": 0.1613924377060618,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 73.37449645996094,
+            "right": 229.2255096435547,
+            "top": 181.95262145996094,
+            "bottom": 215.6473846435547
+          }
+        }
+      ],
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\condition-pixels\\inherited-1280.png",
+      "sha256": "92d6f02d5cb8de919c40a1593e12783db11713408b435b7d7fabdd846e35f72b",
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "combatCSS": "d098890d0adcf1a7621ac0bf6a1770b87fb0a841e0235fee1ebe0cb44ef9698f"
+    },
+    {
+      "variant": "inherited",
+      "width": 1600,
+      "labels": [
+        {
+          "text": "+3 Strength",
+          "owner": "e0",
+          "time": 0.800799999999998,
+          "duration": 1.0326795296952551,
+          "phase": 0.7754583846900838,
+          "opacity": "0.590899",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 1061.5244140625,
+            "right": 1281.675537109375,
+            "top": 93.1251220703125,
+            "bottom": 128.47488403320312
+          }
+        },
+        {
+          "text": "+2 Vulnerable",
+          "owner": "e0",
+          "time": 0.6850666666666655,
+          "duration": 1.0326795296952551,
+          "phase": 0.6633874759469953,
+          "opacity": "0.885822",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 1066.989013671875,
+            "right": 1313.2110595703125,
+            "top": 137.71987915039062,
+            "bottom": 171.88011169433594
+          }
+        },
+        {
+          "text": "+4 Bristle",
+          "owner": "e0",
+          "time": 0.5600666666666655,
+          "duration": 1.0326795296952551,
+          "phase": 0.542343147667449,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 1064.5379638671875,
+            "right": 1239.2620849609375,
+            "top": 181.95262145996094,
+            "bottom": 215.6473846435547
+          }
+        },
+        {
+          "text": "+2 Weak",
+          "owner": "player",
+          "time": 0.40279999999999805,
+          "duration": 1.0326795296952551,
+          "phase": 0.3900532434480083,
+          "opacity": "1",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 180.63381958007812,
+            "right": 322.9661865234375,
+            "top": 134.95262145996094,
+            "bottom": 168.6473846435547
+          }
+        },
+        {
+          "text": "+2 Dexterity",
+          "owner": "player",
+          "time": 0.28700000000000003,
+          "duration": 1.0326795296952551,
+          "phase": 0.27791777772983844,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 347.6839294433594,
+            "right": 565.9160766601562,
+            "top": 134.95262145996094,
+            "bottom": 168.6473846435547
+          }
+        },
+        {
+          "text": "+3 Regen",
+          "owner": "player",
+          "time": 0.1664666666666647,
+          "duration": 1.0326795296952551,
+          "phase": 0.16119876678081263,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 591.574462890625,
+            "right": 747.4254760742188,
+            "top": 134.95262145996094,
+            "bottom": 168.6473846435547
+          }
+        }
+      ],
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\condition-pixels\\inherited-1600.png",
+      "sha256": "dca083b76321fdf83c638c6ed3082e02c233ac200deb4da117d0f5c680f625e5",
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "combatCSS": "d098890d0adcf1a7621ac0bf6a1770b87fb0a841e0235fee1ebe0cb44ef9698f"
+    },
+    {
+      "variant": "current",
+      "width": 1280,
+      "labels": [
+        {
+          "text": "+3 Strength",
+          "owner": "e0",
+          "time": 0.7823333333333334,
+          "duration": 1.0326795296952551,
+          "phase": 0.7575761025922543,
+          "opacity": "0.637958",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 854.1686401367188,
+            "right": 1073.0313720703125,
+            "top": 93.22856140136719,
+            "bottom": 128.3714599609375
+          }
+        },
+        {
+          "text": "+2 Vulnerable",
+          "owner": "e0",
+          "time": 0.662,
+          "duration": 1.0326795296952551,
+          "phase": 0.6410507625684775,
+          "opacity": "0.944603",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 859.9208984375,
+            "right": 1104.279052734375,
+            "top": 137.84918212890625,
+            "bottom": 171.75082397460938
+          }
+        },
+        {
+          "text": "+4 Bristle",
+          "owner": "e0",
+          "time": 0.5184666666666645,
+          "duration": 1.0326795296952551,
+          "phase": 0.502059595216015,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 856.5379638671875,
+            "right": 1031.2620849609375,
+            "top": 181.95262145996094,
+            "bottom": 215.6473846435547
+          }
+        },
+        {
+          "text": "+2 Weak",
+          "owner": "player",
+          "time": 0.39806666666666557,
+          "duration": 1.0326795296952551,
+          "phase": 0.385469698217157,
+          "opacity": "1",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 72.6338119506836,
+            "right": 214.96617889404297,
+            "top": 93.95262145996094,
+            "bottom": 127.64738464355469
+          }
+        },
+        {
+          "text": "+2 Dexterity",
+          "owner": "player",
+          "time": 0.282399999999999,
+          "duration": 1.0326795296952551,
+          "phase": 0.27346334644915016,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 77.1839370727539,
+            "right": 295.4160842895508,
+            "top": 137.95262145996094,
+            "bottom": 171.6473846435547
+          }
+        },
+        {
+          "text": "+3 Regen",
+          "owner": "player",
+          "time": 0.17120000000000193,
+          "duration": 1.0326795296952551,
+          "phase": 0.16578231201166857,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 73.37449645996094,
+            "right": 229.2255096435547,
+            "top": 181.95262145996094,
+            "bottom": 215.6473846435547
+          }
+        }
+      ],
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\condition-pixels\\current-1280.png",
+      "sha256": "a494c9c108ed4ac0aa09df1e31572ddfb0bfac743e6d044db1661a7c54163ec8",
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "combatCSS": "725301bba1073e5688bfdd9f50c6626ebe9cdae11c23698a4024f2ba239e6580"
+    },
+    {
+      "variant": "current",
+      "width": 1600,
+      "labels": [
+        {
+          "text": "+3 Strength",
+          "owner": "e0",
+          "time": 0.7497333333333326,
+          "duration": 1.0326795296952551,
+          "phase": 0.7260077417769477,
+          "opacity": "0.721032",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 1063.2154541015625,
+            "right": 1279.9844970703125,
+            "top": 93.39664459228516,
+            "bottom": 128.203369140625
+          }
+        },
+        {
+          "text": "+2 Vulnerable",
+          "owner": "e0",
+          "time": 0.6294666666666648,
+          "duration": 1.0326795296952551,
+          "phase": 0.6095469587282525,
+          "opacity": "1",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 1068.66650390625,
+            "right": 1311.533447265625,
+            "top": 137.95262145996094,
+            "bottom": 171.6473846435547
+          }
+        },
+        {
+          "text": "+4 Bristle",
+          "owner": "e0",
+          "time": 0.5137999999999979,
+          "duration": 1.0326795296952551,
+          "phase": 0.4975406069602453,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 1064.5379638671875,
+            "right": 1239.2620849609375,
+            "top": 181.95262145996094,
+            "bottom": 215.6473846435547
+          }
+        },
+        {
+          "text": "+2 Weak",
+          "owner": "player",
+          "time": 0.40266666666666656,
+          "duration": 1.0326795296952551,
+          "phase": 0.3899241294978452,
+          "opacity": "1",
+          "color": "rgb(255, 156, 138)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 180.63381958007812,
+            "right": 322.9661865234375,
+            "top": 134.95262145996094,
+            "bottom": 168.6473846435547
+          }
+        },
+        {
+          "text": "+2 Dexterity",
+          "owner": "player",
+          "time": 0.29166666666666663,
+          "duration": 1.0326795296952551,
+          "phase": 0.28243676598560813,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 347.6839294433594,
+            "right": 565.9160766601562,
+            "top": 134.95262145996094,
+            "bottom": 168.6473846435547
+          }
+        },
+        {
+          "text": "+3 Regen",
+          "owner": "player",
+          "time": 0.1758666666666686,
+          "duration": 1.0326795296952551,
+          "phase": 0.17030130026743828,
+          "opacity": "1",
+          "color": "rgb(168, 236, 247)",
+          "font": "20.75px",
+          "padding": "1px 9px",
+          "backing": "url(\"http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp\")",
+          "filter": "none",
+          "stroke": "1px",
+          "box": {
+            "left": 591.574462890625,
+            "right": 747.4254760742188,
+            "top": 134.95262145996094,
+            "bottom": 168.6473846435547
+          }
+        }
+      ],
+      "path": "D:\\UILOOP\\r54-20261029\\b\\docs\\ui-pass\\PERIDOT-r54-proofs\\condition-pixels\\current-1600.png",
+      "sha256": "8b33d87394500200c107d165335aee2b52b4cf330fb61bd7373944d055b13f1e",
+      "visual_source_commit": "3a49caa56e8a326d63436605e98a0ef1f207b9eb",
+      "combatCSS": "725301bba1073e5688bfdd9f50c6626ebe9cdae11c23698a4024f2ba239e6580"
+    }
+  ],
+  "errors": [],
+  "note": "Separate pixel work only; excluded from timing distributions. All six labels are frozen at supplied canonical fixture phase; styles include actual upper-right Strength opacity and backing."
+}

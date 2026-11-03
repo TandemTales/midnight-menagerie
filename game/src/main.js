@@ -35,6 +35,8 @@ import { EventScene } from './scenes/event.js';
 import { ShopScene } from './scenes/shop.js';
 import { RestScene } from './scenes/rest.js';
 import { GameOverScene } from './scenes/gameover.js';
+import { installStory } from './ui/story.js';
+import { showNetNotice } from './ui/netplate.js';
 
 /* ── boot order matters here ───────────────────────────────────────────────
  * Platform first: it reads `window.__MM_HOST__`, which decides whether
@@ -91,6 +93,7 @@ ctx.audio = new Audio(ctx);
 ctx.tooltip = new Tooltip(ctx);
 ctx.atmosphere = new Atmosphere(ctx);
 ctx.scenes = new SceneManager(ctx);
+installStory(ctx);
 /* Which wing's room a node plays in, for the atmosphere's link queue: it links
    the programs of the rooms the party can meet next first (Atmosphere._linkOrder). */
 ctx.moodForRoom = moodForRoom;
@@ -117,7 +120,11 @@ ctx.gamepad = new Gamepad(ctx).start();
 ctx.navigator = new Navigator(ctx).start();
 
 bus.on('platform:pause', ({ paused }) => {
-  if (paused) { clock.pause(); storage.flush(); } else { clock.resume(); }
+  /* A shared expedition does not stop because one player looked away. The clock
+     keeps running under a wire, or alt-tabbing out would stall this client partway
+     through the inputs the rest of the table is already waiting on. */
+  const wired = !!ctx.run?.session?.remote;
+  if (paused) { if (!wired) clock.pause(); storage.flush(); } else { clock.resume(); }
   ctx.audio?.setPaused?.(paused);
 });
 
@@ -194,6 +201,8 @@ if (hostNet && typeof hostNet.onInvite === 'function') {
     }
     ctx.scenes.go('lobby', { room });
   });
+  /* A failed join says why, or Steam's "Join Game" looks like it did nothing. */
+  hostNet.onNotice?.((text) => { if (text) showNetNotice(ctx, text); });
 }
 
 /* Anything the player earned offline, or on another machine, or in the browser

@@ -34,7 +34,7 @@
    "scale": 0.8989,
    "unit": 340.67,
    "loop": false,
-   "fps": 35.56,
+   "fps": 30,
    "hold": false,
    "sha1": "fdd188cc8c9deb0e"
   },
@@ -72,7 +72,7 @@
    "scale": 0.8889,
    "unit": 336.89,
    "loop": false,
-   "fps": 28.44,
+   "fps": 30,
    "hold": false,
    "sha1": "1c180f3e0116896e"
   },
@@ -111,7 +111,7 @@
    "scale": 0.9524,
    "unit": 360.95,
    "loop": false,
-   "fps": 40.0,
+   "fps": 30,
    "hold": true,
    "sha1": "53e4a2453f6e4ba6"
   },
@@ -149,7 +149,7 @@
    "scale": 0.939,
    "unit": 355.87,
    "loop": false,
-   "fps": 35.56,
+   "fps": 30,
    "hold": false,
    "sha1": "a2b207c1b54b6c92"
   },
@@ -187,7 +187,7 @@
    "scale": 0.9926,
    "unit": 376.18,
    "loop": true,
-   "fps": 11.85,
+   "fps": 30,
    "hold": false,
    "sha1": "c4811d13332bf08e"
   }

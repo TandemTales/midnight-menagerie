@@ -39,7 +39,7 @@ const RUN = 'mm.run.v1';
  *         that writes achievements must not have its saves silently accepted and
  *         re-written by a build that would drop them.
  */
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
 /**
  * version -> a function taking the parsed save at that version and returning it
@@ -47,6 +47,12 @@ export const SAVE_VERSION = 2;
  * so a throw leaves the original untouched.
  */
 export const MIGRATIONS = {
+  2: (d) => {
+    // Named observations and reunions are separate from generic Clue currency.
+    if (!d.narrative) d.narrative = { seen: {}, clues: {}, pets: {}, bosses: {}, runs: {}, sanctuary: false, pendingEnding: null };
+    d.version = 3;
+    return d;
+  },
   1: (d) => {
     if (!d.achievements) d.achievements = { unlocked: {}, counters: {}, seen: {} };
     d.version = 2;
@@ -92,6 +98,7 @@ const DEFAULT = {
   companionsRescued: [],       // slugs
   kidsUnlocked: ['maya'],
   petsRescued: [],
+  narrative: { seen: {}, clues: {}, investigations: {}, choices: {}, pets: {}, bosses: {}, runs: {}, sanctuary: false, pendingEnding: null },
   clues: {},                   // kid slug -> [clue ids]
   /**
    * `revealed` is every wing SURVEYED (walked into, win or lose) and gates the
@@ -121,7 +128,7 @@ const DEFAULT = {
 
 function deepMerge(base, over) {
   if (over === undefined || over === null) return structuredClone(base);
-  if (typeof base !== 'object' || Array.isArray(base)) return over;
+  if (base === null || typeof base !== 'object' || Array.isArray(base)) return structuredClone(over);
   const out = structuredClone(base);
   for (const k in over) out[k] = deepMerge(base[k], over[k]);
   return out;

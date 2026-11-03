@@ -52,10 +52,12 @@
  *   `net/actions.js`  the applier every screen calls, and the choice bridge
  *   `net/lobby.js`    where `seat`, `seats`, `seed` and `host` come from
  *
- * NOT built: a transport that reaches another machine. Steam P2P per the
- * designer's decision, which needs a wrapper shell and ends the no-build rule —
- * one file implementing the five methods in `net/transport.js`.
- * See `docs/notes/2026-08-29-the-wire-reaches-the-screens.md`.
+ *   `ui/netplate.js`  what the table is told when a seat drops or the boards split
+ *
+ * The transport that reaches another machine is `SteamTransport`, through the
+ * desktop shell (`shell/steam.js`). See
+ * `docs/notes/2026-08-29-the-wire-reaches-the-screens.md` and
+ * `docs/notes/2026-11-03-co-op-on-a-real-wire.md`.
  */
 
 /** Input kinds the session understands. Anything else is rejected loudly. */
@@ -110,7 +112,21 @@ const WIRE = Object.freeze({
   LOG: 'l',            // the answer to a REJOIN
   HELLO: 'h',
   BEAT: 'b',           // "I am at (turn, seq) and nothing older is coming"
+  RESEND: 'g',         // "I have a gap in this seat's inputs"
+  STATE_ASK: 'sa',     // "I am back with nothing: where is everybody?"
+  STATE: 's',          // one chunk of the answer
 });
+
+/** How long a seat may say nothing at all before the table is told. Beats run every 250 ms,
+ *  so this is generous on purpose: a page linking shaders can stop for seconds at a time. */
+const LOST_MS = 15000;
+/** A beat naming an input we never received: how long to let it arrive by itself. */
+const GAP_MS = 1500;
+/** Steam's Reliable channel carries 1 MB a message. Stay well clear of it. */
+const CHUNK_CHARS = 180 * 1024;
+const LOG_PAGE = 256;
+
+const ms = () => ((typeof performance === 'object' && performance.now) ? performance.now() : Date.now());
 
 /**
  * The inputs that DO NOT COMMUTE, and so are the only ones worth a barrier.
@@ -131,6 +147,10 @@ export class Session {
    * @param {number}  o.seats      how many seats the party has
    * @param {number}  o.seed       the expedition seed, identical on every client
    * @param {boolean} [o.host]     one client resolves rejoin requests
+   * @param {object}  [o.roster]   the lobby's frozen roster; it maps a transport
+   *                               id to a seat and answers somebody arriving late
+   * @param {string}  [o.room]     the password, for the save and for a rejoin
+   * @param {boolean} [o.rejoining] hold every input until `adopt()`
    */
   constructor(o = {}) {
     this.transport = o.transport;
@@ -138,6 +158,30 @@ export class Session {
     this.seats = Math.max(1, o.seats | 0 || 1);
     this.seed = o.seed | 0;
     this.host = !!o.host;
+    this.roster = o.roster || null;
+    this.room = o.room || '';
+
+    /** (seat, seq) of everything accepted: a resend must not apply twice. */
+    this._seen = new Set();
+    /** Inputs per seat, against the seq that seat has announced. A short count is a lost message. */
+    this._count = new Map();
+    this._gapSince = new Map();
+    /** When each seat last said anything, and who has gone quiet or left. */
+    this._heardAt = new Map();
+    this._startedAt = ms();
+    /** Seats the table has noticed are missing, and seats it has agreed to play on without. */
+    this.lost = new Set();
+    this.gone = new Set();
+    /** Every CHOICE answer by `${fight}:${seq}`: one can arrive before its fight has been built. */
+    this._answers = new Map();
+    this._frozen = !!o.rejoining;
+    this._buffered = [];
+    this._stateParts = new Map();
+    this._applying = false;
+    /** The agreed order's clock; see `_heldByBarrier`. */
+    this._clock = 0;
+    /** Local callers waiting for their own input to have been applied. */
+    this._waiters = new Map();
 
     /** The thing `shouldHandOff()` reads: a wire owns the seats, so no veil. */
     this.remote = true;
@@ -173,7 +217,10 @@ export class Session {
     this.peers = new Set();
     this.divergedAt = null;
     this._offs = [];
-    this._listeners = { input: new Set(), diverge: new Set(), peer: new Set(), answer: new Set() };
+    this._listeners = {
+      input: new Set(), diverge: new Set(), peer: new Set(), answer: new Set(),
+      presence: new Set(), gone: new Set(), back: new Set(), state: new Set(), desync: new Set(),
+    };
 
     if (this.transport) {
       this._offs.push(this.transport.onMessage((m, from) => this._onWire(m, from)));
@@ -184,8 +231,158 @@ export class Session {
          thinking, and it is what stops a barrier turning a long deliberation
          into a freeze on somebody else's screen. */
       if (this._beatMs > 0 && typeof setInterval === 'function') {
-        this._beatTimer = setInterval(() => this.beat(), this._beatMs);
+        this._beatTimer = setInterval(() => { this.beat(); this._tick(); }, this._beatMs);
       }
+    }
+  }
+
+  /* ── who is still here ──────────────────────────────────────────────────── */
+
+  /** What a save needs to find this expedition again. See `Run.snapshot`. */
+  netInfo() {
+    return {
+      room: this.room, seat: this.seat, id: this.transport?.id || null,
+      lobby: this.transport?.lobbyId || null, seats: this.seats,
+      roster: this.roster,
+    };
+  }
+
+  /** The seat behind a transport id, from the frozen roster. */
+  _seatOfId(id) {
+    const ids = this.roster?.ids;
+    const i = ids ? ids.indexOf(id) : -1;
+    return i >= 0 ? i : null;
+  }
+
+  _heard(seat) {
+    if (seat == null) return;
+    const s = seat | 0;
+    this._heardAt.set(s, ms());
+    if (this.lost.delete(s)) this._emit('presence', { seat: s, here: true });
+  }
+
+  _markLost(seat) {
+    const s = seat | 0;
+    if (s === this.seat || this.gone.has(s) || this.lost.has(s)) return;
+    this.lost.add(s);
+    this._emit('presence', { seat: s, here: false });
+    /* Reliable is per receiver, so an input they sent as they dropped can have
+       reached us and not a third player. Everyone passes on what they hold. */
+    if (this.seats > 2) this._forward(s);
+  }
+
+  _forward(seat) {
+    const mine = this.log.filter(m => (m.seat | 0) === seat);
+    this._sendLog(mine, null);
+  }
+
+  /** Beat-driven housekeeping: a silent seat, and a gap in what a seat has sent. */
+  _tick() {
+    const now = ms();
+    for (let s = 0; s < this.seats; s++) {
+      if (s === this.seat || this.gone.has(s)) continue;
+      const last = this._heardAt.get(s) ?? this._startedAt;
+      if (now - last > LOST_MS) this._markLost(s);
+    }
+    for (const [s, h] of this._horizon) {
+      const have = this._count.get(s) || 0;
+      if (have >= (h.seq | 0)) { this._gapSince.delete(s); continue; }
+      const since = this._gapSince.get(s);
+      if (since == null) { this._gapSince.set(s, now); continue; }
+      if (now - since < GAP_MS) continue;
+      this._gapSince.set(s, now);
+      this.transport?.send({ k: WIRE.RESEND, seat: s });
+    }
+  }
+
+  /** Answer with log pages. `to` null reaches everybody and is taken by whoever lacks them. */
+  _sendLog(log, to) {
+    for (let i = 0; i < log.length; i += LOG_PAGE) {
+      this.transport?.send({ k: WIRE.LOG, to, log: log.slice(i, i + LOG_PAGE) });
+    }
+  }
+
+  /**
+   * Play on without a seat. Anybody at the table can ask, and two people asking
+   * at once is harmless: `run.dropSeat` only acts once.
+   */
+  dropSeat(seat) {
+    const s = seat | 0;
+    if (s === this.seat || this.gone.has(s)) return null;
+    return this.input({ t: INPUT.ROOM, act: 'seat.gone', to: s });
+  }
+
+  /* ── climbing back in ───────────────────────────────────────────────────── */
+
+  /**
+   * Back with an empty page: ask the table for the expedition.
+   *
+   * The answer is a SAVE, not the whole log replayed from the seed. Each client
+   * leaves a room in its own time and that walk is not an input, so a log alone
+   * cannot rebuild where a run stands; a snapshot can, and `Run.resume` already
+   * knows how to stand a run back up from one, in the middle of a fight included.
+   */
+  requestState() { this.transport?.send({ k: WIRE.STATE_ASK, seat: this.seat }); }
+
+  async _answerState(from) {
+    const run = this.run;
+    if (!run || typeof run.snapshot !== 'function') return;
+    /* Between inputs if we can get there. A table stuck on a question only the
+       returning player can answer never will, so that wait is bounded. */
+    await Promise.race([this.settled(), new Promise(r => setTimeout(r, 1500))]);
+    if (run.pendingCombat) { try { run._combatSave(); } catch { /* the snapshot below still stands */ } }
+    const body = JSON.stringify({
+      snapshot: run.snapshot(), pendingVote: run.pendingVote || null,
+      log: this.log, applied: this._applied - (this._applying ? 1 : 0),
+    });
+    const id = `${this.seat}-${Math.floor(ms())}`;
+    const of = Math.max(1, Math.ceil(body.length / CHUNK_CHARS));
+    for (let n = 0; n < of; n++) {
+      this.transport?.send({ k: WIRE.STATE, to: from, id, n, of,
+                             part: body.slice(n * CHUNK_CHARS, (n + 1) * CHUNK_CHARS) });
+    }
+  }
+
+  _takeState(m) {
+    if (!this._frozen || m.to !== this.transport?.id) return;
+    const parts = this._stateParts.get(m.id) || new Array(m.of);
+    parts[m.n] = m.part;
+    this._stateParts.set(m.id, parts);
+    for (let n = 0; n < m.of; n++) if (parts[n] == null) return;
+    this._stateParts.clear();
+    try { this._emit('state', JSON.parse(parts.join(''))); }
+    catch (err) { console.error('[net] a rejoin answer would not parse', err); }
+  }
+
+  /** Take on the log a rejoin answer carries, then whatever arrived while it was on its way. */
+  adopt(pack) {
+    this._frozen = false;
+    this.log = (pack.log || []).slice();
+    this._seen = new Set();
+    this._count = new Map();
+    this._answers = new Map();
+    for (const m of this.log) {
+      this._record(m);
+      this._clock = Math.max(this._clock, m.clk | 0);
+      this._note(m.seat, m.turn, m.seq, m.clk);
+    }
+    this._applied = Math.max(0, Math.min(this.log.length, pack.applied | 0));
+    this._seq = this.log.reduce((n, m) => ((m.seat | 0) === this.seat ? Math.max(n, m.seq | 0) : n), 0);
+    for (const m of this._buffered.splice(0)) this._accept(m, 'wire');
+    this._pump();
+  }
+
+  _record(msg) {
+    this._seen.add(`${msg.seat | 0}:${msg.turn | 0}:${msg.seq | 0}`);
+    this._count.set(msg.seat | 0, (this._count.get(msg.seat | 0) || 0) + 1);
+    if (msg.t === INPUT.CHOICE && msg.fight) this._answers.set(`${msg.fight}:${msg.seq2 | 0}`, msg.picked || []);
+    if (msg.act === 'seat.gone') {
+      const s = msg.to | 0;
+      this.gone.add(s);
+      this.lost.delete(s);
+      this._horizon.delete(s);
+    } else if (msg.act === 'seat.back') {
+      this.gone.delete(msg.seat | 0);
     }
   }
 
@@ -243,13 +440,10 @@ export class Session {
    * An input that arrives in a LATER task, sorting before one already applied,
    * cannot be put back in its place — the board has moved.
    *
-   * The CROSS-TURN half of that is closed: `_heldByBarrier` will not let this
-   * client reach turn T at all until every seat in the fight has said it
-   * reached turn T, so the straggler from turn T-1 can no longer be a turn
-   * behind. What is left is the SAME-turn race, and `_accept` still reports it
-   * rather than applying it out of order and leaving the digest to notice a
-   * turn later, a long way from the cause. See `_heldByBarrier` for the two
-   * ways to close that and why the choice belongs with the transport.
+   * For a COMBAT input that is closed: `_heldByBarrier` will not apply one until
+   * nothing that sorts before it can still arrive. `_accept` still reports the
+   * case if it ever happens, rather than leaving the digest to notice a turn
+   * later, a long way from the cause.
    */
   /** One message, out of band, because the cursor has already passed it. */
   _runOne(msg) {
@@ -257,11 +451,26 @@ export class Session {
       for (const fn of this._listeners.input) {
         try { await fn(msg); } catch (err) { console.error('[net] applying input', msg, err); }
       }
+      this._landed(msg);
     });
     return this._chain;
   }
 
+  /** Resolves when this input has really been applied, whatever it had to wait for. */
+  whenApplied(msg) {
+    return new Promise((resolve) => {
+      if (this.log.indexOf(msg) < this._applied) { resolve(); return; }
+      this._waiters.set(msg, resolve);
+    });
+  }
+
+  _landed(msg) {
+    const w = this._waiters.get(msg);
+    if (w) { this._waiters.delete(msg); w(); }
+  }
+
   _pump() {
+    if (this._frozen) return this.settled();
     this._chain = (this._chain || Promise.resolve()).then(async () => {
       while (this._applied < this.log.length) {
         const msg = this.log[this._applied];
@@ -269,10 +478,13 @@ export class Session {
         this._applied++;
         // A CHOICE is delivered out of band by `_accept`; it is in the log so a
         // rejoin replays it, and it must not be applied as an input here.
-        if (msg.t === INPUT.CHOICE) continue;
+        if (msg.t === INPUT.CHOICE) { this._landed(msg); continue; }
+        this._applying = true;
         for (const fn of this._listeners.input) {
           try { await fn(msg); } catch (err) { console.error('[net] applying input', msg, err); }
         }
+        this._applying = false;
+        this._landed(msg);
         this._maybeBeat();
       }
       if (this._applied >= this.log.length) { this._heldSince = 0; this._heldWarned = false; }
@@ -289,7 +501,7 @@ export class Session {
   beat() {
     if (!this.transport) return null;
     this._beatTurn = this.turn();
-    const b = { k: WIRE.BEAT, seat: this.seat, turn: this._beatTurn, seq: this._seq };
+    const b = { k: WIRE.BEAT, seat: this.seat, turn: this._beatTurn, seq: this._seq, clk: this._clock };
     this.transport.send(b);
     return b;
   }
@@ -308,13 +520,16 @@ export class Session {
    * un-promise something already promised, which reopens the barrier under an
    * input that has already been cleared to apply.
    */
-  _note(seat, turn, seq) {
+  _note(seat, turn, seq, clk = 0) {
     const s = seat | 0;
     if (s === this.seat) return;
-    const t = turn | 0, q = seq | 0;
+    const t = turn | 0, q = seq | 0, c = clk | 0;
     const h = this._horizon.get(s);
-    if (h && (h.turn > t || (h.turn === t && h.seq >= q))) return;
-    this._horizon.set(s, { turn: t, seq: q });
+    if (h && (h.turn > t || (h.turn === t && h.seq >= q))) {
+      if (c > (h.clk | 0)) h.clk = c;
+      return;
+    }
+    this._horizon.set(s, { turn: t, seq: q, clk: Math.max(c, h ? h.clk | 0 : 0) });
   }
 
   /**
@@ -336,7 +551,7 @@ export class Session {
     const own = this.turn() | 0;
     if (own >= 1) low = own;
     for (const [s, h] of this._horizon) {
-      if (s === this.seat) continue;
+      if (s === this.seat || this.gone.has(s)) continue;
       if (h.turn >= 1 && h.turn < low) low = h.turn;
     }
     return low;
@@ -357,19 +572,23 @@ export class Session {
    * Note it gates this client's OWN input too. That is the cost and it is the
    * point — a barrier one seat may walk through is not a barrier.
    *
-   * ── WHAT IT DOES NOT ───────────────────────────────────────────────────
+   * ── AND THE SAME TURN: THE AGREED ORDER ─────────────────────────────────
    *
-   * The same-turn race, where two seats act at once and their inputs cross.
-   * The microtask pump already covers the common form (everything delivered in
-   * one turn of the event loop is sorted before any of it is applied), and
-   * what remains needs either ROLLBACK — rewind to the top of the turn and
-   * replay the log, which this codebase has the machinery for in
-   * `_resumeCombat` and the digests — or a SEQUENCER stamping a global order,
-   * which reintroduces exactly the host-dependency §8.11 calls StS2's loudest
-   * weakness. Neither is free, and the choice belongs with the transport that
-   * decides the latency budget. `_accept` still reports that case when it
-   * happens; it no longer reports the case above, because it can no longer
-   * occur.
+   * Two seats act at once and their inputs cross. On one machine A's Trick lands
+   * first, on the other B's, and if A's kills what B's was aimed at those are
+   * different boards. Over a real wire that is not rare: anything inside one
+   * network delay crosses, and turns are simultaneous on purpose.
+   *
+   * So every input carries a logical clock (Lamport's): one past anything its
+   * author has seen. The log sorts on it, seat breaking a tie. A combat input is
+   * applied only once every other seat has promised it will never send a lower
+   * one, which is what `clk` on a beat means, and since messages are ordered per
+   * sender that promise also says nothing older is still on the way. A seat acks
+   * every combat input it hears, so the wait is one round trip and not a beat
+   * interval. Every machine therefore applies the same inputs in the same order,
+   * with no host and nothing to fail over; a player's own Trick lands one round
+   * trip after they let go of it. Only a seat that has really stopped answering
+   * can hold this up, and the table is told about that and can play on without it.
    */
   _heldByBarrier(msg) {
     if (!msg) return false;
@@ -378,7 +597,15 @@ export class Session {
     if (!COMBAT_INPUT.has(msg.t)) return false;    // room inputs commute
     const t = msg.turn | 0;
     if (t < 1) return false;
-    return t > this._barrierTurn();
+    if (t > this._barrierTurn()) return true;
+    if (msg.node && this.run?.readyForCombatInput && !this.run.readyForCombatInput(msg)) return true;
+    const c = msg.clk | 0;
+    if (!c) return false;                          // a hand-made input in a harness
+    for (const [s, h] of this._horizon) {
+      if (s === this.seat || this.gone.has(s)) continue;
+      if ((h.clk | 0) < c) return true;
+    }
+    return false;
   }
 
   /** A barrier that never lifts is a freeze. Say so rather than hang quietly. */
@@ -421,7 +648,9 @@ export class Session {
       seat: this.seat,
       turn: this.turn(),
       seq: ++this._seq,
+      clk: ++this._clock,
     };
+    if (COMBAT_INPUT.has(o.t) && this.run?.currentNodeId) msg.node = this.run.currentNodeId;
     this._accept(msg);
     this.transport?.send({ k: WIRE.INPUT, i: msg });
     return msg;
@@ -437,6 +666,9 @@ export class Session {
 
   _onWire(m, from) {
     if (!m || !m.k) return;
+    const speaker = m.k === WIRE.INPUT ? m.i?.seat : m.seat;
+    if (speaker !== undefined) this._heard(speaker);
+    else this._heard(this._seatOfId(from));
     switch (m.k) {
       case WIRE.HELLO:
         if (m.seed !== this.seed) {
@@ -445,17 +677,40 @@ export class Session {
           this._diverge({ reason: 'seed', theirs: m.seed, ours: this.seed, from });
         }
         break;
-      case WIRE.INPUT: this._accept(m.i, from); break;
+      case WIRE.INPUT:
+        if (m.i) this._clock = Math.max(this._clock, m.i.clk | 0);
+        if (this._frozen) { this._buffered.push(m.i); this.beat(); break; }
+        this._accept(m.i, from);
+        /* The ack that makes the agreed order cost a round trip rather than a beat. */
+        if (m.i && COMBAT_INPUT.has(m.i.t)) this.beat();
+        break;
       case WIRE.BEAT:
-        this._note(m.seat, m.turn, m.seq);
+        this._note(m.seat, m.turn, m.seq, m.clk);
         this._pump();          // a beat can release what the barrier was holding
         break;
       case WIRE.DIGEST: this._checkDigest(m, from); break;
+      /* Everybody answers these, not only seat 0. The host is a player like any
+         other and may be the very one who has just dropped. */
       case WIRE.REJOIN:
-        if (this.host) this.transport?.send({ k: WIRE.LOG, to: from, log: this.log.slice(m.from | 0) });
+        this._sendLog(this.log.slice(m.from | 0), from);
+        break;
+      case WIRE.RESEND:
+        this._sendLog(this.log.filter(x => (x.seat | 0) === (m.seat | 0)), from);
         break;
       case WIRE.LOG:
-        if (m.to === this.transport?.id) this.absorb(m.log || []);
+        if (!m.to || m.to === this.transport?.id) {
+          if (this._frozen) this._buffered.push(...(m.log || []));
+          else if (m.to) this.absorb(m.log || []);
+          else for (const x of m.log || []) this._accept(x, 'wire');
+        }
+        break;
+      case WIRE.STATE_ASK: this._answerState(from); break;
+      case WIRE.STATE: this._takeState(m); break;
+      /* A lobby is talking to us: somebody has climbed the ladder after the party
+         went in, or is coming back. The seat, if they have one, is theirs to claim. */
+      case 'lobby:ask':
+      case 'lobby:here':
+        if (this.roster) this.transport?.send({ k: 'lobby:started', to: m.id || from, roster: this.roster });
         break;
       default: break;
     }
@@ -464,6 +719,9 @@ export class Session {
   _onPeer(p) {
     if (p.joined) this.peers.add(p.id); else this.peers.delete(p.id);
     this._emit('peer', p);
+    if (p.joined) { this.beat(); return; }
+    const seat = this._seatOfId(p.id);
+    if (seat != null) this._markLost(seat);
   }
 
   /**
@@ -488,21 +746,27 @@ export class Session {
    * only when it is a COMBAT input, because room inputs commute and combat
    * inputs do not. See `_accept`.
    *
-   * The cross-turn form of it is closed — see `_heldByBarrier`, which is the
-   * turn barrier this comment used to ask for, and `beat()`, which is how a
-   * seat that is thinking says where it is. The SAME-turn race is what remains
-   * and it needs rollback or a sequencer, neither of which should be chosen
-   * before the transport sets the latency budget.
+   * Combat inputs no longer get that far — see `_heldByBarrier`, and `beat()`,
+   * which is how a seat that is thinking says where it is.
    */
   _accept(msg, from) {
     if (!msg) return;
     if (msg.seat === this.seat && from) return;   // our own, echoed: rule 2
+    /* Already have it: a resend, or the same page answered by two players. */
+    if (this._seen.has(`${msg.seat | 0}:${msg.turn | 0}:${msg.seq | 0}`)) return;
     /* An input is itself a promise: `seq` is monotonic per author, so nothing
        older is still coming from that seat. Recorded before anything is
        applied, so an input can release the barrier it is itself queued behind. */
-    this._note(msg.seat, msg.turn, msg.seq);
+    this._note(msg.seat, msg.turn, msg.seq, msg.clk);
+    this._clock = Math.max(this._clock, msg.clk | 0);
     const at = this._insertAt(msg);
     this.log.splice(at, 0, msg);
+    this._record(msg);
+    /* Out of band for the same reason as a CHOICE just below: the queue may be
+       stopped on a question this seat will now never answer. The input itself
+       still takes its place in the log and reaches `run.dropSeat` in order. */
+    if (msg.act === 'seat.gone') this._emit('gone', { seat: msg.to | 0 });
+    if (msg.act === 'seat.back') this._emit('back', { seat: msg.seat | 0 });
     /**
      * A CHOICE answer is delivered OUT OF BAND, and it has to be.
      *
@@ -571,13 +835,14 @@ export class Session {
   _applied = 0;
 
   _insertAt(msg) {
-    const key = (m) => [m.turn | 0, m.seat | 0, m.seq | 0];
+    const key = (m) => [m.turn | 0, m.clk | 0, m.seat | 0, m.seq | 0];
     const k = key(msg);
+    const notAfter = (o) => {
+      for (let n = 0; n < k.length; n++) if (o[n] !== k[n]) return o[n] < k[n];
+      return true;
+    };
     for (let i = this.log.length - 1; i >= 0; i--) {
-      const o = key(this.log[i]);
-      if (o[0] < k[0] || (o[0] === k[0] && (o[1] < k[1] || (o[1] === k[1] && o[2] <= k[2])))) {
-        return i + 1;
-      }
+      if (notAfter(key(this.log[i]))) return i + 1;
     }
     return 0;
   }
@@ -596,12 +861,16 @@ export class Session {
     this.absorbing = true;
     try {
       for (const msg of log) {
-        if (this.log.some(x => x.seat === msg.seat && x.seq === msg.seq)) continue;
+        if (this._seen.has(`${msg.seat | 0}:${msg.turn | 0}:${msg.seq | 0}`)) continue;
         this._accept(msg);
         taken++;
       }
     } finally {
-      this.absorbing = false;
+      /* NOT cleared here. `_accept` only queues; the inputs are applied a
+         microtask later, by which time a flag cleared on this line says "live"
+         for every one of them and the replay sits through every beat. */
+      const done = () => { this.absorbing = false; };
+      this.settled().then(done, done);
     }
     return taken;
   }
@@ -626,19 +895,38 @@ export class Session {
     const run = this.run;
     if (!run || !run.combat || typeof run._combatDigest !== 'function') return null;
     const digest = run._combatDigest(run.combat);
-    const turn = this.turn();
+    const turn = `${run.currentNodeId || ''}#${this.turn()}`;
+    this._publish(turn, digest);
+    return digest;
+  }
+
+  /** The same, for a stretch outside a fight: `at` names the room being walked into. */
+  publishRoomDigest(at) {
+    const run = this.run;
+    if (!run || typeof run._partyDigest !== 'function') return null;
+    const digest = run._partyDigest();
+    this._publish(`room:${at}`, digest);
+    return digest;
+  }
+
+  _publish(turn, digest) {
+    /* Theirs may be in already: whoever gets here second makes the comparison,
+       or a fast peer's digest would only ever be compared by the fast peer. */
+    this._compare(turn, digest, this._digests.get(`${turn}:peer`), null);
     this._digests.set(`${turn}:${this.seat}`, digest);
     this.transport?.send({ k: WIRE.DIGEST, turn, seat: this.seat, digest });
-    return digest;
   }
 
   _checkDigest(m, from) {
     const mine = this._digests.get(`${m.turn}:${this.seat}`);
     this._digests.set(`${m.turn}:${m.seat}`, m.digest);
-    if (!mine || !m.digest) return;
-    if (mine !== m.digest) {
-      this._diverge({ reason: 'digest', turn: m.turn, ours: mine, theirs: m.digest, from });
-    }
+    if (!this._digests.has(`${m.turn}:peer`)) this._digests.set(`${m.turn}:peer`, m.digest);
+    this._compare(m.turn, mine, m.digest, from);
+  }
+
+  _compare(turn, ours, theirs, from) {
+    if (!ours || !theirs || ours === theirs) return;
+    this._diverge({ reason: 'digest', turn, ours, theirs, from });
   }
 
   _diverge(info) {

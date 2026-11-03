@@ -1,0 +1,8 @@
+{
+  "valid_causal_comparison": false,
+  "reason": "First isolation overrides also lost the lazy-loaded cascade. All cases actually used current fixed styling.",
+  "preserved": "raster-isolation.log contains all12 invalid timing summaries. Earlier two invalid full raw runs remain in raster-timing and raster-long-timing.",
+  "preservation_limitation": "A failed output-directory substitution caused the subsequent verified-priority run to overwrite the first isolation proof.json and five PNGs. Those invalid raw distributions and pixels are no longer available. The summary log survives; no claim of complete preservation is made.",
+  "verified_successor": "raster-isolation/proof.json",
+  "final_controls": "raster-controls-final/proof.json"
+}

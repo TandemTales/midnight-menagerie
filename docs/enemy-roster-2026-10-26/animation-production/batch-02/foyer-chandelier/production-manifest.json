@@ -1,0 +1,13 @@
+{
+  "enemy": "foyer-chandelier",
+  "source": "docs\\enemy-roster-2026-10-26\\art-production\\foyer-chandelier-original.png",
+  "source_sha256": "92b0a6c482307521def4a939bdb41f3cf2c3711f8b907bc4e483628cd7ee471a",
+  "method": "Fixed ceiling rose; crown and chain pendulum; three separately hinged source crystals; five visible source flame regions. Premultiplied-alpha source-art rig.",
+  "actions": {
+    "idle": "Small suspended swing, phase-lagged crystals and flame flicker.",
+    "attack": "Anticipatory draw-back, brighter candles, broad announcing swing with three distinct crystal responses, then recovery.",
+    "hurt": "Short crown jerk, reactive crystal shudder and a brief flame dip, then recovery.",
+    "defeat": "Candles go out sequentially; crystal light dims and the assembly settles into a still unlit ornament."
+  },
+  "quality_gate": "Pending per-frame technical and visual sequence review; no browser attempt."
+}

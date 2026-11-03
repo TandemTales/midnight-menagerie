@@ -1,0 +1,72 @@
+{
+  "created_utc": "2026-10-27T00:34:08.932353+00:00",
+  "enemy": "imaginary-friend",
+  "states": [
+    "idle",
+    "attack",
+    "hurt",
+    "defeat",
+    "cast"
+  ],
+  "method": "Continuous source-art crayon arm/head deformation; original face marks yaw within the head before reflection. Small drawn cyan doodle effects and spatial erasure are authored additions. No hidden anatomy or replacement face drawn.",
+  "validation": "batch-06/imaginary-friend-v3-left/validation.json",
+  "quality_gate": "technical_pass_visual_review_pending",
+  "files": [
+    {
+      "path": "animations/sprites/enemies/animations/SS_imaginaryFriend_idle.png",
+      "sha256": "407082ede4f7ed64ea6dda8ed74f57316ef87a0e875e77860a9fc5a156c29ee7",
+      "bytes": 9016716
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/imaginary-friend/idle.webp",
+      "sha256": "369a9eef25c29fcdc774c15c461a32b1c355b99bb1d9418688f30a05f5b50013",
+      "bytes": 5175084
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_imaginaryFriend_attack.png",
+      "sha256": "9ee624e9b6cafe7271d548fb7b5ce27800d4bcb70fbe12846249b84039f33d97",
+      "bytes": 6535575
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/imaginary-friend/attack.webp",
+      "sha256": "cde8736890aa86ee1c6e925fc29d461b12de3cc7a9f436219b4f5405f035f426",
+      "bytes": 3566464
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_imaginaryFriend_hurt.png",
+      "sha256": "9f2e75e9b536afcbb5e99f4274a717449fdd00b86dbb52d5209f853b3840f053",
+      "bytes": 4117062
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/imaginary-friend/hurt.webp",
+      "sha256": "99e8ed8b200fdcfeaf69e033f1f194f863f17c7b3a18fac297754aa1a523b5e7",
+      "bytes": 2216662
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_imaginaryFriend_defeat.png",
+      "sha256": "ea49b116f7d05587faa3563481e10908dce662d261881027a5f71e6d473c4761",
+      "bytes": 4232189
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/imaginary-friend/defeat.webp",
+      "sha256": "f47ae4140b28d0e6a7ac12ae5908bc618e25daf726988005c5fa781070a372e4",
+      "bytes": 2211448
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_imaginaryFriend_cast.png",
+      "sha256": "b565d1f7044d1b0bf6b825a64bd9f24a1496beb84e1d3955b01d0309baa87703",
+      "bytes": 7895535
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/imaginary-friend/cast.webp",
+      "sha256": "5061173f7cba535a371482f04cd06e16cc0fd3deb8206b97bd270b3afeb39752",
+      "bytes": 4324566
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/imaginary-friend/index.json",
+      "sha256": "c5e3741d9327c56e33b9da91fc4d83af48fa8b4803daff5147f8d438c5063af4",
+      "bytes": 3306
+    }
+  ],
+  "complete": true
+}

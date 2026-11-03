@@ -1,0 +1,10 @@
+{
+  "portClear": true,
+  "port": 9562,
+  "source": "7269f14a63ac58f8e3556ec208c24048c5839d70",
+  "command": "\"C:\\Users\\Josh\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" tools/devserver.py 9562",
+  "browserJobs": "All Playwright jobs exited before stop",
+  "verifiedUtc": "2026-10-30T03:10:09.1049806Z",
+  "pidAbsent": true,
+  "pid": 41444
+}

@@ -532,15 +532,25 @@ const PET_SPECIES = {
   priya: 'reptile', jordan: 'dog', lena: 'rodent', samir: 'rodent',
 };
 
+/** Selection follows the same earlier-night framing as a new sanctuary run. */
+function selectionPetLabel(k) {
+  return Save.data.narrative.sanctuary ? `revisit ${k.pet}’s search` : `looking for ${k.pet}`;
+}
+
 /** One line about what happens when this Kid walks in with this Companion. */
 function pairingNote(compSlug, kidSlug) {
   const c = COMPANION_BY_SLUG[compSlug];
   const k = KIDS.find((x) => x.slug === kidSlug);
   if (!c || !k) return '';
+  if (Save.data.narrative.sanctuary) {
+    return `${k.name.split(' ')[0]} and ${c.name} revisit the search for ${k.pet}. ` +
+      'The gate is open today. Pets already home stay home.';
+  }
   const same = COMPANION_SPECIES[compSlug] && COMPANION_SPECIES[compSlug] === PET_SPECIES[kidSlug];
   if (same) {
-    return `${c.name} keeps looking at ${k.name.split(' ')[0]}'s collar tag. ` +
-      `Whatever ${k.pet} is now, ${c.name} was once the same kind of animal — and remembers being found.`;
+    const first = k.name.split(' ')[0];
+    return `${first} is looking for ${k.pet}. ${c.name} waits beside ${first}, ` +
+      'ready to help search the House.';
   }
   /* Pronoun from the Kid record (schema.js KIDS[].pronouns) and NEVER from the
      name or the design doc — the field is the designer's and is authoritative.
@@ -643,7 +653,7 @@ export class SelectScene extends Scene {
     back.addEventListener('click', () => this._back());
     h.appendChild(back);
 
-    const logo = logoLockup({ size: 'sm', plaque: 'Menagerie Companions' });
+    const logo = logoLockup({ size: 'sm', plaque: Save.data.narrative.sanctuary ? 'An earlier night' : 'Menagerie Companions' });
     logo.classList.add('sel__logo');
     h.appendChild(logo);
 
@@ -728,7 +738,7 @@ export class SelectScene extends Scene {
       tile.setAttribute('role', 'option');
       tile.setAttribute('aria-selected', 'false');
       tile.setAttribute('aria-label',
-        `${c.name}, ${c.title}. Found in ${REGION_NAMES[c.region] ?? c.region}.`);
+        `${c.name}, ${c.title}. Available for your expedition.`);
       tile.appendChild(el('span', 'tile__art'));
       board.appendChild(tile);
     }
@@ -739,8 +749,8 @@ export class SelectScene extends Scene {
     const cap = el('div', 'sel__boardcap');
     const withYou = this.unlocked.size - this.freed.size;
     cap.innerHTML =
-      `<em class="sel__boardhint">Choose the one who walks back in with you</em>` +
-      `<span class="sel__boardcount"><b>${this.freed.size}</b> / ${COMPANIONS.length} freed` +
+      `<em class="sel__boardhint">${Save.data.narrative.sanctuary ? 'Revisit the search. Pets already home stay home.' : 'Choose the one who walks back in with you'}</em>` +
+      `<span class="sel__boardcount"><b>${this.freed.size}</b> freed` +
       (withYou > 0 ? `<i>${withYou} already with you</i>` : '') + `</span>`;
     wrap.appendChild(cap);
     return wrap;
@@ -850,12 +860,9 @@ export class SelectScene extends Scene {
       <div class="kid__detail">
         <div class="kid__portrait"></div>
         <div class="kid__poster">
-          <div class="poster__head">Missing</div>
+          <div class="poster__head">${Save.data.narrative.sanctuary ? 'Earlier search' : 'Missing'}</div>
           <div class="poster__photo"></div>
-          <div class="poster__pet"></div>
-          <div class="poster__species"></div>
-          <p class="poster__lost"></p>
-          <p class="poster__note"></p>
+          <button type="button" class="poster__about">About this pet</button>
         </div>
         <div class="kid__info">
           <h2 class="kid__name"></h2>
@@ -898,8 +905,8 @@ export class SelectScene extends Scene {
       b.appendChild(pw);
       b.appendChild(el('div', 'kid-tile__plate',
         `<span class="kid-tile__name">${k.name.split(' ')[0]}</span>` +
-        `<span class="kid-tile__pet">looking for ${k.pet}</span>`));
-      b.setAttribute('aria-label', `${k.name}, looking for ${k.pet}`);
+        `<span class="kid-tile__pet">${selectionPetLabel(k)}</span>`));
+      b.setAttribute('aria-label', `${k.name}, ${selectionPetLabel(k)}`);
       strip.appendChild(b);
     }
     this._kidStep = step;
@@ -1189,7 +1196,7 @@ export class SelectScene extends Scene {
     const img = h.querySelector('.hero__img');
     img.src = heroSrc(slug);
     img.alt = `${c.name}, ${c.title}`;
-    h.querySelector('.hero__region').textContent = `Bound to ${REGION_NAMES[c.region] ?? c.region}`;
+    h.querySelector('.hero__region').textContent = `Wing: ${REGION_NAMES[c.region] ?? c.region}`;
     h.querySelector('.hero__name').textContent = c.name;
     h.querySelector('.hero__sub').textContent = c.title;
     h.querySelector('.hero__identity').textContent = codex.identity;
@@ -1352,10 +1359,12 @@ export class SelectScene extends Scene {
     pf.innerHTML = '';
     pf.appendChild(kidPortrait({ ...k, petKind: info.species }, { w: 360, h: 480 }));
 
-    step.querySelector('.poster__pet').textContent = k.pet;
-    step.querySelector('.poster__species').textContent = info.species;
-    step.querySelector('.poster__lost').textContent = info.lost;
-    step.querySelector('.poster__note').textContent = info.note;
+    const about = step.querySelector('.poster__about');
+    about.textContent = `About ${k.pet}`;
+    about.dataset.tipTitle = `${k.pet} · ${info.species}`;
+    about.dataset.tip = `${info.lost}
+
+${info.note}`;
     /* The actual photograph of the actual animal. This box used to hold one
        hard-coded cat-shaped path shown for every pet on the roster, Samir's
        guinea pig included — the single image the whole game is about. */
@@ -1369,6 +1378,16 @@ export class SelectScene extends Scene {
     step.querySelector('.kid__perkdesc').textContent = info.perk[1];
     step.querySelector('.kid__focus').innerHTML = `<span class="foot__lbl">Plays around</span> ${info.focus}`;
     step.querySelector('.kid__pairtext').textContent = pairingNote(this.state.companion, slug);
+    const perk = step.querySelector('.kid__perk');
+    perk.tabIndex = 0;
+    perk.dataset.tipTitle = info.perk[0];
+    perk.dataset.tip = `${info.perk[1]}
+Plays around: ${info.focus}`;
+    const pairing = step.querySelector('.kid__pairing');
+    pairing.tabIndex = 0;
+    pairing.dataset.tipTitle = 'Together';
+    pairing.dataset.tip = pairingNote(this.state.companion, slug);
+
 
     // the Companion travelling with them, so "Together" is a picture and not a claim
     const pairHost = step.querySelector('.pair__pf');
@@ -1423,7 +1442,7 @@ export class SelectScene extends Scene {
       b.classList.toggle('is-selected', on);
       b.setAttribute('aria-selected', String(on));
     }
-    this._setChip('kid', k.name, `looking for ${k.pet}`);
+    this._setChip('kid', k.name, selectionPetLabel(k));
     if (!instant) this._setMode('kid');
     this._syncGo();
   }

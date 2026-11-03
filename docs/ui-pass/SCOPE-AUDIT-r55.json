@@ -1,0 +1,77 @@
+{
+  "base": "1bfcea516055b63b9f8e9274718f2212e8b9841b",
+  "candidates": [
+    {
+      "code": "JADE",
+      "commit": "526b280c88490547b0fc44d890cab4c408678aa3",
+      "changed_files": 78,
+      "game_source_changes": [
+        "game/src/scenes/combat.css",
+        "game/src/scenes/event.css",
+        "game/src/scenes/gameover.css",
+        "game/src/scenes/rest.css",
+        "game/src/scenes/shop.css",
+        "game/src/ui/kit.css"
+      ],
+      "raster_assets": [
+        "game/assets/ui/r55-jade/pillow-v1.webp",
+        "game/assets/ui/r55-jade/plaque-source-v1.png",
+        "game/assets/ui/r55-jade/worn-plaque-v1.webp"
+      ],
+      "raster_asset_bytes": 2031180,
+      "game_javascript_unchanged": true,
+      "reviewed_additional_helpers": [],
+      "scope_pass": true
+    },
+    {
+      "code": "IOLITE",
+      "commit": "5a4c985298d63b392712544a0c113cde08bfabaf",
+      "changed_files": 75,
+      "game_source_changes": [
+        "game/src/scenes/combat.css",
+        "game/src/scenes/event.css",
+        "game/src/scenes/gameover.css",
+        "game/src/scenes/rest.css",
+        "game/src/scenes/shop.css",
+        "game/src/ui/kit.css"
+      ],
+      "raster_assets": [
+        "game/assets/ui/r55-iolite/enamel-plaque.webp",
+        "game/assets/ui/r55-iolite/pillow-folds.webp",
+        "game/assets/ui/r55-iolite/plaque-generated-original.png",
+        "game/assets/ui/r55-iolite/rail-wood.webp"
+      ],
+      "raster_asset_bytes": 2005063,
+      "game_javascript_unchanged": true,
+      "reviewed_additional_helpers": [],
+      "scope_pass": true
+    },
+    {
+      "code": "ZIRCON",
+      "commit": "8ec98889b1cf30c7e3047e31b7fba4f9e232b54e",
+      "changed_files": 83,
+      "game_source_changes": [
+        "game/src/scenes/combat.css",
+        "game/src/scenes/event.css",
+        "game/src/scenes/gameover.css",
+        "game/src/scenes/rest.css",
+        "game/src/scenes/shop.css",
+        "game/src/ui/kit.css"
+      ],
+      "raster_assets": [
+        "game/assets/ui/r55-zircon/enamel-plaque-v1.webp",
+        "game/assets/ui/r55-zircon/enamel-plaque-v2.webp",
+        "game/assets/ui/r55-zircon/linen-pillow-v1.webp",
+        "game/assets/ui/r55-zircon/plaque-source-v1.png"
+      ],
+      "raster_asset_bytes": 1940698,
+      "game_javascript_unchanged": true,
+      "reviewed_additional_helpers": [
+        "tools/implement_r55_zircon.py",
+        "tools/prepare_r55_zircon_tests.py",
+        "tools/refine_r55_zircon.py"
+      ],
+      "scope_pass": true
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "judge": 2,
+  "rubrics": [
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\RUBRIC.md",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\RUBRIC-r54.md"
+  ],
+  "references": [
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\title.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\mainMenu.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\selectCompanion.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\selectKid.png"
+  ],
+  "order": [
+    "KUNZITE",
+    "PERIDOT",
+    "MORGANITE",
+    "AMETRINE"
+  ],
+  "candidates": {
+    "KUNZITE": [
+      "D:\\UILOOP\\r54-20261029\\judging\\KUNZITE\\rest.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\KUNZITE\\rest-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\KUNZITE\\event.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\KUNZITE\\event-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\KUNZITE\\gameover.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\KUNZITE\\gameover-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\KUNZITE\\shop.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\KUNZITE\\shop-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\KUNZITE\\combat-floaters.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\KUNZITE\\combat-floaters-1280.png"
+    ],
+    "PERIDOT": [
+      "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\rest.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\rest-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\event.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\event-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\gameover.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\gameover-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\shop.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\shop-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\combat-floaters.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\PERIDOT\\combat-floaters-1280.png"
+    ],
+    "MORGANITE": [
+      "D:\\UILOOP\\r54-20261029\\judging\\MORGANITE\\rest.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\MORGANITE\\rest-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\MORGANITE\\event.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\MORGANITE\\event-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\MORGANITE\\gameover.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\MORGANITE\\gameover-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\MORGANITE\\shop.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\MORGANITE\\shop-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\MORGANITE\\combat-floaters.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\MORGANITE\\combat-floaters-1280.png"
+    ],
+    "AMETRINE": [
+      "D:\\UILOOP\\r54-20261029\\judging\\AMETRINE\\rest.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\AMETRINE\\rest-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\AMETRINE\\event.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\AMETRINE\\event-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\AMETRINE\\gameover.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\AMETRINE\\gameover-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\AMETRINE\\shop.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\AMETRINE\\shop-1280.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\AMETRINE\\combat-floaters.png",
+      "D:\\UILOOP\\r54-20261029\\judging\\AMETRINE\\combat-floaters-1280.png"
+    ]
+  },
+  "output": "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\judges-r54\\judge2-final.json"
+}

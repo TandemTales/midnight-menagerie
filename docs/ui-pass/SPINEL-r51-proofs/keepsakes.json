@@ -1,0 +1,241 @@
+{
+  "rows": [
+    {
+      "size": [
+        1280,
+        800
+      ],
+      "max": 1762,
+      "keys": [
+        {
+          "key": "Enter",
+          "before": 0,
+          "after": 106
+        },
+        {
+          "key": "Space",
+          "before": 0,
+          "after": 106
+        }
+      ],
+      "items": [
+        {
+          "text": "\n          \n          Pocket Flashlight\n          At the end of every Scuffle, recover 6 Courage.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Spare Batteries\n          Draw 1 extra Trick on your first turn of every Scuffle.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Friendship Bracelet\n          Gain 1 Guard at the start of every turn for each Keepsake you carry.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Welcome Mat\n          Gain 4 Guard at the start of every Scuffle.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          House Slippers\n          The first attack against you each Scuffle deals 3 less damage.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Brass Service Bell\n          The first time each Scuffle you end a turn with 0 Nerve, draw 1 extra Trick next turn.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Chewed Tennis Ball\n          The first Attack you play each Scuffle deals 8 more damage.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Jar of Fireflies\n          The first time your Guard breaks each Scuffle, gain 6 Guard and draw 1 Trick.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Butterfly Net\n          Every 10th Trick you play in a Scuffle, draw 2.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Sticky Hand\n          Whenever you Vanish a Trick, gain 2 Guard.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Lucky Button\n          Rare Trick rewards appear noticeably more often.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Chalk Stub\n          Unsurveyed rooms on the blueprint show what they really are.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Thermos of Cocoa\n          Safe Rooms restore an extra 12 Courage.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Wind-Up Mouse\n          Every third Trick you play in a turn grants 4 Guard.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Moth-Eaten Monocle\n          Enemies begin every Scuffle with 1 Vulnerable.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Nightlight\n          Attacks that would deal 5 or less damage to you deal 1 instead.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Porcupine Slipper\n          Gain 3 Bristle at the start of every Scuffle.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Coatcheck Ticket\n          On your first turn of every Scuffle, put your most expensive Trick back on the bottom of your draw pile and draw a replacement.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Spare Key\n          Curiosities show you one extra way through. The locked option is never locked to you.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Knotted Handkerchief\n          The first debuff applied to you each Scuffle is refused.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Tin of Sardines\n          Whenever an enemy is defeated, recover 3 Courage. Something always comes to eat.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Ninth Life Charm\n          The first time you would run out of Courage each Scuffle, survive at 1 instead.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Night-Before Bag\n          Draw 2 extra Tricks on your first turn of every Scuffle.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Stopped Pocket Watch\n          Gain 1 extra Nerve on each of your first three turns of a Scuffle.\n        ",
+          "hit": true
+        }
+      ],
+      "endToTop": true
+    },
+    {
+      "size": [
+        1600,
+        900
+      ],
+      "max": 1718,
+      "keys": [
+        {
+          "key": "Enter",
+          "before": 0,
+          "after": 129
+        },
+        {
+          "key": "Space",
+          "before": 0,
+          "after": 129
+        }
+      ],
+      "items": [
+        {
+          "text": "\n          \n          Pocket Flashlight\n          At the end of every Scuffle, recover 6 Courage.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Spare Batteries\n          Draw 1 extra Trick on your first turn of every Scuffle.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Friendship Bracelet\n          Gain 1 Guard at the start of every turn for each Keepsake you carry.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Welcome Mat\n          Gain 4 Guard at the start of every Scuffle.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          House Slippers\n          The first attack against you each Scuffle deals 3 less damage.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Brass Service Bell\n          The first time each Scuffle you end a turn with 0 Nerve, draw 1 extra Trick next turn.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Chewed Tennis Ball\n          The first Attack you play each Scuffle deals 8 more damage.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Jar of Fireflies\n          The first time your Guard breaks each Scuffle, gain 6 Guard and draw 1 Trick.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Butterfly Net\n          Every 10th Trick you play in a Scuffle, draw 2.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Sticky Hand\n          Whenever you Vanish a Trick, gain 2 Guard.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Lucky Button\n          Rare Trick rewards appear noticeably more often.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Chalk Stub\n          Unsurveyed rooms on the blueprint show what they really are.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Thermos of Cocoa\n          Safe Rooms restore an extra 12 Courage.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Wind-Up Mouse\n          Every third Trick you play in a turn grants 4 Guard.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Moth-Eaten Monocle\n          Enemies begin every Scuffle with 1 Vulnerable.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Nightlight\n          Attacks that would deal 5 or less damage to you deal 1 instead.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Porcupine Slipper\n          Gain 3 Bristle at the start of every Scuffle.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Coatcheck Ticket\n          On your first turn of every Scuffle, put your most expensive Trick back on the bottom of your draw pile and draw a replacement.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Spare Key\n          Curiosities show you one extra way through. The locked option is never locked to you.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Knotted Handkerchief\n          The first debuff applied to you each Scuffle is refused.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Tin of Sardines\n          Whenever an enemy is defeated, recover 3 Courage. Something always comes to eat.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Ninth Life Charm\n          The first time you would run out of Courage each Scuffle, survive at 1 instead.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Night-Before Bag\n          Draw 2 extra Tricks on your first turn of every Scuffle.\n        ",
+          "hit": true
+        },
+        {
+          "text": "\n          \n          Stopped Pocket Watch\n          Gain 1 extra Nerve on each of your first three turns of a Scuffle.\n        ",
+          "hit": true
+        }
+      ],
+      "endToTop": true
+    }
+  ],
+  "errors": []
+}

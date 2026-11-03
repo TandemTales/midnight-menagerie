@@ -1,0 +1,12 @@
+{
+  "tool": "image_gen.imagegen",
+  "mode": "built-in; conversation-image references",
+  "transparent_background": true,
+  "num_last_images_to_include": 2,
+  "references": ["animations/sprites/enemies/hallMirror.png", "docs/enemy-roster-2026-10-26/enemy-animation-contact-1.jpg"],
+  "prompt": "Reference roles: the standalone narrow golden mirror is the sole character identity reference. The enemy contact sheet is style context only, do not include its characters. Create an animation production sprite sheet of the exact Hall Mirror character. One PNG, transparent alpha, exactly 9 columns by 4 rows, 36 evenly spaced identical rectangular cells, row-major chronological frames. Target canvas 2304x1536 with cells 256x384. No gutters, borders, labels, numbers, background, floor or cast shadow outside the feet. Each cell contains one entire identical narrow ornate gold freestanding mirror, fixed camera, feet at local (128,360), top at y=24. Keep frame silhouette, carved decoration, golden palette, width and scale identical in every cell. Animate ONLY the small cute lavender reflection inside the glass and glass glints. This is a 1.2 second IDLE cycle played at 30 fps: smoothly breathing, eyes briefly blink around frame 18, a tiny bashful hand flex and returning glint. Subtle continuous movement in every frame, natural in-betweens, no duplicated static frames. Last pose leads seamlessly into first. Exact source identity: tall arched gilded mirror with curled feet and lavender round-faced shy reflection and one waving hand. Painterly polished cute-spooky game art, never frightening. Do not change mirror shape, ornamentation, pose, perspective, pivot or height between frames. This is an actual sprite sheet for a game, not a collage or illustration of a sheet.",
+  "saved_result": "hall-mirror-idle-v1.png",
+  "first_call_error": "AbsolutePathBuf deserialized without a base path at line 1 column 174. Windows referenced_image_paths failed before generation; conversation references then succeeded.",
+  "large_transfer_outcome": "aborted by user; partial file absent on resume",
+  "recovery": "Existing returned data URL saved via bounded PowerShell base64 writes; decoded with validation. No regeneration on resume."
+}

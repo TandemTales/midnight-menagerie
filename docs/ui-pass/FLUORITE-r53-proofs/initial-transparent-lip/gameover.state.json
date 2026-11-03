@@ -1,0 +1,17 @@
+{
+ "url": "http://localhost:9533/game/index.html#scene=gameover&seed=7&companion=bones&kid=maya&pics=1",
+ "state": "{\"scene\":\"gameover\",\"run\":null}",
+ "perf": {
+  "fps": 91,
+  "mem": 29,
+  "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "software": false,
+  "glStd": 44.21,
+  "warmMs": 11560,
+  "settleMs": 322,
+  "band": 38.7
+ },
+ "void": false,
+ "errors": [],
+ "logs": []
+}

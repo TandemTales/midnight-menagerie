@@ -1,0 +1,52 @@
+create a composite image of sprites of the following enemies in a turn based ccg. make sure the final image has a truly transparent background. Make sure the images are good quality and will 2D animate well (nothing in mid-action pose, extra floating parts around it, etc.). Make sure the enemies match the visual style of the included menu screen with companion characters from another part of the game:
+
+1. The Mourning Angel (Level/Region 6)
+A large weathered cemetery angel statue.
+It should not become a gargoyle monster.
+Instead:
+Its head changes direction.
+Hands shift position.
+Stone wings slowly open.
+Its expression changes subtly.
+It may appear in a different place after the screen darkens or another animation plays.
+The power comes from the statue becoming just slightly too alive.
+
+2. The Mausoleum (Level/Region 6)
+A small ornate mausoleum whose interior is impossibly deep.
+Rather than giving it a mouth, the open doorway becomes a shifting void.
+Inside, the player might see:
+Candles.
+A staircase descending forever.
+A spectral procession.
+Rows of empty coffins.
+An entirely different cemetery.
+The structure itself barely needs to move.
+
+3. The Cemetery Gate (Level/Region 6)
+The main wrought iron graveyard gate becomes possessed.
+Chains rise.
+Locks move.
+Gate sections bend inward.
+Names appear across the ironwork.
+Ghostly hands occasionally grip the bars from the wrong side.
+This is essentially a piece of graveyard architecture acting as the enemy.
+
+4. The Widow of the Grounds (Level/Region 6)
+A tall spectral mourner in old black formal dress and a long veil.
+She carries no weapon.
+Wherever she walks:
+Candles light.
+Flowers bend.
+Statues turn.
+Rain falls in small localized patches.
+Ghosts gather silently behind her.
+Her veil occasionally stretches through the entire cemetery like moving darkness.
+She could embody grief becoming so possessive that it refuses to let anything pass on or leave.
+
+5. Rolling Ladder (Level/Region 7)
+Large wooden library ladder racing along brass rails under invisible control, stopping and changing direction abruptly.
+
+6. Loose Pages (Level/Region 7)
+Dozens of old pages swirling around an unseen center, repeatedly arranging themselves into temporary words and silhouettes.
+Production requirements: Create one static composite, one complete enemy design per numbered entry, with clear empty margins separating every enemy. Use the attached UI/selectCompanion.png as the primary visual reference and the accepted source sheets as rendering/style references only. Do not generate animation frames or sequences. All enemies face LEFT toward the players in neutral stable resting poses, no mid-action gesture or attack. Preserve each described identity; action wording above is character context, not a request to depict the action. Keep props held, supported, attached, contained, or touching the core design; omit loose particle effects and orbiting fragments. For inherently grouped enemies, keep the group compact and contained within its own distinct cell. No cropped silhouettes, merged enemies, stray anatomy, halos/matte fringes, text, labels, borders, floors, shadows detached from the sprite, or background scene. Cute, readable and spooky but not threatening; match the accepted art's rich material texture, soft dimensional shading and warm whimsical detail. Output PNG with genuine transparent alpha outside the sprites, never a painted checkerboard or solid-color background. Keep the character itself legible and sufficiently opaque; translucent ghost bodies may have partial alpha. The roster descriptions are quoted from the current original MM Enemies document, not the separate revised roster.
+Exactly 6 enemy designs in this batch.

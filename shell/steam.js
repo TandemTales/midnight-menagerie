@@ -39,7 +39,7 @@
  * stale token is undone, and a close under a stale token is ignored. Without
  * that, the old transport's close() leaves the lobby the invite just joined.
  */
-const V = '1';                         // bump when the wire changes: old builds stop matching
+const V = '2';                         // bump when the wire changes: old builds stop matching
 const POLL_MS = 8;
 const MEMBERS_MS = 250;
 const DEDUPE_MS = 2000;
@@ -55,6 +55,7 @@ class SteamHost {
    */
   constructor(o) {
     this.appId = o.appId | 0;
+    this.demo = !!o.demo;
     this._send = o.send;
     this._sw = o.sw || null;
     this._every = o.every || setInterval;
@@ -69,6 +70,8 @@ class SteamHost {
     this._timers = [];
     this._handles = [];
     this._busy = false;
+    /** Sessions asked for before their sender showed up on the member list. */
+    this._waitingSessions = new Set();
   }
 
   /* ── lifecycle ────────────────────────────────────────────────────────── */
@@ -92,6 +95,9 @@ class SteamHost {
     const on = (k, fn) => { try { this._handles.push(this.client.callback.register(cb[k], fn)); } catch (e) { console.warn(`[steam] ${k}`, e); } };
     on('P2PSessionRequest', ({ remote }) => this._onSessionRequest(remote));
     on('GameLobbyJoinRequested', ({ lobby_steam_id }) => this.joinById(lobby_steam_id));
+    /* Steam gave up on a peer. The game's own beats notice the silence and tell the
+       player; this is here so the reason is in the log for a bug report. */
+    on('P2PSessionConnectFail', ({ remote, error }) => console.warn(`[steam] P2P to ${remote} failed: error ${error}`));
     this._timers.push(this._every(() => this._pump(), POLL_MS));
     this._timers.push(this._every(() => this._members(), MEMBERS_MS));
     this._timers.push(this._every(() => this._dedupe(), DEDUPE_MS));
@@ -104,7 +110,7 @@ class SteamHost {
   info() {
     let deck = false;
     try { deck = !!this.client?.utils.isSteamRunningOnSteamDeck(); } catch { /* old client */ }
-    return { available: this.available, appId: this.appId, me: this.me, name: this.name, deck, reason: this.reason };
+    return { available: this.available, appId: this.appId, me: this.me, name: this.name, deck, reason: this.reason, demo: this.demo };
   }
 
   shutdown() {
@@ -122,7 +128,13 @@ class SteamHost {
     ipc.on('mm:net-open', (_e, o) => { this.open(o).catch(err => console.warn('[steam] open', err)); });
     ipc.on('mm:net-send', (_e, o) => { this.sendAll(o.token, o.msg); });
     ipc.on('mm:net-close', (_e, o) => { this.close(o.token); });
+    ipc.on('mm:net-invite', () => { this.invite(); });
     ipc.on('mm:invite-ready', () => { this._inviteReady = true; this._flushInvite(); });
+  }
+
+  /** The Steam friends picker for this lobby. Needs the overlay; see `main.js`. */
+  invite() {
+    try { this.cur?.lobby.openInviteDialog(); } catch (e) { console.warn('[steam] invite', e); }
   }
 
   /** Achievements, stats and the Deck keyboard: the `steam` half of the host contract. */
@@ -145,7 +157,7 @@ class SteamHost {
 
   /* ── the room ─────────────────────────────────────────────────────────── */
 
-  async open({ room, seats, token }) {
+  async open({ room, seats, token, lobby: hint }) {
     room = String(room || '');
     this.token = token;
     if (!this.client || !room) return;
@@ -154,6 +166,7 @@ class SteamHost {
     if (this.cur && this.cur.room === room && this.cur.token == null) {
       this.cur.token = token;
       this._invite = null;
+      this._emit('lobby', { id: this.cur.lobby.id.toString() });
       for (const id of this.cur.known) this._emit('peer', { id, joined: true });
       for (const m of this.cur.buf.splice(0)) this._emit('msg', m);
       this._members();
@@ -163,14 +176,25 @@ class SteamHost {
 
     const mm = this.client.matchmaking;
     let lobby = null, created = false;
+    /* Coming back to an expedition: the lobby the save remembers, first. Search
+       only reaches nearby regions, and the friend may be a long way off. */
+    if (hint) {
+      try {
+        const back = await mm.joinLobby(BigInt(hint));
+        if (this.token !== token) { try { back.leave(); } catch {} return; }
+        if (this._isRoom(back, room)) lobby = back;
+        else { try { back.leave(); } catch {} }
+      } catch { /* that lobby is gone: search below */ }
+    }
     try {
+      if (lobby) throw null;
       const all = await mm.getLobbies();
       if (this.token !== token) return;
       const fit = all
         .filter(l => this._isRoom(l, room) && this._hasSeat(l))
         .sort((x, y) => (x.id < y.id ? -1 : 1))[0];
       if (fit) lobby = await fit.join();
-    } catch (e) { console.warn('[steam] search', e); }
+    } catch (e) { if (e) console.warn('[steam] search', e); }
     if (this.token !== token) { try { lobby?.leave(); } catch {} return; }
 
     if (!lobby) {
@@ -180,6 +204,7 @@ class SteamHost {
       lobby.mergeFullData({ mm_room: room, mm_v: V });
     }
     this.cur = { lobby, room, token, known: new Set(), created, buf: [] };
+    this._emit('lobby', { id: lobby.id.toString() });
     this._presence();
     this._members();
   }
@@ -207,11 +232,16 @@ class SteamHost {
     let lobby;
     try {
       lobby = await this.client.matchmaking.joinLobby(BigInt(id));
-    } catch (e) { console.warn('[steam] join', id, e); return; }
+    } catch (e) {
+      console.warn('[steam] join', id, e);
+      this._send('mm:notice', { text: 'That room could not be joined. It may be full or closed.' });
+      return;
+    }
     const room = lobby.getData('mm_room');
     if (!room || lobby.getData('mm_v') !== V) {
       console.warn(`[steam] lobby ${id} is not a Midnight Menagerie room of this version`);
       try { lobby.leave(); } catch {}
+      this._send('mm:notice', { text: 'Your friend is on a different version of the game. Both of you need the latest update.' });
       return;
     }
     if (this.cur && this.cur.lobby.id === lobby.id) return;
@@ -259,6 +289,11 @@ class SteamHost {
     const c = this.cur;
     if (!c) return;
     const now = new Set(this._memberIds());
+    for (const id of this._waitingSessions) {
+      if (!now.has(id)) continue;
+      this._waitingSessions.delete(id);
+      this.client.networking.acceptP2PSession(BigInt(id));
+    }
     for (const id of now) if (!c.known.has(id)) { c.known.add(id); this._emit('peer', { id, joined: true }); }
     for (const id of [...c.known]) if (!now.has(id)) { c.known.delete(id); this._emit('peer', { id, joined: false }); }
   }
@@ -288,6 +323,9 @@ class SteamHost {
   _onSessionRequest(remote) {
     const id = remote.toString();
     if (this._memberIds().includes(id)) this.client.networking.acceptP2PSession(BigInt(id));
+    /* Their packet can beat the member list, and Steam only asks once. Refusing
+       here would leave their first messages stuck behind a session nobody took. */
+    else this._waitingSessions.add(id);
   }
 
   /** A lobby we created that is still alone looks for a lower-id twin and moves in. */

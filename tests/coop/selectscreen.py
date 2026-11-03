@@ -59,6 +59,8 @@ async def main():
 
         await page.goto(URL, wait_until="load", timeout=45000)
         await page.wait_for_timeout(2500)
+        # The story screens are tests/narrative's job; this walks through them.
+        await page.evaluate("() => { window.MM.ctx.narrativeRoute = () => null; }")
 
         # The count control is generated from the engine's MAX_PARTY, so its
         # length is itself an assertion that the screen and the engine agree.
@@ -84,6 +86,7 @@ async def main():
         }""")
         await page.reload(wait_until="load")
         await page.wait_for_timeout(2500)
+        await page.evaluate("() => { window.MM.ctx.narrativeRoute = () => null; }")
 
         check(await page.evaluate(unlocked) == "0,1",
               "a soloist sees the SOLO ladder", await page.evaluate(unlocked))

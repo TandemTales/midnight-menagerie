@@ -341,7 +341,7 @@
 /* The pulse is the "it just turned on" tell. Motion-sensitive players get the
    colour and the rim, which carry the whole meaning on their own. */
 @media (prefers-reduced-motion: no-preference) {
-  .mm-card.is-kw-live .mm-card__kw.is-live { animation: mm-kw-live 1.6s var(--ease-soft) infinite; }
+  .mm-card.is-kw-live .mm-card__kw.is-live { animation: mm-kw-live calc(1.6s * var(--anim-scale)) var(--ease-soft) infinite; }
 }
 .mm-reduce .mm-card__kw.is-live { animation: none !important; }
 @keyframes mm-kw-live {
@@ -537,7 +537,7 @@
     color-mix(in srgb, var(--flame-100) 42%, transparent) 47%,
     transparent 56%);
   background-size: 260% 100%;
-  animation: mm-shimmer 5.2s linear infinite;
+  animation: mm-shimmer calc(5.2s * var(--anim-scale)) linear infinite;
   mix-blend-mode: screen;
 }
 @keyframes mm-shimmer { from { background-position: 130% 0; } to { background-position: -130% 0; } }

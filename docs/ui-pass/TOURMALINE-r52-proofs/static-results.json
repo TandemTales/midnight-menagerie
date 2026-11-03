@@ -1,0 +1,34 @@
+[
+  {
+    "name": "scene-css",
+    "exit": 0
+  },
+  {
+    "name": "css-tokens",
+    "exit": 0
+  },
+  {
+    "name": "syntax",
+    "exit": 0
+  },
+  {
+    "name": "offline-layout",
+    "exit": 0
+  },
+  {
+    "name": "ribbon-envelope",
+    "exit": 0
+  },
+  {
+    "name": "lifecycle-unit",
+    "exit": 0
+  },
+  {
+    "name": "seams",
+    "exit": 1
+  },
+  {
+    "name": "endings",
+    "exit": 0
+  }
+]

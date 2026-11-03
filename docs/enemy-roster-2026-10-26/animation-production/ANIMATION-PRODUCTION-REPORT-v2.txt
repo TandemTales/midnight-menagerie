@@ -1,0 +1,53 @@
+MIDNIGHT MENAGERIE - HALL MIRROR ALL-STATE CHECKPOINT
+
+RESULT: Hall Mirror completed and saved with four distinct 30 fps clips.
+Idle: 60 frames / 2.0 seconds / looping.
+Attack: 48 frames / 1.6 seconds / nonlooping, returns to rest.
+Hurt: 24 frames / 0.8 seconds / nonlooping, returns to rest.
+Defeat: 45 frames / 1.5 seconds / nonlooping, holds empty glass.
+No separate cast is required by the approved Hall Mirror matrix; its distinctive premature-greeting gesture is in attack. No live gameplay intent mapping was introduced.
+
+OPEN: hall-mirror-preview.html for all four actions, frame stepping, scrubbing, contact sheets and file links.
+FULL ROSTER: animation-gallery.html; enemy-action-matrix.json and .csv.
+
+SAVED FILES
+Four source sheets: animations/sprites/enemies/animations/SS_hallMirror_<idle|attack|hurt|defeat>.png.
+Four lossless runtime WebP atlases and index.json: game/assets/sprites/enemy-clips/hall-mirror/.
+Exact individual paths, file sizes and SHA-256 hashes: published-clips.json.
+Source cells 512x768; runtime cells 256x384; nine columns; row-major chronological order. Shared anchor [128,372] and unit 360. All new metadata fps values are 30. All prior animation rates are unchanged.
+
+METHOD AND LIMIT
+This is a character-specific 2D source-art rig, not fully redrawn frames or AI video. The approved full-resolution Hall Mirror painting supplies the authentic stationary gold frame, face, hand and palette. A clean glass plate samples the source's genuinely empty upper glass. Signed reflection layers are articulated separately for head, body and palm; closed eyelids and local glass ripples/glints are composited. The geometry and alpha of the mirror stand stay fixed. It does not substitute whole-image wobble or duplicate static frames.
+The initial silhouette-shaped removal mask left a faint outline in defeat. Revision 3 replaces the full affected glass strip, so the final pose is clean empty glass. Recovered imagegen originals, the previous diagnostic, and the revision-2 rig are retained.
+This method is appropriate for a stationary mirror with an animated reflection. It does not establish that every other enemy can reuse this rig, and no low-quality generic batch was produced.
+
+ACTION DESIGN
+Idle: breathing reflection, brief blink, moving glass glint; clean periodic boundary.
+Attack: withdraws in anticipation, lifts palm, waves twice, returns to source pose.
+Hurt: distinct recoil with eye closure and an inward hand tuck, then recovery.
+Defeat: last goodbye, bowed head, sinking and disappearing reflection; the stand remains as an empty mirror and never gets back up.
+
+VALIDATION: PASSED FRAME-SEQUENCE AND ASSET CHECKS
+177 frames decoded from source sheets, runtime atlases and animated WebP previews.
+Unique visible frames per clip: idle 60, attack 47, hurt 23, defeat 45. Attack and hurt intentionally repeat their first pose at the final endpoint; their interiors are animated throughout.
+Source-to-runtime frame order and resizing checked exactly for visible pixels.
+Protected gold/exterior pixels: maximum per-channel difference ZERO across every frame.
+Alpha and body bounds identical across every frame; positive transparent margins, no edge clipping; unused grid cells transparent.
+Idle loop boundary RGB MAE 0.422/255 inside the glass, with a smooth periodic trajectory. Attack and hurt visible endpoints match exactly. Defeat final visible pixels exactly match the clean empty-glass plate.
+Preview WebPs decode to 60/48/24/45 frames and total 2000/1600/800/1500 milliseconds; the standalone HTML clock uses 1000/30 ms. Its one-shot previews stop for inspection; runtime metadata supplies the existing return/hold semantics.
+See representative-v3/validation.json. An initial endpoint check included irrelevant RGB under alpha zero; that failed check is retained as validation-including-invisible-rgb.json. Corrected checks compare all visible pixels and alpha exactly, matching what can render.
+Browser playback remains unverified: the earlier browser check produced no result and was stopped. Supported decoded-frame checks and chronological contact sheets were used instead. No browser or in-game test is claimed.
+
+COVERAGE AFTER THIS CHECKPOINT
+187 roster identities.
+29 preserved animated enemies / 118 preserved actions.
+1 newly completed enemy / 4 newly completed actions: Hall Mirror.
+156 usable enemies / 659 actions remain pending (624 core actions plus 35 separate cast proposals).
+Spectral Scullion remains dependency-blocked: 1 enemy / 4 core actions, prior still-generation moderation denial. It was not regenerated or bypassed.
+
+PRESERVATION AND SCOPE
+All final targets were preflighted as absent and created with exclusive no-overwrite writes. No preexisting source sheet, still, atlas, gameplay file or global sprite registry was edited. No new enemies were wired into the game, published or deployed; no credentials, accounts, purchases or external uploads were used.
+See preservation-validation.json for the final 3,408-file hash check, and published-clips.json for new-asset hashes.
+
+RESUME
+The representative quality gate is passed for this object-specific rig. Continue with enemy-specific action design and appropriate layers/tooling; preserve all preexisting work. build_matrix.py now recognizes the validated Hall Mirror receipt and retains the original 663-action work scope as 4 completed + 659 pending. The four Spectral Scullion actions remain separately blocked. The standard prep_sprites.py batch CLI must not be used because it changes fps, reduces frames and updates/deletes registry-linked output. build_hall_mirror_rig.py stages assets; validate_hall_mirror_rig.py checks them; publish_hall_mirror.py refuses existing final targets and must not be rerun to overwrite these delivered assets.

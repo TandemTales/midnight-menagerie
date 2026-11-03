@@ -1,0 +1,61 @@
+{
+  "created_utc": "2026-10-27T00:12:00.710062+00:00",
+  "enemy": "topiary-hare",
+  "states": [
+    "idle",
+    "attack",
+    "hurt",
+    "defeat"
+  ],
+  "method": "Two separately articulated source foliage ears; intact head rotates at the neck; body compresses above planted feet and front-paw mesh tucks during a hop. Unlettered, unarmed source reflected to face left. No newly invented hidden body parts.",
+  "validation": "batch-04/topiary-hare-v1-left/validation.json",
+  "quality_gate": "technical_pass_visual_review_pending",
+  "files": [
+    {
+      "path": "animations/sprites/enemies/animations/SS_topiaryHare_idle.png",
+      "sha256": "f3737a9f2fe023b2970cab6d5a383ba21835455dfc3dd14c06caa27585241921",
+      "bytes": 3386495
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/topiary-hare/idle.webp",
+      "sha256": "11c360f062325ddd3024872f5e3942581c8798c5145fb3f28243aca5e8ec15da",
+      "bytes": 1540442
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_topiaryHare_attack.png",
+      "sha256": "91850b77182acef75e63d66b519362c93c3dcadaffe45f18beaed7782a431a22",
+      "bytes": 4667346
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/topiary-hare/attack.webp",
+      "sha256": "6cc316d54a2268703e29d2ac5838bf88961a25dfc02f0e4ef18acf69c202788c",
+      "bytes": 2008968
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_topiaryHare_hurt.png",
+      "sha256": "8d2f3b179be5cd61a0a2fa9d010294c8777c54a9629ff9d2d259cc570992527b",
+      "bytes": 2394462
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/topiary-hare/hurt.webp",
+      "sha256": "edcdc378a98c3d1d523b03df10bdb39c9f7551a786dad07c75f15748f4a7549e",
+      "bytes": 1036088
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_topiaryHare_defeat.png",
+      "sha256": "8d6a703ba782082a89417f12f745f29dfa9713b102bb26f28fd3cd6cd4ddf2a1",
+      "bytes": 4248146
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/topiary-hare/defeat.webp",
+      "sha256": "f0acd4b31e178f6d58c44966715c693f87ecf760039c47337a47eb1aa51f25b8",
+      "bytes": 1842764
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/topiary-hare/index.json",
+      "sha256": "a761e941c280b932c8b0e60a8dd9afea58061398abc653bb51225e40879003a1",
+      "bytes": 2643
+    }
+  ],
+  "complete": true
+}

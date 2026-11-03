@@ -1,0 +1,26 @@
+[
+  {
+    "screen": "rest",
+    "exit": 0
+  },
+  {
+    "screen": "rest-1280",
+    "exit": 0
+  },
+  {
+    "screen": "event",
+    "exit": 0
+  },
+  {
+    "screen": "event-1280",
+    "exit": 0
+  },
+  {
+    "screen": "gameover",
+    "exit": 0
+  },
+  {
+    "screen": "gameover-1280",
+    "exit": 0
+  }
+]

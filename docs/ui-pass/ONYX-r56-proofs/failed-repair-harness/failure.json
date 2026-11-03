@@ -1,0 +1,8 @@
+{
+  "source": "c9014e5b",
+  "scriptSHA256": "664d4ed51915a9a832cad0efc8f540e7b83351165a68d155a261fb8905d16da1",
+  "exit": 1,
+  "error": "TypeError: Route.fulfill: Object of type Request is not JSON serializable",
+  "cause": "Playwright passed optional request as second argument to lambda r,body=css; replaced css default with Request. Failure before comparison or screenshots. Pipeline stopped.",
+  "repair": "Single-argument route callback closes over current CSS; no functional assertions changed."
+}

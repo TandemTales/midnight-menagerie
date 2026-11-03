@@ -1,0 +1,10 @@
+{
+  "animations\\sprites\\enemies\\hallMirror.png": "caf416f2eab12132231be8fb5b109f51bb8cb79e6677a1eda24555dd8b6737a8",
+  "game\\assets\\sprites\\enemies\\hall-mirror.webp": "11d9bed0d25a1dece418bc995fb1b0380bc8cebf29db9018b685249a0960f0a7",
+  "animations\\sprites\\enemies\\portraitGreeter.png": "2bbd0fadc6ff74835211308dbb8e34c87a1e3eb2aeeac0b80aace2783636272a",
+  "game\\assets\\sprites\\enemies\\portrait-greeter.webp": "06c0500fd15165be8411cff4e196eb07f3a598946cb8e89c28f2a0ed8aea7767",
+  "animations\\sprites\\enemies\\grandMirror.png": "32ef55b46c7c99f549773c646ed30fd3030690a73de51b0be23e463f286902b2",
+  "game\\assets\\sprites\\enemies\\grand-mirror.webp": "df176858f83c64ba5c982e55712e34664f7ad3b0b6bb82289f54c83510e56851",
+  "animations\\sprites\\enemies\\foyerChandelier.png": "b7ee172b83ce111c174751af6c0ecd3ec6791bdee8d26eab1308c6f2d448f568",
+  "game\\assets\\sprites\\enemies\\foyer-chandelier.webp": "aca7b6c1517b0cfa7da312c8306a3218983aa050c2be49f0f3340efb5cc5161e"
+}

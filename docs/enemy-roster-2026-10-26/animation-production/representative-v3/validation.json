@@ -1,0 +1,166 @@
+{
+  "passed": true,
+  "errors": [],
+  "clips": {
+    "idle": {
+      "frames": 60,
+      "unique_frames": 60,
+      "fps": 30,
+      "duration_seconds": 2.0,
+      "loop": true,
+      "hold": false,
+      "alpha_bbox": [
+        48,
+        10,
+        218,
+        374
+      ],
+      "anchor": [
+        128,
+        372
+      ],
+      "gold_and_exterior_max_channel_difference": 0,
+      "loop_or_endpoint_MAE": 0.4216399479096502,
+      "adjacent_interior_MAE_mean": 0.28291552214791255,
+      "adjacent_interior_MAE_max": 1.305312317571512,
+      "decoded_preview_frames": 60,
+      "preview_duration_ms": 2000,
+      "checks": {
+        "decoding": true,
+        "grid_bounds": true,
+        "source_to_atlas_frame_order": true,
+        "fixed_frame_pixels": true,
+        "alpha_identical": true,
+        "stable_body_bounds": true,
+        "transparent_margin": true,
+        "unused_cells_blank": true,
+        "substantially_changing_frames": true,
+        "decoded_preview_frame_count": true,
+        "fps_30": true,
+        "loop_seam": true
+      },
+      "passed": true
+    },
+    "attack": {
+      "frames": 48,
+      "unique_frames": 47,
+      "fps": 30,
+      "duration_seconds": 1.6,
+      "loop": false,
+      "hold": false,
+      "alpha_bbox": [
+        48,
+        10,
+        218,
+        374
+      ],
+      "anchor": [
+        128,
+        372
+      ],
+      "gold_and_exterior_max_channel_difference": 0,
+      "loop_or_endpoint_MAE": 0.0,
+      "adjacent_interior_MAE_mean": 2.011583701414905,
+      "adjacent_interior_MAE_max": 6.713031568548206,
+      "decoded_preview_frames": 48,
+      "preview_duration_ms": 1600,
+      "checks": {
+        "decoding": true,
+        "grid_bounds": true,
+        "source_to_atlas_frame_order": true,
+        "fixed_frame_pixels": true,
+        "alpha_identical": true,
+        "stable_body_bounds": true,
+        "transparent_margin": true,
+        "unused_cells_blank": true,
+        "substantially_changing_frames": true,
+        "decoded_preview_frame_count": true,
+        "fps_30": true,
+        "returns_to_initial_pose": true
+      },
+      "passed": true
+    },
+    "hurt": {
+      "frames": 24,
+      "unique_frames": 23,
+      "fps": 30,
+      "duration_seconds": 0.8,
+      "loop": false,
+      "hold": false,
+      "alpha_bbox": [
+        48,
+        10,
+        218,
+        374
+      ],
+      "anchor": [
+        128,
+        372
+      ],
+      "gold_and_exterior_max_channel_difference": 0,
+      "loop_or_endpoint_MAE": 0.0,
+      "adjacent_interior_MAE_mean": 3.207063045333052,
+      "adjacent_interior_MAE_max": 11.243836723696619,
+      "decoded_preview_frames": 24,
+      "preview_duration_ms": 800,
+      "checks": {
+        "decoding": true,
+        "grid_bounds": true,
+        "source_to_atlas_frame_order": true,
+        "fixed_frame_pixels": true,
+        "alpha_identical": true,
+        "stable_body_bounds": true,
+        "transparent_margin": true,
+        "unused_cells_blank": true,
+        "substantially_changing_frames": true,
+        "decoded_preview_frame_count": true,
+        "fps_30": true,
+        "returns_to_initial_pose": true
+      },
+      "passed": true
+    },
+    "defeat": {
+      "frames": 45,
+      "unique_frames": 45,
+      "fps": 30,
+      "duration_seconds": 1.5,
+      "loop": false,
+      "hold": true,
+      "alpha_bbox": [
+        48,
+        10,
+        218,
+        374
+      ],
+      "anchor": [
+        128,
+        372
+      ],
+      "gold_and_exterior_max_channel_difference": 0,
+      "loop_or_endpoint_MAE": 39.05444788719745,
+      "adjacent_interior_MAE_mean": 2.597363742503848,
+      "adjacent_interior_MAE_max": 5.580650231263191,
+      "decoded_preview_frames": 45,
+      "preview_duration_ms": 1500,
+      "checks": {
+        "decoding": true,
+        "grid_bounds": true,
+        "source_to_atlas_frame_order": true,
+        "fixed_frame_pixels": true,
+        "alpha_identical": true,
+        "stable_body_bounds": true,
+        "transparent_margin": true,
+        "unused_cells_blank": true,
+        "substantially_changing_frames": true,
+        "decoded_preview_frame_count": true,
+        "fps_30": true,
+        "ends_on_empty_glass": true,
+        "nonlooping_final_hold": true
+      },
+      "passed": true
+    }
+  },
+  "visual_review": "Source, authentic frame, empty-glass plate and chronological contacts inspected. Reflection head/palm retain source identity. Attack anticipates, waves and recovers; hurt closes eyes and recoils; defeat bows, sinks and vanishes. Frame-sequence assessment only; no browser playback or in-game integration claimed.",
+  "invisible_rgb": "RGB under alpha=0 is ignored for endpoint and uniqueness checks; lossless WebP may discard it. All visible pixels and alpha are compared exactly.",
+  "method_limit": "Layered source-art rig with local affine articulation and eyelid/effect compositing, not fully redrawn animation. Appropriate for this fixed mirror object; not evidence that the same rig suits other enemies."
+}

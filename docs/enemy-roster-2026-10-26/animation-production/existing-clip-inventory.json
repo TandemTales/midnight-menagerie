@@ -1,0 +1,5463 @@
+[
+  {
+    "enemy_id": "dust-bunny",
+    "state": "attack",
+    "source_size": [
+      3546,
+      3996
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 325,
+      "fh": 358,
+      "anchor": [
+        170.51,
+        347.92
+      ],
+      "source": "SS_dustBunny_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        220.5,
+        215.3,
+        214.3
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 3.0,
+      "dehalo": false,
+      "warm": 29.0,
+      "dewhite": false,
+      "dip": 0.334,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.991,
+      "scale": 0.8393,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "fa4a86fe0f684aef"
+    }
+  },
+  {
+    "enemy_id": "dust-bunny",
+    "state": "defeat",
+    "source_size": [
+      3492,
+      4032
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 38,
+      "cols": 8,
+      "rows": 5,
+      "fw": 308,
+      "fh": 342,
+      "anchor": [
+        157.02,
+        306.08
+      ],
+      "source": "SS_dustBunny_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        218.6,
+        212.8,
+        212.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -9.0,
+      "dehalo": false,
+      "warm": 37.0,
+      "dewhite": false,
+      "dip": 0.208,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 37,
+      "endIoU": 0.499,
+      "scale": 0.8393,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "3938ded869261914"
+    }
+  },
+  {
+    "enemy_id": "dust-bunny",
+    "state": "hurt",
+    "source_size": [
+      4851,
+      4131
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 342,
+      "anchor": [
+        235.42,
+        307.99
+      ],
+      "source": "SS_dustBunny_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        214.7,
+        209.4,
+        208.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -3.6,
+      "dehalo": false,
+      "warm": 36.0,
+      "dewhite": false,
+      "dip": 0.296,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.992,
+      "scale": 0.7797,
+      "unit": 237.82,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "6fb5762215372e4f"
+    }
+  },
+  {
+    "enemy_id": "dust-bunny",
+    "state": "idle",
+    "source_size": [
+      3114,
+      2961
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 274,
+      "fh": 261,
+      "anchor": [
+        137.23,
+        258.52
+      ],
+      "source": "SS_dustBunny_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        234.4,
+        232.8,
+        232.5
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 3.2,
+      "dehalo": false,
+      "warm": 34.0,
+      "dewhite": false,
+      "dip": 0.54,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.994,
+      "scale": 0.8393,
+      "unit": 256.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "1b55d57777a7ec74"
+    }
+  },
+  {
+    "enemy_id": "coatrack-crawler",
+    "state": "attack",
+    "source_size": [
+      3672,
+      3807
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 397,
+      "fh": 397,
+      "anchor": [
+        191.51,
+        383.77
+      ],
+      "source": "SS_coatrackCrawler_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        180.1,
+        172.7,
+        171.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 0.3,
+      "dehalo": false,
+      "warm": 85.0,
+      "dewhite": false,
+      "dip": 0.57,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.964,
+      "scale": 1.0,
+      "unit": 364.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "973ab40ba44519e7"
+    }
+  },
+  {
+    "enemy_id": "coatrack-crawler",
+    "state": "defeat",
+    "source_size": [
+      4059,
+      4068
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 34,
+      "cols": 9,
+      "rows": 4,
+      "fw": 385,
+      "fh": 400,
+      "anchor": [
+        201.39,
+        359.61
+      ],
+      "source": "SS_coatrackCrawler_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        174.1,
+        167.9,
+        166.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 3.5,
+      "dehalo": false,
+      "warm": 107.0,
+      "dewhite": false,
+      "dip": 0.289,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 33,
+      "endIoU": 0.298,
+      "scale": 0.9281,
+      "unit": 337.82,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "faa021142c1e1ca9"
+    }
+  },
+  {
+    "enemy_id": "coatrack-crawler",
+    "state": "hurt",
+    "source_size": [
+      3015,
+      4086
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 307,
+      "fh": 400,
+      "anchor": [
+        147.51,
+        366.36
+      ],
+      "source": "SS_coatrackCrawler_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        179.3,
+        171.9,
+        170.9
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 0.5,
+      "dehalo": false,
+      "warm": 103.0,
+      "dewhite": false,
+      "dip": 0.369,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.987,
+      "scale": 0.9412,
+      "unit": 342.59,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "3782ccdd36a5e419"
+    }
+  },
+  {
+    "enemy_id": "coatrack-crawler",
+    "state": "idle",
+    "source_size": [
+      2295,
+      3546
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 244,
+      "fh": 370,
+      "anchor": [
+        122.33,
+        367.0
+      ],
+      "source": "SS_coatrackCrawler_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        184.1,
+        182.6,
+        183.8
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 1.3,
+      "dehalo": false,
+      "warm": 85.0,
+      "dewhite": false,
+      "dip": 0.681,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.986,
+      "scale": 1.0,
+      "unit": 364.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "9de40cdeb04002c8"
+    }
+  },
+  {
+    "enemy_id": "lost-luggage",
+    "state": "attack",
+    "source_size": [
+      3753,
+      3330
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 333,
+      "fh": 301,
+      "anchor": [
+        168.28,
+        286.38
+      ],
+      "source": "SS_suitcase_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        162.2,
+        152.2,
+        150.5
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -7.8,
+      "dehalo": false,
+      "warm": 113.0,
+      "dewhite": false,
+      "dip": 0.413,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.979,
+      "scale": 0.8477,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "fa04535ef63ac997"
+    }
+  },
+  {
+    "enemy_id": "lost-luggage",
+    "state": "defeat",
+    "source_size": [
+      3591,
+      3357
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 23,
+      "cols": 8,
+      "rows": 3,
+      "fw": 323,
+      "fh": 300,
+      "anchor": [
+        162.42,
+        292.34
+      ],
+      "source": "SS_suitcase_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        164.9,
+        156.1,
+        154.7
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -12.8,
+      "dehalo": false,
+      "warm": 116.0,
+      "dewhite": false,
+      "dip": 0.621,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 22,
+      "endIoU": 0.522,
+      "scale": 0.8477,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "107f7641de0eb3ed"
+    }
+  },
+  {
+    "enemy_id": "lost-luggage",
+    "state": "hurt",
+    "source_size": [
+      3906,
+      3141
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 346,
+      "fh": 279,
+      "anchor": [
+        152.79,
+        269.52
+      ],
+      "source": "SS_suitcase_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        158.9,
+        153.4,
+        153.9
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -7.8,
+      "dehalo": false,
+      "warm": 116.0,
+      "dewhite": false,
+      "dip": 0.535,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.965,
+      "scale": 0.8477,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "2527f24cae4a3f25"
+    }
+  },
+  {
+    "enemy_id": "lost-luggage",
+    "state": "idle",
+    "source_size": [
+      3438,
+      3114
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 308,
+      "fh": 276,
+      "anchor": [
+        152.51,
+        264.6
+      ],
+      "source": "SS_suitcase_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        169.8,
+        163.9,
+        164.3
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -13.6,
+      "dehalo": false,
+      "warm": 113.0,
+      "dewhite": false,
+      "dip": 0.627,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.713,
+      "scale": 0.8477,
+      "unit": 256.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "e8d05ffcc9c726ff"
+    }
+  },
+  {
+    "enemy_id": "red-carpet-runner",
+    "state": "attack",
+    "source_size": [
+      3573,
+      3987
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 305,
+      "fh": 342,
+      "anchor": [
+        146.86,
+        298.26
+      ],
+      "source": "SS_rug_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        154.4,
+        149.6,
+        145.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -0.5,
+      "dehalo": false,
+      "warm": 156.0,
+      "dewhite": false,
+      "dip": 0.243,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.993,
+      "scale": 0.805,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "e05911a734ec5979"
+    }
+  },
+  {
+    "enemy_id": "red-carpet-runner",
+    "state": "defeat",
+    "source_size": [
+      3411,
+      3132
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 21,
+      "cols": 7,
+      "rows": 3,
+      "fw": 288,
+      "fh": 259,
+      "anchor": [
+        150.24,
+        244.27
+      ],
+      "source": "SS_rug_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        154.8,
+        155.5,
+        153.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -5.8,
+      "dehalo": false,
+      "warm": 149.0,
+      "dewhite": false,
+      "dip": 0.563,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 20,
+      "endIoU": 0.4,
+      "scale": 0.805,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "1d82501813711d53"
+    }
+  },
+  {
+    "enemy_id": "red-carpet-runner",
+    "state": "hurt",
+    "source_size": [
+      4536,
+      3069
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 382,
+      "fh": 259,
+      "anchor": [
+        152.92,
+        255.26
+      ],
+      "source": "SS_rug_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        160.4,
+        158.0,
+        155.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -9.0,
+      "dehalo": false,
+      "warm": 149.0,
+      "dewhite": false,
+      "dip": 0.686,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.993,
+      "scale": 0.805,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "53b570df86bf2624"
+    }
+  },
+  {
+    "enemy_id": "red-carpet-runner",
+    "state": "idle",
+    "source_size": [
+      3663,
+      3501
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 313,
+      "fh": 297,
+      "anchor": [
+        157.34,
+        269.75
+      ],
+      "source": "SS_rug_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        163.0,
+        159.4,
+        156.7
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -2.8,
+      "dehalo": false,
+      "warm": 143.0,
+      "dewhite": false,
+      "dip": 0.57,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.978,
+      "scale": 0.805,
+      "unit": 256.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "0b41acbefa6f8eb3"
+    }
+  },
+  {
+    "enemy_id": "door-greeter",
+    "state": "attack",
+    "source_size": [
+      2385,
+      4671
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 205,
+      "fh": 400,
+      "anchor": [
+        95.55,
+        344.65
+      ],
+      "source": "SS_doorGreeter_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        155.3,
+        153.2,
+        155.3
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 9.7,
+      "dehalo": false,
+      "warm": 142.0,
+      "dewhite": false,
+      "dip": 0.117,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.982,
+      "scale": 0.8214,
+      "unit": 303.9,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "e175ae6aeeeece6f"
+    }
+  },
+  {
+    "enemy_id": "door-greeter",
+    "state": "defeat",
+    "source_size": [
+      3510,
+      3897
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 22,
+      "cols": 8,
+      "rows": 3,
+      "fw": 367,
+      "fh": 396,
+      "anchor": [
+        241.06,
+        366.11
+      ],
+      "source": "SS_doorGreeter_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        149.8,
+        145.7,
+        145.0
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 13.4,
+      "dehalo": false,
+      "warm": 128.0,
+      "dewhite": false,
+      "dip": 0.341,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 21,
+      "endIoU": 0.106,
+      "scale": 1.0,
+      "unit": 370.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "1a0f7b78da6a408a"
+    }
+  },
+  {
+    "enemy_id": "door-greeter",
+    "state": "hurt",
+    "source_size": [
+      2619,
+      3861
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 276,
+      "fh": 400,
+      "anchor": [
+        146.92,
+        380.04
+      ],
+      "source": "SS_doorGreeter_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        141.3,
+        136.1,
+        136.2
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 15.1,
+      "dehalo": false,
+      "warm": 132.0,
+      "dewhite": false,
+      "dip": 0.334,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.997,
+      "scale": 0.9926,
+      "unit": 367.25,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "afdb1665a402b287"
+    }
+  },
+  {
+    "enemy_id": "door-greeter",
+    "state": "idle",
+    "source_size": [
+      2133,
+      3843
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 228,
+      "fh": 400,
+      "anchor": [
+        103.44,
+        379.69
+      ],
+      "source": "SS_doorGreeter_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        185.5,
+        183.4,
+        187.0
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -4.1,
+      "dehalo": false,
+      "warm": 139.0,
+      "dewhite": false,
+      "dip": 0.327,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.996,
+      "scale": 1.0,
+      "unit": 370.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "144a89ac76f4d458"
+    }
+  },
+  {
+    "enemy_id": "butler",
+    "state": "attack",
+    "source_size": [
+      3906,
+      3717
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 350,
+      "anchor": [
+        215.69,
+        344.92
+      ],
+      "source": "SS_butler_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        155.9,
+        152.5,
+        158.9
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -13.7,
+      "dehalo": false,
+      "warm": 2.0,
+      "dewhite": false,
+      "dip": 0.459,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.807,
+      "scale": 0.8989,
+      "unit": 340.67,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "fdd188cc8c9deb0e"
+    }
+  },
+  {
+    "enemy_id": "butler",
+    "state": "cast",
+    "source_size": [
+      4203,
+      3564
+    ],
+    "metadata": {
+      "file": "cast.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 332,
+      "anchor": [
+        236.21,
+        328.33
+      ],
+      "source": "SS_butler_cast.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        164.8,
+        161.7,
+        167.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -13.3,
+      "dehalo": false,
+      "warm": 2.0,
+      "dewhite": false,
+      "dip": 0.541,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.945,
+      "scale": 0.8889,
+      "unit": 336.89,
+      "loop": false,
+      "fps": 28.44,
+      "hold": false,
+      "sha1": "1c180f3e0116896e"
+    }
+  },
+  {
+    "enemy_id": "butler",
+    "state": "defeat",
+    "source_size": [
+      3330,
+      3906
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 30,
+      "cols": 8,
+      "rows": 4,
+      "fw": 344,
+      "fh": 400,
+      "anchor": [
+        182.51,
+        349.99
+      ],
+      "source": "SS_butler_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        156.9,
+        159.3,
+        167.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -19.9,
+      "dehalo": false,
+      "warm": -22.0,
+      "dewhite": false,
+      "dip": 0.562,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 29,
+      "endIoU": 0.348,
+      "scale": 0.9524,
+      "unit": 360.95,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "53e4a2453f6e4ba6"
+    }
+  },
+  {
+    "enemy_id": "butler",
+    "state": "hurt",
+    "source_size": [
+      4023,
+      3618
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 362,
+      "anchor": [
+        227.25,
+        352.36
+      ],
+      "source": "SS_butler_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        165.4,
+        162.5,
+        167.9
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -12.5,
+      "dehalo": false,
+      "warm": 0.0,
+      "dewhite": false,
+      "dip": 0.601,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.913,
+      "scale": 0.939,
+      "unit": 355.87,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "a2b207c1b54b6c92"
+    }
+  },
+  {
+    "enemy_id": "butler",
+    "state": "idle",
+    "source_size": [
+      2700,
+      3852
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 289,
+      "fh": 400,
+      "anchor": [
+        144.28,
+        396.1
+      ],
+      "source": "SS_butler_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        162.3,
+        160.5,
+        167.7
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -19.1,
+      "dehalo": false,
+      "warm": 4.0,
+      "dewhite": false,
+      "dip": 0.661,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.859,
+      "scale": 0.9926,
+      "unit": 376.18,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "c4811d13332bf08e"
+    }
+  },
+  {
+    "enemy_id": "button-baby",
+    "state": "attack",
+    "source_size": [
+      3825,
+      3312
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 338,
+      "fh": 290,
+      "anchor": [
+        154.26,
+        286.08
+      ],
+      "source": "SS_buttonBaby_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        157.2,
+        149.6,
+        157.8
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -18.2,
+      "dehalo": false,
+      "warm": 59.0,
+      "dewhite": false,
+      "dip": 0.392,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.993,
+      "scale": 0.8339,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "534535874e822e23"
+    }
+  },
+  {
+    "enemy_id": "button-baby",
+    "state": "defeat",
+    "source_size": [
+      3843,
+      3123
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 35,
+      "cols": 9,
+      "rows": 4,
+      "fw": 334,
+      "fh": 274,
+      "anchor": [
+        177.18,
+        270.82
+      ],
+      "source": "SS_buttonBaby_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        158.0,
+        152.1,
+        158.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -22.5,
+      "dehalo": false,
+      "warm": 25.0,
+      "dewhite": false,
+      "dip": 0.525,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 34,
+      "endIoU": 0.414,
+      "scale": 0.8339,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "d7bc81ba858c20a5"
+    }
+  },
+  {
+    "enemy_id": "button-baby",
+    "state": "hurt",
+    "source_size": [
+      3780,
+      3015
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 333,
+      "fh": 267,
+      "anchor": [
+        186.41,
+        262.21
+      ],
+      "source": "SS_buttonBaby_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        153.7,
+        147.4,
+        157.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -23.2,
+      "dehalo": false,
+      "warm": 56.0,
+      "dewhite": false,
+      "dip": 0.408,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.971,
+      "scale": 0.8339,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "4ec0205736ee6edc"
+    }
+  },
+  {
+    "enemy_id": "button-baby",
+    "state": "idle",
+    "source_size": [
+      2880,
+      2988
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 252,
+      "fh": 262,
+      "anchor": [
+        126.72,
+        259.34
+      ],
+      "source": "SS_buttonBaby_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        177.9,
+        167.0,
+        181.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -29.5,
+      "dehalo": false,
+      "warm": 58.0,
+      "dewhite": false,
+      "dip": 0.508,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.991,
+      "scale": 0.8339,
+      "unit": 256.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "ceca3c8e1626a0c4"
+    }
+  },
+  {
+    "enemy_id": "patchwork-soldier",
+    "state": "attack",
+    "source_size": [
+      3105,
+      3447
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 245,
+      "fh": 263,
+      "anchor": [
+        137.58,
+        259.55
+      ],
+      "source": "SS_patchworkSoldier_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        163.2,
+        157.7,
+        157.9
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -8.9,
+      "dehalo": false,
+      "warm": 76.0,
+      "dewhite": false,
+      "dip": 0.732,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.987,
+      "scale": 0.7273,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "6f51549035bd0739"
+    }
+  },
+  {
+    "enemy_id": "patchwork-soldier",
+    "state": "defeat",
+    "source_size": [
+      3492,
+      3474
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 24,
+      "cols": 8,
+      "rows": 3,
+      "fw": 233,
+      "fh": 267,
+      "anchor": [
+        131.09,
+        261.92
+      ],
+      "source": "SS_patchworkSoldier_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        170.0,
+        161.3,
+        159.2
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -8.9,
+      "dehalo": false,
+      "warm": 74.0,
+      "dewhite": false,
+      "dip": 0.509,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 23,
+      "endIoU": 0.27,
+      "scale": 0.7273,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "99b943a5ba3a9aa8"
+    }
+  },
+  {
+    "enemy_id": "patchwork-soldier",
+    "state": "hurt",
+    "source_size": [
+      3312,
+      3510
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 256,
+      "fh": 267,
+      "anchor": [
+        126.5,
+        261.93
+      ],
+      "source": "SS_patchworkSoldier_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        160.0,
+        153.5,
+        152.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -11.2,
+      "dehalo": false,
+      "warm": 72.0,
+      "dewhite": false,
+      "dip": 0.352,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.988,
+      "scale": 0.7273,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "beb617dc77ebf274"
+    }
+  },
+  {
+    "enemy_id": "patchwork-soldier",
+    "state": "idle",
+    "source_size": [
+      2358,
+      3420
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 180,
+      "fh": 259,
+      "anchor": [
+        89.82,
+        257.45
+      ],
+      "source": "SS_patchworkSoldier_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        158.5,
+        154.6,
+        154.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -8.5,
+      "dehalo": false,
+      "warm": 70.0,
+      "dewhite": false,
+      "dip": 0.545,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.991,
+      "scale": 0.7273,
+      "unit": 256.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "69e58a3adc8dcde1"
+    }
+  },
+  {
+    "enemy_id": "jack-in-the-box",
+    "state": "attack",
+    "source_size": [
+      4122,
+      3951
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 318,
+      "fh": 304,
+      "anchor": [
+        145.86,
+        288.35
+      ],
+      "source": "SS_jackInTheBox_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        156.4,
+        150.8,
+        151.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -18.3,
+      "dehalo": false,
+      "warm": 88.0,
+      "dewhite": false,
+      "dip": 0.41,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.991,
+      "scale": 0.7293,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "491e6097b3c476f1"
+    }
+  },
+  {
+    "enemy_id": "jack-in-the-box",
+    "state": "defeat",
+    "source_size": [
+      2673,
+      3420
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 11,
+      "cols": 6,
+      "rows": 2,
+      "fw": 203,
+      "fh": 265,
+      "anchor": [
+        106.54,
+        258.19
+      ],
+      "source": "SS_jackInTheBox_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        166.3,
+        163.3,
+        163.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -26.7,
+      "dehalo": false,
+      "warm": 92.0,
+      "dewhite": false,
+      "dip": 0.526,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 10,
+      "endIoU": 0.65,
+      "scale": 0.7293,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "4a89d73e08dede3a"
+    }
+  },
+  {
+    "enemy_id": "jack-in-the-box",
+    "state": "hurt",
+    "source_size": [
+      4032,
+      3456
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 308,
+      "fh": 264,
+      "anchor": [
+        140.4,
+        258.68
+      ],
+      "source": "SS_jackInTheBox_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        171.8,
+        161.4,
+        161.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -23.7,
+      "dehalo": false,
+      "warm": 93.0,
+      "dewhite": false,
+      "dip": 0.24,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.995,
+      "scale": 0.7293,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "b49713e0b676ea28"
+    }
+  },
+  {
+    "enemy_id": "jack-in-the-box",
+    "state": "idle",
+    "source_size": [
+      2529,
+      3420
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 195,
+      "fh": 261,
+      "anchor": [
+        97.51,
+        258.41
+      ],
+      "source": "SS_jackInTheBox_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        170.7,
+        167.4,
+        168.5
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -24.8,
+      "dehalo": false,
+      "warm": 87.0,
+      "dewhite": false,
+      "dip": 0.549,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.993,
+      "scale": 0.7293,
+      "unit": 256.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "7b6c95331087f2fe"
+    }
+  },
+  {
+    "enemy_id": "blanket-blob",
+    "state": "attack",
+    "source_size": [
+      3375,
+      2817
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 356,
+      "fh": 304,
+      "anchor": [
+        177.64,
+        286.32
+      ],
+      "source": "SS_blanketBlob_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        206.7,
+        198.2,
+        210.3
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -40.6,
+      "dehalo": false,
+      "warm": 41.0,
+      "dewhite": false,
+      "dip": 0.572,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.996,
+      "scale": 0.9734,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "3320f21da7c76cf7"
+    }
+  },
+  {
+    "enemy_id": "blanket-blob",
+    "state": "defeat",
+    "source_size": [
+      3375,
+      2565
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 23,
+      "cols": 8,
+      "rows": 3,
+      "fw": 342,
+      "fh": 261,
+      "anchor": [
+        170.83,
+        257.95
+      ],
+      "source": "SS_blanketBlob_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        212.0,
+        202.6,
+        210.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -24.8,
+      "dehalo": false,
+      "warm": 57.0,
+      "dewhite": false,
+      "dip": 0.527,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 22,
+      "endIoU": 0.943,
+      "scale": 0.9734,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "cb19fd8b34332da8"
+    }
+  },
+  {
+    "enemy_id": "blanket-blob",
+    "state": "hurt",
+    "source_size": [
+      3375,
+      3231
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 347,
+      "fh": 331,
+      "anchor": [
+        172.78,
+        327.96
+      ],
+      "source": "SS_blanketBlob_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        206.1,
+        195.0,
+        207.3
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -19.0,
+      "dehalo": false,
+      "warm": 57.0,
+      "dewhite": false,
+      "dip": 0.223,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.996,
+      "scale": 0.9734,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "3b6f7021d061f81b"
+    }
+  },
+  {
+    "enemy_id": "blanket-blob",
+    "state": "idle",
+    "source_size": [
+      3375,
+      2565
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 343,
+      "fh": 261,
+      "anchor": [
+        171.8,
+        258.92
+      ],
+      "source": "SS_blanketBlob_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        206.7,
+        197.4,
+        204.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -20.1,
+      "dehalo": false,
+      "warm": 57.0,
+      "dewhite": false,
+      "dip": 0.579,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.996,
+      "scale": 0.9734,
+      "unit": 256.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "3e16eee9918e0ae4"
+    }
+  },
+  {
+    "enemy_id": "patchwork-giant",
+    "state": "attack",
+    "source_size": [
+      4266,
+      3114
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 297,
+      "anchor": [
+        198.4,
+        292.97
+      ],
+      "source": "SS_patchworkGiant_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        168.1,
+        164.4,
+        166.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -23.4,
+      "dehalo": false,
+      "warm": 63.0,
+      "dewhite": true,
+      "dip": 0.486,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.993,
+      "scale": 0.907,
+      "unit": 294.78,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "a8d2670e44f6e8f4"
+    }
+  },
+  {
+    "enemy_id": "patchwork-giant",
+    "state": "defeat",
+    "source_size": [
+      3798,
+      3303
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 19,
+      "cols": 7,
+      "rows": 3,
+      "fw": 387,
+      "fh": 344,
+      "anchor": [
+        195.7,
+        328.28
+      ],
+      "source": "SS_patchworkGiant_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        164.8,
+        156.7,
+        155.9
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -21.1,
+      "dehalo": false,
+      "warm": 69.0,
+      "dewhite": false,
+      "dip": 0.205,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 18,
+      "endIoU": 0.505,
+      "scale": 1.0,
+      "unit": 325.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "b452b020af3ead01"
+    }
+  },
+  {
+    "enemy_id": "patchwork-giant",
+    "state": "hurt",
+    "source_size": [
+      3996,
+      3159
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 318,
+      "anchor": [
+        210.44,
+        312.24
+      ],
+      "source": "SS_patchworkGiant_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        162.9,
+        156.5,
+        157.3
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -22.9,
+      "dehalo": false,
+      "warm": 69.0,
+      "dewhite": false,
+      "dip": 0.347,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.991,
+      "scale": 0.9547,
+      "unit": 310.26,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "65e1a6629e353e56"
+    }
+  },
+  {
+    "enemy_id": "patchwork-giant",
+    "state": "idle",
+    "source_size": [
+      3258,
+      3213
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 343,
+      "fh": 338,
+      "anchor": [
+        173.78,
+        333.46
+      ],
+      "source": "SS_patchworkGiant_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        169.5,
+        162.4,
+        163.2
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -27.2,
+      "dehalo": false,
+      "warm": 65.0,
+      "dewhite": false,
+      "dip": 0.439,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.841,
+      "scale": 1.0,
+      "unit": 325.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "c3f803e3ba4e626d"
+    }
+  },
+  {
+    "enemy_id": "toy-chest",
+    "state": "attack",
+    "source_size": [
+      3258,
+      3483
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 342,
+      "fh": 368,
+      "anchor": [
+        171.0,
+        358.0
+      ],
+      "source": "SS_toyChest_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        187.4,
+        182.0,
+        181.5
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -24.2,
+      "dehalo": false,
+      "warm": 102.0,
+      "dewhite": false,
+      "dip": 0.571,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.996,
+      "scale": 1.0,
+      "unit": 285.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "a8344866e2d4e4ce"
+    }
+  },
+  {
+    "enemy_id": "toy-chest",
+    "state": "defeat",
+    "source_size": [
+      4599,
+      5040
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 41,
+      "cols": 9,
+      "rows": 5,
+      "fw": 376,
+      "fh": 400,
+      "anchor": [
+        184.75,
+        353.41
+      ],
+      "source": "SS_toyChest_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        163.2,
+        157.6,
+        156.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -6.3,
+      "dehalo": false,
+      "warm": 74.0,
+      "dewhite": false,
+      "dip": 0.228,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 40,
+      "endIoU": 0.492,
+      "scale": 0.7421,
+      "unit": 211.5,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "7371767ae5fe0258"
+    }
+  },
+  {
+    "enemy_id": "toy-chest",
+    "state": "hurt",
+    "source_size": [
+      3321,
+      3294
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 347,
+      "fh": 349,
+      "anchor": [
+        175.54,
+        345.15
+      ],
+      "source": "SS_toyChest_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        185.4,
+        179.8,
+        179.2
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -12.0,
+      "dehalo": false,
+      "warm": 78.0,
+      "dewhite": false,
+      "dip": 0.415,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.985,
+      "scale": 1.0,
+      "unit": 285.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "691604010ed9c51a"
+    }
+  },
+  {
+    "enemy_id": "toy-chest",
+    "state": "idle",
+    "source_size": [
+      3375,
+      2916
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 353,
+      "fh": 310,
+      "anchor": [
+        178.08,
+        306.08
+      ],
+      "source": "SS_toyChest_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        185.2,
+        181.0,
+        181.7
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -18.3,
+      "dehalo": false,
+      "warm": 83.0,
+      "dewhite": false,
+      "dip": 0.597,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.849,
+      "scale": 1.0,
+      "unit": 285.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "824521fa1183a67a"
+    }
+  },
+  {
+    "enemy_id": "governess",
+    "state": "attack",
+    "source_size": [
+      3186,
+      3663
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 343,
+      "fh": 396,
+      "anchor": [
+        180.3,
+        372.06
+      ],
+      "source": "SS_governess_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        182.9,
+        176.8,
+        182.5
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 8.4,
+      "dehalo": false,
+      "warm": 24.0,
+      "dewhite": false,
+      "dip": 0.544,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.982,
+      "scale": 1.0,
+      "unit": 358.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "3772342e3fb7bfe8"
+    }
+  },
+  {
+    "enemy_id": "governess",
+    "state": "cast",
+    "source_size": [
+      3258,
+      3978
+    ],
+    "metadata": {
+      "file": "cast.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 327,
+      "fh": 400,
+      "anchor": [
+        153.89,
+        375.97
+      ],
+      "source": "SS_governess_cast.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        182.4,
+        176.0,
+        180.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 8.6,
+      "dehalo": false,
+      "warm": 27.0,
+      "dewhite": false,
+      "dip": 0.525,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.985,
+      "scale": 0.9259,
+      "unit": 331.48,
+      "loop": false,
+      "fps": 28.44,
+      "hold": false,
+      "sha1": "733aa070b1df4a63"
+    }
+  },
+  {
+    "enemy_id": "governess",
+    "state": "defeat",
+    "source_size": [
+      4140,
+      3753
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 32,
+      "cols": 8,
+      "rows": 4,
+      "fw": 400,
+      "fh": 362,
+      "anchor": [
+        200.46,
+        340.01
+      ],
+      "source": "SS_governess_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        181.2,
+        175.9,
+        181.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 9.6,
+      "dehalo": false,
+      "warm": 25.0,
+      "dewhite": false,
+      "dip": 0.425,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 31,
+      "endIoU": 0.264,
+      "scale": 0.9281,
+      "unit": 332.25,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "a924eb57bb74c30a"
+    }
+  },
+  {
+    "enemy_id": "governess",
+    "state": "hurt",
+    "source_size": [
+      3060,
+      3636
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 329,
+      "fh": 382,
+      "anchor": [
+        159.34,
+        375.79
+      ],
+      "source": "SS_governess_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        175.3,
+        168.2,
+        174.5
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 6.4,
+      "dehalo": false,
+      "warm": 28.0,
+      "dewhite": false,
+      "dip": 0.475,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.982,
+      "scale": 1.0,
+      "unit": 358.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "09f81f4378552c2f"
+    }
+  },
+  {
+    "enemy_id": "governess",
+    "state": "idle",
+    "source_size": [
+      2628,
+      3582
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 281,
+      "fh": 380,
+      "anchor": [
+        138.68,
+        365.39
+      ],
+      "source": "SS_governess_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        182.9,
+        176.4,
+        181.3
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 4.9,
+      "dehalo": false,
+      "warm": 29.0,
+      "dewhite": false,
+      "dip": 0.57,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.98,
+      "scale": 1.0,
+      "unit": 358.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "b415ce846ed93330"
+    }
+  },
+  {
+    "enemy_id": "wardrobe-guest",
+    "state": "attack",
+    "source_size": [
+      2421,
+      3375
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 255,
+      "fh": 354,
+      "anchor": [
+        111.55,
+        351.0
+      ],
+      "source": "SS_wardrobeGuest_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        188.1,
+        184.8,
+        184.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -1.9,
+      "dehalo": false,
+      "warm": 80.0,
+      "dewhite": false,
+      "dip": 0.53,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.996,
+      "scale": 1.0,
+      "unit": 346.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "cd937f1b1c64d903"
+    }
+  },
+  {
+    "enemy_id": "wardrobe-guest",
+    "state": "defeat",
+    "source_size": [
+      5355,
+      3735
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 19,
+      "cols": 7,
+      "rows": 3,
+      "fw": 372,
+      "fh": 366,
+      "anchor": [
+        196.0,
+        351.0
+      ],
+      "source": "SS_wardrobeGuest_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        175.0,
+        172.0,
+        172.9
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 1.9,
+      "dehalo": false,
+      "warm": 76.0,
+      "dewhite": false,
+      "dip": 0.339,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 18,
+      "endIoU": 0.691,
+      "scale": 1.0,
+      "unit": 346.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "9afa9555410e082d"
+    }
+  },
+  {
+    "enemy_id": "wardrobe-guest",
+    "state": "hurt",
+    "source_size": [
+      2088,
+      3384
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 220,
+      "fh": 353,
+      "anchor": [
+        109.5,
+        351.0
+      ],
+      "source": "SS_wardrobeGuest_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        187.4,
+        183.7,
+        183.9
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -8.3,
+      "dehalo": false,
+      "warm": 86.0,
+      "dewhite": false,
+      "dip": 0.515,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.997,
+      "scale": 1.0,
+      "unit": 346.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "7c31e9551a56b3c3"
+    }
+  },
+  {
+    "enemy_id": "wardrobe-guest",
+    "state": "idle",
+    "source_size": [
+      2088,
+      3366
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 218,
+      "fh": 352,
+      "anchor": [
+        109.0,
+        349.0
+      ],
+      "source": "SS_wardrobeGuest_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        175.9,
+        173.1,
+        172.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -7.2,
+      "dehalo": false,
+      "warm": 90.0,
+      "dewhite": false,
+      "dip": 0.507,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.997,
+      "scale": 1.0,
+      "unit": 346.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "149d7fd8cd680e81"
+    }
+  },
+  {
+    "enemy_id": "blanket-creeper",
+    "state": "attack",
+    "source_size": [
+      3618,
+      2358
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 378,
+      "fh": 247,
+      "anchor": [
+        192.71,
+        238.74
+      ],
+      "source": "SS_blanketCreeper_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        160.6,
+        151.7,
+        155.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -4.9,
+      "dehalo": false,
+      "warm": 53.0,
+      "dewhite": false,
+      "dip": 0.494,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.995,
+      "scale": 1.0,
+      "unit": 226.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "8d2f9cdfc4082b6a"
+    }
+  },
+  {
+    "enemy_id": "blanket-creeper",
+    "state": "defeat",
+    "source_size": [
+      3537,
+      2196
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 29,
+      "cols": 8,
+      "rows": 4,
+      "fw": 368,
+      "fh": 230,
+      "anchor": [
+        184.0,
+        227.08
+      ],
+      "source": "SS_blanketCreeper_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        157.7,
+        148.6,
+        152.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -5.2,
+      "dehalo": false,
+      "warm": 56.0,
+      "dewhite": false,
+      "dip": 0.492,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 28,
+      "endIoU": 0.89,
+      "scale": 1.0,
+      "unit": 226.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "67b94e3fa8468703"
+    }
+  },
+  {
+    "enemy_id": "blanket-creeper",
+    "state": "hurt",
+    "source_size": [
+      3438,
+      2196
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 359,
+      "fh": 233,
+      "anchor": [
+        180.0,
+        229.96
+      ],
+      "source": "SS_blanketCreeper_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        154.8,
+        146.0,
+        148.5
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -5.1,
+      "dehalo": false,
+      "warm": 55.0,
+      "dewhite": false,
+      "dip": 0.437,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.995,
+      "scale": 1.0,
+      "unit": 226.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "56760f5164707343"
+    }
+  },
+  {
+    "enemy_id": "blanket-creeper",
+    "state": "idle",
+    "source_size": [
+      3447,
+      2241
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 361,
+      "fh": 237,
+      "anchor": [
+        181.5,
+        233.66
+      ],
+      "source": "SS_blanketCreeper_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        157.6,
+        148.3,
+        151.5
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -3.9,
+      "dehalo": false,
+      "warm": 53.0,
+      "dewhite": false,
+      "dip": 0.481,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.995,
+      "scale": 1.0,
+      "unit": 226.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "0d98db14ef715b4b"
+    }
+  },
+  {
+    "enemy_id": "slipper-skitter",
+    "state": "attack",
+    "source_size": [
+      3510,
+      2601
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 368,
+      "fh": 274,
+      "anchor": [
+        176.65,
+        268.5
+      ],
+      "source": "SS_slipperSkitter_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        212.9,
+        204.2,
+        204.5
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -14.7,
+      "dehalo": false,
+      "warm": 63.0,
+      "dewhite": false,
+      "dip": 0.475,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.992,
+      "scale": 1.0,
+      "unit": 201.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "c21dffe2a7bda4cf"
+    }
+  },
+  {
+    "enemy_id": "slipper-skitter",
+    "state": "defeat",
+    "source_size": [
+      3537,
+      2475
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 13,
+      "cols": 7,
+      "rows": 2,
+      "fw": 350,
+      "fh": 260,
+      "anchor": [
+        174.33,
+        255.88
+      ],
+      "source": "SS_slipperSkitter_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        212.7,
+        204.5,
+        205.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -14.4,
+      "dehalo": false,
+      "warm": 59.0,
+      "dewhite": false,
+      "dip": 0.644,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 12,
+      "endIoU": 0.415,
+      "scale": 1.0,
+      "unit": 201.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "6c26f5aa722c6148"
+    }
+  },
+  {
+    "enemy_id": "slipper-skitter",
+    "state": "hurt",
+    "source_size": [
+      3609,
+      2970
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 378,
+      "fh": 314,
+      "anchor": [
+        173.5,
+        308.0
+      ],
+      "source": "SS_slipperSkitter_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        204.0,
+        196.2,
+        196.3
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -17.1,
+      "dehalo": false,
+      "warm": 61.0,
+      "dewhite": false,
+      "dip": 0.383,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.994,
+      "scale": 1.0,
+      "unit": 201.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "e59203a89eee7755"
+    }
+  },
+  {
+    "enemy_id": "slipper-skitter",
+    "state": "idle",
+    "source_size": [
+      3339,
+      2007
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 349,
+      "fh": 213,
+      "anchor": [
+        172.64,
+        202.82
+      ],
+      "source": "SS_slipperSkitter_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        209.6,
+        201.1,
+        202.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -26.5,
+      "dehalo": false,
+      "warm": 59.0,
+      "dewhite": false,
+      "dip": 0.625,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.993,
+      "scale": 1.0,
+      "unit": 201.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "6eb630459d1546e7"
+    }
+  },
+  {
+    "enemy_id": "blanket-hydra",
+    "state": "attack",
+    "source_size": [
+      4554,
+      2646
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 231,
+      "anchor": [
+        158.63,
+        223.66
+      ],
+      "source": "SS_blanketHydra_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        183.2,
+        187.0,
+        187.2
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -9.4,
+      "dehalo": false,
+      "warm": 47.0,
+      "dewhite": true,
+      "dip": 0.35,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.991,
+      "scale": 0.7968,
+      "unit": 186.45,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "763b33121d2d1486"
+    }
+  },
+  {
+    "enemy_id": "blanket-hydra",
+    "state": "defeat",
+    "source_size": [
+      3438,
+      2295
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 25,
+      "cols": 9,
+      "rows": 3,
+      "fw": 359,
+      "fh": 244,
+      "anchor": [
+        180.0,
+        240.22
+      ],
+      "source": "SS_blanketHydra_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        174.7,
+        171.9,
+        174.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -13.2,
+      "dehalo": false,
+      "warm": 53.0,
+      "dewhite": false,
+      "dip": 0.461,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 24,
+      "endIoU": 0.734,
+      "scale": 1.0,
+      "unit": 234.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "558c04c97ca2c6c5"
+    }
+  },
+  {
+    "enemy_id": "blanket-hydra",
+    "state": "hurt",
+    "source_size": [
+      3438,
+      2475
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 363,
+      "fh": 268,
+      "anchor": [
+        182.0,
+        261.08
+      ],
+      "source": "SS_blanketHydra_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        172.1,
+        166.9,
+        169.5
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -15.7,
+      "dehalo": false,
+      "warm": 50.0,
+      "dewhite": false,
+      "dip": 0.477,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.99,
+      "scale": 1.0,
+      "unit": 234.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "a46a597d56c54041"
+    }
+  },
+  {
+    "enemy_id": "blanket-hydra",
+    "state": "idle",
+    "source_size": [
+      3429,
+      2277
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 359,
+      "fh": 242,
+      "anchor": [
+        179.5,
+        239.0
+      ],
+      "source": "SS_blanketHydra_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        176.6,
+        171.7,
+        173.3
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -13.1,
+      "dehalo": false,
+      "warm": 51.0,
+      "dewhite": false,
+      "dip": 0.521,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.991,
+      "scale": 1.0,
+      "unit": 234.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "34dd461b2f8c5d67"
+    }
+  },
+  {
+    "enemy_id": "the-wardrobe",
+    "state": "attack",
+    "source_size": [
+      5616,
+      4581
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 314,
+      "anchor": [
+        199.68,
+        268.53
+      ],
+      "source": "SS_grandWardrobe_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        189.8,
+        186.0,
+        188.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -8.8,
+      "dehalo": false,
+      "warm": 23.0,
+      "dewhite": true,
+      "dip": 0.492,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.982,
+      "scale": 0.6359,
+      "unit": 201.59,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "a908a65b818f1ba9"
+    }
+  },
+  {
+    "enemy_id": "the-wardrobe",
+    "state": "defeat",
+    "source_size": [
+      5175,
+      3258
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 25,
+      "cols": 9,
+      "rows": 3,
+      "fw": 400,
+      "fh": 246,
+      "anchor": [
+        201.53,
+        237.99
+      ],
+      "source": "SS_grandWardrobe_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        186.8,
+        181.9,
+        182.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -7.3,
+      "dehalo": false,
+      "warm": 33.0,
+      "dewhite": false,
+      "dip": 0.675,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 24,
+      "endIoU": 0.278,
+      "scale": 0.7463,
+      "unit": 236.57,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "08cbd438ef0e8297"
+    }
+  },
+  {
+    "enemy_id": "the-wardrobe",
+    "state": "hurt",
+    "source_size": [
+      4284,
+      3114
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 288,
+      "anchor": [
+        189.3,
+        284.4
+      ],
+      "source": "SS_grandWardrobe_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        183.8,
+        177.4,
+        179.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -3.7,
+      "dehalo": false,
+      "warm": 26.0,
+      "dewhite": false,
+      "dip": 0.483,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.995,
+      "scale": 0.885,
+      "unit": 280.53,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "366686dd38212e1e"
+    }
+  },
+  {
+    "enemy_id": "the-wardrobe",
+    "state": "idle",
+    "source_size": [
+      4158,
+      3087
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 292,
+      "anchor": [
+        196.51,
+        290.0
+      ],
+      "source": "SS_grandWardrobe_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        185.5,
+        180.7,
+        183.0
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -7.9,
+      "dehalo": false,
+      "warm": 46.0,
+      "dewhite": false,
+      "dip": 0.673,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.996,
+      "scale": 0.9091,
+      "unit": 288.18,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "d7eda271ab9e934f"
+    }
+  },
+  {
+    "enemy_id": "dough-blob",
+    "state": "attack",
+    "source_size": [
+      3843,
+      2979
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 300,
+      "anchor": [
+        213.4,
+        287.04
+      ],
+      "source": "SS_doughBlob_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        222.1,
+        215.7,
+        212.0
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -10.3,
+      "dehalo": false,
+      "warm": 86.0,
+      "dewhite": false,
+      "dip": 0.643,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.995,
+      "scale": 0.9259,
+      "unit": 251.85,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "4ef3cd44e5095454"
+    }
+  },
+  {
+    "enemy_id": "dough-blob",
+    "state": "defeat",
+    "source_size": [
+      3465,
+      3195
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 341,
+      "fh": 315,
+      "anchor": [
+        173.28,
+        312.47
+      ],
+      "source": "SS_doughBlob_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        219.8,
+        212.6,
+        209.2
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -29.8,
+      "dehalo": false,
+      "warm": 86.0,
+      "dewhite": false,
+      "dip": 0.597,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 47,
+      "endIoU": 0.78,
+      "scale": 0.9412,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "c850f28ed871a00d"
+    }
+  },
+  {
+    "enemy_id": "dough-blob",
+    "state": "hurt",
+    "source_size": [
+      3834,
+      2925
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 381,
+      "fh": 290,
+      "anchor": [
+        187.29,
+        286.12
+      ],
+      "source": "SS_doughBlob_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        221.9,
+        215.2,
+        211.2
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -15.8,
+      "dehalo": false,
+      "warm": 86.0,
+      "dewhite": false,
+      "dip": 0.778,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.995,
+      "scale": 0.9412,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "856e4060df9f676b"
+    }
+  },
+  {
+    "enemy_id": "dough-blob",
+    "state": "idle",
+    "source_size": [
+      3510,
+      2655
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 346,
+      "fh": 262,
+      "anchor": [
+        171.66,
+        258.82
+      ],
+      "source": "SS_doughBlob_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        220.6,
+        213.9,
+        209.8
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -24.1,
+      "dehalo": false,
+      "warm": 86.0,
+      "dewhite": false,
+      "dip": 0.761,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.995,
+      "scale": 0.9412,
+      "unit": 256.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "dc15f3291a88c41d"
+    }
+  },
+  {
+    "enemy_id": "candy-clump",
+    "state": "attack",
+    "source_size": [
+      4113,
+      3303
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 341,
+      "fh": 272,
+      "anchor": [
+        167.09,
+        269.22
+      ],
+      "source": "SS_candyClump_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        188.4,
+        181.4,
+        179.9
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -15.6,
+      "dehalo": false,
+      "warm": 123.0,
+      "dewhite": false,
+      "dip": 0.312,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.991,
+      "scale": 0.7829,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "6f7d185d157d30d4"
+    }
+  },
+  {
+    "enemy_id": "candy-clump",
+    "state": "defeat",
+    "source_size": [
+      5076,
+      3627
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 22,
+      "cols": 8,
+      "rows": 3,
+      "fw": 344,
+      "fh": 268,
+      "anchor": [
+        177.19,
+        257.84
+      ],
+      "source": "SS_candyClump_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        160.4,
+        155.1,
+        158.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -0.4,
+      "dehalo": false,
+      "warm": 96.0,
+      "dewhite": false,
+      "dip": 0.333,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 21,
+      "endIoU": 0.536,
+      "scale": 0.7829,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "2c6cd7c767d75f64"
+    }
+  },
+  {
+    "enemy_id": "candy-clump",
+    "state": "hurt",
+    "source_size": [
+      5382,
+      3186
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 230,
+      "anchor": [
+        185.54,
+        227.88
+      ],
+      "source": "SS_candyClump_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        158.6,
+        153.0,
+        156.8
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -4.4,
+      "dehalo": false,
+      "warm": 99.0,
+      "dewhite": false,
+      "dip": 0.293,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.989,
+      "scale": 0.6885,
+      "unit": 225.13,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "158f4c765ac24c93"
+    }
+  },
+  {
+    "enemy_id": "candy-clump",
+    "state": "idle",
+    "source_size": [
+      3249,
+      3186
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 268,
+      "fh": 261,
+      "anchor": [
+        133.9,
+        259.13
+      ],
+      "source": "SS_candyClump_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        174.9,
+        170.8,
+        174.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -3.9,
+      "dehalo": false,
+      "warm": 98.0,
+      "dewhite": false,
+      "dip": 0.491,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.988,
+      "scale": 0.7829,
+      "unit": 256.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "cf0645cf6559b1a2"
+    }
+  },
+  {
+    "enemy_id": "jam-jar",
+    "state": "attack",
+    "source_size": [
+      3933,
+      3384
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 307,
+      "fh": 265,
+      "anchor": [
+        149.16,
+        260.08
+      ],
+      "source": "SS_jamJar_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        201.4,
+        193.7,
+        186.7
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -20.2,
+      "dehalo": false,
+      "warm": 103.0,
+      "dewhite": false,
+      "dip": 0.555,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.981,
+      "scale": 0.7464,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "bbe615df2c25941d"
+    }
+  },
+  {
+    "enemy_id": "jam-jar",
+    "state": "defeat",
+    "source_size": [
+      3357,
+      3483
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 15,
+      "cols": 8,
+      "rows": 2,
+      "fw": 260,
+      "fh": 269,
+      "anchor": [
+        134.7,
+        255.78
+      ],
+      "source": "SS_jamJar_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        169.7,
+        167.7,
+        167.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -9.6,
+      "dehalo": false,
+      "warm": 78.0,
+      "dewhite": false,
+      "dip": 0.406,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 14,
+      "endIoU": 0.533,
+      "scale": 0.7464,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "6b23ba0a622d6346"
+    }
+  },
+  {
+    "enemy_id": "jam-jar",
+    "state": "hurt",
+    "source_size": [
+      3402,
+      3366
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 269,
+      "fh": 262,
+      "anchor": [
+        134.96,
+        259.73
+      ],
+      "source": "SS_jamJar_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        167.5,
+        167.3,
+        166.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -12.0,
+      "dehalo": false,
+      "warm": 79.0,
+      "dewhite": false,
+      "dip": 0.591,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.99,
+      "scale": 0.7464,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "f23d72d654461385"
+    }
+  },
+  {
+    "enemy_id": "jam-jar",
+    "state": "idle",
+    "source_size": [
+      3456,
+      3411
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 273,
+      "fh": 267,
+      "anchor": [
+        132.39,
+        263.46
+      ],
+      "source": "SS_jamJar_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        170.4,
+        167.0,
+        166.9
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -12.6,
+      "dehalo": false,
+      "warm": 78.0,
+      "dewhite": false,
+      "dip": 0.669,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.99,
+      "scale": 0.7464,
+      "unit": 256.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "2dde45146fc6b687"
+    }
+  },
+  {
+    "enemy_id": "pantry-mimic",
+    "state": "attack",
+    "source_size": [
+      2871,
+      3330
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 225,
+      "fh": 262,
+      "anchor": [
+        112.48,
+        258.13
+      ],
+      "source": "SS_pantryMimic_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        176.7,
+        172.1,
+        172.2
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -23.9,
+      "dehalo": false,
+      "warm": 70.0,
+      "dewhite": false,
+      "dip": 0.46,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.978,
+      "scale": 0.7485,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "9a51c5a5d0755061"
+    }
+  },
+  {
+    "enemy_id": "pantry-mimic",
+    "state": "defeat",
+    "source_size": [
+      3699,
+      3789
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 22,
+      "cols": 8,
+      "rows": 3,
+      "fw": 290,
+      "fh": 296,
+      "anchor": [
+        147.88,
+        276.64
+      ],
+      "source": "SS_pantryMimic_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        168.6,
+        163.4,
+        163.2
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -23.2,
+      "dehalo": false,
+      "warm": 50.0,
+      "dewhite": false,
+      "dip": 0.126,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 21,
+      "endIoU": 0.406,
+      "scale": 0.7485,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "25a1f8eec59e0698"
+    }
+  },
+  {
+    "enemy_id": "pantry-mimic",
+    "state": "hurt",
+    "source_size": [
+      3366,
+      3339
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 270,
+      "fh": 262,
+      "anchor": [
+        139.88,
+        258.99
+      ],
+      "source": "SS_pantryMimic_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        172.8,
+        167.7,
+        167.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -20.0,
+      "dehalo": false,
+      "warm": 70.0,
+      "dewhite": false,
+      "dip": 0.286,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.99,
+      "scale": 0.7485,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "f2e992e70a99a20b"
+    }
+  },
+  {
+    "enemy_id": "pantry-mimic",
+    "state": "idle",
+    "source_size": [
+      2889,
+      3330
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 228,
+      "fh": 260,
+      "anchor": [
+        114.76,
+        258.25
+      ],
+      "source": "SS_pantryMimic_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        188.5,
+        184.7,
+        186.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -22.0,
+      "dehalo": false,
+      "warm": 75.0,
+      "dewhite": false,
+      "dip": 0.47,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.993,
+      "scale": 0.7485,
+      "unit": 256.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "d4d85fa891f351e5"
+    }
+  },
+  {
+    "enemy_id": "sugar-golem",
+    "state": "attack",
+    "source_size": [
+      5499,
+      3546
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 265,
+      "anchor": [
+        191.84,
+        246.94
+      ],
+      "source": "SS_sugarGolem_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        231.3,
+        227.8,
+        242.5
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -7.2,
+      "dehalo": false,
+      "warm": 70.0,
+      "dewhite": false,
+      "dip": 0.448,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.993,
+      "scale": 0.6803,
+      "unit": 192.52,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "f5e7570e1720293c"
+    }
+  },
+  {
+    "enemy_id": "sugar-golem",
+    "state": "defeat",
+    "source_size": [
+      4788,
+      3330
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 29,
+      "cols": 8,
+      "rows": 4,
+      "fw": 400,
+      "fh": 281,
+      "anchor": [
+        200.22,
+        260.34
+      ],
+      "source": "SS_sugarGolem_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        234.7,
+        227.0,
+        223.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -13.9,
+      "dehalo": false,
+      "warm": 83.0,
+      "dewhite": false,
+      "dip": 0.284,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 28,
+      "endIoU": 0.402,
+      "scale": 0.8097,
+      "unit": 229.15,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "37d44115115f7cd2"
+    }
+  },
+  {
+    "enemy_id": "sugar-golem",
+    "state": "hurt",
+    "source_size": [
+      4428,
+      3150
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 286,
+      "anchor": [
+        175.48,
+        279.57
+      ],
+      "source": "SS_sugarGolem_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        237.9,
+        232.2,
+        229.9
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -9.1,
+      "dehalo": false,
+      "warm": 82.0,
+      "dewhite": false,
+      "dip": 0.392,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.994,
+      "scale": 0.8602,
+      "unit": 243.44,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "b63212cb8fc1ae26"
+    }
+  },
+  {
+    "enemy_id": "sugar-golem",
+    "state": "idle",
+    "source_size": [
+      3627,
+      3096
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 380,
+      "fh": 328,
+      "anchor": [
+        190.71,
+        313.3
+      ],
+      "source": "SS_sugarGolem_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        244.3,
+        239.8,
+        238.0
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -10.6,
+      "dehalo": false,
+      "warm": 82.0,
+      "dewhite": false,
+      "dip": 0.58,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.994,
+      "scale": 1.0,
+      "unit": 283.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "e2c6a4f7b1f3b6a0"
+    }
+  },
+  {
+    "enemy_id": "oven-maw",
+    "state": "attack",
+    "source_size": [
+      3420,
+      2754
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 360,
+      "fh": 292,
+      "anchor": [
+        170.0,
+        287.0
+      ],
+      "source": "SS_ovenMaw_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        170.3,
+        157.5,
+        161.7
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -32.1,
+      "dehalo": false,
+      "warm": 199.0,
+      "dewhite": false,
+      "dip": 0.407,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.994,
+      "scale": 1.0,
+      "unit": 286.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "a29d29bc5c9aaee0"
+    }
+  },
+  {
+    "enemy_id": "oven-maw",
+    "state": "defeat",
+    "source_size": [
+      3393,
+      3402
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 34,
+      "cols": 9,
+      "rows": 4,
+      "fw": 360,
+      "fh": 354,
+      "anchor": [
+        171.98,
+        347.69
+      ],
+      "source": "SS_ovenMaw_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        171.0,
+        167.9,
+        170.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -21.9,
+      "dehalo": false,
+      "warm": 76.0,
+      "dewhite": false,
+      "dip": 0.151,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 33,
+      "endIoU": 0.65,
+      "scale": 1.0,
+      "unit": 286.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "8fea08eea97bf0f5"
+    }
+  },
+  {
+    "enemy_id": "oven-maw",
+    "state": "hurt",
+    "source_size": [
+      3645,
+      3141
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 380,
+      "fh": 332,
+      "anchor": [
+        169.0,
+        322.86
+      ],
+      "source": "SS_ovenMaw_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        167.4,
+        165.8,
+        170.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -26.7,
+      "dehalo": false,
+      "warm": 80.0,
+      "dewhite": false,
+      "dip": 0.106,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.993,
+      "scale": 1.0,
+      "unit": 286.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "df2c492bd7c12546"
+    }
+  },
+  {
+    "enemy_id": "oven-maw",
+    "state": "idle",
+    "source_size": [
+      3213,
+      2952
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 338,
+      "fh": 313,
+      "anchor": [
+        169.0,
+        308.11
+      ],
+      "source": "SS_ovenMaw_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        174.7,
+        171.7,
+        174.8
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -29.5,
+      "dehalo": false,
+      "warm": 86.0,
+      "dewhite": false,
+      "dip": 0.492,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.993,
+      "scale": 1.0,
+      "unit": 286.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "fca01a4c174d117b"
+    }
+  },
+  {
+    "enemy_id": "confectioner",
+    "state": "attack",
+    "source_size": [
+      5616,
+      4068
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 272,
+      "anchor": [
+        202.9,
+        252.82
+      ],
+      "source": "SS_confectioner_attack.png",
+      "sourceFrames": 81,
+      "matte": "PREMULT",
+      "bg": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 18.2,
+      "dehalo": false,
+      "warm": 80.0,
+      "dewhite": false,
+      "dip": 0.551,
+      "untail": false,
+      "deblack": false,
+      "black": 0.02,
+      "endIoU": 0.978,
+      "scale": 0.6211,
+      "unit": 219.25,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "02cfda7a8431d63e"
+    }
+  },
+  {
+    "enemy_id": "confectioner",
+    "state": "defeat",
+    "source_size": [
+      5301,
+      3879
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 33,
+      "cols": 9,
+      "rows": 4,
+      "fw": 400,
+      "fh": 331,
+      "anchor": [
+        202.67,
+        311.81
+      ],
+      "source": "SS_confectioner_defeat.png",
+      "sourceFrames": 81,
+      "matte": "PREMULT",
+      "bg": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 23.3,
+      "dehalo": false,
+      "warm": 82.0,
+      "dewhite": false,
+      "dip": 0.689,
+      "untail": false,
+      "deblack": false,
+      "black": 0.017,
+      "defeatCut": 32,
+      "endIoU": 0.356,
+      "scale": 0.8529,
+      "unit": 301.07,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "0bf2fffdb1567f36"
+    }
+  },
+  {
+    "enemy_id": "confectioner",
+    "state": "hurt",
+    "source_size": [
+      4059,
+      3672
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 363,
+      "anchor": [
+        203.75,
+        355.9
+      ],
+      "source": "SS_confectioner_hurt.png",
+      "sourceFrames": 81,
+      "matte": "PREMULT",
+      "bg": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 19.1,
+      "dehalo": false,
+      "warm": 82.0,
+      "dewhite": false,
+      "dip": 0.68,
+      "untail": false,
+      "deblack": false,
+      "black": 0.018,
+      "endIoU": 0.987,
+      "scale": 0.9346,
+      "unit": 329.91,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "8e48ccf2f066515d"
+    }
+  },
+  {
+    "enemy_id": "confectioner",
+    "state": "idle",
+    "source_size": [
+      2637,
+      3465
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 277,
+      "fh": 363,
+      "anchor": [
+        139.0,
+        357.77
+      ],
+      "source": "SS_confectioner_idle.png",
+      "sourceFrames": 81,
+      "matte": "PREMULT",
+      "bg": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 19.0,
+      "dehalo": false,
+      "warm": 82.0,
+      "dewhite": false,
+      "dip": 0.799,
+      "untail": false,
+      "deblack": false,
+      "black": 0.027,
+      "endIoU": 0.984,
+      "scale": 1.0,
+      "unit": 353.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "9394666943c31f42"
+    }
+  },
+  {
+    "enemy_id": "creeping-ivy",
+    "state": "attack",
+    "source_size": [
+      5436,
+      4698
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 335,
+      "anchor": [
+        197.95,
+        299.76
+      ],
+      "source": "SS_creepingIvy_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        168.2,
+        169.9,
+        171.2
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": 0.2,
+      "dehalo": false,
+      "warm": 36.0,
+      "dewhite": false,
+      "dip": 0.401,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.989,
+      "scale": 0.6745,
+      "unit": 180.1,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "68cdd07f82835eba"
+    }
+  },
+  {
+    "enemy_id": "creeping-ivy",
+    "state": "defeat",
+    "source_size": [
+      3339,
+      3555
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 47,
+      "cols": 8,
+      "rows": 6,
+      "fw": 334,
+      "fh": 355,
+      "anchor": [
+        168.15,
+        341.64
+      ],
+      "source": "SS_creepingIvy_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        151.7,
+        152.5,
+        151.0
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -8.7,
+      "dehalo": false,
+      "warm": 39.0,
+      "dewhite": false,
+      "dip": 0.263,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 46,
+      "endIoU": 0.762,
+      "scale": 0.9588,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "07d7396f47531e93"
+    }
+  },
+  {
+    "enemy_id": "creeping-ivy",
+    "state": "hurt",
+    "source_size": [
+      3249,
+      3114
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 330,
+      "fh": 314,
+      "anchor": [
+        165.09,
+        309.6
+      ],
+      "source": "SS_creepingIvy_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        158.8,
+        159.4,
+        157.0
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -4.8,
+      "dehalo": false,
+      "warm": 37.0,
+      "dewhite": false,
+      "dip": 0.459,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.989,
+      "scale": 0.9588,
+      "unit": 256.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "632e602c7114d218"
+    }
+  },
+  {
+    "enemy_id": "creeping-ivy",
+    "state": "idle",
+    "source_size": [
+      3249,
+      2601
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 327,
+      "fh": 262,
+      "anchor": [
+        163.48,
+        258.95
+      ],
+      "source": "SS_creepingIvy_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        160.2,
+        159.5,
+        158.8
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -6.5,
+      "dehalo": false,
+      "warm": 38.0,
+      "dewhite": false,
+      "dip": 0.445,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.991,
+      "scale": 0.9588,
+      "unit": 256.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "9f925ac9b28b4f4e"
+    }
+  },
+  {
+    "enemy_id": "compost-colossus",
+    "state": "attack",
+    "source_size": [
+      5094,
+      2817
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 217,
+      "anchor": [
+        212.68,
+        214.6
+      ],
+      "source": "SS_compostColossus_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        188.8,
+        182.6,
+        179.5
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -7.2,
+      "dehalo": false,
+      "warm": 61.0,
+      "dewhite": false,
+      "dip": 0.494,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.988,
+      "scale": 0.7299,
+      "unit": 207.3,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "c778d53b429561f4"
+    }
+  },
+  {
+    "enemy_id": "compost-colossus",
+    "state": "defeat",
+    "source_size": [
+      4698,
+      3087
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 27,
+      "cols": 9,
+      "rows": 3,
+      "fw": 400,
+      "fh": 267,
+      "anchor": [
+        202.19,
+        261.57
+      ],
+      "source": "SS_compostColossus_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        166.2,
+        160.0,
+        158.4
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -3.8,
+      "dehalo": false,
+      "warm": 68.0,
+      "dewhite": false,
+      "dip": 0.201,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 26,
+      "endIoU": 0.622,
+      "scale": 0.8351,
+      "unit": 237.16,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "f462207d930b33b7"
+    }
+  },
+  {
+    "enemy_id": "compost-colossus",
+    "state": "hurt",
+    "source_size": [
+      4437,
+      2871
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 254,
+      "anchor": [
+        200.18,
+        251.26
+      ],
+      "source": "SS_compostColossus_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        166.9,
+        163.1,
+        162.2
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -5.8,
+      "dehalo": false,
+      "warm": 60.0,
+      "dewhite": false,
+      "dip": 0.472,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.992,
+      "scale": 0.8403,
+      "unit": 238.66,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "a86e7fd23437dafa"
+    }
+  },
+  {
+    "enemy_id": "compost-colossus",
+    "state": "idle",
+    "source_size": [
+      4041,
+      2844
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 285,
+      "anchor": [
+        193.85,
+        280.96
+      ],
+      "source": "SS_compostColossus_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        168.0,
+        164.6,
+        164.1
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -5.1,
+      "dehalo": false,
+      "warm": 58.0,
+      "dewhite": false,
+      "dip": 0.46,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.992,
+      "scale": 0.9456,
+      "unit": 268.56,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "9da6c153d7ac3018"
+    }
+  },
+  {
+    "enemy_id": "ancient-topiary",
+    "state": "attack",
+    "source_size": [
+      3807,
+      3654
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 382,
+      "anchor": [
+        214.58,
+        378.19
+      ],
+      "source": "SS_ancientTopiary_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        178.9,
+        179.5,
+        176.9
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -1.2,
+      "dehalo": false,
+      "warm": 32.0,
+      "dewhite": false,
+      "dip": 0.355,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.99,
+      "scale": 0.9975,
+      "unit": 284.29,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "a3b8a65c8f035f32"
+    }
+  },
+  {
+    "enemy_id": "ancient-topiary",
+    "state": "defeat",
+    "source_size": [
+      4239,
+      3357
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 31,
+      "cols": 8,
+      "rows": 4,
+      "fw": 400,
+      "fh": 328,
+      "anchor": [
+        214.93,
+        324.2
+      ],
+      "source": "SS_ancientTopiary_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        172.1,
+        170.6,
+        168.2
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -7.1,
+      "dehalo": false,
+      "warm": 48.0,
+      "dewhite": false,
+      "dip": 0.261,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 30,
+      "endIoU": 0.5,
+      "scale": 0.9132,
+      "unit": 260.27,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "d9c8e7d5568f0573"
+    }
+  },
+  {
+    "enemy_id": "ancient-topiary",
+    "state": "hurt",
+    "source_size": [
+      3960,
+      3222
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 329,
+      "anchor": [
+        223.19,
+        324.17
+      ],
+      "source": "SS_ancientTopiary_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        170.5,
+        168.4,
+        164.0
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -5.4,
+      "dehalo": false,
+      "warm": 55.0,
+      "dewhite": false,
+      "dip": 0.39,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.987,
+      "scale": 0.9479,
+      "unit": 270.14,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "a81243ea5419482e"
+    }
+  },
+  {
+    "enemy_id": "ancient-topiary",
+    "state": "idle",
+    "source_size": [
+      3267,
+      2754
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 344,
+      "fh": 290,
+      "anchor": [
+        172.0,
+        287.0
+      ],
+      "source": "SS_ancientTopiary_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        175.2,
+        174.7,
+        174.7
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -4.2,
+      "dehalo": false,
+      "warm": 46.0,
+      "dewhite": false,
+      "dip": 0.487,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.991,
+      "scale": 1.0,
+      "unit": 285.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "347e0dc6e0060089"
+    }
+  },
+  {
+    "enemy_id": "carnivorous-conservatory",
+    "state": "attack",
+    "source_size": [
+      4131,
+      2817
+    ],
+    "metadata": {
+      "file": "attack.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 400,
+      "fh": 273,
+      "anchor": [
+        196.06,
+        270.37
+      ],
+      "source": "SS_conservatory_attack.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        179.9,
+        178.3,
+        176.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -10.4,
+      "dehalo": false,
+      "warm": 93.0,
+      "dewhite": false,
+      "dip": 0.57,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.988,
+      "scale": 0.9259,
+      "unit": 259.26,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "ad15878ac875a897"
+    }
+  },
+  {
+    "enemy_id": "carnivorous-conservatory",
+    "state": "defeat",
+    "source_size": [
+      3924,
+      2727
+    ],
+    "metadata": {
+      "file": "defeat.webp",
+      "frames": 23,
+      "cols": 8,
+      "rows": 3,
+      "fw": 400,
+      "fh": 286,
+      "anchor": [
+        200.92,
+        282.51
+      ],
+      "source": "SS_conservatory_defeat.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        175.6,
+        173.0,
+        172.6
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -17.0,
+      "dehalo": false,
+      "warm": 88.0,
+      "dewhite": false,
+      "dip": 0.762,
+      "untail": false,
+      "deblack": false,
+      "defeatCut": 22,
+      "endIoU": 0.598,
+      "scale": 0.995,
+      "unit": 278.61,
+      "loop": false,
+      "fps": 40.0,
+      "hold": true,
+      "sha1": "c4492f390e669f0e"
+    }
+  },
+  {
+    "enemy_id": "carnivorous-conservatory",
+    "state": "hurt",
+    "source_size": [
+      3591,
+      3015
+    ],
+    "metadata": {
+      "file": "hurt.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 376,
+      "fh": 322,
+      "anchor": [
+        185.46,
+        316.96
+      ],
+      "source": "SS_conservatory_hurt.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        174.2,
+        172.0,
+        169.9
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -18.2,
+      "dehalo": false,
+      "warm": 91.0,
+      "dewhite": false,
+      "dip": 0.133,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.988,
+      "scale": 1.0,
+      "unit": 280.0,
+      "loop": false,
+      "fps": 35.56,
+      "hold": false,
+      "sha1": "5157b6058be4598e"
+    }
+  },
+  {
+    "enemy_id": "carnivorous-conservatory",
+    "state": "idle",
+    "source_size": [
+      3501,
+      2727
+    ],
+    "metadata": {
+      "file": "idle.webp",
+      "frames": 48,
+      "cols": 8,
+      "rows": 6,
+      "fw": 367,
+      "fh": 289,
+      "anchor": [
+        180.5,
+        286.0
+      ],
+      "source": "SS_conservatory_idle.png",
+      "sourceFrames": 81,
+      "matte": "CONTAM",
+      "bg": [
+        184.9,
+        182.6,
+        181.3
+      ],
+      "grid": [
+        9,
+        9
+      ],
+      "lift": -22.8,
+      "dehalo": false,
+      "warm": 91.0,
+      "dewhite": false,
+      "dip": 0.469,
+      "untail": false,
+      "deblack": false,
+      "endIoU": 0.987,
+      "scale": 1.0,
+      "unit": 280.0,
+      "loop": true,
+      "fps": 11.85,
+      "hold": false,
+      "sha1": "0bbeb3256d112891"
+    }
+  }
+]

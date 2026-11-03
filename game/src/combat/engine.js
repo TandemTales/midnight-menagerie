@@ -376,6 +376,10 @@ export class CombatEngine {
       kid: p.kid || null,
     });
     pl.piles = new Piles(this, pl);
+    /* A seat whose player has left the expedition walks in already down: no
+       hand, no turn, not a target, and the fight is priced without them. */
+    pl.absent = !!p.absent;
+    if (pl.absent) pl.fallen = true;
     /** This Kid's Keepsakes. Per seat: co-op parity, and `_relicProviders`
      *  dispatches each one with its owner so a teammate's Keepsake can never
      *  fire for the wrong Kid. */
@@ -403,7 +407,12 @@ export class CombatEngine {
    * to be scaled the same way.
    */
   get partyHpScale() {
-    return PARTY_HP_SCALE[Math.min(this.players.length, PARTY_HP_SCALE.length) - 1] ?? 1;
+    return PARTY_HP_SCALE[Math.min(this.presentSeats, PARTY_HP_SCALE.length) - 1] ?? 1;
+  }
+
+  /** Seats with a player behind them. A left seat prices nothing. */
+  get presentSeats() {
+    return Math.max(1, this.players.reduce((n, pl) => n + (pl.absent ? 0 : 1), 0));
   }
 
   /**
@@ -422,7 +431,7 @@ export class CombatEngine {
     // otherwise the curve applies. Rolled Courage is scaled AFTER the roll so a
     // seeded fight keeps the same roll at every party size.
     const party = (typeof def.partyHp === 'function')
-      ? (def.partyHp(this.players.length) ?? this.partyHpScale)
+      ? (def.partyHp(this.presentSeats) ?? this.partyHpScale)
       : this.partyHpScale;
     // `raw.summoned` is set by `summon()` below; a body that was on the board
     // when the fight opened is not a return and takes only `courageFix`.
@@ -1362,7 +1371,7 @@ export class CombatEngine {
   }
 
   /** A per-player threshold: "18 damage times number of players" (Foyer §27). */
-  perPlayer(n) { return (n | 0) * this.players.length; }
+  perPlayer(n) { return (n | 0) * this.presentSeats; }
 
   // ── cost ──────────────────────────────────────────────────────────────────
 
@@ -2005,8 +2014,10 @@ export class CombatEngine {
         if (!pl.fallen) continue;
         pl.fallen = false;
         pl.alive = true;
-        pl.hp = 1;
-        this._emit(EV.PLAYER_REVIVE, { actorId: pl.id, seat: pl.seat, name: pl.name, hp: 1 });
+        /* Somebody who left was not beaten: they keep the Courage they had, so
+           coming back later does not cost them for a fight they never saw. */
+        pl.hp = pl.absent ? Math.max(1, pl.hp) : 1;
+        this._emit(EV.PLAYER_REVIVE, { actorId: pl.id, seat: pl.seat, name: pl.name, hp: pl.hp });
       }
     }
     this._invalidate();
@@ -2952,6 +2963,10 @@ export class CombatEngine {
     // "was I hit last turn?". (data/enemies/_lib.js dmgTaken / wasHit.)
     // Nobody has ended the new turn yet.
     for (const pl of this.players) pl.ended = false;
+    /* A seat whose player left mid-fight goes down at the top of the turn, the
+       same point on every client, rather than whenever the news reached each. */
+    for (const pl of this.players) if (pl.absent && !pl.fallen) this._fall(pl, null);
+    if (this.over) return;
     // The fresh-status reprieve is worth exactly one decay. Clearing it at the
     // top of every turn means a stack that somehow escaped its bucket cannot
     // ride the reprieve forever.
@@ -3594,6 +3609,21 @@ export class CombatEngine {
 
   /** True once every living seat has ended its turn. */
   get tableReady() { return this.livingPlayers().every(pl => pl.ended); }
+
+  /**
+   * A seat's player has left the expedition, mid-fight.
+   *
+   * This turn it ends exactly as if they had pressed the button, because an END
+   * commutes (see `session._accept`) and so cannot split two clients. From the
+   * next turn it is down (`_beginPlayerTurn`). Nothing here reads the wire.
+   */
+  async absentSeat(who) {
+    const pl = this._resolveSeat(who);
+    if (!pl || pl.absent) return [];
+    pl.absent = true;
+    if (this.phase !== 'player' || pl.ended || pl.fallen) return [];
+    return this.endTurn(pl);
+  }
 
   /** Accept a Player, an actor id, or a seat index. */
   _resolveSeat(who) {

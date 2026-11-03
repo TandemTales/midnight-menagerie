@@ -1,0 +1,21 @@
+{
+  "enemy": "crib-curtains",
+  "source": "docs\\enemy-roster-2026-10-26\\art-production\\crib-curtains-original.png",
+  "source_sha256": "aee4d8fc416ecf3763c566b80a0cc3d62ef78e8e03fa81977ae5d4d22b733693",
+  "method": "Two independently deformed authentic cloth panels, fixed rod/rings, local tieback lift and traveling hem deformation. Premultiplied alpha interpolation. No generic whole-image transform.",
+  "actions": {
+    "idle": "Small phase-offset hem sway; attachments fixed.",
+    "attack": "Panels gather inward in anticipation, tiebacks lift, panels part broadly and recover.",
+    "hurt": "Inward flinch, briefly compressed folds and an asymmetric hem flutter, then recover.",
+    "defeat": "Both panels bow and sag, then independently dissolve from the empty curtain rod; hold the remaining rod/rings."
+  },
+  "quality_gate": "technical_pass_visual_review_pending",
+  "orientation": {
+    "required": "screen-left",
+    "method": "Resting cloth is biased left; both panels gather right, then sweep left with an asymmetric opening. Hurt recoils right, defeat folds left. Fixed rod and source moon stitching are not mirrored.",
+    "attack_shared_hem_bias_source_pixels": -48,
+    "status": "left_in_inspected_keyposes"
+  },
+  "delivery_receipt": "batch-02/crib-curtains-v3-left/installed-assets.json",
+  "review_limits": "All decoded packing/timing checks passed and chronological poses inspected. Full-speed intended-size visual approval and game integration remain unverified."
+}

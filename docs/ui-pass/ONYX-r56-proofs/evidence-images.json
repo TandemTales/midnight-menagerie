@@ -1,0 +1,419 @@
+{
+  "images": [
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\event-initial-1280.png",
+      "sha256": "50836ea4f3ff15ffee248c90b315313d74f938b5e2e7e83aaf6a33fa1fdcfb11",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328253.236806,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\event-initial-1600.png",
+      "sha256": "b8036f85461b6832f3245b30bb75f4e126b2c09548c2a11a4d20a06647b6b178",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328256.4901266,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\event-interactions-1280.png",
+      "sha256": "9ac2e28255ae477c3b8b1e1f27f5bef00f3ffb41ced1da6a2efc2005b6563bf0",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328255.368413,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\event-interactions-1600.png",
+      "sha256": "e1ba5abaf60cc71856755d611a7471a26c2c82188aeaf3275ff0fd647adb707d",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328258.8040204,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\gameover-initial-1280.png",
+      "sha256": "7899c81300cf68f3f2e743d71a84c4a0a92cac65f727b6858e29087570030c1a",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328274.4322867,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\gameover-initial-1600.png",
+      "sha256": "c7d9e8abfb885a4964a61c6bb9e4a3995737c13456af0320f5fca6b288466128",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328278.5927212,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\gameover-interactions-1280.png",
+      "sha256": "eca32da85486315317f3aafe8a6f9453cc09e281c1384567ca01d8dde0ccf351",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328277.505738,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\gameover-interactions-1600.png",
+      "sha256": "6c73861cd1a2772732338d2697463c821b0e8ed26f968109fe97fda857d5fdb2",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328281.7520072,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\keepsakes-1280.png",
+      "sha256": "8c7ca0ed989e7f8154016f2fd4d8d638dba01d0099a020ad1183f15b936b0564",
+      "visual_source_commit": "84d60fbbee06f0d2bcd80a528200407073f979fd",
+      "fileModifiedEpoch": 1793329027.4270601,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\keepsakes-1600.png",
+      "sha256": "b417d7d2f9703443e698672c1b1e99fc40ebe2432fb38a538fe9ea725fec53c4",
+      "visual_source_commit": "84d60fbbee06f0d2bcd80a528200407073f979fd",
+      "fileModifiedEpoch": 1793329032.2662065,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\memorial-geometry-1280.png",
+      "sha256": "64600d23809fae52865b58c062f51e8170fabf3f89abd54ceab3af717a66dd94",
+      "visual_source_commit": "84d60fbbee06f0d2bcd80a528200407073f979fd",
+      "fileModifiedEpoch": 1793329112.781552,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\memorial-geometry-1600.png",
+      "sha256": "0486f6efda45202a569535d7d57f1235f2cd30b35945964b1cd652084b410494",
+      "visual_source_commit": "84d60fbbee06f0d2bcd80a528200407073f979fd",
+      "fileModifiedEpoch": 1793329114.9933648,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\rest-initial-1280.png",
+      "sha256": "cb28c41f04f262ee6612f26dfb78722f1839ef2a9cafdae5bafc9a91c256d606",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328241.3802106,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\rest-initial-1600.png",
+      "sha256": "bbc412879a2588698f4621268068a4bbf4b22589b3a414af346081c725e4b95b",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328244.6978416,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\rest-interactions-1280.png",
+      "sha256": "0ff102fc9d74db96345a17bea959b4dab2491c10ff47f890e2dd4e5724c69b20",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328243.6012814,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\rest-interactions-1600.png",
+      "sha256": "59b1004996f2fed882225f073b0c48854b178e1662c26a5006515c8e78726ac0",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328247.0685265,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\shop-initial-1280.png",
+      "sha256": "f1b20e12818fa2f355910481e8e3f22ebbcd769799682c8ef8f530abab04e4d3",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328225.1244855,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\shop-initial-1600.png",
+      "sha256": "7f1a7732ac5a7ef906ae4f65ab77351fd2ada97e6dcdaa3d9cb1230eec287fd0",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328230.449553,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\shop-interactions-1280.png",
+      "sha256": "72160840060b6edb3e77edeeab3be2f4993358071647a84ca7d301505d94fc09",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328229.2116032,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\shop-interactions-1600.png",
+      "sha256": "583d77886eff7906a51c102339d7f75bfc6463d34bf36be3e7665b15878c47e5",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328234.843598,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\condition-pixels\\current-1280.png",
+      "sha256": "32c2aa7ee760bf4eeced4009ae1aaf7dd2448d7bd3c7f2a8c232b4bc24191e3a",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328338.9645867,
+      "variant": "current",
+      "stylesheet_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "stylesheet_sha256": "88e7b745c731719976fd3f3c5ca7fa8e6903697ca3f809b1b1282dddf1291214"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\condition-pixels\\current-1600.png",
+      "sha256": "31e4b9f3d385047b1b1399cb8f35c4e3a9418a296abf65a15217ad67ba78ced7",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328347.1730936,
+      "variant": "current",
+      "stylesheet_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "stylesheet_sha256": "88e7b745c731719976fd3f3c5ca7fa8e6903697ca3f809b1b1282dddf1291214"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\condition-pixels\\inherited-1280.png",
+      "sha256": "400fdc64de31f1035e792daea8ba05052db61da52f323f03894a093eb40be389",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328322.7619152,
+      "variant": "inherited",
+      "stylesheet_source_commit": "035efe6f43bfe09f4eb267e0cc931b009179b283",
+      "stylesheet_sha256": "fa59ab5b22345b85e59ca8ae794133de1df46945fb3c1f748855d1c760f1edfd"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\condition-pixels\\inherited-1600.png",
+      "sha256": "23453e7f4473dd654517c814860646dd0cc8c3397eb29375f8e08f38d915124b",
+      "visual_source_commit": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+      "fileModifiedEpoch": 1793328331.0580008,
+      "variant": "inherited",
+      "stylesheet_source_commit": "035efe6f43bfe09f4eb267e0cc931b009179b283",
+      "stylesheet_sha256": "fa59ab5b22345b85e59ca8ae794133de1df46945fb3c1f748855d1c760f1edfd"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\event-boundary\\initial-1280.png",
+      "sha256": "638022b3df6a3a83c14f0d2b14fae4e39ac03a518d9e7cac518600c4a30a6675",
+      "visual_source_commit": "84d60fbbee06f0d2bcd80a528200407073f979fd",
+      "fileModifiedEpoch": 1793329066.955248,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\event-boundary\\initial-1600.png",
+      "sha256": "e4eba0bb26ce526c257fbc6d5b86f1121e392f540639a2aa29a93985d072e6a7",
+      "visual_source_commit": "84d60fbbee06f0d2bcd80a528200407073f979fd",
+      "fileModifiedEpoch": 1793329069.607227,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\lifecycle\\survivor.png",
+      "sha256": "e0cf9b536110a0d2f6bdb5e399515f135dcb513fad2b912cd0873c414b2dbcd3",
+      "visual_source_commit": "15260c9147c733c4b308652875b6f92e7d0dd654",
+      "fileModifiedEpoch": 1793328935.3599465,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\memorial\\bottom-1280.png",
+      "sha256": "e8f9b6f3b1f728cef9bf8c864807f7ab370d08c6e7b428b311f05de8ffca2b6c",
+      "visual_source_commit": "15260c9147c733c4b308652875b6f92e7d0dd654",
+      "fileModifiedEpoch": 1793328963.883919,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\memorial\\bottom-1600.png",
+      "sha256": "dd1028f25b84149f81851bccdf6d8c9037863b73f3036712c5641dc092240988",
+      "visual_source_commit": "15260c9147c733c4b308652875b6f92e7d0dd654",
+      "fileModifiedEpoch": 1793328957.7010226,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\memorial\\initial-1280.png",
+      "sha256": "797097663c59b6a4d2be8a0ad1fc04df13ecc6f537bdb2b572f7ee26fb9cb1cd",
+      "visual_source_commit": "15260c9147c733c4b308652875b6f92e7d0dd654",
+      "fileModifiedEpoch": 1793328959.981626,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\memorial\\initial-1600.png",
+      "sha256": "4a7cc8c03a3c2a368dab6ac83cef57e8f43e7a66bcaa4475a34a5c1f783924be",
+      "visual_source_commit": "15260c9147c733c4b308652875b6f92e7d0dd654",
+      "fileModifiedEpoch": 1793328953.2507606,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\memorial-long\\bottom-1280.png",
+      "sha256": "5b49c84828e05ab67a266250ab37b143fc9dc4218812729b152058b4298263f2",
+      "visual_source_commit": "84d60fbbee06f0d2bcd80a528200407073f979fd",
+      "fileModifiedEpoch": 1793329008.5032563,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\memorial-long\\bottom-1600.png",
+      "sha256": "bcaf1b9cd04d6c98f48eca48a725a465e74e1b3945f242b298ad437dd50e9053",
+      "visual_source_commit": "84d60fbbee06f0d2bcd80a528200407073f979fd",
+      "fileModifiedEpoch": 1793328994.6161637,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\memorial-long\\initial-1280.png",
+      "sha256": "dccef9fa0533f1fa352c9f5958af4729b9b654d6b24ce3f5fa18e901016a2543",
+      "visual_source_commit": "84d60fbbee06f0d2bcd80a528200407073f979fd",
+      "fileModifiedEpoch": 1793328996.8684528,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\memorial-long\\initial-1600.png",
+      "sha256": "b717ab7484c2db13368500d8e29ea40978d2297fd00fd6d2225f5be588d0c4f1",
+      "visual_source_commit": "15260c9147c733c4b308652875b6f92e7d0dd654",
+      "fileModifiedEpoch": 1793328981.9874513,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\boss-0-1280.png",
+      "sha256": "7710e8b31140febbf8f01da59b7cdb4d181a6b043bf3f3fb767513e85353c6f6",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328709.7609851,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\boss-0-1600.png",
+      "sha256": "4b2a62d05b04f73c0e579c26a0d5219c2481319160334f268a447495d11cbc15",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328784.3626542,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\crowd-0-1280.png",
+      "sha256": "0ec265cf12685d1f0ee3228abeb1b561474f7c0d74b2333959142d9879f2a87a",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328724.1563785,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\crowd-0-1600.png",
+      "sha256": "cb4844d9998074a61efe15dcac99b0aee2b7cfb71554e08b212baf15343eaee9",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328788.9799416,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\crowd-1-1280.png",
+      "sha256": "8f4de3444e49e7887b30193fe3b62a2bfddba8162bd88f32222f669d8259865d",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328736.7087793,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\crowd-1-1600.png",
+      "sha256": "6330bb2819303745b9cd15e55bb390b04babdce519b8cc8b2f9ad886b77e6517",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328795.0392933,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\crowd-2-1280.png",
+      "sha256": "59d5a0e89eb9d22f88f201efa23b80c8ee247a60f51fe6f9da9e24c025351823",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328744.5819066,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\crowd-2-1600.png",
+      "sha256": "19495f48568c9346ca4f61405bbd848c23455117d6cd08070afd744d02fa63b4",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328800.8697124,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\crowd-3-1280.png",
+      "sha256": "080dd625e77ad009595a181301c52f15c780830cd27375c5f507910ee692ba11",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328752.3074768,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\crowd-3-1600.png",
+      "sha256": "e0d893cac62f6766dfb98c405f568334197e9b7d288431907b6514c68058a69e",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328806.6685653,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\crowd-all-1280.png",
+      "sha256": "122c0d7c14a58519d2dd4f03c5c6b59cf64dfe0bb5f1e4d2cde8ceb998ba6653",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328755.362133,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\crowd-all-1600.png",
+      "sha256": "874d7a0cf21dc8a2d4f4e5bc2cacdadeda329a11d68073949034ab2cf5813c4c",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328812.3153484,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\crowd-all-long-1280.png",
+      "sha256": "3ef5317cefa0049d1a8dff5763c5e2d06de2790f481f1f6df69c3655c7f2f1a3",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328775.2009864,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\crowd-all-long-1600.png",
+      "sha256": "34529efae9102277876959aa6a47fa6c2dd4c5475780df2352a9c05904df1b75",
+      "visual_source_commit": "15260c9147c733c4b308652875b6f92e7d0dd654",
+      "fileModifiedEpoch": 1793328825.2836044,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\crowd-repeats-1280.png",
+      "sha256": "9088ec4ea04d5e1b31a5ffaa17227ef7822b442d56a70fe14ea980ab186d12c3",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328761.4038384,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\crowd-repeats-1600.png",
+      "sha256": "7b6641723f83609b405d31d877226db35c599d2663d4e08030430023fc305613",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328818.1881201,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\queue\\idle-resize.png",
+      "sha256": "6f3672936c299ff6b03704ae6c187a61e7adc33f911e38ee757cdc6616a6f1ea",
+      "visual_source_commit": "15260c9147c733c4b308652875b6f92e7d0dd654",
+      "fileModifiedEpoch": 1793328910.0693772,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\repaired-surfaces\\event-1280.png",
+      "sha256": "51b8fbab7969eb8cf443a59c0b874c606c95e8f06c455aafc29a887e846ceb00",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328590.3375525,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\repaired-surfaces\\event-1600.png",
+      "sha256": "caaaefc03e6cea8c00fb48fdd34cd15337a0925f9eace3a30cca8fbb10466653",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328597.0511303,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\repaired-surfaces\\gameover-1280.png",
+      "sha256": "a6fa13d082567f0192ce1678c5b028f7b707fdd79a5fe24c0e206deb1b62f8c8",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328576.4549408,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\repaired-surfaces\\gameover-1600.png",
+      "sha256": "17bd49d5d737b3e5ad843ee6c9e669deaf29cdaf3d85545946e3192b9e3db151",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328583.9477668,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\repaired-surfaces\\shop-1280.png",
+      "sha256": "6144d0da2b9e156a4442096bcd2d846bac103e138a6f355d58722d65d193c72f",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328555.5487208,
+      "variant": "native"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\b\\docs\\ui-pass\\ONYX-r56-proofs\\repaired-surfaces\\shop-1600.png",
+      "sha256": "2b298360575cee9235c2cb493908394b91e314b2a062002d594cf9e5c61887e4",
+      "visual_source_commit": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+      "fileModifiedEpoch": 1793328562.0806541,
+      "variant": "native"
+    }
+  ],
+  "note": "Initial eight boards and baseline/current condition comparisons are source9cb. Repaired six views are source9d9. Other functional screenshot head bindings use their retained creation timestamps and commit timeline; every game tree after repair is identical. Canonical10+title use their separate final provenance.json. No initial or overridden screenshot is labeled canonical."
+}

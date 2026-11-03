@@ -1,0 +1,18 @@
+[
+  {
+    "path": "UI/selectCompanion.png",
+    "sha256": "61275552613ad5190c3b0bd89a2271eae37069a8d4a9deca0093ef8b8baa0212"
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_coatrackCrawler_idle.png",
+    "sha256": "e59e4dea63e3756b9373fd95676d5406c4418bed23fd354dd37bc64cf538fa18"
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_suitcase_idle.png",
+    "sha256": "e47504f22f7685d976114336bf4ebdd21736bd418352324be385be2f1238bf79"
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketHydra_idle.png",
+    "sha256": "7b1b415b900ed0dfdb581c6031f69a24906676ca891de20f573736a48fe08c13"
+  }
+]

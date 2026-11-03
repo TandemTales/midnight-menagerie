@@ -1,0 +1,467 @@
+{
+  "rows": [
+    {
+      "scene": "shop",
+      "size": [
+        1280,
+        800
+      ],
+      "targets": [
+        {
+          "text": "\n      56Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      59Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      75Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      87Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      81Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      95Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      131Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      176Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      65Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      48Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      37Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n      82Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "wares",
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    },
+    {
+      "scene": "shop",
+      "size": [
+        1600,
+        900
+      ],
+      "targets": [
+        {
+          "text": "\n      56Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      59Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      75Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      87Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      81Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      95Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      131Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      176Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      65Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      48Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      37Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n      82Buttons\n      Buy",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "wares",
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    },
+    {
+      "scene": "rest",
+      "size": [
+        1280,
+        800
+      ],
+      "targets": [
+        {
+          "text": "1\n        \n        \n          Rest\n          Take a nap while your Companion keeps watch.\n          Courage 46 \u2192 68\n          Recovers up to 22.\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "2\n        \n        \n          Sharpen a Trick\n          Work on one Trick by torchlight until it is better than it was.\n          14 Tricks can be sharpened\n          Permanent, for the rest of the expedition.\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "3\n        \n        \n          Forge a Keepsake\n          The flame strengthens a Keepsake. Its price is some of your maximum Courage.\n          Costs 8 maximum Courage\n          Courage 74 \u2192 66 \u00b7 the Keepsake fires twice\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "4\n        \n        \n          Sit with your Companion\n          Share a quiet moment and see what catches their attention.\n          +1 Clue\n          Spend your fort action to gain a Clue.\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "choices",
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    },
+    {
+      "scene": "rest",
+      "size": [
+        1600,
+        900
+      ],
+      "targets": [
+        {
+          "text": "1\n        \n        \n          Rest\n          Take a nap while your Companion keeps watch.\n          Courage 46 \u2192 68\n          Recovers up to 22.\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "2\n        \n        \n          Sharpen a Trick\n          Work on one Trick by torchlight until it is better than it was.\n          14 Tricks can be sharpened\n          Permanent, for the rest of the expedition.\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "3\n        \n        \n          Forge a Keepsake\n          The flame strengthens a Keepsake. Its price is some of your maximum Courage.\n          Costs 8 maximum Courage\n          Courage 74 \u2192 66 \u00b7 the Keepsake fires twice\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "4\n        \n        \n          Sit with your Companion\n          Share a quiet moment and see what catches their attention.\n          +1 Clue\n          Spend your fort action to gain a Clue.\n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "choices",
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    },
+    {
+      "scene": "event",
+      "size": [
+        1280,
+        800
+      ],
+      "targets": [
+        {
+          "text": "\n        Gather the loose Buttons.\n        \n          risk13 Courage, or a Curse\n          gain45\u2013130 Buttons\n          \n          \n        \n        \n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n        Go through the collars.\n        \n          costs4 Courage\n          always3 Clues and 30 Buttons\n          \n          \n        \n        \n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "\n        Ring the bell and ask properly.\n        \n          riskUp to 6 maximum Courage\n          gainA Keepsake; possibly a Clue\n          \n          \n        \n        \n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "story",
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    },
+    {
+      "scene": "event",
+      "size": [
+        1600,
+        900
+      ],
+      "targets": [
+        {
+          "text": "\n        Gather the loose Buttons.\n        \n          risk13 Courage, or a Curse\n          gain45\u2013130 Buttons\n          \n          \n        \n        \n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n        Go through the collars.\n        \n          costs4 Courage\n          always3 Clues and 30 Buttons\n          \n          \n        \n        \n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        },
+        {
+          "text": "\n        Ring the bell and ask properly.\n        \n          riskUp to 6 maximum Courage\n          gainA Keepsake; possibly a Clue\n          \n          \n        \n        \n        ",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "story",
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    },
+    {
+      "scene": "gameover",
+      "size": [
+        1280,
+        800
+      ],
+      "targets": [
+        {
+          "text": "Titleput the house down for now",
+          "disabled": false,
+          "hit": true,
+          "font": "18px",
+          "focus": true
+        },
+        {
+          "text": "Go straight back inchoose a Kid and a Companion",
+          "disabled": false,
+          "hit": true,
+          "font": "18px",
+          "focus": true
+        },
+        {
+          "text": "Return to the Clubhousework out what to bring next time",
+          "disabled": false,
+          "hit": true,
+          "font": "18px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "Tricks",
+          "hit": true,
+          "keyboardScenePreserved": true
+        },
+        {
+          "label": "record",
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    },
+    {
+      "scene": "gameover",
+      "size": [
+        1600,
+        900
+      ],
+      "targets": [
+        {
+          "text": "Titleput the house down for now",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "Go straight back inchoose a Kid and a Companion",
+          "disabled": false,
+          "hit": true,
+          "font": "20px",
+          "focus": true
+        },
+        {
+          "text": "Return to the Clubhousework out what to bring next time",
+          "disabled": false,
+          "hit": true,
+          "font": "22px",
+          "focus": true
+        }
+      ],
+      "cues": [
+        {
+          "label": "Tricks",
+          "hit": true,
+          "keyboardScenePreserved": true
+        },
+        {
+          "label": "record",
+          "hit": true,
+          "keyboardScenePreserved": true
+        }
+      ],
+      "keyboardMoved": true,
+      "gamepadMoved": true
+    }
+  ],
+  "errors": []
+}

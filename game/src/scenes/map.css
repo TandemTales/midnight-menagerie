@@ -206,12 +206,12 @@
   width: clamp(360px, 32vw, 520px);
   left: calc(100% - var(--kit-edge) - 36px);
   top: calc(100% - var(--map-foot) - 20px);
-  animation-delay: -.8s;
+  animation-delay: calc(-.8s * var(--anim-scale));
 }
 /* and the light they throw down across the sheet */
 .map-props__light { --light-a: 17%; width: clamp(620px, 58vw, 980px); top: calc(var(--hud-h) + var(--map-corner) * .18); }
 .map-props__light--l { left: calc(var(--kit-edge) + var(--map-corner) * .56); }
-.map-props__light--r { left: calc(100% - var(--kit-edge) - var(--map-corner) * .56); animation-delay: -1.9s; }
+.map-props__light--r { left: calc(100% - var(--kit-edge) - var(--map-corner) * .56); animation-delay: calc(-1.9s * var(--anim-scale)); }
 
 /* ── the route: GRAPHITE OVER INK ────────────────────────────────────────────
    THE ROUTE GRAPH IS THE MAP, and it took four rounds to draw because the first
@@ -324,7 +324,7 @@
 .mi-edge--entry { stroke: var(--mark); opacity: .9; }
 .mi-edge--entry.is-dead { stroke: var(--graphite-soft); opacity: .3; }
 .mi-in {
-  font-family: var(--font-display); font-size: 27px; font-weight: 700;
+  font-family: var(--font-display); --reading-size: 27px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 700;
   letter-spacing: .3em; text-anchor: middle;
   /* inked solid (round 19: "the margin notes ... are ghost type") */
   fill: color-mix(in srgb, var(--mark) 45%, #241910); opacity: 1;
@@ -418,6 +418,9 @@
    meets the rim at any zoom. */
 .mn-pool {
   position: absolute; inset: 14%;
+  /* Decorative light spills beyond the button (the boss uses -42% inset).
+     Its transparent bounds must not steal a neighbouring room's clicks. */
+  pointer-events: none;
   border-radius: 50%;
   background:
     radial-gradient(circle at 38% 32%, color-mix(in srgb, var(--parchment) 70%, #fff) 0%, transparent 62%),
@@ -533,7 +536,7 @@
      and a low arch rising over the name, violet enamel filled to its rim and
      screwed down on the plan with its own shadow on the paper. */
   --tag-h: 33px;
-  font-family: var(--font-body); font-size: 16.5px; font-weight: 600;
+  font-family: var(--font-body); --reading-size: 16.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 600;
   letter-spacing: .015em; white-space: nowrap; line-height: 1.1;
   max-width: 360px;
   color: var(--kit-name);
@@ -597,7 +600,7 @@
     color-mix(in srgb, var(--flame-100) 88%, transparent) 0%,
     color-mix(in srgb, var(--flame-200) 42%, transparent) 52%,
     transparent 78%);
-  animation: mm-breathe 2.6s var(--ease-soft) infinite;
+  animation: mm-breathe calc(2.6s * var(--anim-scale)) var(--ease-soft) infinite;
 }
 .map-node.is-legal .mn-label,
 .map-node.is-current .mn-label,
@@ -643,7 +646,7 @@
     color-mix(in srgb, var(--flame-500) 13%, transparent) 44%,
     transparent 74%);
   mix-blend-mode: screen;
-  animation: map-sealglow 5.4s ease-in-out infinite;
+  animation: map-sealglow calc(5.4s * var(--anim-scale)) ease-in-out infinite;
 }
 .map-screen.is-still .map-node--boss .mn-in::after { animation: none; }
 @media (prefers-reduced-motion: reduce) {
@@ -657,7 +660,7 @@
 .map-node--boss .mn-label {
   --plate-h: 76px;
   transform: translateX(calc(-50% + var(--mn-dx, 0px)));
-  font-family: var(--font-display); font-size: 22px; font-weight: 700; letter-spacing: .08em;
+  font-family: var(--font-display); --reading-size: 22px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 700; letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--kit-name);
   /* "RECEIVIN…".  The boss's name is 341px of Cinzel and the shared 244px cap
@@ -685,7 +688,7 @@
   position: absolute; top: calc(100% + 3px + 45px + var(--mn-dy, 0px)); left: 50%;
   transform: translateX(calc(-50% + var(--mn-dx, 0px)));
   display: inline-flex; align-items: center; gap: 8px;
-  font-family: var(--font-display); font-size: 14px; font-weight: 700;
+  font-family: var(--font-display); --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 700;
   letter-spacing: .34em; text-indent: .34em; white-space: nowrap;
   color: color-mix(in oklab, var(--threat-200) 70%, var(--kit-gold-hi));
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
@@ -698,8 +701,8 @@
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
 }
 .mn-boss-tag::after { margin-left: -.34em; }
-.map-node.is-refused { animation: mm-refuse .3s var(--ease-out); }
-.map-node.is-stamping .mn-tick { animation: mm-tick .34s var(--ease-out) backwards; }
+.map-node.is-refused { animation: mm-refuse calc(.3s * var(--anim-scale)) var(--ease-out); }
+.map-node.is-stamping .mn-tick { animation: mm-tick calc(.34s * var(--anim-scale)) var(--ease-out) backwards; }
 
 /* ── the shared run HUD (ui/hud.js) ─────────────────────────────────────
    The strip itself is `.mm-hud--fixed`, owned by ui-chrome. All this host
@@ -722,7 +725,7 @@
   pointer-events: none;
 }
 .map-banner.is-tucked { opacity: 1; }
-.map-banner .kit-cartouche__title { font-size: clamp(22px, 1.95vw, 30px); letter-spacing: .06em; }
+.map-banner .kit-cartouche__title { --reading-size: clamp(22px, 1.95vw, 30px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .06em; }
 .bn-body {
   display: grid; justify-items: center;
   margin-top: 1px;
@@ -749,7 +752,9 @@
    nothing drops or stacks. */
 .map-bar {
   --bar-h: 58px;
-  position: absolute; z-index: 6;
+  /* Wing explanations extend above this bar, across the drawing tools (15).
+     Lift their parent stacking context; a z-index on note-pop alone cannot. */
+  position: absolute; z-index: 20;
   left: calc(var(--kit-edge) + clamp(64px, 5.4vw, 92px) + 14px);
   right: calc(var(--kit-edge) + clamp(38px, 3vw, 50px) + 22px);
   bottom: calc(var(--map-foot) - var(--bar-h) / 2);
@@ -778,13 +783,13 @@
 }
 .map-legend .lg-h { grid-row: 1 / 3; grid-column: 1; margin-right: 2px; }
 .lg-h, .notes-h {
-  font-family: var(--font-display); font-weight: 700; font-size: 12px; letter-spacing: .22em;
+  font-family: var(--font-display); font-weight: 700; --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .22em;
   text-transform: uppercase; color: var(--kit-gold-hi); flex: none;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
 .lg-i {
   display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
-  font-family: var(--font-body); font-size: 13.5px; font-weight: 600;
+  font-family: var(--font-body); --reading-size: 13.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 600;
   color: var(--kit-text);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -819,7 +824,7 @@
   background: none;
   color: var(--kit-gold-hi);
   font-family: var(--font-display); font-weight: 700;
-  font-size: 13px; letter-spacing: .14em; text-transform: uppercase; white-space: nowrap;
+  --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .14em; text-transform: uppercase; white-space: nowrap;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9), 0 0 12px color-mix(in srgb, var(--kit-candle) 22%, transparent);
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
   cursor: pointer;
@@ -848,13 +853,14 @@
   border-image: url("../../assets/ui/kit/plate-lit.webp") 12 53 12 46 fill /
     calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 53 / 72) calc(var(--plate-h) * 12 / 72) calc(var(--plate-h) * 46 / 72) stretch;
   background: none;
-  font-size: 13px; white-space: nowrap; cursor: help;
+  --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); white-space: nowrap; cursor: help;
   color: var(--threat-100);
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .8));
 }
 .note--boon { color: var(--spectre-100); }
+.note:hover, .note:focus-visible { z-index: 1; }
 .note b {
-  font-family: var(--font-display); font-weight: 700; font-size: 12px;
+  font-family: var(--font-display); font-weight: 700; --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .1em; text-transform: uppercase;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
@@ -894,9 +900,9 @@
   transition: opacity var(--t-quick) var(--ease-out), transform var(--t-quick) var(--ease-out);
 }
 .note:hover .note-pop, .note:focus-visible .note-pop { opacity: 1; transform: none; }
-.note-pop i { font-style: normal; font-size: 13.5px; line-height: 1.4; display: block; }
+.note-pop i { font-style: normal; --reading-size: 13.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.4; display: block; }
 .note-pop em {
-  display: block; margin-top: 6px; font-size: 12px; font-style: italic; color: var(--kit-text-lo);
+  display: block; margin-top: 6px; --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-style: italic; color: var(--kit-text-lo);
 }
 
 /* ── the ballot ──────────────────────────────────────────────────────────
@@ -907,7 +913,7 @@
    pass the pencil round. */
 .map-ballot {
   --plate-h: 40px;
-  flex: none; font-size: 12px; white-space: nowrap;
+  flex: none; --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); white-space: nowrap;
   display: inline-flex; align-items: center; height: var(--plate-h);
   padding: 0 calc(var(--plate-h) * .6);
   border: 0 solid transparent;
@@ -935,11 +941,11 @@
   animation: mapVerdictIn var(--t-base) var(--ease-out) both;
 }
 .map-verdict b {
-  font-family: var(--font-display); font-size: 20px; font-weight: 600;
+  font-family: var(--font-display); --reading-size: 20px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 600;
   letter-spacing: .02em;
 }
 .map-verdict i {
-  font-style: normal; font-size: 12px; letter-spacing: .06em; opacity: .72;
+  font-style: normal; --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .06em; opacity: .72;
 }
 @keyframes mapVerdictIn {
   from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)) scale(.97); }
@@ -952,7 +958,7 @@
   transform: translate(-50%, -100%);
   display: inline-flex; gap: 3px;
   padding: 2px 6px 3px; border-radius: 2px;
-  font-family: var(--font-display); font-size: 12px; letter-spacing: .12em;
+  font-family: var(--font-display); --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .12em;
   color: var(--text-ink);
   background: linear-gradient(168deg,
     color-mix(in srgb, var(--parchment) 97%, #fff), var(--parchment) 70%);
@@ -974,7 +980,7 @@
    medallion: the same card the rest of the game's tooltips are. */
 .map-tip {
   position: fixed; top: 0; left: 0; z-index: 40;
-  width: 320px; padding: 13px 16px 12px;
+  width: min(440px, calc(100vw - 28px)); padding: 16px 20px;
   border: 1px solid transparent;
   border-image: url("../../assets/ui/kit/panel.webp") 44 / 30px / 10px stretch;
   background:
@@ -1002,24 +1008,24 @@
 .tip-ico .f { fill: currentColor; }
 .tip-ico .pl, .tip-ico .pw { fill: var(--kit-enamel); }
 .tip-room {
-  display: block; font-family: var(--font-display); font-weight: 700; font-size: 16px; line-height: 1.15;
+  display: block; font-family: var(--font-display); font-weight: 700; --reading-size: 16px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.15;
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0,0,0,.9);
 }
 .tip-type {
   font-family: var(--font-display); font-weight: 700;
-  font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
+  --reading-size: 10.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .2em; text-transform: uppercase;
   color: var(--kit-gold);
 }
-.tip-blurb { margin: 9px 0 0; font-size: 13.5px; line-height: 1.4; font-style: italic; color: var(--kit-text-mid); }
-.tip-reward { margin: 6px 0 0; font-size: 12.5px; color: var(--kit-text); }
+.tip-blurb { margin: 9px 0 0; --reading-size: 13.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.4; font-style: italic; color: var(--kit-text-mid); }
+.tip-reward { margin: 6px 0 0; --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--kit-text); }
 .tip-reward i {
   font-style: normal; font-family: var(--font-display); font-weight: 700;
-  letter-spacing: .16em; text-transform: uppercase; font-size: 10.5px; color: var(--kit-gold); margin-right: 6px;
+  letter-spacing: .16em; text-transform: uppercase; --reading-size: 10.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--kit-gold); margin-right: 6px;
 }
 .tip-hz {
-  display: flex; gap: 7px; align-items: flex-start;
-  margin: 9px 0 0; padding: 7px 8px; font-size: 12.5px; line-height: 1.35;
+  display: block;
+  margin: 9px 0 0; padding: 7px 8px; --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.35;
   color: var(--threat-100);
   background: color-mix(in srgb, var(--threat-500) 26%, transparent);
   box-shadow: inset 2px 0 0 color-mix(in srgb, var(--threat-300) 70%, transparent);
@@ -1029,11 +1035,11 @@
   background: color-mix(in srgb, var(--spectre-500) 24%, transparent);
   box-shadow: inset 2px 0 0 color-mix(in srgb, var(--spectre-300) 70%, transparent);
 }
-.tip-hz span { color: currentColor; flex: none; }
+.tip-hz span { color: currentColor; display: inline-block; margin-right: 7px; vertical-align: middle; }
 .tip-hz svg .s { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
 .tip-hz svg .f { fill: currentColor; }
 .tip-foot {
-  margin: 9px 0 0; padding-top: 8px; font-size: 12px; letter-spacing: .04em;
+  margin: 9px 0 0; padding-top: 8px; --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .04em;
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold-lo) 90%, transparent) 20%, color-mix(in srgb, var(--kit-gold-lo) 90%, transparent) 80%, transparent) 0 0 / 100% 1px no-repeat;
   color: var(--kit-text-lo);
 }
@@ -1105,15 +1111,15 @@
    into are inked by the same pass of the pen, never out of step with each other. */
 .map-screen.is-drawing .map-ink,
 .map-screen.is-drawing .map-nodes {
-  animation: mm-wipe .70s var(--ease-soft) .10s backwards;
+  animation: mm-wipe calc(.70s * var(--anim-scale)) var(--ease-soft) calc(.10s * var(--anim-scale)) backwards;
   will-change: clip-path, transform;
   transform: translateZ(0);
 }
-.map-screen.is-drawing .map-wet   { animation: mm-wet  .70s var(--ease-soft) .10s backwards; }
+.map-screen.is-drawing .map-wet   { animation: mm-wet  calc(.70s * var(--anim-scale)) var(--ease-soft) calc(.10s * var(--anim-scale)) backwards; }
 .map-screen.is-drawing .map-banner,
 .map-screen.is-drawing .map-bar,
 .map-screen.is-drawing .map-hudhost {
-  animation: mm-rise .42s var(--ease-out) .18s backwards;
+  animation: mm-rise calc(.42s * var(--anim-scale)) var(--ease-out) calc(.18s * var(--anim-scale)) backwards;
 }
 
 /* ── reduced motion ─────────────────────────────────────────────────────── */
@@ -1156,15 +1162,15 @@
 /* Narrower boards keep the whole key, every condition AND the whole house's
    caption: the bar tightens its air, never its words. */
 @media (max-width: 1500px) {
-  .lg-i { font-size: 12.5px; gap: 4px; }
+  .lg-i { --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); gap: 4px; }
   .lg-ico { width: 21px; height: 21px; }
   .lg-ico svg { width: 13px; height: 13px; }
   .map-legend { column-gap: 7px; --plate-h: 54px; }
-  .lg-h { letter-spacing: .12em; font-size: 12px; }
+  .lg-h { letter-spacing: .12em; --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
   .map-bar { gap: 8px; --bar-h: 54px; }
   .note { gap: 5px; --plate-h: 42px; }
-  .note b { font-size: 12px; letter-spacing: .05em; }
-  .map-atlas { --plate-h: 44px; font-size: 12px; letter-spacing: .08em; }
+  .note b { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .05em; }
+  .map-atlas { --plate-h: 44px; --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .08em; }
 }
 /* a wing with three conditions: the conditions give up their icons' air */
 .map-bar:has(.note ~ .note ~ .note) .note b { letter-spacing: .02em; }
@@ -1344,11 +1350,11 @@
 }
 
 /* ── the key, readable at 1280 ── */
-.lg-i { font-size: 14.5px; }
+.lg-i { --reading-size: 14.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .lg-ico { width: 26px; height: 26px; }
 .lg-ico svg { width: 16px; height: 16px; }
 @media (max-width: 1500px) {
-  .lg-i { font-size: 13.5px; gap: 4px; }
+  .lg-i { --reading-size: 13.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); gap: 4px; }
   .lg-ico { width: 23px; height: 23px; }
   .lg-ico svg { width: 14px; height: 14px; }
   .map-legend { column-gap: 8px; }
@@ -1516,7 +1522,7 @@
 .mi-zone-tab { fill: currentColor; stroke: rgb(10 5 2 / .9); stroke-width: 1.4; stroke-linejoin: round; }
 .mi-zone-tabrule { fill: none; stroke: rgb(244 226 190 / .55); stroke-width: 1.2; stroke-linejoin: round; }
 .mi-zone-name {
-  font-family: Cinzel, Georgia, serif; font-weight: 700; font-size: 21px;
+  font-family: Cinzel, Georgia, serif; font-weight: 700; --reading-size: 21px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: 2.2px;
   fill: #f6e6c6;
 }
@@ -1530,11 +1536,11 @@
    its own beside the crown and need lie over no region and no room */
 .map-screen .map-node--boss .mn-label {
   --plate-h: 62px;
-  font-size: 18px;
+  --reading-size: 18px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   min-width: 210px;
   padding-top: 9px;
 }
-.map-screen .map-node--boss .mn-boss-tag { top: calc(100% + 3px + 36px + var(--mn-dy, 0px)); font-size: 12.5px; }
+.map-screen .map-node--boss .mn-boss-tag { top: calc(100% + 3px + 36px + var(--mn-dy, 0px)); --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 
 /* ── the key, a size up: a cartouche legend ──
    Survey 5 (J1): "the KEY strip is a dense two-row list of tiny pairs". Its
@@ -1560,7 +1566,7 @@
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill /
     calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
-  font-size: 12px; letter-spacing: .3em; text-indent: .3em;
+  --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .3em; text-indent: .3em;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
 }
 .map-screen .map-legend .lg-h::before, .map-screen .map-legend .lg-h::after {
@@ -1568,11 +1574,11 @@
   background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 50%, var(--kit-gold-lo));
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .7);
 }
-.map-screen .lg-i { font-size: 15.5px; gap: 6px; }
+.map-screen .lg-i { --reading-size: 15.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); gap: 6px; }
 .map-screen .lg-ico { width: 27px; height: 27px; }
 .map-screen .lg-ico svg { width: 17px; height: 17px; }
 @media (max-width: 1500px) {
-  .map-screen .lg-i { font-size: 14.5px; gap: 5px; }
+  .map-screen .lg-i { --reading-size: 14.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); gap: 5px; }
   .map-screen .lg-ico { width: 25px; height: 25px; }
   .map-screen .lg-ico svg { width: 16px; height: 16px; }
   .map-screen .map-legend { column-gap: 8px; padding-right: calc(var(--plate-h) * .5); }
@@ -1666,7 +1672,7 @@
 /* the name, engraved on the paper: the condition's own pale ink cut out of a
    line of gall, which breaks the chain line where it crosses it */
 .map-screen .mi-zone-names .mi-zone-name {
-  font-family: var(--font-display); font-weight: 700; font-size: 22px;
+  font-family: var(--font-display); font-weight: 700; --reading-size: 22px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: 3px; dominant-baseline: central;
   fill: #f2b7a2;
   stroke: var(--kit-gall); stroke-width: 6px; stroke-linejoin: round;
@@ -1686,13 +1692,13 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 .map-screen .map-node--boss .mn-label {
   --plate-h: 82px;
-  font-size: 17px; letter-spacing: .07em; line-height: 1.08;
+  --reading-size: 17px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .07em; line-height: 1.08;
   min-width: 0; max-width: 320px;
   padding: 13px calc(var(--plate-h) * .56) 0;
 }
 .map-screen .map-node--boss .mn-boss-tag {
   top: calc(100% + 3px + 55px + var(--mn-dy, 0px));
-  font-size: 14.5px; letter-spacing: .3em; text-indent: .3em;
+  --reading-size: 14.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .3em; text-indent: .3em;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1716,11 +1722,11 @@
   border: 0; border-image: none;
   border-right: 1px solid color-mix(in srgb, var(--kit-gold) 55%, transparent);
   filter: none;
-  font-size: 13px; letter-spacing: .22em; text-indent: 0;
+  --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .22em; text-indent: 0;
 }
 .map-screen .map-legend .lg-h::before, .map-screen .map-legend .lg-h::after { content: none; }
 @media (max-width: 1500px) {
-  .map-screen .map-legend .lg-h { font-size: 12px; letter-spacing: .16em; padding-right: 7px; }
+  .map-screen .map-legend .lg-h { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .16em; padding-right: 7px; }
 }
 /* ...and at the Deck's 1280 the bar takes the KEY's column back out of its
    air, never its words (HELIOTROPE's tightening): the plates' gaps and their
@@ -1810,7 +1816,7 @@
 .map-screen .mi-zone-names .mi-zone-name,
 .map-screen .mi-zone-names .mi-zone--boon .mi-zone-name {
   fill: currentColor; stroke: none;
-  font-size: 21px; letter-spacing: 2.6px;
+  --reading-size: 21px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: 2.6px;
 }
 
 /* the stamps, by distance (REPAIR r41): round 42 turned every room from the
@@ -1836,7 +1842,7 @@
 /* the boss's plate a little narrower at the Deck's width, so it fits the
    paper beside its seal (map.js _placeTags tries that paper first) */
 @media (max-width: 1500px) {
-  .map-screen .map-node--boss .mn-label { padding-inline: calc(var(--plate-h) * .42); font-size: 16px; }
+  .map-screen .map-node--boss .mn-label { padding-inline: calc(var(--plate-h) * .42); --reading-size: 16px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1900,8 +1906,8 @@
    (its plate no taller: the padding gives back what the letters take);
    the placement pass measures the plate, so it makes room for it */
 @media (max-width: 1500px) {
-  .map-screen .map-node:not(.map-node--boss) .mn-label { font-size: 18px; --tag-h: 28px; line-height: 1.05; }
-  .map-screen .map-legend .lg-h { font-size: 13px; }
+  .map-screen .map-node:not(.map-node--boss) .mn-label { --reading-size: 18px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); --tag-h: 28px; line-height: 1.05; }
+  .map-screen .map-legend .lg-h { --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1947,3 +1953,185 @@
 .map-screen .mi-zone-names .mi-zone-plate { stroke-linejoin: round; }
 .map-screen .mi-zone-names .mi-zone-plate-rule { stroke-width: 1.3; stroke-linejoin: round; }
 .map-screen .mi-zone-names .mi-zone-plate-bead { fill: var(--kit-gold-hi); stroke: none; }
+
+/* ── THE FLOORPLAN (2026-10-27) ─────────────────────────────────────────────
+   A wing drawn as a real building (state/floorplan.js, ui/blueprint.js) on a
+   cyanotype: chalk-white plan on Prussian blue.  Everything the KIDS added is
+   crayon: the route, the notes, and the marks on the rooms, which are their
+   scrawled symbols on a rubbed-clean patch of the floor rather than gilt
+   medallions laid over the plan (those hid the very rooms they stood for).
+
+   Scoped to `.map-screen--plan` and written with !important on purpose: the
+   classic sheet's look is twenty rounds of stacked, high-specificity rules
+   that this block must override wholesale without touching one of them, so
+   switching back to the classic map (mapgen.js MAP_STYLES) restores it
+   exactly. */
+.map-screen--plan {
+  --plan-ground: #1d4a82;
+  --plan-floor: rgb(26 66 118);
+  --graphite: #d9e8fa;
+  --graphite-soft: #8fb0d8;
+  --mark: #ffad33;
+  --mark-hot: #ffd76a;
+}
+
+/* ── the legs ── */
+.map-screen--plan .mi-halo { stroke: #0b2449 !important; opacity: 0 !important; }
+.map-screen--plan .mi-halo.is-open { opacity: .7 !important; stroke-width: 15 !important; }
+.map-screen--plan .mi-halo.is-walked { opacity: .5 !important; stroke-width: 13 !important; }
+.map-screen--plan .mi-shade { stroke: #04112a !important; }
+.map-screen--plan .mi-ghost { stroke: var(--graphite) !important; }
+.map-screen--plan .mi-ghost.is-open { stroke: var(--mark-hot) !important; }
+.map-screen--plan .mi-ghost.is-walked { stroke: #fff3d0 !important; }
+.map-screen--plan .mi-edge { stroke: var(--graphite) !important; }
+.map-screen--plan .mi-edges .mi-edge.is-dead { opacity: .62 !important; stroke-width: 3.4 !important; stroke-dasharray: none !important; }
+.map-screen--plan .mi-edges .mi-edge.is-cold { stroke: var(--graphite-soft) !important; opacity: .34 !important; stroke-width: 2.4 !important; }
+.map-screen--plan .mi-edge.is-open { stroke: var(--mark) !important; stroke-width: 8.6 !important; opacity: 1 !important; }
+.map-screen--plan .mi-edge.is-walked { stroke: #fff3d0 !important; stroke-width: 7 !important; opacity: .95 !important; }
+.map-screen--plan .mi-edge--entry { stroke: var(--mark) !important; }
+.map-screen--plan .mi-edge--entry.is-dead { stroke: var(--graphite-soft) !important; opacity: .4 !important; }
+/* a secret way: the Kids' dotted crayon, yellow, wall or no wall.  The one
+   route stroke allowed a dash: not the architect's "proposed" but a child's
+   "this way, secretly" — and it must never read as a door. */
+.map-screen--plan .mi-edges .mi-edge.mi-edge--secret { stroke: #ffd84a !important; stroke-dasharray: 1 12 !important; stroke-linecap: round !important; stroke-width: 7 !important; opacity: .9 !important; }
+.map-screen--plan .mi-edges .mi-edge.mi-edge--secret.is-open { stroke: var(--mark) !important; stroke-width: 9.5 !important; opacity: 1 !important; }
+.map-screen--plan .mi-edges .mi-edge.mi-edge--secret.is-walked { stroke: #fff3d0 !important; }
+.map-screen--plan .mi-edges .mi-edge.mi-edge--secret.is-cold { opacity: .32 !important; }
+.map-screen--plan .mi-ghosts .mi-ghost[data-from][data-to] { stroke-dasharray: none; }
+.map-screen--plan .mi-in { fill: #ffd38a !important; }
+.map-screen--plan .mi-arrowhead { fill: var(--mark) !important; stroke: #0b2449 !important; }
+
+/* ── the marks: the Kids' crayon symbols, one colour per kind of room ── */
+.map-screen--plan .map-node:not(.map-node--boss) {
+  --mn-fit: min(1, calc(1.18 / var(--mn-k, 1))) !important;
+  filter: none !important;
+}
+.map-screen--plan .map-node--scuffle   { color: #ff9c86 !important; }
+.map-screen--plan .map-node--bigScare  { color: #ff4d40 !important; }
+.map-screen--plan .map-node--safe      { color: #86e38f !important; }
+.map-screen--plan .map-node--shop      { color: #ffb547 !important; }
+.map-screen--plan .map-node--treasure  { color: #ffdc4f !important; }
+.map-screen--plan .map-node--curiosity { color: #eef4ff !important; }
+.map-screen--plan .map-node--unknown   { color: #cdb8ff !important; }
+.map-screen--plan .map-node--rescue    { color: #72f0dd !important; }
+/* a rubbed-clean patch of floor under each, not a medallion over it */
+.map-screen--plan .map-node:not(.map-node--boss) .mn-pool {
+  inset: 9% !important;
+  background: radial-gradient(circle closest-side, var(--plan-floor) 0 64%, rgb(26 66 118 / 0) 100%) !important;
+  box-shadow: none !important; animation: none !important; opacity: 1 !important;
+}
+.map-screen--plan .map-node .mn-art .pl,
+.map-screen--plan .map-node .mn-art .pw { fill: var(--plan-floor) !important; }
+.map-screen--plan .map-node:not(.map-node--boss) .mn-art > g:not(.mn-overdraw) { filter: drop-shadow(0 1.6px 0 rgb(4 14 34 / .9)) !important; }
+.map-screen--plan .map-node .mn-overdraw { display: inline !important; opacity: .55; }
+/* rooms you cannot walk to yet: the crayon a little fainter, never gone */
+.map-screen--plan .map-node.is-dim:not(.map-node--boss) .mn-in { opacity: .86 !important; }
+.map-screen--plan .map-node.is-cold:not(.map-node--boss) .mn-in { opacity: .42 !important; }
+/* the rooms you may enter: ringed round in orange crayon, twice */
+.map-screen--plan .map-node.is-legal .mn-in { opacity: 1 !important; }
+.map-screen--plan .map-node.is-legal .mn-pool {
+  inset: 4% !important;
+  background: radial-gradient(circle closest-side, rgb(255 196 110 / .3) 0, var(--plan-floor) 58%, rgb(26 66 118 / 0) 100%) !important;
+}
+.map-screen--plan .map-node.is-legal .mn-ring { opacity: 1 !important; stroke: var(--mark) !important; stroke-width: 4.6 !important; }
+.map-screen--plan .map-node.is-legal .mn-ring2 { opacity: .55 !important; stroke: var(--mark-hot) !important; }
+.map-screen--plan .map-node.is-legal { filter: drop-shadow(0 0 12px rgb(255 170 60 / .45)) !important; }
+.map-screen--plan .map-node.is-kbd .mn-ring { stroke: var(--mark-hot) !important; }
+/* where you are standing, and where you have been: ringed and ticked in chalk */
+.map-screen--plan .map-node.is-current .mn-ring { opacity: 1 !important; stroke: #fff3d0 !important; stroke-width: 4 !important; }
+.map-screen--plan .map-node.is-current .mn-pool,
+.map-screen--plan .map-node.is-visited .mn-pool { background: radial-gradient(circle closest-side, var(--plan-floor) 0 64%, rgb(26 66 118 / 0) 100%) !important; box-shadow: none !important; }
+.map-screen--plan .map-node.is-visited .mn-art > g { opacity: .5 !important; }
+.map-screen--plan .map-node.is-visited .mn-tick { opacity: .95 !important; stroke: #fff3d0 !important; }
+
+/* An unfolded working survey, viewed a few rooms at a time. */
+.map-screen--plan {
+  --plan-ground: var(--bp-ground);
+  --plan-floor: var(--bp-floor);
+  --graphite: var(--bp-paper-ink);
+  --mark: var(--bp-pencil-yellow);
+  --mark-hot: var(--bp-pencil-white);
+}
+.map-screen--plan .map-sheet { background: var(--bp-ground); }
+.map-screen--plan .map-lamp,
+.map-screen--plan .map-shade { opacity: .2; }
+.map-screen--plan .map-node .mn-label { background: none !important; box-shadow: none !important; border: none !important; color: var(--bp-pencil-white); }
+.map-screen--plan .map-node .mn-label::before,
+.map-screen--plan .map-node .mn-label::after { display: none; }
+.map-screen--plan .mi-edges .mi-edge.is-dead:not(.is-cold) { opacity: .28 !important; stroke-width: 2 !important; }
+.map-screen--plan .mi-edge.is-open { stroke-width: 5 !important; }
+.map-screen--plan .mi-edge.is-walked { stroke-width: 4 !important; }
+.map-player-marks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.map-player-marks path { fill: none; stroke: var(--pencil-color); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; opacity: .88; }
+.map-pencil--yellow { --pencil-color: var(--bp-pencil-yellow); }
+.map-pencil--red { --pencil-color: var(--bp-pencil-red); }
+.map-pencil--green { --pencil-color: var(--bp-pencil-green); }
+.map-pencil--white { --pencil-color: var(--bp-pencil-white); }
+.map-screen--plan[data-map-tool="draw"] .map-viewport { cursor: crosshair; }
+.map-screen--plan[data-map-tool="erase"] .map-viewport { cursor: cell; }
+.map-tools {
+  position: absolute; z-index: 15;
+  left: calc(var(--map-side) + 12px); right: calc(var(--map-side) + 12px);
+  bottom: calc(var(--map-foot) + 8px);
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 5px;
+  padding: 8px 12px; border: 1px solid var(--kit-gold-lo); border-radius: 4px;
+  background: var(--kit-gall); color: var(--kit-gold-hi);
+  font-family: var(--font-body, Georgia, serif); --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--kit-gall) 70%, transparent);
+}
+.map-tools button {
+  display: inline-flex; align-items: center; gap: 5px;
+  min-height: 38px; padding: 5px 10px; color: var(--bp-pencil-white);
+  background: transparent; border: 1px solid var(--kit-gold-lo); border-radius: 3px;
+  font: inherit; cursor: pointer;
+}
+.map-tools button:hover, .map-tools button[aria-pressed="true"] { background: var(--bp-floor); border-color: var(--bp-pencil-yellow); }
+.map-tools button:focus-visible { outline: 2px solid var(--bp-pencil-yellow); outline-offset: 3px; }
+.map-tools button:disabled { opacity: .35; cursor: default; }
+.map-tools__title { font-style: italic; margin-right: 5px; }
+.map-pencil i { display: inline-block; width: 7px; height: 19px; background: var(--pencil-color); transform: rotate(16deg); border-radius: 2px 2px 5px 5px; }
+.map-pencil span { text-transform: capitalize; }
+.map-tools__divider { height: 24px; border-left: 1px solid var(--kit-gold-lo); margin: 0 3px; }
+.map-tools__status { flex-basis: 100%; text-align: center; --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--bp-pencil-white); }
+@media (max-width: 1100px) {
+  .map-tools { gap: 4px; padding: 6px; }
+  .map-tools button { padding: 3px 7px; --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+  .map-tools__title, .map-pencil span { display: none; }
+  .map-pencil { min-width: 32px; justify-content: center; }
+}
+
+/* The architect's room name is already printed inside its walls. */
+.map-screen--plan .map-node:not(.map-node--boss) .mn-label,
+.map-screen--plan .mn-lead { display: none !important; }
+
+/* Shared galleries are readable architecture. Show tonight's route choices,
+   walked paths and the exits of a room being inspected, not 90 overlapping
+   future pencil lines along the same hall. */
+.map-screen--mansion .mi-edge.is-dead:not(.is-route-preview),
+.map-screen--mansion .mi-edge.is-cold:not(.is-route-preview),
+.map-screen--mansion .mi-shade.is-dead,
+.map-screen--mansion .mi-ghost.is-dead { opacity: 0 !important; }
+.map-screen--mansion .mi-edges .mi-edge.is-route-preview:not(.is-open):not(.is-walked) {
+  opacity: .65 !important; stroke: var(--bp-pencil-yellow) !important; stroke-width: 3 !important;
+}
+
+/* Actual threshold states, separate from room encounter stamps. */
+.map-screen--mansion .mi-access { pointer-events:none; }
+.map-screen--mansion .mi-threshold { stroke-width:4; stroke-linecap:round; fill:var(--bp-ground); }
+.map-screen--mansion .mi-threshold.is-latched { stroke:var(--bp-pencil-red); opacity:.78; }
+.map-screen--mansion .mi-threshold.is-unlatched { stroke:var(--bp-pencil-green); }
+
+/* Local forks are readable again: keep the future branches visible so players
+   can plan a route, while current choices retain the strongest pencil. */
+.map-screen--mansion.map-screen--local .mi-edges .mi-edge.is-dead:not(.is-route-preview) {
+  opacity:.38 !important; stroke:var(--bp-pencil-white) !important; stroke-width:2.2 !important;
+}
+.map-screen--mansion.map-screen--local .mi-edges .mi-edge.is-cold:not(.is-route-preview) { opacity:.13 !important; }
+.map-screen--mansion.map-screen--local .mi-threshold.is-latched { opacity:.48; stroke-width:2.5; }
+
+/* Larger reading sizes need room, including on a 1280px panel. */
+.map-screen { --map-foot: 104px; }
+.map-screen .map-bar { height: auto; min-height: 80px; bottom: 12px; flex-wrap: wrap; justify-content: center; row-gap: 4px; }
+.map-screen .map-legend { --plate-h: 64px; }
+.map-screen .map-tools { bottom: calc(var(--map-foot) + 18px); }
+.map-screen .tip-type, .map-screen .tip-reward i { letter-spacing: .1em; }

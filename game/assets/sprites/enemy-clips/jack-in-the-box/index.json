@@ -34,7 +34,7 @@
    "scale": 0.7293,
    "unit": 256.0,
    "loop": false,
-   "fps": 35.56,
+   "fps": 30,
    "hold": false,
    "sha1": "491e6097b3c476f1"
   },
@@ -73,7 +73,7 @@
    "scale": 0.7293,
    "unit": 256.0,
    "loop": false,
-   "fps": 40.0,
+   "fps": 30,
    "hold": true,
    "sha1": "4a89d73e08dede3a"
   },
@@ -111,7 +111,7 @@
    "scale": 0.7293,
    "unit": 256.0,
    "loop": false,
-   "fps": 35.56,
+   "fps": 30,
    "hold": false,
    "sha1": "b49713e0b676ea28"
   },
@@ -149,7 +149,7 @@
    "scale": 0.7293,
    "unit": 256.0,
    "loop": true,
-   "fps": 11.85,
+   "fps": 30,
    "hold": false,
    "sha1": "7b6c95331087f2fe"
   }

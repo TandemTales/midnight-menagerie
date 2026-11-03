@@ -1,0 +1,81 @@
+# Co-op on a real wire
+
+Audited 2026-11-03 for a Steam demo. Every suite was green. Everything below would
+still have gone wrong between two computers, because a two-tab test on one machine
+has no latency worth the name, and nobody in those tests ever leaves.
+
+## What was wrong
+
+| What a player would have seen | Why |
+|---|---|
+| A friend's connection drops. Everyone else's game stops answering. No message, ever. | Nothing in `game/src` listened to `session.on('peer')`; the turn barrier and END waited on the missing seat forever. |
+| Two players' boards quietly become two different games. | `publishDigest()` had tests and no caller, so the out-of-sync check never ran in real play. |
+| Two players act within one network delay of each other and their boards split. | Each machine applied its own Trick at once and the other's on arrival. The code's own comments left this "until the transport sets the latency budget". Steam sets it. |
+| Continue on a co-op save turns it into one person playing everybody's Kid, while the friends wait. | The run resumed with no session. There was no path back to the party. |
+| A slower player is pulled out of the shop or reward they are still reading. | A door with one exit resolved on the first vote, a shortcut meant for one shared screen. |
+| Two parties built from one seed. | Every client derived the roster from its own rows when GO landed, and messages are only ordered per sender. A third player could hear GO before a friend's last change. |
+| Somebody with the password arrives after the party left, and waits in an empty treehouse forever. | A running Session ignored lobby messages. |
+| The host drops, and a later rejoin could not have been answered. | Only seat 0 answered `REJOIN`. |
+| Alt-tabbing stalls that player's client partway through the table's inputs. | Window blur stops the clock, right for a solo game and wrong for a shared one. |
+| Two machines on different map styles draw different wings from one seed. | `mapStyle()` reads each machine's own storage. |
+| A player stays on the map with a fight running behind them. | `SceneManager.go` drops a navigation while another is in flight, and over a wire a door is opened by somebody else's vote, whenever it lands. Found only when a real two-tab fight ran. |
+| A fast player's first card is lost on a slower machine, and the boards split. | The scene starts the fight after its door and any boss's entrance. An input arriving before that found no card and returned. It waits now (`run.readyForCombatInput`). |
+| **A built depot does not start.** | The packager shipped tracked files only. Codex's uncommitted modules (`state/floorplan.js`, `ui/story.js`, `core/motion.js`...) would have been missing, with imports still pointing at them. |
+| A rejoin mid-fight in a party could not have replayed. | `turn:end` fires once per seat and was recorded as a bare `['e']`, replayed as "the whole table ends", so seat two's entry ended the NEXT turn. `courageOnEntry` is the local Kid's only, so the other seat's Courage came back wrong. |
+
+## What it does now
+
+**The agreed order** (`session._heldByBarrier`). Every input carries a Lamport clock
+and the log sorts on it, seat breaking ties. A combat input is applied once every
+other seat has promised (`clk` on a beat) never to send a lower one. Seats ack every
+combat input they hear, so that wait is one round trip, not a beat interval. All
+machines apply the same inputs in the same order, with no host and nothing to fail
+over. **The cost is that a player's own Trick lands one round trip after they let
+go.** Room inputs commute and are not held.
+
+**Who is still here** (`session.lost`, `session.gone`, `ui/netplate.js`). A seat is
+`lost` when Steam says it left the lobby or after 8 s of silence. The plate says so
+and offers **Play on without them** or **Leave the expedition**. Playing on is an
+input in the log (`seat.gone`), so every machine applies it in order. That seat
+stops being a voter, its open question gets the deterministic rule, and its Kid goes
+down at the top of the next turn. Later fights are priced without them. They keep
+their Courage and any waiting reward.
+
+**Climbing back in** (`scenes/lobby.js`, `session.requestState`). Continue on a co-op
+save goes to the Treehouse with the save's password and Steam lobby id. A running
+session answers `lobby:started`; if the roster names them, a survivor sends a
+snapshot and the log. The answer is a SAVE and not the log alone, because each client
+leaves a room in its own time and that walk is not an input. `Run.resume` stands the
+run up, `restoreInterruptedCombat` replays the fight, and a replay that does not land
+on the same board fails loudly instead of restarting (a restart would strand the rest
+of the party). If nobody is home, **Open the house back up** resumes from the save,
+and two players returning together agree that the lowest seat opens it.
+
+**Lost messages.** A beat names how many inputs its seat has sent, so a shorter count
+here is a gap, and it gets asked for again. Everybody answers rejoin and resend
+requests. `_accept` dedupes on (seat, seq).
+
+**The check runs.** A board digest at each `playerReady` and a party digest at each
+room. The plate tells the player if they split and offers Leave and climb back in.
+
+## What has NOT been tested
+
+**Nothing here has run against real Steam, because there is no App ID yet.**
+`tests/shell/steam.test.cjs` plays Steam with a fake. `tests/coop/rejoin.py` and
+`tests/coop/latency.py` use two real tabs on a BroadcastChannel, the second through a
+simulated 60-180 ms wire. All are honest about the protocol. None can speak for Valve's
+relay, real latency, or `electronEnableSteamOverlay`, whose `in-process-gpu` switch has
+only been exercised without Steam. `--no-steam-overlay`,
+or `"overlay": false` in `release.json`, turns it off if a machine objects.
+
+## Known and left
+
+- `seat.gone` and the last vote can cross within one network delay, and then only one
+  machine prices the next fight without that seat. A digest catches it. Votes are not
+  held by the agreed order because rooms have to stay responsive.
+- A snapshot taken while the table is stuck on a question only the returning player
+  can answer is bounded at 1.5 s and may fail to replay. The player is told and sent
+  back to the title; the table can play on.
+- Rejoining mid-fight after the table already played on keeps that Kid down until the
+  next fight. That is deliberate: dealing them back in mid-turn is a rules question,
+  not a wire question.

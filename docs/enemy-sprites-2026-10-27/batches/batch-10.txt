@@ -1,0 +1,58 @@
+create a composite image of sprites of the following enemies in a turn based ccg. make sure the final image has a truly transparent background. Make sure the images are good quality and will 2D animate well (nothing in mid-action pose, extra floating parts around it, etc.). Make sure the enemies match the visual style of the included menu screen with companion characters from another part of the game:
+
+1. The Living Index (Level/Region 7)
+A huge wall of catalogue cabinets operating as one possessed system.
+Drawers open in waves.
+Cards fly between them.
+Labels rewrite themselves.
+Entire sections slide sideways.
+There is no face or body.
+The cataloguing system itself is the enemy.
+
+2. The Restricted Cabinet (Level/Region 7)
+A tall locked bookcase with iron mesh doors.
+Something luminous moves behind the books.
+Chains loosen.
+Locks turn themselves.
+Individual books float out briefly before being violently pulled back inside.
+The cabinet never needs monster anatomy.
+
+3. The Atlas Room (Level/Region 7)
+A huge standing atlas opens into impossible geography.
+Pages become windows onto forests, cities, oceans, deserts, and mansion rooms.
+Objects or shadows briefly cross from those spaces into the library before being pulled back into the page.
+This works well as a highly visual elite.
+
+4. The Librarian’s Desk (Level/Region 7)
+A large formal desk surrounded by a powerful invisible presence.
+Pens write.
+Stamps fall.
+Cards sort themselves.
+Books slam shut.
+A chair rolls backward as though someone just stood up.
+You never need to show the librarian.
+
+5. The Black Ink Manuscript (Level/Region 7)
+A huge open handwritten book sits on a lectern.
+Ink continuously writes new lines by itself.
+Words spill off the page as liquid black shapes.
+Whole paragraphs occasionally rise as translucent calligraphy in the air.
+The book remains stationary while the writing becomes the supernatural threat.
+
+6. The Head Librarian (Level/Region 7)
+A quieter and more traditional spectral librarian.
+They carry:
+A ledger.
+Reading glasses.
+A ring of archive keys.
+A small lamp.
+Their most distinctive visual feature is that the books obey them.
+Shelves slide.
+Ladders move.
+Reading lamps turn.
+Books return themselves to shelves.
+The Head Librarian barely needs to move.
+A raised finger is enough to make the entire library react.
+This version makes the boss feel authoritative without becoming visually busy.
+Production requirements: Create one static composite, one complete enemy design per numbered entry, with clear empty margins separating every enemy. Use the attached UI/selectCompanion.png as the primary visual reference and the accepted source sheets as rendering/style references only. Do not generate animation frames or sequences. All enemies face LEFT toward the players in neutral stable resting poses, no mid-action gesture or attack. Preserve each described identity; action wording above is character context, not a request to depict the action. Keep props held, supported, attached, contained, or touching the core design; omit loose particle effects and orbiting fragments. For inherently grouped enemies, keep the group compact and contained within its own distinct cell. No cropped silhouettes, merged enemies, stray anatomy, halos/matte fringes, text, labels, borders, floors, shadows detached from the sprite, or background scene. Cute, readable and spooky but not threatening; match the accepted art's rich material texture, soft dimensional shading and warm whimsical detail. Output PNG with genuine transparent alpha outside the sprites, never a painted checkerboard or solid-color background. Keep the character itself legible and sufficiently opaque; translucent ghost bodies may have partial alpha. The roster descriptions are quoted from the current original MM Enemies document, not the separate revised roster.
+Exactly 6 enemy designs in this batch.

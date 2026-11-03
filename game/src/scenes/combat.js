@@ -1,3 +1,4 @@
+import { BASE_ANIMATION_RATE } from '../core/motion.js';
 /**
  * The Scuffle screen. OWNER: combat-scene.
  * Spec: docs/STS2-REFERENCE.md §1 (layout), §2 (numbers are never a mystery),
@@ -25,7 +26,7 @@ import { previewIncoming } from '../combat/preview.js';
 import { act } from '../net/actions.js';
 import { INPUT, cardRef } from '../net/session.js';
 import { passTo, shouldHandOff } from '../ui/handoff.js';
-import { TERMS, COMPANIONS } from '../data/schema.js';
+import { TERMS, COMPANIONS, KIDS } from '../data/schema.js';
 import { Hand } from '../ui/hand.js';
 import { CardView, ART_W, ART_H, CARD_SS } from '../ui/card.js';
 import { warmArt } from '../ui/cardart.js';
@@ -246,7 +247,18 @@ export class CombatScene extends Scene {
     this._warmDeck();
 
     this._offFrame = ctx.clock.onFrame((dt, t) => this._frame(dt, t));
-    this._ro = new ResizeObserver(() => { this.fx?.resize(); this._syncHandBounds(); this._layoutEnemies(); });
+    this._ro = new ResizeObserver(() => {
+      this.fx?.resize();
+      // The hand has its own ResizeObserver. Fit on the next frame so both
+      // observers have measured the new viewport before we place any feet.
+      cancelAnimationFrame(this._resizeFit);
+      this._resizeFit = requestAnimationFrame(() => {
+        this._resizeFit = 0;
+        this._syncHandBounds();
+        this._layoutEnemies();
+        this._scheduleFit();
+      });
+    });
     this._ro.observe(this.root);
 
     this._syncAll();
@@ -1106,29 +1118,18 @@ export class CombatScene extends Scene {
   _fitPlates() {
     if (!this.views || !this.views.size || !this.$handHost) return;
     this._syncStage();
-    let top = window.innerHeight;
-    // the visible cards…
-    for (const c of this.$handHost.querySelectorAll('.mm-card')) {
-      const r = c.getBoundingClientRect();
-      if (r.height > 0 && r.top > 0) top = Math.min(top, r.top);
-    }
-    // …and the fan's pointer catcher, which occludes for the mouse either way
-    const hit = this.$handHost.querySelector('.mm-hand__hit');
-    if (hit) {
-      const r = hit.getBoundingClientRect();
-      if (r.height > 0 && r.top > 0) top = Math.min(top, r.top);
-    }
-    if (top >= window.innerHeight) top = window.innerHeight * 0.78;   // no hand yet
-    /* …and never lower than a full opening hand would stand, so a plate is
-       placed once for five Tricks rather than sinking and climbing again as
-       they are played (a boss's stage resizes to keep its plate clear). */
-    if (this.hand && this.hand.restTop) {
-      const host = this.$handHost.getBoundingClientRect();
-      const rest = host.top + this.hand.restTop(Math.max(5, this.hand.slots.length));
-      if (Number.isFinite(rest)) top = Math.min(top, rest);
-    }
+    // Use the settled fan geometry, not card DOM bounds mid-resize or while
+    // a card is raised. Those transient bounds could leave a boss permanently
+    // lifted by 140px, with its feet against the wall and its body shrunken.
+    // The pointer catcher extends six pixels above the resting cards.
+    const host = this.$handHost.getBoundingClientRect();
+    const rest = this.hand?.restTop(Math.max(5, this.hand.slots.length));
+    const top = Number.isFinite(rest) ? host.top + rest - 6 : window.innerHeight * 0.78;
     const limit = top - PLATE_GAP;
-    for (const v of this.views.values()) v.setPlateLimit(limit);
+    // A label may use spare floor depth, but may never lift its creature
+    // beyond the room's reserved standing band, even during a resize.
+    const maxRise = Math.max(0, (this._stageFl || 0) - window.innerHeight * 0.44);
+    for (const v of this.views.values()) v.setPlateLimit(limit, maxRise);
     this._placeIncomingSoon();
   }
 
@@ -1196,9 +1197,7 @@ export class CombatScene extends Scene {
       root: this.$handHost,
       onPlay: (o) => this._onPlay(o),
       onPreview: (o) => this._onPreview(o),
-      getTargets: () => [...this.views.values()]
-        .filter(v => v.alive && !v.dying)
-        .map(v => ({ id: v.id, el: v.$stage })),
+      getTargets: card => this._handTargets(card),
     });
     /* RESUME. The hand is normally filled by `draw` events, which a resumed
        engine has already emitted and will never emit again — so a restored
@@ -1260,6 +1259,16 @@ export class CombatScene extends Scene {
     }));
   }
 
+  /** The engine owns targetability, including Ward animals and Hidden. */
+  _handTargets(card) {
+    const selected = card && this.engine.card(card.uid);
+    if (!selected) return [];
+    const ids = new Set(this.engine.targetableEnemies(selected).map(actor => actor.id));
+    return [...this.views.values()]
+      .filter(v => v.alive && !v.dying && ids.has(v.id))
+      .map(v => ({ id: v.id, el: v.$stage }));
+  }
+
   /** Resolve a tap on a card in hand into a play, or into a usable hint. */
   async _tapPlay(uid) {
     const card = this.engine.card(uid);
@@ -1267,7 +1276,7 @@ export class CombatScene extends Scene {
     const aimed = card.target === 'enemy' || card.target === 'ally';
     let tid = null, foe = null;
     if (aimed) {
-      const living = card.target === 'enemy' ? this.engine.livingEnemies() : [];
+      const living = card.target === 'enemy' ? this.engine.targetableEnemies(card) : [];
       if (living.length !== 1) {
         this._deny('Drag it onto the one you mean, or select it and press Tab.');
         return;
@@ -1510,7 +1519,7 @@ export class CombatScene extends Scene {
   _defaultTargetFor(uid) {
     const c = this.engine.card(uid);
     if (!c) return null;
-    if (c.target === 'enemy') return this.engine.firstLivingEnemy()?.id || null;
+    if (c.target === 'enemy') return this.engine.targetableEnemies(c)[0]?.id || null;
     return null;
   }
 
@@ -2250,7 +2259,7 @@ export class CombatScene extends Scene {
         const c = this._pointOf(ev.actorId);
         if (ev.reason !== 'decay' && Math.abs(ev.delta) > 0) {
           this.fx.word(c.x, c.y - 46, `${ev.delta > 0 ? '+' : ''}${ev.delta} ${ev.name}`,
-            ev.kind === 'debuff' ? 'debuff' : 'buff');
+            ev.kind === 'debuff' ? 'debuff' : 'buff', this._wordBounds(ev.actorId));
           this.ctx.audio?.play?.(ev.kind === 'debuff' ? 'combat:status-apply-debuff' : 'combat:status-apply-buff');
           await this._wait(this._o(0.11));
         }
@@ -2287,6 +2296,12 @@ export class CombatScene extends Scene {
         await this._wait(this._d(0.2));
         return;
       }
+
+      case 'entity:remove':
+        // Divide and other departures remove an actor without killing it.
+        // The view must leave the target list as well as the board.
+        this._removeEnemyView(ev.id);
+        return;
 
       case 'snack:used': {
         // Emitted BEFORE the effects land, which is the whole point: the eat
@@ -2388,7 +2403,7 @@ export class CombatScene extends Scene {
         if (ev.delta && label) {
           const c = this._pointOf(ev.ownerId);
           this.fx.word(c.x + (ev.ownerId === this.me.id ? 64 : 0), c.y - 56,
-            `${ev.delta > 0 ? '+' : ''}${ev.delta} ${label}`, 'counter');
+            `${ev.delta > 0 ? '+' : ''}${ev.delta} ${label}`, 'counter', this._wordBounds(ev.ownerId));
         }
         /* NINE LIVES IS A BODY BEAT, not only a number moving. The brief builds
            one Life Spark clip for both directions -- "the same clip can represent
@@ -2432,7 +2447,7 @@ export class CombatScene extends Scene {
           v.setQueue(ev.queue || []);
           if (ev.action && typeof ev.action === 'string' && ev.action !== 'preview') {
             const c = this._pointOf(ev.enemyId);
-            this.fx.word(c.x, c.y - 70, ev.action.toUpperCase(), 'counter');
+            this.fx.word(c.x, c.y - 70, ev.action.toUpperCase(), 'counter', this._wordBounds(ev.enemyId));
             this.ctx.audio?.play?.('ui:confirm');
           }
         }
@@ -2655,7 +2670,7 @@ export class CombatScene extends Scene {
        has already swung above, so the miss reads as a miss; this replaces only
        the contact beat. A Companion with no `spectral` built clanks instead. */
     if (ev.prevented) {
-      this.fx.word(c.x, c.y - 46, 'MISSED', 'counter');
+      this.fx.word(c.x, c.y - 46, 'MISSED', 'counter', this._wordBounds(ev.targetId));
       if (isPlayer && !this.hero?.playClip('spectral')) this._playerHit(0, 1);
       this.ctx.audio?.play?.('combat:block-gain');
       await this._wait(this._d(0.16));
@@ -2680,12 +2695,12 @@ export class CombatScene extends Scene {
        cannot leave the rig it belongs to. */
     const n = this._numeralSpot(ev.targetId, c);
     if (blockedAll) {
-      this.fx.number(n.x, n.y, ev.amount, { kind: 'blocked', mag: ev.amount, rise: n.rise });
+      this.fx.number(n.x, n.y, ev.amount, { kind: 'blocked', mag: ev.amount, rise: n.rise, ...this._wordBounds(ev.targetId) });
     } else {
       this.fx.number(n.x, n.y, hpLoss, { kind: isPlayer ? 'taken' : 'damage', mag: hpLoss, rise: n.rise });
       if (ev.blocked > 0) {
         this.fx.number(c.x - (n.x - c.x), n.y + 20, ev.blocked,
-          { kind: 'blocked', mag: ev.blocked, delay: 0.06, rise: n.rise });
+          { kind: 'blocked', mag: ev.blocked, delay: 0.06, rise: n.rise, ...this._wordBounds(ev.targetId) });
       }
     }
 
@@ -2694,7 +2709,14 @@ export class CombatScene extends Scene {
     } else if (tgt) {
       if (blockedAll) tgt.clank(ev.amount);
       else tgt.flinch(hpLoss, ev.sourceId === this.me.id ? 1 : -1);
-      tgt.setState(E.state.enemies.find(x => x.id === ev.targetId) || {});
+      const snap = E.state.enemies.find(x => x.id === ev.targetId);
+      // Rules finish before their animation queue. A threshold hit can already
+      // have despawned this actor (Dough Blob's Divide); its damage event still
+      // carries the valid impact values until entity:remove takes the view away.
+      tgt.setState(snap || {
+        hp: ev.hpAfter, maxHp: tgt.maxHp, block: ev.blockAfter,
+        alive: ev.hpAfter > 0, statuses: [],
+      });
     }
 
     // shake scaled to Courage actually lost, never to the raw number
@@ -2827,7 +2849,7 @@ export class CombatScene extends Scene {
     this.$handHost.classList.add('is-impact');
     clearTimeout(this._veilT);
     this._veilT = setTimeout(() => this.$handHost.classList.remove('is-impact'),
-      Math.round(340 / this.speed));
+      Math.round(340 / (this.speed * BASE_ANIMATION_RATE)));
   }
 
   _playerHit(hpLoss, blocked) {
@@ -2900,6 +2922,11 @@ export class CombatScene extends Scene {
     // turn behind the fight it is labelling.
     this.$turnN.textContent = `Turn ${this.engine.turn}`;
     this._syncPlayer();
+    // Also reconcile a missed removal when restoring or settling a queue.
+    // Dead actors remain in engine.state and retain their death animation;
+    // despawned actors are absent altogether.
+    const present = new Set(st.enemies.map(e => e.id));
+    for (const id of this.views.keys()) if (!present.has(id)) this._removeEnemyView(id);
     for (const e of st.enemies) {
       const v = this.views.get(e.id);
       if (!v) continue;
@@ -3621,6 +3648,22 @@ export class CombatScene extends Scene {
     this._layoutEnemies();
   }
 
+  _removeEnemyView(id) {
+    const view = this.views.get(id);
+    if (!view) return;
+    view.alive = false;
+    this.views.delete(id);
+    // Its restraint instructions no longer describe the board once the Ward
+    // animal has left. Keep other actors' and encounter-wide rules intact.
+    if (view.role === 'ward') {
+      for (const [key, rule] of this._rules) if (rule.sourceId === id) this._rules.delete(key);
+      this._renderRules();
+    }
+    view.destroy();
+    this._layoutEnemies();
+    this._renderIncoming(0);
+  }
+
   /* ══ ui plumbing ════════════════════════════════════════════════════════ */
   _bindUi() {
     const on = (el, ev, fn, o) => { el.addEventListener(ev, fn, o); this._offs.push(() => el.removeEventListener(ev, fn, o)); };
@@ -3847,7 +3890,7 @@ export class CombatScene extends Scene {
     void b.offsetWidth;
     b.classList.add('is-on');
     clearTimeout(this._bannerT);
-    this._bannerT = setTimeout(() => b.classList.remove('is-on'), hold * 1000 / this.speed);
+    this._bannerT = setTimeout(() => b.classList.remove('is-on'), hold * 1000 / (this.speed * BASE_ANIMATION_RATE));
   }
 
   _deny(reason) {
@@ -3864,7 +3907,7 @@ export class CombatScene extends Scene {
     this.$deny.classList.add('is-on');
     this.ctx.audio?.play?.('ui:deny');
     clearTimeout(this._denyT);
-    this._denyT = setTimeout(() => this.$deny.classList.remove('is-on'), 1500);
+    this._denyT = setTimeout(() => this.$deny.classList.remove('is-on'), 1500 / BASE_ANIMATION_RATE);
   }
 
   /**
@@ -3882,6 +3925,42 @@ export class CombatScene extends Scene {
     if (this.reduceMotion) return;
     this._shake.mag = Math.min(30, this._shake.mag + 16 * k * this.shakeAmt);
     this.ctx.stage?.shake?.(0.08 + 0.22 * k, 11);
+  }
+
+  /** Real painted silhouettes and UI exclusions, used only by condition labels. */
+  _wordBounds(id) {
+    const localRect = r => ({ left: r.left - this.fx.left, right: r.right - this.fx.left,
+      top: r.top - this.fx.top, bottom: r.bottom - this.fx.top });
+    const actors = [];
+    const add = (actorId, view, player = false) => {
+      const node = player ? view?.el : view?.$stage;
+      if (!node) return;
+      let r = node.getBoundingClientRect();
+      if (player && view._kidSrc && view.$kidFit) {
+        const m = view.$kidFit.getScreenCTM(), w = +view.$kidRect.getAttribute('width'), h = +view.$kidRect.getAttribute('height');
+        if (m && w && h) {
+          const points = [[0,0],[w,0],[0,h],[w,h]].map(([x,y]) => new DOMPoint(x,y).matrixTransform(m));
+          r = { left: Math.min(...points.map(p => p.x)), right: Math.max(...points.map(p => p.x)),
+            top: Math.min(...points.map(p => p.y)), bottom: Math.max(...points.map(p => p.y)) };
+        }
+      }
+      const b = localRect(r);
+      actors.push({ ...b, element: node, id: actorId, x: (b.left + b.right) / 2, y: (b.top + b.bottom) / 2,
+        name: player ? `${this._kidName || KIDS.find(k=>k.slug===this.hero.kid)?.name || this.hero.kid || 'You'} & ${this.$plName?.textContent || 'Companion'}` : (view.$name?.textContent || actorId) });
+    };
+    add(this.me.id, this.hero, true);
+    for (const [actorId, view] of this.views) add(actorId, view);
+    const plates = [...document.querySelectorAll('.cb-enemy__plate, .cb-enemy__above, .cb-enemy__intent, .cb-enemy__guard, .cb-player, .cb-player__figure, .cb-player__counters, .cb-player__plate, .mm-hud, .cb-room, .cb-handhost .mm-card, button')]
+      .filter(node => node.offsetWidth && node.offsetHeight && getComputedStyle(node).visibility !== 'hidden')
+      .map(node => localRect(node.getBoundingClientRect()));
+    if(this.hero?._spriteSrc&&this.hero.$spriteFit){
+      const m=this.hero.$spriteFit.getScreenCTM(),w=+this.hero.$spriteRect.getAttribute('width'),h=+this.hero.$spriteRect.getAttribute('height');
+      if(m&&w&&h){
+        const points=[[0,0],[w,0],[0,h],[w,h]].map(([x,y])=>new DOMPoint(x,y).matrixTransform(m));
+        plates.push(localRect({left:Math.min(...points.map(p=>p.x)),right:Math.max(...points.map(p=>p.x)),top:Math.min(...points.map(p=>p.y)),bottom:Math.max(...points.map(p=>p.y))}));
+      }
+    }
+    return { actorId: id, actor: actors.find(a => a.id === id), actors, plates, refreshBounds: () => this._wordBounds(id) };
   }
 
   /** Layer-local point for FX, from an actor id. */
@@ -4094,6 +4173,7 @@ export class CombatScene extends Scene {
     this.hero = null;
     if (window.__MM_CLIPS?._scene === this) delete window.__MM_CLIPS;
     this._ro?.disconnect();
+    cancelAnimationFrame(this._resizeFit);
     for (const off of this._offs) { try { off(); } catch {} }
     for (const off of this._engineOffs) { try { off(); } catch {} }
     for (const off of this._tipOffs) { try { off(); } catch {} }

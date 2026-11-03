@@ -715,7 +715,9 @@ class Checker:
             # reads perfectly well — plus a phantom `false` off the destructured
             # default. Checking a call against the wrong implementation is worse
             # than not checking it.
-            if re.search(r"\n\s*" + re.escape(api) + r"\s*\([^)]*\)\s*\{", src):
+            # Indentation cannot span lines: stripped template literals can
+            # contain thousands of blank lines, making \n\s* rescan quadratically.
+            if re.search(r"\n[^\S\n]*" + re.escape(api) + r"\s*\([^)]*\)\s*\{", src):
                 continue
             for m in re.finditer(r"(?:^|[^A-Za-z0-9_$.])(?:" + IDENT + r"\.)?" +
                                  re.escape(api) + r"\??\.?\(", src):

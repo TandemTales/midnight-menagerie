@@ -1,0 +1,884 @@
+{
+  "level": 15,
+  "entries": [
+    {
+      "level": 15,
+      "region": "Kennels and Animal Ward",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Water Bowl Poltergeist",
+      "existing_animation": false,
+      "description": "A heavy oval bowl hovers above its broad rubber foot; one flat water ellipse rises intact. Offers a fresh drink during every important moment; could interrupt one cue with an unnecessary refresh.",
+      "animation": "2D animation Idle: tiny rock. Tell: ellipse lifts. Action: ellipse slides sideways like a coaster. Resolve: it returns.",
+      "signature": "Signature Low metal oval and impossible rigid water; no liquid creature.",
+      "production_id": "water-bowl-poltergeist",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\water-bowl-poltergeist.webp",
+      "source_path": "animations\\sprites\\enemies\\waterBowlPoltergeist.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            221,
+            116
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            221,
+            116
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            2,
+            220,
+            116
+          ],
+          "transparent_pixels": 5750,
+          "partial_alpha_pixels": 19175,
+          "sha256": "9556abef745267571cc6b4b6305ea22a8efd229b1b638181906a812e62eb02fb"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            256,
+            256
+          ],
+          "alpha_bbox": [
+            16,
+            4,
+            244,
+            254
+          ],
+          "visible_bbox_alpha64": [
+            19,
+            75,
+            238,
+            189
+          ],
+          "transparent_pixels": 43566,
+          "partial_alpha_pixels": 21259,
+          "sha256": "ae2c3332d7ef5b967ac75a70e6b9db79a83fa737184b746c19d9927cd51e55a4"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            0,
+            10,
+            1244,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            92,
+            368,
+            1166,
+            925
+          ],
+          "transparent_pixels": 1041482,
+          "partial_alpha_pixels": 530607,
+          "sha256": "bd81d07754142156734be2928817c3332265e7a9d40879b488efb510fdc20ea8"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\water-bowl-poltergeist-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\water-bowl-poltergeist-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "water-bowl-poltergeist.webp",
+          "w": 221,
+          "h": 116,
+          "source": "waterBowlPoltergeist.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 15,
+      "region": "Kennels and Animal Ward",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Grooming Mitt",
+      "existing_animation": false,
+      "description": "An empty padded grooming mitt floats thumb-up; three rubber nubs form a blunt scalloped edge. Cannot resist tidying one last speck of imaginary fluff; could brush away a small beneficial effect.",
+      "animation": "2D animation Idle: thumb wiggles. Tell: palm tilts in-plane. Action: wiping sweep. Resolve: one fluff mote falls.",
+      "signature": "Signature Soft mitten silhouette, not a grasping spectral hand; never grips bodies.",
+      "production_id": "grooming-mitt",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\grooming-mitt.webp",
+      "source_path": "animations\\sprites\\enemies\\groomingMitt.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            163,
+            205
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            163,
+            205
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            163,
+            205
+          ],
+          "transparent_pixels": 11707,
+          "partial_alpha_pixels": 21249,
+          "sha256": "a2728a4c532cc92e7f1b1d7a0bb2e2cb69c0216eecfbe2987121c828fba81005"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            256,
+            256
+          ],
+          "alpha_bbox": [
+            44,
+            24,
+            239,
+            251
+          ],
+          "visible_bbox_alpha64": [
+            46,
+            26,
+            209,
+            231
+          ],
+          "transparent_pixels": 43094,
+          "partial_alpha_pixels": 21983,
+          "sha256": "e195adc484b581c38eae97a0aa298fb0651b0d7f06f20b9e3d757a4e391972d3"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            0,
+            17,
+            1242,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            228,
+            128,
+            1023,
+            1132
+          ],
+          "transparent_pixels": 1048227,
+          "partial_alpha_pixels": 523691,
+          "sha256": "80f87fb05ab80e1882b33ee138883ae868aca613d38faa61b86aa1d5d6efedb3"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\grooming-mitt-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\grooming-mitt-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "grooming-mitt.webp",
+          "w": 163,
+          "h": 205,
+          "source": "groomingMitt.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 15,
+      "region": "Kennels and Animal Ward",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Reward Clicker",
+      "existing_animation": false,
+      "description": "A teardrop-shaped training clicker hovers vertically, its broad button and blunt metal tongue clearly separated. Congratulates everyone a beat too early; could prematurely trigger a helper's announced preparation.",
+      "animation": "2D animation Idle: tiny bounce. Tell: button rises. Action: button depresses and tongue flexes. Resolve: two fixed sound arcs fade.",
+      "signature": "Signature Solid teardrop and one crisp click, unlike dangling chimes.",
+      "production_id": "reward-clicker",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\reward-clicker.webp",
+      "source_path": "animations\\sprites\\enemies\\rewardClicker.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            123,
+            193
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            123,
+            193
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            1,
+            123,
+            193
+          ],
+          "transparent_pixels": 6515,
+          "partial_alpha_pixels": 16891,
+          "sha256": "e2486b07172a00058f3e689b0b51d2918c38402500f200b31014d726ad512cb6"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            256,
+            256
+          ],
+          "alpha_bbox": [
+            10,
+            26,
+            194,
+            223
+          ],
+          "visible_bbox_alpha64": [
+            70,
+            29,
+            192,
+            221
+          ],
+          "transparent_pixels": 47748,
+          "partial_alpha_pixels": 17455,
+          "sha256": "e2c0a37478e57634bdd6c3f54d88759c877f21f2d4f0ded5896d3b971862c7e2"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            49,
+            23,
+            1234,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            343,
+            141,
+            940,
+            1079
+          ],
+          "transparent_pixels": 1156634,
+          "partial_alpha_pixels": 415538,
+          "sha256": "1f23bf4f035f3c8b4afc3e1ac7d5dd337591d1313ac6fd7fda91c8c53fae3e47"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\reward-clicker-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\reward-clicker-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "reward-clicker.webp",
+          "w": 123,
+          "h": 193,
+          "source": "rewardClicker.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 15,
+      "region": "Kennels and Animal Ward",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Fussing Fan",
+      "existing_animation": false,
+      "description": "A four-bladed grooming fan sits on a curved neck and triangular base; blades rotate in-plane. Keeps correcting a nonexistent bad hair day; could push a prepared nuisance back onto its owner.",
+      "animation": "2D animation Idle: blades tick. Tell: neck leans. Action: blades accelerate with one airflow ribbon. Resolve: neck springs upright.",
+      "signature": "Signature Open pinwheel above a low base; no spotlight or watching eye.",
+      "production_id": "fussing-fan",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\fussing-fan.webp",
+      "source_path": "animations\\sprites\\enemies\\fussingFan.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            186,
+            224
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            186,
+            224
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            186,
+            224
+          ],
+          "transparent_pixels": 25552,
+          "partial_alpha_pixels": 15338,
+          "sha256": "5163cd07116a583f817cb152c16279a27770f98173d4b6f6ff0c65797f97fdf5"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            256,
+            256
+          ],
+          "alpha_bbox": [
+            38,
+            7,
+            242,
+            253
+          ],
+          "visible_bbox_alpha64": [
+            51,
+            16,
+            236,
+            240
+          ],
+          "transparent_pixels": 47262,
+          "partial_alpha_pixels": 17500,
+          "sha256": "c9794e4383e38cda4d27a3e6d8424be2ec0efce10cf6abfdb61a3ee1e9dfb4bd"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            0,
+            19,
+            1238,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            249,
+            79,
+            1153,
+            1175
+          ],
+          "transparent_pixels": 1139417,
+          "partial_alpha_pixels": 432682,
+          "sha256": "149316344bcbf42c0fab3797734224367c3b529896729ecfdc9ffc3faa629de9"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\fussing-fan-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\fussing-fan-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "fussing-fan.webp",
+          "w": 186,
+          "h": 224,
+          "source": "fussingFan.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 15,
+      "region": "Kennels and Animal Ward",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Treat Puzzle",
+      "existing_animation": false,
+      "description": "A thick wooden enrichment board holds three sliding covers, with one star-shaped treat visible beneath. Proudly changes the answer after explaining its puzzle; could conceal which of two cues is genuine.",
+      "animation": "2D animation Idle: covers twitch. Tell: middle cover lifts slightly. Action: two covers slide. Resolve: treat peeks from one opening.",
+      "signature": "Signature Low rectangular slider puzzle, not a chest or food creature.",
+      "production_id": "treat-puzzle",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\treat-puzzle.webp",
+      "source_path": "animations\\sprites\\enemies\\treatPuzzle.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            227,
+            157
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            227,
+            157
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            227,
+            157
+          ],
+          "transparent_pixels": 11713,
+          "partial_alpha_pixels": 23483,
+          "sha256": "a1b16b0ebf4407cf8b6418646775189b36c88932c8d6a1ef28d4f99c7a0573af"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            256,
+            256
+          ],
+          "alpha_bbox": [
+            15,
+            10,
+            248,
+            233
+          ],
+          "visible_bbox_alpha64": [
+            17,
+            53,
+            244,
+            210
+          ],
+          "transparent_pixels": 40930,
+          "partial_alpha_pixels": 24163,
+          "sha256": "0c821e7becbbe44fbd85a6b599ec1dde535ec16f1212bd08300f8cb08b129a81"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            17,
+            39,
+            1240,
+            1230
+          ],
+          "visible_bbox_alpha64": [
+            84,
+            262,
+            1193,
+            1027
+          ],
+          "transparent_pixels": 994938,
+          "partial_alpha_pixels": 576841,
+          "sha256": "2f417098ecf98589761426d2abd8270545ce2c50e7d5260a6b46a752582df013"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\treat-puzzle-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\treat-puzzle-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "treat-puzzle.webp",
+          "w": 227,
+          "h": 157,
+          "source": "treatPuzzle.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 15,
+      "region": "Kennels and Animal Ward",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Scent Tin",
+      "existing_animation": false,
+      "description": "A round scent-training tin floats on edge; its crescent lid exposes three large scent holes. Mistakes every visitor for a familiar fragrance; could mark a choice for an extra follow-up cue.",
+      "animation": "2D animation Idle: lid rattles. Tell: lid slides halfway. Action: one curled scent line traces a loop. Resolve: lid shuts.",
+      "signature": "Signature Thin disc profile; one drawn scent line, not smoke anatomy.",
+      "production_id": "scent-tin",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\scent-tin.webp",
+      "source_path": "animations\\sprites\\enemies\\scentTin.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            157,
+            187
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            157,
+            187
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            6,
+            157,
+            186
+          ],
+          "transparent_pixels": 8734,
+          "partial_alpha_pixels": 20266,
+          "sha256": "bd9c6831fd94ec1a6d68ecaac250370c8fe65dbfc8bbe4483ae9609bfba8449e"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            256,
+            256
+          ],
+          "alpha_bbox": [
+            3,
+            23,
+            242,
+            253
+          ],
+          "visible_bbox_alpha64": [
+            52,
+            35,
+            209,
+            215
+          ],
+          "transparent_pixels": 43752,
+          "partial_alpha_pixels": 21425,
+          "sha256": "d10f5c726aca92d34f3edf26fdee7a56bd0349c03cb7c573c716c5c9413e46c7"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            1242,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            256,
+            168,
+            1022,
+            1054
+          ],
+          "transparent_pixels": 1056173,
+          "partial_alpha_pixels": 515957,
+          "sha256": "671a2fea1441c03dc5c50934c5e8c1c1de926ae7678fd3e09fcbe2daf6a74dd1"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\scent-tin-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\scent-tin-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "scent-tin.webp",
+          "w": 157,
+          "h": 187,
+          "source": "scentTin.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 15,
+      "region": "Kennels and Animal Ward",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Pace Cone",
+      "existing_animation": false,
+      "description": "A squat training cone balances on a square rubber base, bearing one raised paw-shaped badge. Moves the start of playtime whenever everyone is ready; could redirect the next cue toward a decoy.",
+      "animation": "2D animation Idle: tip wobbles. Tell: one corner lifts. Action: sideways hop. Resolve: base flattens.",
+      "signature": "Signature Single broad triangle and jaunty hop; no barrier or animal silhouette.",
+      "production_id": "pace-cone",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\pace-cone.webp",
+      "source_path": "animations\\sprites\\enemies\\paceCone.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            184,
+            185
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            184,
+            185
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            184,
+            184
+          ],
+          "transparent_pixels": 17323,
+          "partial_alpha_pixels": 16307,
+          "sha256": "fb2683c2f06b9a0adebfc304d8737d19d9938f913161a1d4ac533fd244805b29"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            256,
+            256
+          ],
+          "alpha_bbox": [
+            38,
+            30,
+            226,
+            249
+          ],
+          "visible_bbox_alpha64": [
+            41,
+            33,
+            224,
+            217
+          ],
+          "transparent_pixels": 48140,
+          "partial_alpha_pixels": 16986,
+          "sha256": "e41fc42e77b78d4452d2c8ae3c9766e9a6b7f86f757ba8958db7b7549a039b8e"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            0,
+            19,
+            1234,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            200,
+            164,
+            1095,
+            1063
+          ],
+          "transparent_pixels": 1163316,
+          "partial_alpha_pixels": 408753,
+          "sha256": "43d30f27320caa6810e652c1bf5e17042bd26f667e6770a8860d999dcd607cc9"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\pace-cone-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\pace-cone-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "pace-cone.webp",
+          "w": 184,
+          "h": 185,
+          "source": "paceCone.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 15,
+      "region": "Kennels and Animal Ward",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Tag Collector",
+      "existing_animation": false,
+      "description": "A broad zigzag display rail carries three oversized loose identity tags: round, bone-shaped, and diamond. Tags slide along short pegs; no collar, animal, or leash is attached. Delighted to remember everyone, but assigns the wrong places in line; could exchange two announced opposing cues.",
+      "animation": "2D animation Idle: tags sway. Tell: tags rise. Action: two trade positions on short paths. Resolve: all rehang with a pleased jingle.",
+      "signature": "Signature Wide zigzag and three contrasting shapes, not a coatrack or wall of names.",
+      "production_id": "tag-collector",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\tag-collector.webp",
+      "source_path": "animations\\sprites\\enemies\\tagCollector.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            483,
+            282
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            483,
+            282
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            1,
+            483,
+            282
+          ],
+          "transparent_pixels": 61834,
+          "partial_alpha_pixels": 72861,
+          "sha256": "72993793faebd59ada66edbca8acfe063ae09b5a9a62fd53b2dc1f93ea276769"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            14,
+            103,
+            501,
+            498
+          ],
+          "visible_bbox_alpha64": [
+            17,
+            116,
+            499,
+            397
+          ],
+          "transparent_pixels": 184394,
+          "partial_alpha_pixels": 76239,
+          "sha256": "2da71a737ba03d8b81c72fcbee7f751850d47f0706f879b144e9c3f9faba8d72"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            33,
+            33,
+            1224,
+            1230
+          ],
+          "visible_bbox_alpha64": [
+            41,
+            284,
+            1221,
+            971
+          ],
+          "transparent_pixels": 1108540,
+          "partial_alpha_pixels": 463369,
+          "sha256": "665a76573d314d2f2fa945fa00452ae32111a7acc6f0cdb20c08c20ca75106f2"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\tag-collector-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\tag-collector-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "tag-collector.webp",
+          "w": 483,
+          "h": 282,
+          "source": "tagCollector.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 15,
+      "region": "Kennels and Animal Ward",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Fetch Return",
+      "existing_animation": false,
+      "description": "A broad U-shaped wooden ball-return track sits on stubby feet. One stitched fabric ball rests between its open raised ends; no animal occupies it. An indefatigable playmate believes every completed activity deserves another go; could recycle one resolved helper cue rather than introducing a new threat.",
+      "animation": "2D animation Idle: ball rocks. Tell: track end tilts. Action: ball follows a fixed U-path. Resolve: opposite end bounces welcomingly.",
+      "signature": "Signature Open U silhouette and single rolling prop, not a toy chest swarm or room-sized course.",
+      "production_id": "fetch-return",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\fetch-return.webp",
+      "source_path": "animations\\sprites\\enemies\\fetchReturn.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            450,
+            286
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            450,
+            286
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            450,
+            286
+          ],
+          "transparent_pixels": 61465,
+          "partial_alpha_pixels": 66215,
+          "sha256": "2dc25fd4fecb0402b913470cfac1893a0e22b3277a850bd2cc77c236fae9d360"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            10,
+            41,
+            500,
+            489
+          ],
+          "visible_bbox_alpha64": [
+            33,
+            120,
+            483,
+            406
+          ],
+          "transparent_pixels": 192004,
+          "partial_alpha_pixels": 69120,
+          "sha256": "f2627779b5c8efe4e2571ac5593e08729e4226cc0570f9c73b9f50d0b77dc558"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            25,
+            9,
+            1240,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            82,
+            294,
+            1183,
+            994
+          ],
+          "transparent_pixels": 1152957,
+          "partial_alpha_pixels": 418641,
+          "sha256": "719757c1eaddb9577794fee3c9ea2c453779e1b49b5055995830f362dc8778d0"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\fetch-return-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-15\\fetch-return-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "fetch-return.webp",
+          "w": 450,
+          "h": 286,
+          "source": "fetchReturn.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    }
+  ],
+  "counts": {
+    "new": 9,
+    "pending": 2,
+    "blocked": 0
+  },
+  "complete": false
+}

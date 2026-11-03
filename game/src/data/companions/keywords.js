@@ -81,7 +81,7 @@ const K = (id, name, desc, extra) => ({ id, name, desc, ...(extra || {}) });
 
 export const COMPANION_KEYWORDS = [
   // shared vocabulary
-  K('vanish', 'Vanish', 'Remove this Trick from the combat after it resolves. Midnight Menagerie’s word for Exhaust.'),
+  K('vanish', 'Vanish', 'Remove this Trick for the rest of this Scuffle after it resolves. Your expedition deck is unchanged.'),
   K('retain', 'Retain', 'This Trick is not discarded at the end of your turn.'),
   K('innate', 'Innate', 'This Trick starts in your opening hand.'),
   K('ethereal', 'Ethereal', 'If this Trick is in your hand at the end of your turn, it Vanishes.'),
@@ -184,7 +184,7 @@ export const COMPANION_KEYWORDS = [
   K('appetite', 'Appetite', 'A 0-6 track. It starts at 2 and drops by 1 at the end of every turn. Both ends of it pay.', { companion: 'crumbula' }),
   K('hungry', 'Hungry', 'A condition, not a buff: 0 or 1 [Appetite]. Where the aggressive half of the Count lives.', { companion: 'crumbula' }),
   K('sated', 'Sated', 'A condition, not a buff: 4 or more [Appetite]. Where the safe half lives.', { companion: 'crumbula' }),
-  K('bite-mark', 'Bite Mark', 'A stacking enemy status that does nothing by itself — a prepared meal waiting to be eaten. Lost if the enemy dies.', { companion: 'crumbula' }),
+  K('bite-mark', 'Bite Mark', 'A stacking enemy status that does nothing by itself — a prepared meal waiting to be eaten. Lost if the enemy is defeated.', { companion: 'crumbula' }),
   K('feed', 'Feed X', 'Remove up to X [Bite Mark]s from an enemy. Each restores Courage and raises [Appetite] by 1, one mark at a time.', { companion: 'crumbula' }),
   K('queasy', 'Queasy', 'Eating past maximum [Appetite]. One per Feed however far past it goes, stacking to 2, and it costs that much Nerve next turn.', { companion: 'crumbula' }),
   K('indulge', 'Indulge', 'Voluntarily lose Courage. It ignores Guard, it counts as Courage lost, it is not enemy damage, and it can never take him below 1.', { companion: 'crumbula' }),
@@ -658,7 +658,7 @@ export const COMPANION_STATUSES = [
     decayAll: true,
   },
   powerStatus('crumbula/velvet-appetite', 'Velvet Appetite', 'Becoming Hungry, and becoming Sated, each draw once a turn.', 'appetite'),
-  powerStatus('crumbula/house-rules', 'House Rules', 'Bite Marks on a dying enemy move to the living instead of being lost.', 'bite-mark'),
+  powerStatus('crumbula/house-rules', 'House Rules', 'Bite Marks on a defeated enemy move to the remaining enemies instead of being lost.', 'bite-mark'),
   powerStatus('crumbula/connoisseur', 'Connoisseur', 'Playing a Leftover also gains Guard.', 'appetite'),
   powerStatus('crumbula/the-counts-cut', 'The Count’s Cut', 'Your first Indulge each turn marks every enemy.', 'bite-mark'),
   powerStatus('crumbula/hunger-pangs', 'Hunger Pangs', 'Your first Attack each turn while Hungry costs 1 less.', 'appetite'),

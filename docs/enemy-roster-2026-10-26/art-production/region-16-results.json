@@ -1,0 +1,1078 @@
+{
+  "level": 16,
+  "entries": [
+    {
+      "level": 16,
+      "region": "Moon Courtyard and Pumpkin Grounds",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Pumpkin Lantern",
+      "existing_animation": false,
+      "description": "A squat carved pumpkin hovering just above its curled stem-shadow, with a small, warmly lopsided smile. Winks an inviting patch of light onto the wrong place; suggests distracting the visitor from a fellow haunt's next cue.",
+      "animation": "2D animation Idle: gentle bob. Tell: lid tilts. Action: one glow-mask expands from the carving. Resolve: lid settles and light contracts.",
+      "signature": "Signature A single floating invitation; never a walking pumpkin or miniature cart.",
+      "production_id": "pumpkin-lantern",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\pumpkin-lantern.webp",
+      "source_path": "animations\\sprites\\enemies\\pumpkinLantern.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            166,
+            187
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 12756,
+          "partial_alpha_pixels": 17758,
+          "alpha_bbox": [
+            0,
+            0,
+            166,
+            187
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            166,
+            186
+          ],
+          "sha256": "5e83d2a8f82bb1dd1e618ecb0de9bc6b083bb4c1f4c6f875ecd5dd7f606da094"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 46438,
+          "partial_alpha_pixels": 18570,
+          "alpha_bbox": [
+            27,
+            11,
+            229,
+            250
+          ],
+          "visible_bbox_alpha64": [
+            47,
+            29,
+            213,
+            215
+          ],
+          "sha256": "076850206cf2909ed53d6697ffedc2a0056c4d5e3e69eb5cfc7727cfc23ba67f"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1124109,
+          "partial_alpha_pixels": 447904,
+          "alpha_bbox": [
+            0,
+            24,
+            1240,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            233,
+            144,
+            1041,
+            1054
+          ],
+          "sha256": "d96c9ea8335aad48658e38ff5d1bbc19454bdc42c9b51727042896833b826405"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\pumpkin-lantern-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "pumpkin-lantern.webp",
+          "w": 166,
+          "h": 187,
+          "source": "pumpkinLantern.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 16,
+      "region": "Moon Courtyard and Pumpkin Grounds",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Moon Dial",
+      "existing_animation": false,
+      "description": "A low, tilted stone dial with a crescent-shaped gnomon and three inset moon marks. Borrows a patch of moon-shadow for nearby haunts; suggests brief cover from the visitor, not another clock's time reversal.",
+      "animation": "2D animation Idle: faint glyph shimmer. Tell: crescent tips sideways. Action: a small shadow wedge sweeps outward. Resolve: crescent and shadow return.",
+      "signature": "Signature Low stone profile and redirected shade, not spinning celestial machinery.",
+      "production_id": "moon-dial",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\moon-dial.webp",
+      "source_path": "animations\\sprites\\enemies\\moonDial.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            183,
+            149
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 12667,
+          "partial_alpha_pixels": 14200,
+          "alpha_bbox": [
+            0,
+            0,
+            183,
+            149
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            182,
+            149
+          ],
+          "sha256": "bca2e279273d64aee60b7f49230267149a063796448d69bdc85994ac887231b2"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 50318,
+          "partial_alpha_pixels": 14818,
+          "alpha_bbox": [
+            35,
+            54,
+            222,
+            207
+          ],
+          "visible_bbox_alpha64": [
+            37,
+            56,
+            219,
+            205
+          ],
+          "sha256": "33bafb46167598c69b351713c0e6d404fc22c0ca00e6f86aade283154f16523e"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1218602,
+          "partial_alpha_pixels": 353656,
+          "alpha_bbox": [
+            0,
+            19,
+            1200,
+            1232
+          ],
+          "visible_bbox_alpha64": [
+            182,
+            276,
+            1074,
+            1004
+          ],
+          "sha256": "0e8853f6f5727a48451446962fc3b3af0e74321de60a6e0fc0dafe96994979b9"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\moon-dial-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "moon-dial.webp",
+          "w": 183,
+          "h": 149,
+          "source": "moonDial.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 16,
+      "region": "Moon Courtyard and Pumpkin Grounds",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Hay Bale Poltergeist",
+      "existing_animation": false,
+      "description": "A compact rectangular hay bale with two conspicuously tidy twine bands and no face or limbs. Reties its own packing whenever disturbed; suggests rebuilding a small protective layer rather than lunging at anyone.",
+      "animation": "2D animation Idle: tiny straw shiver. Tell: bands loosen. Action: bands tighten while three straw flecks return. Resolve: bale gives a satisfied settling bounce.",
+      "signature": "Signature A self-packing block, not a straw person or blanket creature.",
+      "production_id": "hay-bale-poltergeist",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\hay-bale-poltergeist.webp",
+      "source_path": "animations\\sprites\\enemies\\hayBalePoltergeist.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            209,
+            146
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 11604,
+          "partial_alpha_pixels": 18436,
+          "alpha_bbox": [
+            0,
+            0,
+            209,
+            146
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            208,
+            145
+          ],
+          "sha256": "2b93351b99e68637e91d14a020974820ead22283ff0288a94441a5f69b4924e5"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 45226,
+          "partial_alpha_pixels": 19836,
+          "alpha_bbox": [
+            22,
+            5,
+            243,
+            239
+          ],
+          "visible_bbox_alpha64": [
+            27,
+            61,
+            235,
+            205
+          ],
+          "sha256": "8406bb26b69c4e8f0657dc7fae32bdf0ecb2820402080de1db0f67d891797979"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1081345,
+          "partial_alpha_pixels": 491027,
+          "alpha_bbox": [
+            0,
+            21,
+            1236,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            134,
+            296,
+            1153,
+            1005
+          ],
+          "sha256": "3d3f98f932cb66117a44abc6f8dfacfc8e49a37b627447b01f014efa4bc69883"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\hay-bale-poltergeist-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "hay-bale-poltergeist.webp",
+          "w": 209,
+          "h": 146,
+          "source": "hayBalePoltergeist.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 16,
+      "region": "Moon Courtyard and Pumpkin Grounds",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Harvest Sieve",
+      "existing_animation": false,
+      "description": "A broad wooden sieve suspended at a readable slant, its mesh holding three oversized golden seeds. Sifts upward, keeping the festival's 'best bits'; suggests removing a nuisance from a fellow haunt.",
+      "animation": "2D animation Idle: shallow rocking. Tell: seeds gather centrally. Action: mesh flashes and three flecks rise. Resolve: seeds settle into their original positions.",
+      "signature": "Signature One shallow mesh oval; the supernatural act is reverse sifting.",
+      "production_id": "harvest-sieve",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\harvest-sieve.webp",
+      "source_path": "animations\\sprites\\enemies\\harvestSieve.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            199,
+            144
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 7894,
+          "partial_alpha_pixels": 20091,
+          "alpha_bbox": [
+            0,
+            0,
+            199,
+            144
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            199,
+            144
+          ],
+          "sha256": "46b17d36c9b82b097cd6aadbce5dd45b63958272023b6d7871e490abaa1cbc20"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 44068,
+          "partial_alpha_pixels": 20797,
+          "alpha_bbox": [
+            0,
+            10,
+            231,
+            243
+          ],
+          "visible_bbox_alpha64": [
+            30,
+            55,
+            229,
+            199
+          ],
+          "sha256": "4c6516113e3c76c10d6bf97e305a7212c273e6e27537bfead6a35dedce65384f"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1059890,
+          "partial_alpha_pixels": 512204,
+          "alpha_bbox": [
+            0,
+            20,
+            1240,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            149,
+            271,
+            1119,
+            974
+          ],
+          "sha256": "e88b9f835579c13fa6d20680613b1fb494d31254fc67d51dbb7ea59fafa87f87"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\harvest-sieve-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "harvest-sieve.webp",
+          "w": 199,
+          "h": 144,
+          "source": "harvestSieve.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 16,
+      "region": "Moon Courtyard and Pumpkin Grounds",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Prize Rosette",
+      "existing_animation": false,
+      "description": "An oversized pleated prize ribbon floating upright, with a bright blank center and two short tails. Insists a nearby nuisance deserves first prize; suggests briefly bolstering one fellow haunt while drawing the visitor's attention.",
+      "animation": "2D animation Idle: tails flutter. Tell: pleats open slightly. Action: center flashes one star-shaped seal. Resolve: pleats close and tails fall still.",
+      "signature": "Signature A compact award badge, not a mask, ghost guest or streamer swarm.",
+      "production_id": "prize-rosette",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\prize-rosette.webp",
+      "source_path": "animations\\sprites\\enemies\\prizeRosette.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            156,
+            215
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 10988,
+          "partial_alpha_pixels": 22015,
+          "alpha_bbox": [
+            0,
+            0,
+            156,
+            215
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            156,
+            214
+          ],
+          "sha256": "be1ae79a6319383b209baeb2510b9f66c08773bb4336b017f9be89e85bd312ec"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 42028,
+          "partial_alpha_pixels": 22971,
+          "alpha_bbox": [
+            34,
+            19,
+            244,
+            248
+          ],
+          "visible_bbox_alpha64": [
+            51,
+            21,
+            207,
+            235
+          ],
+          "sha256": "9e1c34f4b4a837628d14684931054e20ac8c785971ed9c308b637e5831ebb0f1"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1021626,
+          "partial_alpha_pixels": 550246,
+          "alpha_bbox": [
+            0,
+            29,
+            1234,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            250,
+            106,
+            1014,
+            1152
+          ],
+          "sha256": "b0d9cc3e39d5f203ca27fde52ae6f84ae4a9f6dda4a8cac5bdc6f840a3c8dde9"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\prize-rosette-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "prize-rosette.webp",
+          "w": 156,
+          "h": 215,
+          "source": "prizeRosette.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 16,
+      "region": "Moon Courtyard and Pumpkin Grounds",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Seed Scoop",
+      "existing_animation": false,
+      "description": "A long-handled wooden measure balanced impossibly on its narrow tip, holding one pale, oversized seed. Plants its one seed in empty air, convinced spring is here; suggests a small, visibly announced buildup.",
+      "animation": "2D animation Idle: careful balancing. Tell: bowl inclines. Action: seed lifts above one faint root-shaped glow. Resolve: glow fades and seed returns.",
+      "signature": "Signature A narrow leverlike silhouette planting air, not another portion-balancing scale.",
+      "production_id": "seed-scoop",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\seed-scoop.webp",
+      "source_path": "animations\\sprites\\enemies\\seedScoop.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            62,
+            222
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 9718,
+          "partial_alpha_pixels": 3716,
+          "alpha_bbox": [
+            0,
+            0,
+            62,
+            222
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            4,
+            61,
+            222
+          ],
+          "sha256": "47f111c7e881ba3a35c64b118d40a812a2fe097b97ed6064f27a8726defcad50"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 60564,
+          "partial_alpha_pixels": 4642,
+          "alpha_bbox": [
+            37,
+            7,
+            165,
+            236
+          ],
+          "visible_bbox_alpha64": [
+            102,
+            16,
+            162,
+            234
+          ],
+          "sha256": "0fc4253ad34c022d24b5398811c182e37fb720583733b9000026aea6442b9c0f"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1462271,
+          "partial_alpha_pixels": 110035,
+          "alpha_bbox": [
+            49,
+            33,
+            1216,
+            1230
+          ],
+          "visible_bbox_alpha64": [
+            500,
+            77,
+            794,
+            1143
+          ],
+          "sha256": "e12e3651d85327b63cb4bb61bce2fcf8715fd7ad328b291e1b2b0d5ec3ab0fbe"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\seed-scoop-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "seed-scoop.webp",
+          "w": 62,
+          "h": 222,
+          "source": "seedScoop.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 16,
+      "region": "Moon Courtyard and Pumpkin Grounds",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Seed Rattle",
+      "existing_animation": false,
+      "description": "A ridged tin seed shaker with a short handle, a tied ribbon, and no opening mouth. Shakes the festival's count-in before anyone is ready; suggests nudging the rhythm of an announced effect.",
+      "animation": "2D animation Idle: ribbon droops. Tell: handle rises. Action: two crisp shakes release tiny sound rings. Resolve: shaker tilts back and ribbon settles.",
+      "signature": "Signature A closed upright cylinder; sound cues distinguish it from dispensing tools.",
+      "production_id": "seed-rattle",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\seed-rattle.webp",
+      "source_path": "animations\\sprites\\enemies\\seedRattle.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            137,
+            169
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 12348,
+          "partial_alpha_pixels": 10342,
+          "alpha_bbox": [
+            0,
+            0,
+            137,
+            169
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            135,
+            169
+          ],
+          "sha256": "236360f32f7dbdb54fc6a95f5fdf7d255a9565068b25cdcbe918f02a06d268c2"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 53305,
+          "partial_alpha_pixels": 11768,
+          "alpha_bbox": [
+            58,
+            38,
+            199,
+            241
+          ],
+          "visible_bbox_alpha64": [
+            60,
+            40,
+            195,
+            209
+          ],
+          "sha256": "04ce5bbd4ea2db2850dfdfbe34f23fe3364eec56a92effb054566fb85a731107"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1283219,
+          "partial_alpha_pixels": 289006,
+          "alpha_bbox": [
+            31,
+            21,
+            1230,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            295,
+            198,
+            956,
+            1021
+          ],
+          "sha256": "b9f622ab06013bfe126e82ae151483a673ebd6fdfa16ec9db98c93a0faa3d0d1"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\seed-rattle-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "seed-rattle.webp",
+          "w": 137,
+          "h": 169,
+          "source": "seedRattle.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 16,
+      "region": "Moon Courtyard and Pumpkin Grounds",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Great Pumpkin Cart",
+      "existing_animation": false,
+      "description": "A broad two-wheeled harvest wagon with three clearly separated gourds, one shallow basket and a curved wooden rail. No face, arms or giant glowing pumpkin dominates it. Re-sorts the harvest into an order it considers perfect; suggests exchanging which fellow haunt receives the next protective effect.",
+      "animation": "2D animation Idle: wheel rocks a fraction. Tell: basket tips. Action: three attached gourds lift and exchange preset slots. Resolve: basket levels and gourds settle with staggered bounces.",
+      "signature": "Signature Horizontal inventory choreography, not the regular lantern's floating light invitation.",
+      "production_id": "great-pumpkin-cart",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\great-pumpkin-cart.webp",
+      "source_path": "animations\\sprites\\enemies\\greatPumpkinCart.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            465,
+            301
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 62613,
+          "partial_alpha_pixels": 75748,
+          "alpha_bbox": [
+            0,
+            0,
+            465,
+            301
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            465,
+            301
+          ],
+          "sha256": "b0235edb984daccb495a647dd6ca3bccff02c66a532250a555a15a60c440f833"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 179876,
+          "partial_alpha_pixels": 80664,
+          "alpha_bbox": [
+            0,
+            7,
+            494,
+            502
+          ],
+          "visible_bbox_alpha64": [
+            27,
+            108,
+            491,
+            409
+          ],
+          "sha256": "f76fd2d74d8982865dd45656bf9a11377c6c0f80235760455e2639345a664271"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1076826,
+          "partial_alpha_pixels": 495037,
+          "alpha_bbox": [
+            0,
+            17,
+            1238,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            65,
+            266,
+            1202,
+            1001
+          ],
+          "sha256": "76a23b15aeae46ad5dce41c216af653f8d7697c2e6f174a55f659b3110b20df4"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\great-pumpkin-cart-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "great-pumpkin-cart.webp",
+          "w": 465,
+          "h": 301,
+          "source": "greatPumpkinCart.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 16,
+      "region": "Moon Courtyard and Pumpkin Grounds",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Cider Press",
+      "existing_animation": false,
+      "description": "A squat slatted cider barrel beneath one tall screw and a broad T-handle. Its little collecting cup stays visibly attached to the base; no surrounding workshop is needed. Patiently presses the same impossible drop twice, saving a second serving for a fellow haunt; suggests banking enemy-side recovery.",
+      "animation": "2D animation Idle: handle sways. Tell: screw descends one short increment. Action: one amber drop enters the cup, then rises back. Resolve: screw unwinds and the cup's glow remains briefly.",
+      "signature": "Signature Vertical rotary compression, unlike the crypt's squat lever-and-stamp press.",
+      "production_id": "cider-press",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\cider-press.webp",
+      "source_path": "animations\\sprites\\enemies\\ciderPress.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            290,
+            384
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 38086,
+          "partial_alpha_pixels": 71991,
+          "alpha_bbox": [
+            0,
+            0,
+            290,
+            384
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            290,
+            384
+          ],
+          "sha256": "1c96834518135a08ef3ce9eb3df1dc75c37fb0512844fa2d231d50c375f3d684"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 186330,
+          "partial_alpha_pixels": 74531,
+          "alpha_bbox": [
+            36,
+            31,
+            477,
+            512
+          ],
+          "visible_bbox_alpha64": [
+            112,
+            59,
+            402,
+            443
+          ],
+          "sha256": "287ba953a5f5ae9a9a5f3e9e064d1ef971090df89f31a8a72ba75424bb01d14a"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1121071,
+          "partial_alpha_pixels": 450622,
+          "alpha_bbox": [
+            0,
+            39,
+            1224,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            276,
+            145,
+            984,
+            1085
+          ],
+          "sha256": "0df139006086434bd999ab8072eb2625e0101dffa1b9ee9bbff8baa8388f5efb"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\cider-press-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "cider-press.webp",
+          "w": 290,
+          "h": 384,
+          "source": "ciderPress.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 16,
+      "region": "Moon Courtyard and Pumpkin Grounds",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Generous Cornucopia",
+      "existing_animation": false,
+      "description": "A large curled wicker horn resting on its side, with three fixed harvest shapes near the rim and one loose ribbon at its narrow tip. Offers fellow haunts another helping from its empty basket; suggests renewing their spent blessings without spawning food creatures.",
+      "animation": "2D animation Idle: wicker gently flexes. Tell: rim tips up. Action: three flat golden offering-shapes follow the same short arc outward and fade. Resolve: rim lowers and the ribbon unwinds.",
+      "signature": "Signature An unmistakable curved horn whose excess is hospitality, not appetite.",
+      "production_id": "generous-cornucopia",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\generous-cornucopia.webp",
+      "source_path": "animations\\sprites\\enemies\\generousCornucopia.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            463,
+            355
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 75829,
+          "partial_alpha_pixels": 87446,
+          "alpha_bbox": [
+            0,
+            0,
+            463,
+            355
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            463,
+            354
+          ],
+          "sha256": "030a19bdefe88285ca3f27e9f0f97e048c55097e87c2955c0aa23e0529d8743d"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 170825,
+          "partial_alpha_pixels": 90229,
+          "alpha_bbox": [
+            23,
+            36,
+            499,
+            468
+          ],
+          "visible_bbox_alpha64": [
+            35,
+            74,
+            497,
+            428
+          ],
+          "sha256": "c82bb2c7b5ed5a70819496e44f6554ef17434920d3dcefb09fb401b3c71c39fb"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1025668,
+          "partial_alpha_pixels": 546503,
+          "alpha_bbox": [
+            49,
+            65,
+            1221,
+            1234
+          ],
+          "visible_bbox_alpha64": [
+            85,
+            182,
+            1217,
+            1049
+          ],
+          "sha256": "79cf1c393ca8c270fbfd7c541c677f40def933902d935f7718ccf798ae1f991e"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\generous-cornucopia-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "generous-cornucopia.webp",
+          "w": 463,
+          "h": 355,
+          "source": "generousCornucopia.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    },
+    {
+      "level": 16,
+      "region": "Moon Courtyard and Pumpkin Grounds",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Harvest Effigy",
+      "existing_animation": false,
+      "description": "A grand festival figure built from straw, wooden crossbars and broad fan-shaped sleeves. A plain wooden moon mask replaces a conventional face; small pumpkins, ribbons and two unlit lantern ornaments decorate its waist. Keep the whole silhouette fixed and puppetlike. Conducts one last harvest welcome, awarding its fellow haunts the brightest patch of moonlight. It suggests ceremonial enemy-side protection followed by generous, readable openings, rather than striking or frightening the visitor.",
+      "animation": "2D animation Idle: shallow crossbar sway. Tell: sleeve lifts and mask inclines. Action: both sleeves fan outward as three ribbon accents trace a short welcoming arc. Resolve: sleeves fold, ornaments settle and mask bows.",
+      "signature": "Signature The region's only scarecrow-shaped presence; no lesser effigy repeats its silhouette.",
+      "production_id": "harvest-effigy",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\harvest-effigy.webp",
+      "source_path": "animations\\sprites\\enemies\\harvestEffigy.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            875,
+            872
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 423233,
+          "partial_alpha_pixels": 338974,
+          "alpha_bbox": [
+            0,
+            0,
+            875,
+            872
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            874,
+            872
+          ],
+          "sha256": "479b98669333e0868794746662cc778a6605c4e2f18489b440d487f389e65cdc"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 685299,
+          "partial_alpha_pixels": 362484,
+          "alpha_bbox": [
+            0,
+            19,
+            1008,
+            1024
+          ],
+          "visible_bbox_alpha64": [
+            76,
+            68,
+            949,
+            940
+          ],
+          "sha256": "e3ef4cabc6f25bc1ac03b57ca479ad002ed491bc8d572e1d67787e5e4b0bcc95"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1027480,
+          "partial_alpha_pixels": 544610,
+          "alpha_bbox": [
+            0,
+            23,
+            1234,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            93,
+            84,
+            1162,
+            1151
+          ],
+          "sha256": "6dea74a3d7a284e9c96e00ac37ce94388fb542274043508704644d9d2c9597e9"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\harvest-effigy-original.png",
+        "visual": "Reviewed full generated image: approved identity, tactile painted cutout style, whole unclipped silhouette, distinct materials and required features, no invented threatening anatomy. Reviewed region contact sheet at final sprite size.",
+        "conversion": "Tier-sized square source, isolated existing build_enemy_still; no registry modification.",
+        "runtime_metadata": {
+          "file": "harvest-effigy.webp",
+          "w": 875,
+          "h": 872,
+          "source": "harvestEffigy.png"
+        },
+        "generation_tool": "built-in image_gen"
+      },
+      "blocker": null
+    }
+  ],
+  "counts": {
+    "existing": 0,
+    "new": 11,
+    "pending": 0,
+    "blocked": 0
+  }
+}

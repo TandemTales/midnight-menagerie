@@ -1,0 +1,707 @@
+{
+  "judge": "judge1",
+  "status": "FINAL",
+  "method": "Blind image-only inspection. All four named references viewed first; all ten named images for each candidate then viewed in strict CITRINE, LAPIS, RUBY, OPAL order. Forty candidate images inspected. Earlier partial notes reused without consulting any source, metadata, browser or other review. Combat background neutral 5 and excluded from holistic judgment; other instructed exclusions respected. Scores assess the paired captures, not functionality or unseen content.",
+  "rubric": "9 requires the same painted hand as the references; 10 shippable. Enlarged type is intentional. Offscreen continuation does not prove absence or inaccessibility.",
+  "candidates": {
+    "CITRINE": {
+      "overall": 6.3,
+      "fits_between_samples": false,
+      "screens": {
+        "rest": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 7,
+              "material": 6,
+              "background": 8,
+              "composition": 6,
+              "readability": 6,
+              "coherence": 7
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 7,
+              "material": 6,
+              "background": 8,
+              "composition": 5,
+              "readability": 5,
+              "coherence": 6
+            }
+          },
+          "overall": 6.4,
+          "fits_between_samples": false,
+          "worst_problem": "1280x800 lower right: fourth choice is sliced through by the dark footer and has no explicit continuation cue.",
+          "visual_observations": "Purple and gold ornament belongs to the family, but the tent reads as flat geometry against the richly modeled frame. Rules press into the lower borders of the first three rows."
+        },
+        "event": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 8,
+              "background": 8,
+              "composition": 7,
+              "readability": 7,
+              "coherence": 8
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 8,
+              "background": 8,
+              "composition": 6,
+              "readability": 6,
+              "coherence": 7
+            }
+          },
+          "overall": 7.3,
+          "fits_between_samples": false,
+          "worst_problem": "1280x800 lower paper board: the third choice begins behind the footer with no explicit scroll signal.",
+          "visual_observations": "Warm paper, drop cap and colored risk/reward phrases feel coherent. The paper is a large flat upright sheet with weak physical support; narrow option columns cause awkward word wrapping."
+        },
+        "gameover": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 7,
+              "material": 7,
+              "background": 8,
+              "composition": 6,
+              "readability": 6,
+              "coherence": 7
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 7,
+              "material": 7,
+              "background": 8,
+              "composition": 6,
+              "readability": 6,
+              "coherence": 7
+            }
+          },
+          "overall": 6.8,
+          "fits_between_samples": false,
+          "worst_problem": "Both sizes lower edge: left record, center card caption and right inventory all disappear into the footer without clearly differentiated continuation cues.",
+          "visual_observations": "The candle and paired portraits establish a strong narrative center. Many similarly weighted cartouches compete; the top of the featured card is crowded by the progress plaque."
+        },
+        "shop": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 7,
+              "material": 7,
+              "background": 8,
+              "composition": 7,
+              "readability": 6,
+              "coherence": 7
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 6,
+              "material": 7,
+              "background": 8,
+              "composition": 6,
+              "readability": 4,
+              "coherence": 6
+            }
+          },
+          "overall": 6.2,
+          "fits_between_samples": false,
+          "worst_problem": "1280x800 far-right Boomerang Bone: rules visibly run below the card's text chamber and are clipped.",
+          "visual_observations": "The shelf, jars and price tags make a convincing shop tableau, but cramped card rules and low-contrast paper labels weaken useful reading. The lower merchandise runs into the footer without an obvious continuation cue."
+        },
+        "combat": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 7,
+              "material": 7,
+              "background": 5,
+              "composition": 3,
+              "readability": 5,
+              "coherence": 5
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 7,
+              "material": 7,
+              "background": 5,
+              "composition": 2,
+              "readability": 4,
+              "coherence": 4
+            }
+          },
+          "overall": 4.6,
+          "fits_between_samples": false,
+          "worst_problem": "1280x800 middle combat area: six conditions form one interleaved stack between actors, with Regen intruding into the enemy nameplate region.",
+          "visual_observations": "Large enamel labels are readable individually, yet owner attribution is ambiguous. The central stack crowds the enemy silhouette and disperses no clear friendly versus enemy grouping."
+        }
+      }
+    },
+    "LAPIS": {
+      "overall": 7.1,
+      "fits_between_samples": false,
+      "screens": {
+        "rest": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 8,
+              "background": 8,
+              "composition": 7,
+              "readability": 7,
+              "coherence": 8
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 8,
+              "background": 8,
+              "composition": 7,
+              "readability": 7,
+              "coherence": 8
+            }
+          },
+          "overall": 7.8,
+          "fits_between_samples": false,
+          "worst_problem": "1600x900 lower right: the More choices below plaque covers the fourth choice's title rather than occupying a dedicated continuation strip.",
+          "visual_observations": "Painted quilt, carved chair backs, folds and lantern give the fort convincing depth. The overlaid small characters feel less grounded than the cloth. Text clears the first three row borders; continuation is explicit."
+        },
+        "event": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 8,
+              "background": 8,
+              "composition": 7,
+              "readability": 7,
+              "coherence": 8
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 8,
+              "background": 8,
+              "composition": 7,
+              "readability": 7,
+              "coherence": 8
+            }
+          },
+          "overall": 7.6,
+          "fits_between_samples": false,
+          "worst_problem": "Both sizes around the lower board: the supporting lectern is mostly hidden, leaving disconnected bright triangular edges and a large candle above its right edge.",
+          "visual_observations": "Warm paper and enamel drop cap are convincing. Continuation is legible, but its far-right placement is detached from the paper scroll area. The board starts low and leaves a broad unused wall above."
+        },
+        "gameover": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 7,
+              "material": 7,
+              "background": 8,
+              "composition": 5,
+              "readability": 6,
+              "coherence": 6
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 7,
+              "material": 7,
+              "background": 8,
+              "composition": 4,
+              "readability": 5,
+              "coherence": 6
+            }
+          },
+          "overall": 5.9,
+          "fits_between_samples": false,
+          "worst_problem": "1280x800 center: the showcased card starts halfway down its bay and its rules are cut at the footer while a large empty black region sits above it.",
+          "visual_observations": "Compact inventory badges improve density and the continuation cue helps. The left panel's generous gaps and center card's low placement make the three columns feel independently laid out."
+        },
+        "shop": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 6,
+              "background": 7,
+              "composition": 7,
+              "readability": 8,
+              "coherence": 7
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 6,
+              "background": 7,
+              "composition": 7,
+              "readability": 8,
+              "coherence": 7
+            }
+          },
+          "overall": 7,
+          "fits_between_samples": false,
+          "worst_problem": "Both sizes central shop backdrop: tall smooth purple gradient stripes read as a synthetic backdrop rather than painted hanging cloth.",
+          "visual_observations": "Cards retain convincing proportions and full first-row rules; two-row continuation is clearly indicated. The wide spaces between cards and lack of a substantial shelf beneath each row weaken the physical display."
+        },
+        "combat": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 7,
+              "background": 5,
+              "composition": 8,
+              "readability": 8,
+              "coherence": 8
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 7,
+              "background": 5,
+              "composition": 8,
+              "readability": 8,
+              "coherence": 8
+            }
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "1280x800 left group: short horizontal dashes point into empty space rather than making a precise connection to the friendly owner.",
+          "visual_observations": "Clear opposing stacks sit beside the actors without covering faces or nameplates. All six condition labels read comfortably, though the vertical spacing is quite loose and owner attribution relies on side placement."
+        }
+      }
+    },
+    "RUBY": {
+      "overall": 7.6,
+      "fits_between_samples": false,
+      "screens": {
+        "rest": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 8,
+              "background": 8,
+              "composition": 8,
+              "readability": 8,
+              "coherence": 8
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 8,
+              "background": 8,
+              "composition": 7,
+              "readability": 7,
+              "coherence": 8
+            }
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "1280x800 lower right: the third choice is cut between its description and rule; the continuation plaque is clear but detached below the board.",
+          "visual_observations": "The blanket fort has rich upholstery, fringe, cushions and a grounded lantern. Spacious choice rows preserve the enlarged hierarchy; the synthetic purple row textures remain less painterly than the fort."
+        },
+        "event": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 8,
+              "background": 8,
+              "composition": 8,
+              "readability": 8,
+              "coherence": 8
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 8,
+              "background": 8,
+              "composition": 8,
+              "readability": 8,
+              "coherence": 8
+            }
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "Both sizes lower-right edge: More story below sits over the footer zone far from the paper's clipped continuation.",
+          "visual_observations": "Carved wooden side supports make the sheet feel seated in an object. The serif copy, aged paper and brass lamp form a coherent reading station. The support is legible at both sizes, though most of its structure is still concealed."
+        },
+        "gameover": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 7,
+              "material": 7,
+              "background": 8,
+              "composition": 7,
+              "readability": 7,
+              "coherence": 7
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 7,
+              "material": 7,
+              "background": 8,
+              "composition": 7,
+              "readability": 7,
+              "coherence": 7
+            }
+          },
+          "overall": 7,
+          "fits_between_samples": false,
+          "worst_problem": "1600x900 center: the thick progress plaque overlaps the showcased card's top cost medallion.",
+          "visual_observations": "The featured card's complete rules are visible and the inventory is compact with a continuation cue. Left and right boards remain much flatter than the ornate central framing, and the cue overlaps the last inventory region at 1280."
+        },
+        "shop": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 7,
+              "background": 8,
+              "composition": 7,
+              "readability": 8,
+              "coherence": 7
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 7,
+              "background": 8,
+              "composition": 7,
+              "readability": 8,
+              "coherence": 7
+            }
+          },
+          "overall": 7.3,
+          "fits_between_samples": false,
+          "worst_problem": "Both sizes top merchandise: cards are extremely elongated, with large empty text chambers that make them look like tall panels rather than the reference game's tactile cards.",
+          "visual_observations": "All five first-row rules are visible and legible. The shelf and secondary category headers establish a complete shop; the continuation plaque makes the crop intentional. Purple drapery is too smooth and mechanically regular."
+        },
+        "combat": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 7,
+              "background": 5,
+              "composition": 7,
+              "readability": 8,
+              "coherence": 7
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 7,
+              "background": 5,
+              "composition": 7,
+              "readability": 8,
+              "coherence": 7
+            }
+          },
+          "overall": 7.4,
+          "fits_between_samples": false,
+          "worst_problem": "Both sizes upper combat area: the two condition groups hug the top rail, visually detaching them from their owners below.",
+          "visual_observations": "Friendly and enemy conditions form distinct stacks without face or plate overlap. The topmost labels nearly touch the HUD boundary; lower Strength appears translucent and less readable than the other labels."
+        }
+      }
+    },
+    "OPAL": {
+      "overall": 6.8,
+      "fits_between_samples": false,
+      "screens": {
+        "rest": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 8,
+              "background": 7,
+              "composition": 7,
+              "readability": 8,
+              "coherence": 7
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 8,
+              "background": 7,
+              "composition": 7,
+              "readability": 8,
+              "coherence": 7
+            }
+          },
+          "overall": 7.6,
+          "fits_between_samples": false,
+          "worst_problem": "Both sizes left illustration: large blurred pale-purple ornaments behind the fort compete with its carefully painted cloth and make the scene read as a cutout.",
+          "visual_observations": "The detailed quilt, rug and carved furniture are strong; characters have a clearer floor relationship. Three complete choices are readable. The continuation plaque is explicit but centered under the overall screen rather than the choice board."
+        },
+        "event": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 7,
+              "background": 8,
+              "composition": 6,
+              "readability": 7,
+              "coherence": 7
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 7,
+              "background": 8,
+              "composition": 5,
+              "readability": 6,
+              "coherence": 7
+            }
+          },
+          "overall": 6.9,
+          "fits_between_samples": false,
+          "worst_problem": "1280x800 center: the lowered paper board exposes only one complete choice, while a broad empty band remains above the board.",
+          "visual_observations": "The carved support has real wood depth, but the oversized left candle dominates it. Paper looks unusually smooth with conspicuous repeated vertical fold stripes. Continuation is explicit, though detached in the footer; no claim about offscreen reachability."
+        },
+        "gameover": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 7,
+              "material": 7,
+              "background": 8,
+              "composition": 4,
+              "readability": 5,
+              "coherence": 6
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 7,
+              "material": 7,
+              "background": 8,
+              "composition": 3,
+              "readability": 4,
+              "coherence": 5
+            }
+          },
+          "overall": 4.9,
+          "fits_between_samples": false,
+          "worst_problem": "1280x800 center: the featured card is pushed so low that only its illustration remains above the footer, despite ample blank space above the portraits.",
+          "visual_observations": "The three columns have attractive individual parts but weak shared alignment. Large top gaps and vertically separated summary blocks squander the reading area. A named continuation cue helps explain cropping but does not repair the composition."
+        },
+        "shop": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 6,
+              "background": 7,
+              "composition": 6,
+              "readability": 8,
+              "coherence": 7
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 6,
+              "background": 7,
+              "composition": 6,
+              "readability": 8,
+              "coherence": 7
+            }
+          },
+          "overall": 6.7,
+          "fits_between_samples": false,
+          "worst_problem": "Both sizes left side of the merchandise board: an unusually wide empty purple column makes the card display look off-center.",
+          "visual_observations": "Large naturally proportioned cards display the first-row rules clearly. The smooth striped backdrop and lack of visible supporting shelves make this feel like a gallery grid rather than a tactile shop. Continuation is named, but the initial view offers little sense of the other merchandise categories."
+        },
+        "combat": {
+          "scores": {
+            "1600x900": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 7,
+              "background": 5,
+              "composition": 6,
+              "readability": 8,
+              "coherence": 7
+            },
+            "1280x800": {
+              "ornament": 8,
+              "palette": 8,
+              "typography": 8,
+              "material": 7,
+              "background": 5,
+              "composition": 5,
+              "readability": 7,
+              "coherence": 7
+            }
+          },
+          "overall": 7.2,
+          "fits_between_samples": false,
+          "worst_problem": "1280x800 upper center: The Butler's Bristle sits above Maya while Maya's Weak sits between the actors, splitting both owners' spatial groups.",
+          "visual_observations": "Owner names remove semantic ambiguity and faces/plates remain unobstructed. Spatial grouping is inconsistent across the pair; the small owner headings crowd the top border of the cartouches, and Strength is noticeably faint."
+        }
+      }
+    }
+  },
+  "per_screen_rankings": {
+    "rest": [
+      "RUBY",
+      "LAPIS",
+      "OPAL",
+      "CITRINE"
+    ],
+    "event": [
+      "RUBY",
+      "LAPIS",
+      "CITRINE",
+      "OPAL"
+    ],
+    "gameover": [
+      "RUBY",
+      "CITRINE",
+      "LAPIS",
+      "OPAL"
+    ],
+    "shop": [
+      "RUBY",
+      "LAPIS",
+      "OPAL",
+      "CITRINE"
+    ],
+    "combat": [
+      "LAPIS",
+      "RUBY",
+      "OPAL",
+      "CITRINE"
+    ]
+  },
+  "overall_system_ranking": [
+    "RUBY",
+    "LAPIS",
+    "OPAL",
+    "CITRINE"
+  ],
+  "overall_system_winner": "RUBY",
+  "winner_rationale": "RUBY is the most coherent whole system: its painted fort and legible carved lectern share the references' object-based staging; the shop exposes all five complete rules at both sizes; gameover retains a complete featured card; and combat separates the two sides without face or nameplate overlap. It has fewer severe layout failures than LAPIS or OPAL. This is a relative winner at 7.6, not a same-painted-hand 9: stretched shop cards, smooth curtain gradients, detached continuation cues and progress-plaque overlap still need work.",
+  "winner_fixes": [
+    {
+      "priority": 1,
+      "screen": "gameover",
+      "fix": "At 1600x900, reserve separate vertical space for the progress cartouche and featured card so the cartouche no longer covers the card's cost medallion. Preserve the complete rules at both sizes."
+    },
+    {
+      "priority": 2,
+      "screen": "shop",
+      "fix": "Restore a believable card aspect ratio without reducing rule type or removing information. Give longer rules sufficient width and use a deliberate second row with a visible continuation break if needed; retain the shop's physical shelf structure."
+    },
+    {
+      "priority": 3,
+      "screen": "combat",
+      "fix": "Keep every friendly condition together beside its owner and every enemy condition together beside the enemy, with more space below the top HUD. Add a restrained owner heading per group so attribution is explicit without scattering labels."
+    },
+    {
+      "priority": 4,
+      "screen": "rest",
+      "fix": "At 1280x800, avoid cutting the third choice between its description and mechanical rule. Use a dedicated scroll viewport boundary and continuation rail, while keeping the present type size and full text."
+    },
+    {
+      "priority": 5,
+      "screen": "all scrolling boards",
+      "fix": "Place the continuation cue within the lower boundary of the actual scrolling board. Reserve space so it cannot cover the final visible item or compete with the navigation buttons; give the cue a board-specific name."
+    },
+    {
+      "priority": 6,
+      "screen": "shop",
+      "fix": "Replace the perfectly regular gradient curtain with painted folds, fabric grain, hem thickness and localized lantern highlights matching the reference cloth and carved trim."
+    },
+    {
+      "priority": 7,
+      "screen": "rest",
+      "fix": "Give action-row interiors quieter painted enamel or cloth texture with restrained highlights; the current smooth swirls and black gradients look less tactile than the fort and gold frame."
+    },
+    {
+      "priority": 8,
+      "screen": "gameover",
+      "fix": "Reduce excessive internal empty padding in summary and inventory framing, keeping the enlarged text. Give each scrolling column a clear lower edge so the footer does not appear to erase content."
+    }
+  ],
+  "candidate_specific_grafts": [
+    {
+      "from": "CITRINE",
+      "to": "RUBY",
+      "idea": "Preserve the shop's readable relationship among shelf, tagged merchandise, keepsake domes and snack jars as more goods move into continuation. Graft this staging, not the cramped small cards or clipped rules."
+    },
+    {
+      "from": "LAPIS",
+      "to": "RUBY",
+      "idea": "Borrow the combat placement of complete owner-side condition stacks alongside actors, with all labels clear of faces and plates. Keep the spatial groups tighter and add explicit owner identification."
+    },
+    {
+      "from": "LAPIS",
+      "to": "RUBY",
+      "idea": "Borrow the shop card proportions and natural multirow rhythm as a starting point for resolving RUBY's very tall card panels. Retain physical shelf supports rather than the unsupported gradient grid."
+    },
+    {
+      "from": "OPAL",
+      "to": "RUBY",
+      "idea": "Borrow explicit owner names on combat conditions, but put one owner heading above each unified group; do not copy OPAL's scattered Bristle/Weak arrangement."
+    },
+    {
+      "from": "OPAL",
+      "to": "RUBY",
+      "idea": "Borrow named continuation wording such as expedition record or fort choices. Position it on the relevant board's dedicated rail rather than the central footer."
+    },
+    {
+      "from": "RUBY",
+      "to": "other candidates",
+      "idea": "Use the visible carved event support and rich fort upholstery as the material benchmark. Keep the complete featured-card rules and all-five-shop-rule readability when adjusting layout."
+    }
+  ],
+  "reference_fit_conclusion": "No candidate reaches coherence 9 across the five screens, and none earns fits_between_samples=true. Attractive individual painted objects do not erase compositing, material and layout mismatches."
+}

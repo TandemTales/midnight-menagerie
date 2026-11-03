@@ -1,0 +1,202 @@
+/** Personal wax-pencil marks in sheet coordinates. Never part of run RNG/state. */
+export class MapMarkings {
+  constructor(scene) {
+    this.scene = scene;
+    this.off = []; this.history = []; this.mode = 'pan'; this.color = 'yellow';
+    this.key = `mm.blueprint-marks.v2:${scene.model.seed}:${scene.model.regionId}:plan${scene.model.map.plan.v}:${scene.SW}`;
+    this.strokes = [];
+    try {
+      const saved = JSON.parse(localStorage.getItem(this.key) || '[]');
+      if (Array.isArray(saved)) this.strokes = saved.filter(s =>
+        ['yellow', 'red', 'green', 'white'].includes(s.color) && Array.isArray(s.points)
+        && s.points.length && s.points.length <= 4000
+        && s.points.every(p => Array.isArray(p) && p.length === 2 && p.every(Number.isFinite))
+      ).slice(-300);
+    } catch { /* Storage may be disabled; the tools still work for this visit. */ }
+    const ns = 'http://www.w3.org/2000/svg';
+    this.svg = document.createElementNS(ns, 'svg');
+    this.svg.classList.add('map-player-marks');
+    this.svg.setAttribute('viewBox', `0 0 ${scene.SW} ${scene.SH}`);
+    this.svg.setAttribute('aria-hidden', 'true');
+    scene.el.sheet.append(this.svg);
+    this.bar = document.createElement('div');
+    this.bar.className = 'map-tools';
+    this.bar.setAttribute('role', 'group'); this.bar.setAttribute('aria-label', 'Map pencils and navigation');
+    this.bar.innerHTML = `<span class="map-tools__title">Our notes</span>
+      <button data-tool="pan" aria-pressed="true" title="Move the sheet (V)">Hand</button>
+      ${['yellow', 'red', 'green', 'white'].map(c => `<button class="map-pencil map-pencil--${c}" data-tool="${c}" aria-label="${c} marker" aria-pressed="false" title="Draw with the ${c} marker"><i aria-hidden="true"></i><span>${c === 'white' ? 'Chalk' : c}</span></button>`).join('')}
+      <button data-tool="erase" aria-pressed="false" title="Erase your strokes (E)">Eraser</button>
+      <button data-action="undo" title="Undo the last drawing or erasure (Ctrl Z)">Undo</button>
+      <button data-action="clear" title="Erase all your marks on this wing; Undo restores them">Clear</button>
+      <span class="map-tools__divider"></span>
+      <button data-action="stamp" title="Mark the selected room with an X (M)">X room</button>
+      <button data-action="remove" title="Erase your marks at the selected room (Delete)">Unmark</button>
+      <button data-action="here" title="Return to your current room (0)">You are here</button>
+      <button data-action="overview" title="See the whole sheet">Overview</button>
+      <button data-action="out" aria-label="Zoom out">−</button>
+      <button data-action="in" aria-label="Zoom in">+</button>
+      <output class="map-tools__status" aria-live="polite">Drag / scroll · Shift scroll sideways · Ctrl scroll zoom</output>`;
+    scene.el.screen.append(this.bar);
+    this.status = this.bar.querySelector('output');
+    this.on(this.bar, 'click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.tool) this.select(b.dataset.tool);
+      else this.action(b.dataset.action);
+    });
+    const vp = scene.el.viewport;
+    this.on(vp, 'pointerdown', e => {
+      if (e.button !== 0 || this.mode === 'pan') return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      if (this.active != null) return;
+      this.active = e.pointerId; this.remember();
+      vp.setPointerCapture(e.pointerId);
+      const p = this.point(e);
+      if (this.mode === 'erase') { this.lastErase = p; this.erase(p, p); }
+      else {
+        this.stroke = { color: this.color, points: [p] };
+        this.strokes.push(this.stroke);
+        this.path = this.makePath(this.stroke);
+      }
+      scene._hideTip();
+    }, true);
+    this.on(window, 'pointermove', e => {
+      if (this.active !== e.pointerId) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      const p = this.point(e);
+      if (this.mode === 'erase') { this.erase(this.lastErase, p); this.lastErase = p; }
+      else if (this.stroke && this.stroke.points.length < 4000) {
+        const last = this.stroke.points.at(-1);
+        if (Math.hypot(p[0] - last[0], p[1] - last[1]) < 2 / scene.view.z) return;
+        this.stroke.points.push(p); this.path.setAttribute('d', this.d(this.stroke));
+      }
+    }, true);
+    const end = e => {
+      if (this.active !== e.pointerId) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      if (vp.hasPointerCapture(e.pointerId)) vp.releasePointerCapture(e.pointerId);
+      this.active = null; this.stroke = null; this.path = null; this.save();
+    };
+    this.on(window, 'pointerup', end, true);
+    this.on(window, 'pointercancel', end, true);
+    this.on(vp, 'click', e => {
+      if (this.mode !== 'pan') { e.preventDefault(); e.stopImmediatePropagation(); }
+    }, true);
+    this.on(window, 'keydown', e => {
+      /* This listens on window in the capture phase, ahead of every dialog's own
+         keys: without this line Escape could not close Discoveries, How to play or
+         Settings over the map, and M or Delete changed the marks behind them. */
+      if (document.querySelector('.mm-modal, dialog[open]')) return;
+      if (e.target.closest?.('input,textarea,select') || e.target.isContentEditable) return;
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault(); this.action('undo'); return;
+      }
+      if (e.ctrlKey || e.metaKey || e.altKey || e.target.closest?.('.map-tools')) return;
+      const k = e.key.toLowerCase();
+      /* Escape puts a pencil down. With none in hand it is not this bar's key: the
+         HUD opens Settings on it, and a controller's Start and Cancel send it. */
+      if (k === 'escape' && this.mode === 'pan') return;
+      if (k === 'v' || k === 'escape') this.select('pan');
+      else if (k === 'e') this.select('erase');
+      else if (k === 'm') this.action('stamp');
+      else if (k === 'delete') this.action('remove');
+      else return;
+      e.preventDefault(); e.stopImmediatePropagation();
+    }, true);
+    this.render();
+  }
+  on(el, event, fn, options) {
+    el.addEventListener(event, fn, options);
+    this.off.push(() => el.removeEventListener(event, fn, options));
+  }
+  point(e) {
+    const r = this.scene._vpRect(), v = this.scene.view;
+    return [Math.max(0, Math.min(this.scene.SW, (e.clientX - r.left - v.x) / v.z)),
+      Math.max(0, Math.min(this.scene.SH, (e.clientY - r.top - v.y) / v.z))];
+  }
+  d(s) { return 'M' + s.points.map(p => p.map(v => v.toFixed(1)).join(',')).join(' L') + (s.points.length === 1 ? ' l0.1,0' : ''); }
+  makePath(s) {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', this.d(s)); path.setAttribute('class', `map-pencil--${s.color}`);
+    this.svg.append(path); return path;
+  }
+  render() {
+    this.svg.replaceChildren(); this.strokes.forEach(s => this.makePath(s));
+    this.bar.querySelector('[data-action="undo"]').disabled = !this.history.length;
+    this.bar.querySelector('[data-action="clear"]').disabled = !this.strokes.length;
+  }
+  remember() {
+    this.history.push(JSON.stringify(this.strokes));
+    if (this.history.length > 30) this.history.shift();
+  }
+  save() {
+    this.strokes = this.strokes.slice(-300);
+    try {
+      localStorage.setItem(this.key, JSON.stringify(this.strokes));
+      const indexKey = 'mm.blueprint-marks.index';
+      const old = JSON.parse(localStorage.getItem(indexKey) || '[]');
+      const keys = [...(Array.isArray(old) ? old : []).filter(k => k !== this.key), this.key];
+      while (keys.length > 24) {
+        const k = keys.shift(); if (typeof k === 'string' && k.startsWith('mm.blueprint-marks.v2:')) localStorage.removeItem(k);
+      }
+      localStorage.setItem(indexKey, JSON.stringify(keys));
+    } catch { this.status.textContent = 'Marks kept for this visit; storage is unavailable'; }
+    this.render();
+  }
+  select(tool) {
+    if (this.active != null) return;
+    this.scene._hideTip();
+    this.mode = ['pan', 'erase'].includes(tool) ? tool : 'draw';
+    if (this.mode === 'draw') this.color = tool;
+    this.scene.el.screen.dataset.mapTool = this.mode;
+    this.bar.querySelectorAll('[data-tool]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tool === tool)));
+    this.status.textContent = this.mode === 'pan' ? 'Drag / scroll · Shift scroll sideways · Ctrl scroll zoom'
+      : this.mode === 'erase' ? 'Rub out your marks · V returns to Hand' : 'Draw on the sheet · V returns to Hand';
+  }
+  erase(a, b) {
+    const radius = 18 / this.scene.view.z;
+    // Swept eraser: catches strokes even when a fast pointer skips between samples.
+    const distance = (p, u, v) => {
+      const dx = v[0] - u[0], dy = v[1] - u[1];
+      const t = Math.max(0, Math.min(1, ((p[0] - u[0]) * dx + (p[1] - u[1]) * dy) / (dx * dx + dy * dy || 1)));
+      return Math.hypot(p[0] - u[0] - t * dx, p[1] - u[1] - t * dy);
+    };
+    const cross = (u, v, p) => (v[0]-u[0])*(p[1]-u[1])-(v[1]-u[1])*(p[0]-u[0]);
+    const hits = (u, v) => Math.min(distance(u,a,b), distance(v,a,b), distance(a,u,v), distance(b,u,v)) <= radius
+      || (cross(a,b,u)*cross(a,b,v) < 0 && cross(u,v,a)*cross(u,v,b) < 0);
+    const before = this.strokes.length;
+    this.strokes = this.strokes.filter(s => !s.points.some((p, i) => hits(p, s.points[Math.max(0, i-1)])));
+    if (before !== this.strokes.length) this.render();
+  }
+  action(action) {
+    if (this.active != null) return;
+    const s = this.scene;
+    s._hideTip();
+    if (action === 'here') { s._fitView(); return; }
+    if (action === 'overview') {
+      s.view.z = s._fitZoom; s.view.x = s.view.y = 0; s._applyView(); return;
+    }
+    if (action === 'in' || action === 'out') { s._zoomCentre(action === 'in' ? 1.2 : 1/1.2); return; }
+    if (action === 'undo') {
+      if (this.history.length) { this.strokes = JSON.parse(this.history.pop()); this.save(); this.status.textContent = 'Last change undone'; }
+      return;
+    }
+    this.remember();
+    if (action === 'clear') { this.strokes = []; this.status.textContent = 'Your marks are cleared · Undo brings them back'; }
+    else {
+      const n = s.model.map.nodes.find(n => n.id === s._focusId) || s.model.map.nodes.find(n => n.id === s.model.currentId) || s.model.map.nodes[0];
+      const x = n.x * s.SW, y = n.y * s.SH;
+      if (action === 'stamp') {
+        this.strokes.push({ color: this.color, points: [[x-25,y-25],[x+25,y+25]] },
+          { color: this.color, points: [[x-25,y+25],[x+25,y-25]] });
+        s._lookAt(n, 0);
+        this.status.textContent = `Marked ${n.roomName || 'selected room'}`;
+      } else if (action === 'remove') { this.erase([x-35,y-35],[x+35,y+35]); this.status.textContent = 'Erased marks at the selected room'; }
+    }
+    this.save();
+  }
+  destroy() {
+    if (this.active != null) this.save();
+    for (const off of this.off) off();
+    this.svg.remove(); this.bar.remove();
+  }
+}

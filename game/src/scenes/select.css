@@ -88,7 +88,7 @@
   justify-self: center; align-self: center;
   transition: opacity var(--t-base) var(--ease-out), visibility 0s linear 0s;
 }
-.sel__logo .mm-logo__plaque { font-size: calc(var(--logo-w) * .042); padding: 3px calc(var(--logo-w) * .05); bottom: calc(var(--logo-w) * -.085); }
+.sel__logo .mm-logo__plaque { --reading-size: calc(var(--logo-w) * .042); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); padding: 3px calc(var(--logo-w) * .05); bottom: calc(var(--logo-w) * -.085); }
 /* While the Menagerie is on screen the painting carries the wordmark in its own
    cartouche. Two of them, one above the other, was the giveaway that this screen
    was a reconstruction of the art rather than the art itself. So the wordmark is
@@ -288,7 +288,7 @@
 }
 .sel__board[data-lit] .sel__candlelight {
   opacity: 1;
-  animation: sel-candleflicker 3.6s ease-in-out infinite;
+  animation: sel-candleflicker calc(3.6s * var(--anim-scale)) ease-in-out infinite;
 }
 @keyframes sel-candleflicker {
   0%, 100% { opacity: 1; }
@@ -404,7 +404,7 @@
 .hero__name {
   margin: 0;
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(26px, 2.5vw, 46px);
+  --reading-size: clamp(26px, 2.5vw, 46px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .02em;
   background-image: linear-gradient(178deg, var(--arcane-100) 0%, var(--arcane-200) 30%, var(--arcane-300) 62%, var(--arcane-400) 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -515,7 +515,7 @@
   border: 1px solid color-mix(in srgb, var(--brass-400) 20%, transparent);
 }
 .vital__n { font-family: var(--font-num); font-size: var(--fs-lg); line-height: 1.05; color: var(--brass-100); }
-.vital__l { font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-lo); }
+.vital__l { --reading-size: 9px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .12em; text-transform: uppercase; color: var(--text-lo); }
 .vital--hp .vital__n    { color: var(--courage-300); }
 .vital--nerve .vital__n { color: var(--pluck-300); }
 .vital--deck .vital__n  { color: var(--spectre-200); }
@@ -538,16 +538,16 @@
   grid-area: cost;
   display: grid; place-items: center;
   width: 17px; height: 17px; border-radius: 50%;
-  font-family: var(--font-num); font-size: 10px; font-weight: 700;
+  font-family: var(--font-num); --reading-size: 10px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 700;
   color: var(--ink-900);
   background: radial-gradient(circle at 34% 30%, var(--pluck-300), var(--pluck-500));
 }
 .mcard__name { grid-area: name; font-family: var(--font-display); font-size: var(--fs-sm); color: var(--text-hi); align-self: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mcard__type { grid-area: type; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--card-tint); }
+.mcard__type { grid-area: type; --reading-size: 9px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .16em; text-transform: uppercase; color: var(--card-tint); }
 .mcard__text { grid-area: text; font-size: var(--fs-xs); line-height: 1.35; color: var(--text-mid); }
 .mcard__n {
   position: absolute; top: 5px; right: 6px;
-  font-family: var(--font-num); font-size: 10px; color: var(--brass-200);
+  font-family: var(--font-num); --reading-size: 10px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--brass-200);
 }
 
 
@@ -692,7 +692,7 @@
 .kid__info { display: flex; flex-direction: column; gap: var(--s-3); min-height: 0; overflow: auto; justify-content: space-between; }
 .kid__name {
   margin: 0;
-  font-family: var(--font-display); font-size: clamp(24px, 2.2vw, 40px);
+  font-family: var(--font-display); --reading-size: clamp(24px, 2.2vw, 40px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   background-image: linear-gradient(178deg, var(--arcane-100), var(--arcane-300) 70%, var(--arcane-400));
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
@@ -708,7 +708,7 @@
   background: color-mix(in srgb, var(--ink-600) 58%, transparent);
   border: 1px solid color-mix(in srgb, var(--brass-400) 20%, transparent);
 }
-.packitem__slots { color: var(--brass-300); letter-spacing: 2px; font-size: 9px; }
+.packitem__slots { color: var(--brass-300); letter-spacing: 2px; --reading-size: 9px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .packitem__name { font-size: var(--fs-sm); color: var(--text-hi); }
 .packitem__n { font-size: var(--fs-xs); color: var(--text-lo); }
 .kid__focus { margin: var(--s-2) 0 0; font-size: var(--fs-sm); color: var(--text-mid); }
@@ -774,7 +774,7 @@
   position: absolute; top: 6px; right: 6px; z-index: 2;
   display: grid; place-items: center;
   width: 20px; height: 20px; border-radius: 50%;
-  font-family: var(--font-num); font-size: 11px; font-weight: 700;
+  font-family: var(--font-num); --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 700;
   color: var(--ink-900);
   background: radial-gradient(circle at 34% 30%, var(--flame-200), var(--flame-400));
   box-shadow: 0 0 12px color-mix(in srgb, var(--flame-glow) 70%, transparent);
@@ -848,7 +848,7 @@
 .foot__seed:hover .seed__hint, .foot__seed:focus-within .seed__hint { opacity: 1; }
 .seed__roll {
   width: 28px; height: 28px; border-radius: var(--radius-sm);
-  font-size: 15px; color: var(--text-mid);
+  --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--text-mid);
   border: 1px solid color-mix(in srgb, var(--brass-400) 26%, transparent);
   transition: all var(--t-quick) var(--ease-out);
 }
@@ -867,14 +867,14 @@
   border-color: color-mix(in srgb, var(--ink-400) 80%, transparent);
   cursor: not-allowed; transform: none;
 }
-.btn--go.is-ready { animation: go-pulse 2.6s var(--ease-soft) infinite; }
+.btn--go.is-ready { animation: go-pulse calc(2.6s * var(--anim-scale)) var(--ease-soft) infinite; }
 @keyframes go-pulse {
   0%,100% { box-shadow: 0 0 18px color-mix(in srgb, var(--flame-glow) 30%, transparent); }
   50%     { box-shadow: 0 0 34px color-mix(in srgb, var(--flame-glow) 62%, transparent); }
 }
 
 /* ── leaving ──────────────────────────────────────────────────────────────── */
-.scene--select.is-leaving { animation: sel-out .32s var(--ease-in) forwards; }
+.scene--select.is-leaving { animation: sel-out calc(.32s * var(--anim-scale)) var(--ease-in) forwards; }
 @keyframes sel-out { to { opacity: 0; transform: scale(1.02); } }
 
 /* ── readability ──────────────────────────────────────────────────────────── */
@@ -935,3 +935,47 @@
   font-size: var(--fs-xs); letter-spacing: .08em; text-transform: uppercase;
   color: var(--good-300);
 }
+
+/* Keep the expedition controls on two readable rows at smaller widths. */
+@media (max-width: 1500px) {
+  .scene--select { --foot-h: 150px; }
+  .sel__foot { flex-wrap: wrap; justify-content: center; align-content: center; gap: 8px 16px; padding: 10px 20px; }
+  .sel__foot > * { flex-shrink: 0; }
+  .sel-pair__txt { min-width: 110px; }
+  .sel__foot .btn--go { margin-left: 0; }
+}
+/* The complete authored pet print gets a height-bounded column at every size. */
+.scene--select .kid__detail { grid-template-columns: minmax(0, 23%) minmax(0, 29%) minmax(0, 1fr); }
+.scene--select .kid__poster {
+  align-self: stretch; min-height: 0; display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto; gap: 8px;
+  padding: 0; background: none; box-shadow: none; transform: none;
+}
+.scene--select .kid__poster::before { content: none; }
+.scene--select .poster__head { font-size: 18px; color: var(--brass-200); }
+.scene--select .poster__photo {
+  width: 100%; height: 100%; min-height: 0; aspect-ratio: auto; margin: 0;
+  border: 0; background: none; box-shadow: none; overflow: visible;
+}
+.poster__about { justify-self: center; padding: 5px 12px; border: 1px solid var(--brass-400); background: var(--ink-800); color: var(--text-hi); font: inherit; font-size: 14px; cursor: help; }
+.scene--select .kid__info { overflow: visible; justify-content: flex-start; gap: 8px; }
+.scene--select .kid__name { font-size: clamp(24px, 2.2vw, 36px); }
+.scene--select .kid__perk, .scene--select .kid__pairing { cursor: help; gap: 3px; }
+.scene--select .kid__perk:focus-visible, .scene--select .kid__pairing:focus-visible { outline: 2px solid var(--brass-300); }
+.scene--select .kid__perk .hero__h::after, .scene--select .kid__pairing .hero__h::after { content: ' ⓘ'; }
+.scene--select .kid__perkdesc, .scene--select .kid__focus, .scene--select .kid__pairing .pair { display: none; }
+.scene--select .kid__pairing { margin-top: 0; padding-top: 0; }
+.scene--select .kid__perkname { font-size: 18px; }
+.scene--select .kid__packlist { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.scene--select .kid__pack { gap: 4px; }
+.scene--select .packitem { padding: 4px 6px; gap: 4px; }
+.scene--select .sel__kidstep { grid-template-rows: minmax(0, 1fr) clamp(110px, 17vh, 170px); }
+.scene--select .kid__detail { grid-template-rows: minmax(0, 1fr); }
+.scene--select .poster__photo { display: block; }
+.scene--select .kid-tile { grid-template-rows: minmax(0, 1fr) auto; }
+.scene--select .kid-tile__pf { min-height: 0; aspect-ratio: auto; }
+/* The shallow roster slots must show the entire square headshot. */
+.scene--select .kid-tile__pf .kidpf { object-fit: contain; object-position: center; }
+.scene--select .kid__trait { font-size: 15px; line-height: 1.35; }
+.scene--select .kid__info > * { flex-shrink: 0; }
+.scene--select .kid__info .hero__h { margin: 0 0 4px; font-size: 14px; }

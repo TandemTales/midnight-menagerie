@@ -1,0 +1,1217 @@
+{
+  "rows": [
+    {
+      "wrap": {
+        "left": 0,
+        "right": 1280,
+        "top": 134.6875,
+        "bottom": 691,
+        "width": 1280,
+        "height": 556.3125
+      },
+      "rail": {
+        "left": 60.796875,
+        "right": 1219.203125,
+        "top": 691,
+        "bottom": 736,
+        "width": 1158.40625,
+        "height": 45
+      },
+      "content": [
+        {
+          "sel": ".go-mvp__slot .mm-card",
+          "text": "\n      \n        \n        \n        \n        \n        \n        \n        \n          \n          \n          \n          \n        \n        \n          \n          \n          Dig Up a Fight\n          \n            Attack\n          \n          Deal 9 damage 2 times. Reduce one Buried Trick\u2019s counter by 1. If that Dig Ups it, deal 14 more and it costs 1 less this turn.\n          \n        \n        \n        \n        \n        2\n      \n      ",
+          "box": {
+            "left": 495.45660400390625,
+            "right": 755.3558959960938,
+            "top": 162.67178344726562,
+            "bottom": 524.6875,
+            "width": 259.8992919921875,
+            "height": 362.0157165527344
+          },
+          "lines": [
+            {
+              "left": 495.45660400390625,
+              "right": 755.3558959960938,
+              "top": 162.67178344726562,
+              "bottom": 524.6875
+            },
+            {
+              "left": 554.7657470703125,
+              "right": 696.0467529296875,
+              "top": 294.8540954589844,
+              "bottom": 318.490478515625
+            },
+            {
+              "left": 602.22314453125,
+              "right": 669.60693359375,
+              "top": 342.5465087890625,
+              "bottom": 361.8853454589844
+            },
+            {
+              "left": 530.4578857421875,
+              "right": 561.2959594726562,
+              "top": 392.43804931640625,
+              "bottom": 417.1487731933594
+            },
+            {
+              "left": 561.2959594726562,
+              "right": 570.6464233398438,
+              "top": 390.28924560546875,
+              "bottom": 418.22314453125
+            },
+            {
+              "left": 570.6464233398438,
+              "right": 624.7850952148438,
+              "top": 392.43804931640625,
+              "bottom": 417.1487731933594
+            },
+            {
+              "left": 624.7850952148438,
+              "right": 634.1355590820312,
+              "top": 390.28924560546875,
+              "bottom": 418.22314453125
+            },
+            {
+              "left": 634.1355590820312,
+              "right": 720.3546142578125,
+              "top": 392.43804931640625,
+              "bottom": 417.1487731933594
+            },
+            {
+              "left": 535.477294921875,
+              "right": 560.8091430664062,
+              "top": 411.1221618652344,
+              "bottom": 435.8329162597656
+            },
+            {
+              "left": 561.9674682617188,
+              "right": 604.7747802734375,
+              "top": 411.1221618652344,
+              "bottom": 435.8329162597656
+            },
+            {
+              "left": 605.93310546875,
+              "right": 715.335205078125,
+              "top": 411.1221618652344,
+              "bottom": 435.8329162597656
+            },
+            {
+              "left": 539.5733642578125,
+              "right": 594.299560546875,
+              "top": 429.8063049316406,
+              "bottom": 454.5170593261719
+            },
+            {
+              "left": 595.4578857421875,
+              "right": 638.7352905273438,
+              "top": 429.8063049316406,
+              "bottom": 454.5170593261719
+            },
+            {
+              "left": 639.8935546875,
+              "right": 692.5382080078125,
+              "top": 429.8063049316406,
+              "bottom": 454.5170593261719
+            },
+            {
+              "left": 692.5382080078125,
+              "right": 711.2223510742188,
+              "top": 427.6575622558594,
+              "bottom": 455.5914306640625
+            },
+            {
+              "left": 526.6640014648438,
+              "right": 631.432861328125,
+              "top": 448.4904479980469,
+              "bottom": 473.2012023925781
+            },
+            {
+              "left": 631.432861328125,
+              "right": 640.7833251953125,
+              "top": 446.3416748046875,
+              "bottom": 474.27557373046875
+            },
+            {
+              "left": 640.7833251953125,
+              "right": 724.1317138671875,
+              "top": 448.4904479980469,
+              "bottom": 473.2012023925781
+            },
+            {
+              "left": 518.3543701171875,
+              "right": 532.8584594726562,
+              "top": 170.79678344726562,
+              "bottom": 213.77198791503906
+            },
+            {
+              "left": 495.45660400390625,
+              "right": 755.3558959960938,
+              "top": 162.67178344726562,
+              "bottom": 524.6875
+            }
+          ],
+          "visible": true
+        },
+        {
+          "sel": ".go-mvp__h",
+          "text": "From your final deckrare",
+          "box": {
+            "left": 492.375,
+            "right": 758.421875,
+            "top": 532.84375,
+            "bottom": 582.625,
+            "width": 266.046875,
+            "height": 49.78125
+          },
+          "lines": [
+            {
+              "left": 504.375,
+              "right": 746.421875,
+              "top": 538.84375,
+              "bottom": 557.109375
+            },
+            {
+              "left": 504.375,
+              "right": 746.421875,
+              "top": 535.84375,
+              "bottom": 558.84375
+            },
+            {
+              "left": 611.609375,
+              "right": 639.1875,
+              "top": 557.109375,
+              "bottom": 576.625
+            },
+            {
+              "left": 611.609375,
+              "right": 639.1875,
+              "top": 553.109375,
+              "bottom": 580.109375
+            }
+          ],
+          "visible": true
+        },
+        {
+          "sel": ".go-said",
+          "text": "Dig Up a Fight was in your final deck. You can read its rules here.",
+          "box": {
+            "left": 434.359375,
+            "right": 816.46875,
+            "top": 586.625,
+            "bottom": 634.46875,
+            "width": 382.109375,
+            "height": 47.84375
+          },
+          "lines": [
+            {
+              "left": 450.359375,
+              "right": 800.46875,
+              "top": 586.625,
+              "bottom": 634.46875
+            },
+            {
+              "left": 523.75,
+              "right": 620.03125,
+              "top": 584.625,
+              "bottom": 611.625
+            },
+            {
+              "left": 620.03125,
+              "right": 727.078125,
+              "top": 584.625,
+              "bottom": 611.625
+            },
+            {
+              "left": 525.40625,
+              "right": 725.421875,
+              "top": 608.546875,
+              "bottom": 635.546875
+            }
+          ],
+          "visible": true
+        }
+      ],
+      "portraits": [
+        {
+          "text": "Maya Chenwith BonesHaunt Level 0",
+          "box": {
+            "left": 64.03125,
+            "right": 190.6875,
+            "top": 231.6875,
+            "bottom": 317.6875,
+            "width": 126.65625,
+            "height": 86
+          },
+          "lines": [
+            {
+              "left": 88.3125,
+              "right": 166.390625,
+              "top": 245.890625,
+              "bottom": 264.390625
+            },
+            {
+              "left": 88.3125,
+              "right": 166.390625,
+              "top": 240.890625,
+              "bottom": 267.890625
+            },
+            {
+              "left": 86.4375,
+              "right": 168.265625,
+              "top": 264.390625,
+              "bottom": 303.484375
+            },
+            {
+              "left": 94.984375,
+              "right": 159.71875,
+              "top": 261.390625,
+              "bottom": 286.390625
+            },
+            {
+              "left": 86.4375,
+              "right": 168.265625,
+              "top": 280.9375,
+              "bottom": 305.9375
+            }
+          ],
+          "contained": true
+        },
+        {
+          "text": "Bonesready for another expedition",
+          "box": {
+            "left": 254.6875,
+            "right": 381.359375,
+            "top": 231.6875,
+            "bottom": 317.6875,
+            "width": 126.671875,
+            "height": 86
+          },
+          "lines": [
+            {
+              "left": 296.609375,
+              "right": 339.4375,
+              "top": 245.890625,
+              "bottom": 264.390625
+            },
+            {
+              "left": 296.609375,
+              "right": 339.4375,
+              "top": 240.890625,
+              "bottom": 267.890625
+            },
+            {
+              "left": 262.6875,
+              "right": 373.359375,
+              "top": 264.390625,
+              "bottom": 303.484375
+            },
+            {
+              "left": 266.703125,
+              "right": 369.328125,
+              "top": 261.390625,
+              "bottom": 286.390625
+            },
+            {
+              "left": 287.03125,
+              "right": 349.015625,
+              "top": 280.9375,
+              "bottom": 305.9375
+            }
+          ],
+          "contained": true
+        }
+      ],
+      "tricks": [
+        {
+          "text": "\n        1\n        Bite\n        \u00d74\n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 976.328125,
+            "top": 451.0625,
+            "bottom": 474.1875,
+            "width": 41.859375,
+            "height": 23.125
+          },
+          "quantity": {
+            "left": 1147.375,
+            "right": 1174.96875,
+            "top": 449.125,
+            "bottom": 476.125,
+            "width": 27.59375,
+            "height": 27
+          },
+          "clear": true
+        },
+        {
+          "text": "\n        1\n        Sit Pretty\n        \u00d73\n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1040.359375,
+            "top": 517.0625,
+            "bottom": 540.1875,
+            "width": 105.890625,
+            "height": 23.125
+          },
+          "quantity": {
+            "left": 1147.375,
+            "right": 1174.96875,
+            "top": 515.125,
+            "bottom": 542.125,
+            "width": 27.59375,
+            "height": 27
+          },
+          "clear": true
+        },
+        {
+          "text": "\n        2\n        Dig Up a Fight\n        \n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1082.46875,
+            "top": 583.0625,
+            "bottom": 606.1875,
+            "width": 148,
+            "height": 23.125
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        1\n        Flying Femur\n        \n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1071.984375,
+            "top": 649.0625,
+            "bottom": 672.1875,
+            "width": 137.515625,
+            "height": 23.125
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        1\n        Go Get It!\n        \n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1037.8125,
+            "top": 715.0625,
+            "bottom": 738.1875,
+            "width": 103.34375,
+            "height": 23.125
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        3\n        Jawbone Jamboree\n        \n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1123.90625,
+            "top": 781.0625,
+            "bottom": 804.1875,
+            "width": 189.4375,
+            "height": 23.125
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        2\n        Off Leash\n        \n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1035.984375,
+            "top": 847.0625,
+            "bottom": 870.1875,
+            "width": 101.515625,
+            "height": 23.125
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        2\n        Put Yourself Back Together\n        \n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1128.96875,
+            "top": 904.625,
+            "bottom": 950.875,
+            "width": 194.5,
+            "height": 46.25
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        2\n        Roll Over\n        \n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1041.046875,
+            "top": 985.3125,
+            "bottom": 1008.4375,
+            "width": 106.578125,
+            "height": 23.125
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        0\n        Shake, Boy!\n        \n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1050.21875,
+            "top": 1051.3125,
+            "bottom": 1074.4375,
+            "width": 115.75,
+            "height": 23.125
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        1\n        Sit, Stay\n        \n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1016.296875,
+            "top": 1117.3125,
+            "bottom": 1140.4375,
+            "width": 81.828125,
+            "height": 23.125
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        2\n        Tighten the Collar\n        \n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1128.96875,
+            "top": 1174.875,
+            "bottom": 1221.125,
+            "width": 194.5,
+            "height": 46.25
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        2\n        Toss and Chase\n        \n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1095.5,
+            "top": 1255.5625,
+            "bottom": 1278.6875,
+            "width": 161.03125,
+            "height": 23.125
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        1\n        Treat Stash\n        \n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1056.359375,
+            "top": 1321.5625,
+            "bottom": 1344.6875,
+            "width": 121.890625,
+            "height": 23.125
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        1\n        Wet Dog Shake\n        \n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1091.6875,
+            "top": 1387.5625,
+            "bottom": 1410.6875,
+            "width": 157.21875,
+            "height": 23.125
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        1\n        Who Buried That?\n        \n      ",
+          "name": {
+            "left": 934.46875,
+            "right": 1121.96875,
+            "top": 1453.5625,
+            "bottom": 1476.6875,
+            "width": 187.5,
+            "height": 23.125
+          },
+          "quantity": null,
+          "clear": true
+        }
+      ],
+      "reach": {
+        "left": 55.03125,
+        "right": 390.359375,
+        "top": 329.6875,
+        "bottom": 463.890625,
+        "width": 335.328125,
+        "height": 134.203125
+      },
+      "stage": {
+        "left": 55.03125,
+        "right": 390.359375,
+        "top": 142.6875,
+        "bottom": 317.6875,
+        "width": 335.328125,
+        "height": 175
+      },
+      "shrine": {
+        "left": 410.359375,
+        "right": 840.46875,
+        "top": 142.6875,
+        "bottom": 679.46875,
+        "width": 430.109375,
+        "height": 536.78125
+      },
+      "typography": [
+        {
+          "class": "go-tri__h",
+          "font": "17.375px",
+          "reading": "clamp(12.5px,.86vw,14px)",
+          "floor": "calc(16px * 1)"
+        },
+        {
+          "class": "go-reach__n",
+          "font": "40px",
+          "reading": "clamp(46px, 4.2vw, 68px)",
+          "floor": "calc(16px * 1)"
+        },
+        {
+          "class": "go-reach__unit",
+          "font": "17.375px",
+          "reading": "clamp(12.5px,.86vw,14px)",
+          "floor": "calc(16px * 1)"
+        },
+        {
+          "class": "go-reach__where",
+          "font": "18.5px",
+          "reading": "clamp(14px,1vw,16px)",
+          "floor": "calc(16px * 1)"
+        },
+        {
+          "class": "go-reach__wing",
+          "font": "17.375px",
+          "reading": "clamp(12.5px,.86vw,14px)",
+          "floor": "calc(16px * 1)"
+        }
+      ],
+      "baseClear": true,
+      "progressLeft": true,
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "wrap": {
+        "left": 0,
+        "right": 1600,
+        "top": 160.625,
+        "bottom": 777.015625,
+        "width": 1600,
+        "height": 616.390625
+      },
+      "rail": {
+        "left": 72,
+        "right": 1528,
+        "top": 777.015625,
+        "bottom": 825.015625,
+        "width": 1456,
+        "height": 48
+      },
+      "content": [
+        {
+          "sel": ".go-mvp__slot .mm-card",
+          "text": "\n      \n        \n        \n        \n        \n        \n        \n        \n          \n          \n          \n          \n        \n        \n          \n          \n          Dig Up a Fight\n          \n            Attack\n          \n          Deal 9 damage 2 times. Reduce one Buried Trick\u2019s counter by 1. If that Dig Ups it, deal 14 more and it costs 1 less this turn.\n          \n        \n        \n        \n        \n        2\n      \n      ",
+          "box": {
+            "left": 631.4462280273438,
+            "right": 931.8350219726562,
+            "top": 188.22576904296875,
+            "bottom": 606.625,
+            "width": 300.3887939453125,
+            "height": 418.39923095703125
+          },
+          "lines": [
+            {
+              "left": 631.4462280273438,
+              "right": 931.8350219726562,
+              "top": 188.22576904296875,
+              "bottom": 606.625
+            },
+            {
+              "left": 700.0049438476562,
+              "right": 863.2607421875,
+              "top": 340.75616455078125,
+              "bottom": 368.57080078125
+            },
+            {
+              "left": 754.858154296875,
+              "right": 832.71435546875,
+              "top": 396.85107421875,
+              "bottom": 418.7054443359375
+            },
+            {
+              "left": 686.5322265625,
+              "right": 717.420166015625,
+              "top": 459.27880859375,
+              "bottom": 485.106689453125
+            },
+            {
+              "left": 717.420166015625,
+              "right": 726.7796630859375,
+              "top": 457.29205322265625,
+              "bottom": 485.106689453125
+            },
+            {
+              "left": 726.7796630859375,
+              "right": 781.0120239257812,
+              "top": 459.27880859375,
+              "bottom": 485.106689453125
+            },
+            {
+              "left": 781.0120239257812,
+              "right": 790.3715209960938,
+              "top": 457.29205322265625,
+              "bottom": 485.106689453125
+            },
+            {
+              "left": 790.3715209960938,
+              "right": 876.7335205078125,
+              "top": 459.27880859375,
+              "bottom": 485.106689453125
+            },
+            {
+              "left": 691.375,
+              "right": 716.7527465820312,
+              "top": 477.9978332519531,
+              "bottom": 503.8257141113281
+            },
+            {
+              "left": 718.0875854492188,
+              "right": 760.9736328125,
+              "top": 477.9978332519531,
+              "bottom": 503.8257141113281
+            },
+            {
+              "left": 762.3085327148438,
+              "right": 871.90625,
+              "top": 477.9978332519531,
+              "bottom": 503.8257141113281
+            },
+            {
+              "left": 695.4882202148438,
+              "right": 750.3103637695312,
+              "top": 496.7168273925781,
+              "bottom": 522.544677734375
+            },
+            {
+              "left": 751.6452026367188,
+              "right": 794.9969482421875,
+              "top": 496.7168273925781,
+              "bottom": 522.544677734375
+            },
+            {
+              "left": 796.331787109375,
+              "right": 849.0740356445312,
+              "top": 496.7168273925781,
+              "bottom": 522.544677734375
+            },
+            {
+              "left": 849.0740356445312,
+              "right": 867.7930908203125,
+              "top": 494.7300720214844,
+              "bottom": 522.544677734375
+            },
+            {
+              "left": 682.7449951171875,
+              "right": 787.686279296875,
+              "top": 515.435791015625,
+              "bottom": 541.263671875
+            },
+            {
+              "left": 787.686279296875,
+              "right": 797.0457763671875,
+              "top": 513.4490966796875,
+              "bottom": 541.263671875
+            },
+            {
+              "left": 797.0457763671875,
+              "right": 880.5362548828125,
+              "top": 515.435791015625,
+              "bottom": 541.263671875
+            },
+            {
+              "left": 657.926025390625,
+              "right": 674.6893310546875,
+              "top": 197.38348388671875,
+              "bottom": 247.052490234375
+            },
+            {
+              "left": 631.4462280273438,
+              "right": 931.8350219726562,
+              "top": 188.22576904296875,
+              "bottom": 606.625
+            }
+          ],
+          "visible": true
+        },
+        {
+          "sel": ".go-mvp__h",
+          "text": "From your final deckrare",
+          "box": {
+            "left": 642.765625,
+            "right": 920.5,
+            "top": 614.5,
+            "bottom": 665.171875,
+            "width": 277.734375,
+            "height": 50.671875
+          },
+          "lines": [
+            {
+              "left": 654.765625,
+              "right": 908.5,
+              "top": 620.5,
+              "bottom": 639.65625
+            },
+            {
+              "left": 654.765625,
+              "right": 908.5,
+              "top": 617.5,
+              "bottom": 642.5
+            },
+            {
+              "left": 767.84375,
+              "right": 795.421875,
+              "top": 639.65625,
+              "bottom": 659.171875
+            },
+            {
+              "left": 767.84375,
+              "right": 795.421875,
+              "top": 635.65625,
+              "bottom": 662.65625
+            }
+          ],
+          "visible": true
+        },
+        {
+          "sel": ".go-said",
+          "text": "Dig Up a Fight was in your final deck. You can read its rules here.",
+          "box": {
+            "left": 534.921875,
+            "right": 1028.359375,
+            "top": 669.171875,
+            "bottom": 694.578125,
+            "width": 493.4375,
+            "height": 25.40625
+          },
+          "lines": [
+            {
+              "left": 566.140625,
+              "right": 997.140625,
+              "top": 669.171875,
+              "bottom": 694.578125
+            },
+            {
+              "left": 566.140625,
+              "right": 668.421875,
+              "top": 667.171875,
+              "bottom": 695.171875
+            },
+            {
+              "left": 668.421875,
+              "right": 997.140625,
+              "top": 667.171875,
+              "bottom": 695.171875
+            }
+          ],
+          "visible": true
+        }
+      ],
+      "portraits": [
+        {
+          "text": "Maya Chenwith BonesHaunt Level 0",
+          "box": {
+            "left": 77.796875,
+            "right": 247.859375,
+            "top": 269.125,
+            "bottom": 355.125,
+            "width": 170.0625,
+            "height": 86
+          },
+          "lines": [
+            {
+              "left": 119.96875,
+              "right": 205.6875,
+              "top": 281.90625,
+              "bottom": 303.234375
+            },
+            {
+              "left": 119.96875,
+              "right": 205.6875,
+              "top": 276.90625,
+              "bottom": 306.90625
+            },
+            {
+              "left": 121.90625,
+              "right": 203.734375,
+              "top": 303.234375,
+              "bottom": 342.328125
+            },
+            {
+              "left": 130.453125,
+              "right": 195.1875,
+              "top": 300.234375,
+              "bottom": 325.234375
+            },
+            {
+              "left": 121.90625,
+              "right": 203.734375,
+              "top": 319.78125,
+              "bottom": 344.78125
+            }
+          ],
+          "contained": true
+        },
+        {
+          "text": "Bonesready for another expedition",
+          "box": {
+            "left": 311.859375,
+            "right": 481.921875,
+            "top": 269.125,
+            "bottom": 355.125,
+            "width": 170.0625,
+            "height": 86
+          },
+          "lines": [
+            {
+              "left": 373.375,
+              "right": 420.40625,
+              "top": 281.90625,
+              "bottom": 303.234375
+            },
+            {
+              "left": 373.375,
+              "right": 420.40625,
+              "top": 276.90625,
+              "bottom": 306.90625
+            },
+            {
+              "left": 319.859375,
+              "right": 473.921875,
+              "top": 303.234375,
+              "bottom": 342.328125
+            },
+            {
+              "left": 345.578125,
+              "right": 448.203125,
+              "top": 300.234375,
+              "bottom": 325.234375
+            },
+            {
+              "left": 365.890625,
+              "right": 427.875,
+              "top": 319.78125,
+              "bottom": 344.78125
+            }
+          ],
+          "contained": true
+        }
+      ],
+      "tricks": [
+        {
+          "text": "\n        1\n        Bite\n        \u00d74\n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1202.703125,
+            "top": 528.5,
+            "bottom": 552.5625,
+            "width": 43.546875,
+            "height": 24.0625
+          },
+          "quantity": {
+            "left": 1440.796875,
+            "right": 1468.390625,
+            "top": 527.03125,
+            "bottom": 554.03125,
+            "width": 27.59375,
+            "height": 27
+          },
+          "clear": true
+        },
+        {
+          "text": "\n        1\n        Sit Pretty\n        \u00d73\n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1269.328125,
+            "top": 594.5,
+            "bottom": 618.5625,
+            "width": 110.171875,
+            "height": 24.0625
+          },
+          "quantity": {
+            "left": 1440.796875,
+            "right": 1468.390625,
+            "top": 593.03125,
+            "bottom": 620.03125,
+            "width": 27.59375,
+            "height": 27
+          },
+          "clear": true
+        },
+        {
+          "text": "\n        2\n        Dig Up a Fight\n        \n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1313.15625,
+            "top": 660.5,
+            "bottom": 684.5625,
+            "width": 154,
+            "height": 24.0625
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        1\n        Flying Femur\n        \n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1302.234375,
+            "top": 726.5,
+            "bottom": 750.5625,
+            "width": 143.078125,
+            "height": 24.0625
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        1\n        Go Get It!\n        \n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1266.703125,
+            "top": 792.5,
+            "bottom": 816.5625,
+            "width": 107.546875,
+            "height": 24.0625
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        3\n        Jawbone Jamboree\n        \n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1356.28125,
+            "top": 858.5,
+            "bottom": 882.5625,
+            "width": 197.125,
+            "height": 24.0625
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        2\n        Off Leash\n        \n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1264.796875,
+            "top": 924.5,
+            "bottom": 948.5625,
+            "width": 105.640625,
+            "height": 24.0625
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        2\n        Put Yourself Back Together\n        \n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1422.390625,
+            "top": 982.53125,
+            "bottom": 1030.65625,
+            "width": 263.234375,
+            "height": 48.125
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        2\n        Roll Over\n        \n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1270.0625,
+            "top": 1064.625,
+            "bottom": 1088.6875,
+            "width": 110.90625,
+            "height": 24.0625
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        0\n        Shake, Boy!\n        \n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1279.59375,
+            "top": 1130.625,
+            "bottom": 1154.6875,
+            "width": 120.4375,
+            "height": 24.0625
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        1\n        Sit, Stay\n        \n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1244.3125,
+            "top": 1196.625,
+            "bottom": 1220.6875,
+            "width": 85.15625,
+            "height": 24.0625
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        2\n        Tighten the Collar\n        \n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1375.6875,
+            "top": 1262.625,
+            "bottom": 1286.6875,
+            "width": 216.53125,
+            "height": 24.0625
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        2\n        Toss and Chase\n        \n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1326.71875,
+            "top": 1328.625,
+            "bottom": 1352.6875,
+            "width": 167.5625,
+            "height": 24.0625
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        1\n        Treat Stash\n        \n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1285.984375,
+            "top": 1394.625,
+            "bottom": 1418.6875,
+            "width": 126.828125,
+            "height": 24.0625
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        1\n        Wet Dog Shake\n        \n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1322.75,
+            "top": 1460.625,
+            "bottom": 1484.6875,
+            "width": 163.59375,
+            "height": 24.0625
+          },
+          "quantity": null,
+          "clear": true
+        },
+        {
+          "text": "\n        1\n        Who Buried That?\n        \n      ",
+          "name": {
+            "left": 1159.15625,
+            "right": 1354.25,
+            "top": 1526.625,
+            "bottom": 1550.6875,
+            "width": 195.09375,
+            "height": 24.0625
+          },
+          "quantity": null,
+          "clear": true
+        }
+      ],
+      "reach": {
+        "left": 68.796875,
+        "right": 490.921875,
+        "top": 367.125,
+        "bottom": 532.421875,
+        "width": 422.125,
+        "height": 165.296875
+      },
+      "stage": {
+        "left": 68.796875,
+        "right": 490.921875,
+        "top": 168.625,
+        "bottom": 355.125,
+        "width": 422.125,
+        "height": 186.5
+      },
+      "shrine": {
+        "left": 510.921875,
+        "right": 1052.359375,
+        "top": 168.625,
+        "bottom": 739.578125,
+        "width": 541.4375,
+        "height": 570.953125
+      },
+      "typography": [
+        {
+          "class": "go-tri__h",
+          "font": "18.32px",
+          "reading": "clamp(12.5px,.86vw,14px)",
+          "floor": "calc(16px * 1)"
+        },
+        {
+          "class": "go-reach__n",
+          "font": "67.2px",
+          "reading": "clamp(46px, 4.2vw, 68px)",
+          "floor": "calc(16px * 1)"
+        },
+        {
+          "class": "go-reach__unit",
+          "font": "18.32px",
+          "reading": "clamp(12.5px,.86vw,14px)",
+          "floor": "calc(16px * 1)"
+        },
+        {
+          "class": "go-reach__where",
+          "font": "20px",
+          "reading": "clamp(14px,1vw,16px)",
+          "floor": "calc(16px * 1)"
+        },
+        {
+          "class": "go-reach__wing",
+          "font": "18.32px",
+          "reading": "clamp(12.5px,.86vw,14px)",
+          "floor": "calc(16px * 1)"
+        }
+      ],
+      "baseClear": true,
+      "progressLeft": true,
+      "size": [
+        1600,
+        900
+      ]
+    }
+  ],
+  "errors": []
+}

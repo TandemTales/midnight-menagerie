@@ -1,0 +1,205 @@
+{
+  "rows": [
+    {
+      "kind": "status",
+      "frames": 87,
+      "visible": 85,
+      "font": 20,
+      "styles": {
+        "font": "20px",
+        "color": "rgb(244, 239, 228)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.457, 0, 0, 1.457, 977.6, 113.8)",
+        "backing": "url(\"http://localhost:9552/game/assets/ui/r55-iolite/enamel-plaque.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "buff",
+      "frames": 94,
+      "visible": 92,
+      "font": 20.75,
+      "styles": {
+        "font": "20.75px",
+        "color": "rgb(168, 236, 247)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.457, 0, 0, 1.457, 982.1, 116.8)",
+        "backing": "url(\"http://localhost:9552/game/assets/ui/r55-iolite/enamel-plaque.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "debuff",
+      "frames": 121,
+      "visible": 119,
+      "font": 20.75,
+      "styles": {
+        "font": "20.75px",
+        "color": "rgb(255, 156, 138)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.459, 0, 0, 1.459, 982.1, 116.8)",
+        "backing": "url(\"http://localhost:9552/game/assets/ui/r55-iolite/enamel-plaque.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "counter",
+      "frames": 107,
+      "visible": 105,
+      "font": 20,
+      "styles": {
+        "font": "20px",
+        "color": "rgb(255, 215, 94)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.457, 0, 0, 1.457, 977.6, 113.8)",
+        "backing": "url(\"http://localhost:9552/game/assets/ui/r55-iolite/enamel-plaque.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "blocked",
+      "frames": 120,
+      "visible": 118,
+      "font": 23,
+      "styles": {
+        "font": "23px",
+        "color": "rgb(143, 183, 217)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.457, 0, 0, 1.457, 949.9, 114.7)",
+        "backing": "url(\"http://localhost:9552/game/assets/ui/r55-iolite/enamel-plaque.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1280
+    },
+    {
+      "kind": "status",
+      "frames": 83,
+      "visible": 81,
+      "font": 20,
+      "styles": {
+        "font": "20px",
+        "color": "rgb(244, 239, 228)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.459, 0, 0, 1.459, 1184.6, 113.8)",
+        "backing": "url(\"http://localhost:9552/game/assets/ui/r55-iolite/enamel-plaque.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "buff",
+      "frames": 87,
+      "visible": 85,
+      "font": 20.75,
+      "styles": {
+        "font": "20.75px",
+        "color": "rgb(168, 236, 247)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.459, 0, 0, 1.459, 1189.1, 115.8)",
+        "backing": "url(\"http://localhost:9552/game/assets/ui/r55-iolite/enamel-plaque.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "debuff",
+      "frames": 85,
+      "visible": 83,
+      "font": 20.75,
+      "styles": {
+        "font": "20.75px",
+        "color": "rgb(255, 156, 138)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.459, 0, 0, 1.459, 1189.1, 115.8)",
+        "backing": "url(\"http://localhost:9552/game/assets/ui/r55-iolite/enamel-plaque.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "counter",
+      "frames": 76,
+      "visible": 74,
+      "font": 20,
+      "styles": {
+        "font": "20px",
+        "color": "rgb(255, 215, 94)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.455, 0, 0, 1.455, 1184.6, 113.8)",
+        "backing": "url(\"http://localhost:9552/game/assets/ui/r55-iolite/enamel-plaque.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    },
+    {
+      "kind": "blocked",
+      "frames": 76,
+      "visible": 74,
+      "font": 23,
+      "styles": {
+        "font": "23px",
+        "color": "rgb(143, 183, 217)",
+        "filter": "none",
+        "shadow": "rgb(7, 6, 13) 1px 1px 0px",
+        "stroke": "1px",
+        "willChange": "auto",
+        "transform": "matrix(1.455, 0, 0, 1.455, 1156.9, 117.7)",
+        "backing": "url(\"http://localhost:9552/game/assets/ui/r55-iolite/enamel-plaque.webp\")"
+      },
+      "maxOutside": 0,
+      "failures": [],
+      "drained": true,
+      "width": 1600
+    }
+  ],
+  "errors": []
+}

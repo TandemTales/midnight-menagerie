@@ -1,0 +1,15 @@
+{
+  "enemy": "topiary-hare",
+  "created_utc": "2026-10-27T00:11:59.833418+00:00",
+  "status": "left_in_inspected_keyposes",
+  "required": "screen-left",
+  "evidence": "Nose and eyes face left throughout inspected poses. Separate ears trail a crouch and leftward hop, hurt recoils right, and defeat bows the head with both foliage ears wilting left. All decoded frames retain a connected opaque body. Unlettered shrub reflected; no held prop.",
+  "contacts": [
+    "idle-contact.jpg",
+    "attack-contact.jpg",
+    "hurt-contact.jpg",
+    "defeat-contact.jpg"
+  ],
+  "limits": "Decoded chronological key poses inspected; full-speed intended-size temporal approval pending. No browser or game runtime test.",
+  "text_handedness": "No legible text or held handed prop reflected."
+}

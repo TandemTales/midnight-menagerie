@@ -1,0 +1,20 @@
+{
+  "coverage": {
+    "existing": 31,
+    "new": 1,
+    "pending": 155,
+    "blocked": 0,
+    "total": 187
+  },
+  "unique_ids": 187,
+  "regions_validated": 17,
+  "animated_identities_preserved": 29,
+  "prior_files_sha256_verified": 367,
+  "changed_prior_files": [],
+  "new_runtime_metadata": {
+    "file": "hall-mirror.webp",
+    "w": 106,
+    "h": 245,
+    "source": "hallMirror.png"
+  }
+}

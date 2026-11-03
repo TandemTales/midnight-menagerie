@@ -1,0 +1,159 @@
+{
+ "clips": {
+  "attack": {
+   "file": "attack.webp",
+   "frames": 48,
+   "cols": 8,
+   "rows": 6,
+   "fw": 400,
+   "fh": 382,
+   "anchor": [
+    214.58,
+    378.19
+   ],
+   "source": "SS_ancientTopiary_attack.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    178.9,
+    179.5,
+    176.9
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -1.2,
+   "dehalo": false,
+   "warm": 32.0,
+   "dewhite": false,
+   "dip": 0.355,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.99,
+   "scale": 0.9975,
+   "unit": 284.29,
+   "loop": false,
+   "fps": 35.56,
+   "hold": false,
+   "sha1": "a3b8a65c8f035f32"
+  },
+  "defeat": {
+   "file": "defeat.webp",
+   "frames": 31,
+   "cols": 8,
+   "rows": 4,
+   "fw": 400,
+   "fh": 328,
+   "anchor": [
+    214.93,
+    324.2
+   ],
+   "source": "SS_ancientTopiary_defeat.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    172.1,
+    170.6,
+    168.2
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -7.1,
+   "dehalo": false,
+   "warm": 48.0,
+   "dewhite": false,
+   "dip": 0.261,
+   "untail": false,
+   "deblack": false,
+   "defeatCut": 30,
+   "endIoU": 0.5,
+   "scale": 0.9132,
+   "unit": 260.27,
+   "loop": false,
+   "fps": 40.0,
+   "hold": true,
+   "sha1": "d9c8e7d5568f0573"
+  },
+  "hurt": {
+   "file": "hurt.webp",
+   "frames": 48,
+   "cols": 8,
+   "rows": 6,
+   "fw": 400,
+   "fh": 329,
+   "anchor": [
+    223.19,
+    324.17
+   ],
+   "source": "SS_ancientTopiary_hurt.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    170.5,
+    168.4,
+    164.0
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -5.4,
+   "dehalo": false,
+   "warm": 55.0,
+   "dewhite": false,
+   "dip": 0.39,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.987,
+   "scale": 0.9479,
+   "unit": 270.14,
+   "loop": false,
+   "fps": 35.56,
+   "hold": false,
+   "sha1": "a81243ea5419482e"
+  },
+  "idle": {
+   "file": "idle.webp",
+   "frames": 48,
+   "cols": 8,
+   "rows": 6,
+   "fw": 344,
+   "fh": 290,
+   "anchor": [
+    172.0,
+    287.0
+   ],
+   "source": "SS_ancientTopiary_idle.png",
+   "sourceFrames": 81,
+   "matte": "CONTAM",
+   "bg": [
+    175.2,
+    174.7,
+    174.7
+   ],
+   "grid": [
+    9,
+    9
+   ],
+   "lift": -4.2,
+   "dehalo": false,
+   "warm": 46.0,
+   "dewhite": false,
+   "dip": 0.487,
+   "untail": false,
+   "deblack": false,
+   "endIoU": 0.991,
+   "scale": 1.0,
+   "unit": 285.0,
+   "loop": true,
+   "fps": 11.85,
+   "hold": false,
+   "sha1": "347e0dc6e0060089"
+  }
+ },
+ "scale": 1.0,
+ "unit": 285.0
+}

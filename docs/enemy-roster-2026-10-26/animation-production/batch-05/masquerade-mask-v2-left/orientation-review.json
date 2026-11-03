@@ -1,0 +1,15 @@
+{
+  "enemy": "masquerade-mask",
+  "created_utc": "2026-10-27T00:18:04.560939+00:00",
+  "status": "left_in_inspected_keyposes",
+  "required": "screen-left",
+  "evidence": "Intact reflected mask faces left. It withdraws right and peeks left while separate trailing ribbons follow; hurt recoils right, recovery returns to its left profile. Defeat extinguishes eye light, tips downward and sinks. Foreground ribbon still covers the same hidden face region.",
+  "contacts": [
+    "idle-contact.jpg",
+    "attack-contact.jpg",
+    "hurt-contact.jpg",
+    "defeat-contact.jpg"
+  ],
+  "limits": "Chronological decoded key poses inspected; full-speed intended-size temporal approval pending. No browser or game test.",
+  "text_handedness": "Bell source orientation retained. Only unlettered, unarmed mask is reflected."
+}

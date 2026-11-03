@@ -1,0 +1,83 @@
+{
+  "checks": [
+    {
+      "name": "interactions",
+      "exit": 0,
+      "seconds": 90.711
+    },
+    {
+      "name": "queue",
+      "exit": 0,
+      "seconds": 154.776
+    },
+    {
+      "name": "ink",
+      "exit": 0,
+      "seconds": 57.924
+    },
+    {
+      "name": "idle",
+      "exit": 0,
+      "seconds": 25.907
+    },
+    {
+      "name": "lifecycle",
+      "exit": 0,
+      "seconds": 26.108
+    },
+    {
+      "name": "memorial",
+      "exit": 0,
+      "seconds": 27.193
+    },
+    {
+      "name": "memorial-long",
+      "exit": 0,
+      "seconds": 43.883
+    },
+    {
+      "name": "keepsakes",
+      "exit": 0,
+      "seconds": 24.419
+    },
+    {
+      "name": "event-boundary",
+      "exit": 0,
+      "seconds": 37.573
+    },
+    {
+      "name": "shop-rules",
+      "exit": 0,
+      "seconds": 27.851
+    }
+  ],
+  "gameSource": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+  "canonicalSource": "7269f14a63ac58f8e3556ec208c24048c5839d70",
+  "gameTree": "4b4992870bfe43678f1a5580c0bd9197150f61b8",
+  "binding": "Game tree is byte-identical from repaired source through final capture. Later commits changed only native timing harness, not visual/runtime game sources.",
+  "interactionReuse": {
+    "source": "9cb13654ffced0788242b93f9a25abd8b0365b1a",
+    "target": "9d9aba354f7e3478b44da4f5b9c71dcf96ffed1f",
+    "basis": "Only three paint rules were removed. Targeted native before/after check proved exact text, DOM boxes, Range ink, font, computed text color, padding and border width equality at both sizes. All original input assertions remain unchanged.",
+    "proof": "repaired-surfaces/proof.json",
+    "exactGameDiff": "diff --git a/game/src/scenes/event.css b/game/src/scenes/event.css\nindex f7b18c2e..89bf4ffa 100644\n--- a/game/src/scenes/event.css\n+++ b/game/src/scenes/event.css\n@@ -1252,11 +1252,6 @@\n .ev-bookmark { background: linear-gradient(94deg,var(--kit-ink-oxblood),color-mix(in srgb,var(--threat-400) 84%,transparent) 26%,color-mix(in srgb,var(--threat-400) 64%,transparent) 46%,var(--kit-ink-oxblood) 67%,color-mix(in srgb,var(--threat-400) 72%,transparent) 82%,var(--kit-ink-oxblood)),url(\"../../assets/ui/kit/flock.webp\") center / 65px 90px; box-shadow: inset 1px 0 0 color-mix(in srgb,var(--kit-candle) 28%,transparent),inset -2px 0 1px var(--kit-ink-oxblood); }\n \n /* Round56 ONYX: red cloth folded over its existing edge; engraved live initial. */\n-.ev-bookmark {\n- background: linear-gradient(97deg,var(--kit-ink-oxblood),var(--threat-400) 16%,color-mix(in srgb,var(--kit-candle) 38%,var(--threat-400)) 24%,var(--kit-ink-oxblood) 38%,var(--threat-400) 66%,var(--kit-ink-oxblood)),url(\"../../assets/ui/kit/flock.webp\") 18% 31% / 37px 62px;\n- background-blend-mode: soft-light,normal;\n- box-shadow: inset 2px 0 1px color-mix(in srgb,var(--kit-candle) 42%,transparent),inset -3px 0 1px var(--kit-ink-oxblood),inset 0 5px 2px var(--kit-ink-oxblood);\n-}\n .ev-initial__letter {\n  background: linear-gradient(119deg,transparent 16%,color-mix(in srgb,var(--kit-paper-ink) 25%,transparent) 17% 19%,transparent 20% 63%,color-mix(in srgb,var(--kit-parchment) 65%,transparent) 64% 66%,transparent 67%) 0 0 / 31px 44px,linear-gradient(174deg,var(--kit-parchment),var(--kit-gold-hi) 31%,var(--kit-gold) 57%,var(--kit-gold-lo) 71%,var(--kit-gold-hi));\n  background-clip: text; -webkit-background-clip: text;\ndiff --git a/game/src/scenes/gameover.css b/game/src/scenes/gameover.css\nindex ae7ea828..6092db20 100644\n--- a/game/src/scenes/gameover.css\n+++ b/game/src/scenes/gameover.css\n@@ -1615,8 +1615,3 @@\n \n /* Round56 ONYX: shallow enamel drawers; separate quantity bays stay clear. */\n .go-ledger[data-fold] .go-trick.go-trick { border-image-source: url(\"../../assets/ui/r56-onyx/enamel-plaque.webp\"); }\n-.go-ledger[data-fold] .go-trick.go-trick .go-trick__cost {\n- border-color: var(--kit-gold-lo); border-top-color: var(--kit-gold-hi); border-left-color: var(--kit-gold);\n- background: radial-gradient(ellipse at 19% 16%,color-mix(in srgb,var(--kit-lav) 48%,transparent),transparent 47%),url(\"../../assets/ui/r54-peridot/lavender-paint-v1.webp\") 23% 59% / 48px 43px;\n- box-shadow: inset 1px 1px 1px var(--kit-violet-lo),inset -2px -2px 1px var(--kit-void),0 2px 1px var(--kit-void);\n-}\ndiff --git a/game/src/scenes/shop.css b/game/src/scenes/shop.css\nindex cee31bdf..d03d04ba 100644\n--- a/game/src/scenes/shop.css\n+++ b/game/src/scenes/shop.css\n@@ -1504,8 +1504,3 @@\n  background-blend-mode: normal,normal,soft-light,normal;\n  box-shadow: inset calc(1 * var(--u)) calc(1 * var(--u)) 0 var(--frame-hi),inset calc(-3 * var(--u)) calc(-4 * var(--u)) calc(2 * var(--u)) var(--frame-deep),inset calc(3 * var(--u)) calc(3 * var(--u)) calc(1 * var(--u)) var(--frame-lo),0 calc(4 * var(--u)) calc(10 * var(--u)) var(--kit-void);\n }\n-.scene--shop .sh-card .mm-card[data-rarity] .mm-card__cost {\n- background: url(\"../../assets/ui/kit/grain.webp\") 17% 39% / 67px 59px,url(\"../../assets/ui/kit/coin-face.webp\") center / 100% 100% no-repeat;\n- background-blend-mode: multiply,normal;\n- box-shadow: inset calc(1 * var(--u)) calc(2 * var(--u)) calc(1 * var(--u)) color-mix(in srgb,var(--kit-gold-hi) 65%,transparent),inset calc(-2 * var(--u)) calc(-3 * var(--u)) calc(2 * var(--u)) color-mix(in srgb,var(--kit-gold-lo) 70%,transparent);\n-}",
+    "unchangedSourceHashes": {
+      "game/src/scenes/rest.css": "d7625ecc54e9915ecf6277a8678603622304b50d3ea0ac43618490ea91453b89",
+      "game/src/scenes/combat.css": "ef94002fc85cd7ce8657fbd81b26cd77e61186f2a4d28375ec88e26ca05d2da3",
+      "game/src/ui/kit.css": "a956ce5b58fd77053855722b3e2c259281c414e719b79a5ae97badfbd908b03d",
+      "game/src/scenes/rest.js": "bf629b42109df983e5e636116445535bce69c4dafda72d1b4819c25f2a5f4e88",
+      "game/src/scenes/shop.js": "00611f87fff8bebc1b31d49617b6c3978955abdc2c47675e5525ae12c3dbccdf",
+      "game/src/scenes/gameover.js": "cb349eaba150745fa7e72f649022100f11519e000fce11a90cc6b2297fb57876",
+      "game/src/scenes/event.js": "9b283f4a88df8d7941538c0a5a8199b237684003ac150fdde594c1a7693d8a11"
+    }
+  },
+  "extra": [
+    "memorial-geometry.json",
+    "long-quantities-1280.json",
+    "long-quantities-1600.json",
+    "native-material-timing-final/proof.json"
+  ],
+  "functionalFailures": [],
+  "testHarnessFailure": "failed-repair-harness/failure.json",
+  "supersededNative": "native-material-timing/protocol-status.json"
+}

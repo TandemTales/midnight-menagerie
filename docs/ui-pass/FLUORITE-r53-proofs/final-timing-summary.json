@@ -1,0 +1,30 @@
+{
+  "source": "27b3b5d6 (byte-equivalent final game tree)",
+  "proof": "auto-raster-initial/queue/proof.json",
+  "cases": 16,
+  "delivered": 96,
+  "expired": 96,
+  "frames": 2443,
+  "ordinaryDrainMaxMs": 5778.199999988079,
+  "ordinaryOnsetMaxMs": 4086.0999999940395,
+  "repeats": [
+    {
+      "width": 1280,
+      "drainMs": 10251.300000011921,
+      "onsetMs": 8626.199999988079
+    },
+    {
+      "width": 1600,
+      "drainMs": 4866.5,
+      "onsetMs": 3304.9000000059605
+    }
+  ],
+  "layoutP95Ms": 2.0999999940395355,
+  "layoutMaxMs": 5.300000011920929,
+  "frameP95RangeMs": [
+    31.400000005960464,
+    136.19999998807907
+  ],
+  "frameMaxMs": 189.40000000596046,
+  "timingLimitation": "Full safety fixture includes screenshot work; causal comparison uses final six uninterrupted pre/post-verified controls."
+}

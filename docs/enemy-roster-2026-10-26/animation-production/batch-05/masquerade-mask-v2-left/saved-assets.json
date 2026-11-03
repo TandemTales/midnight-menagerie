@@ -1,0 +1,61 @@
+{
+  "created_utc": "2026-10-27T00:18:05.512921+00:00",
+  "enemy": "masquerade-mask",
+  "states": [
+    "idle",
+    "attack",
+    "hurt",
+    "defeat"
+  ],
+  "method": "Intact source mask tilts as a rigid face; trailing ribbon regions bend with delayed curves. Broad foreground ribbon remains over the unpainted hidden face. Reflected unlettered mask points left. No invented hidden anatomy.",
+  "validation": "batch-05/masquerade-mask-v2-left/validation.json",
+  "quality_gate": "technical_pass_visual_review_pending",
+  "files": [
+    {
+      "path": "animations/sprites/enemies/animations/SS_masqueradeMask_idle.png",
+      "sha256": "3040e17bf942d1563e05fe3411a923c44b770e23bd9d38d2909981783bcf8de9",
+      "bytes": 7766831
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/masquerade-mask/idle.webp",
+      "sha256": "c5794301af383049bdb79bd442ef1af1adee20b39922adcbef2bec09126f0a27",
+      "bytes": 3950874
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_masqueradeMask_attack.png",
+      "sha256": "e04cb76eeb4f1bc5e52e90fe0084d22ef64f1ef6594191b7a76c4e3c4ce59a98",
+      "bytes": 6497150
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/masquerade-mask/attack.webp",
+      "sha256": "b6bc51395d0db21f2ff99f442ad83c119e5fe715b181ae0439b6beb883798303",
+      "bytes": 3267222
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_masqueradeMask_hurt.png",
+      "sha256": "d847650e3b113d829a528f6471bd91d1a84741053e09cb3856bdcc0cd11291ae",
+      "bytes": 3241009
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/masquerade-mask/hurt.webp",
+      "sha256": "7bce3184993487d43607c00057604f017920d4d3e92108faf5962aee41c406f3",
+      "bytes": 1628926
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_masqueradeMask_defeat.png",
+      "sha256": "9427f62d04f1083174241a2de11b9a4544f3bb725e91ebba8935fd55524f4638",
+      "bytes": 6039230
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/masquerade-mask/defeat.webp",
+      "sha256": "75344fe3ad1fec8b7a0185038f13fd5df754a9870a97725724a2220fca8ad362",
+      "bytes": 3046822
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/masquerade-mask/index.json",
+      "sha256": "f8a3e18f97bc9e8add204fa5830187c403efa4470452e5143f9c071c22602c93",
+      "bytes": 2692
+    }
+  ],
+  "complete": true
+}

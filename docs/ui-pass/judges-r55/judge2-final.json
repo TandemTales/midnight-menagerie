@@ -1,0 +1,474 @@
+{
+  "judge": 2,
+  "inspected": {
+    "references": 4,
+    "captures": 40,
+    "references_first": true,
+    "order": [
+      "ZIRCON",
+      "IOLITE",
+      "JADE",
+      "ALMANDINE"
+    ],
+    "capture_order": [
+      "rest",
+      "rest-1280",
+      "event",
+      "event-1280",
+      "gameover",
+      "gameover-1280",
+      "shop",
+      "shop-1280",
+      "combat-floaters",
+      "combat-floaters-1280"
+    ]
+  },
+  "method": "Blind image-only review of the two supplied rubrics, then all four references before forty individual native-detail view_image inspections in exact candidate and capture order. Scores judge each paired screen conservatively at both sizes. A 9 requires the same painted hand as the references, not victory within this set. Large type and scrolling are accepted; visible physical boundaries are judged without inferring interaction or inaccessible content. Preview banners and unchanged combat room, actor and hand art are excluded from comparative credit. Animated condition labels are evaluated only at their visible captured phases; no opacity or lifetime prescription is inferred. Close rankings reflect small material differences, not assumed implementation or candidate identities.",
+  "candidates": {
+    "ZIRCON": {
+      "system_overall": 7.9,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8,
+            "palette": 8.5,
+            "typography": 8,
+            "material": 7.2,
+            "background": 7.1,
+            "composition": 8.3,
+            "readability": 8.5,
+            "coherence": 7.7
+          },
+          "overall": 7.8,
+          "fits_between_samples": false,
+          "worst_problem": "The broad, uniformly bright rectangular frames around the right-hand choices look more manufactured than the irregular painted frame around the fort.",
+          "size_notes": {
+            "1600x900": "The blanket fort is the warm focal object, and the three visible choices are clearly separated. Thick outer choice rims compete with the fine gold surround; the exposed wood grain on the lower rail is conspicuous. Pillow and book emblems have smoother highlights than the fort textiles.",
+            "1280x800": "The fort and three choices remain well balanced. The third description meets a narrow physical lower edge with a clear more-below label; that is an intentional continuation, not evidence of inaccessible content. The bright choice rims and glossy pillow still look separate from the painted room."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.2,
+            "palette": 8.5,
+            "typography": 8.1,
+            "material": 7.9,
+            "background": 7.8,
+            "composition": 8.5,
+            "readability": 8.7,
+            "coherence": 8
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "The bottom Story Register rail has conspicuously stretched-looking grain and a straight luminous lip that does not fully share the carved lectern's material.",
+          "size_notes": {
+            "1600x900": "The parchment, illuminated initial, hanging portraits and lectern make a coherent scene. The first choice is fully readable, while the next passes behind a definite rail. Window light beams are broad and soft compared with the references' localized lighting.",
+            "1280x800": "The paper remains cleanly readable and the center lectern is well staged after the side portraits disappear. The rail makes the continuation unambiguous, but its coarse wood face is less convincing than the richly carved support below."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.4,
+            "palette": 8.5,
+            "typography": 8,
+            "material": 7.7,
+            "background": 8.2,
+            "composition": 8.7,
+            "readability": 8.5,
+            "coherence": 8.1
+          },
+          "overall": 8.2,
+          "fits_between_samples": false,
+          "worst_problem": "The purple Final Tricks rows on the right read as thin outlined interface strips beside the deeply carved central memorial.",
+          "size_notes": {
+            "1600x900": "The portraits, extinguished candle, progression record, featured card and right-hand inventory preserve a strong memorial hierarchy. The long lower wood rail has a conspicuous repetitive grain, and its almost continuous bright upper edge looks mechanically even.",
+            "1280x800": "The three-column memorial remains comprehensible and the center card text is readable. The right deck list clearly continues behind its own narrow labeled edge; the broader memorial boundary is also distinct. Smooth purple row fills and small rounded number boxes remain less painterly than the central shrine."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.5,
+            "palette": 8.6,
+            "typography": 8,
+            "material": 8,
+            "background": 8.5,
+            "composition": 8.8,
+            "readability": 8.7,
+            "coherence": 8.3
+          },
+          "overall": 8.3,
+          "fits_between_samples": false,
+          "worst_problem": "The three large card rims and pale circular cost counters are too uniformly polished against the worn curtains and carved shelving.",
+          "size_notes": {
+            "1600x900": "Mr. Moth, the draped stall and the three cards form a convincing shop tableau. Price tags sit on the shelf and the BUY cartouche is visually integrated. The bottom rail's large wood grain and even gold band draw more attention than their structural role needs.",
+            "1280x800": "All three wares retain readable titles and rules, and the merchant remains clearly framed. Card borders look particularly smooth at this size; the flat shield silhouettes in the card wells do not have the painted enamel character of the references."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 7.7,
+            "palette": 8.3,
+            "typography": 7.8,
+            "material": 6.9,
+            "background": 8,
+            "composition": 8,
+            "readability": 8.7,
+            "coherence": 7.5
+          },
+          "overall": 7.8,
+          "fits_between_samples": false,
+          "worst_problem": "The condition labels across the upper field remain shallow gold outlines around bright typesetting rather than worn dimensional plaques.",
+          "size_notes": {
+            "1600x900": "Signs and words are legible, and owner nameplates identify the two condition groups. The three ally labels form a wide row while the enemy labels form a column. Their dark faces and hairline gold edges remain much flatter than the ornate enemy frame; Strength is visibly in a dimmer phase.",
+            "1280x800": "Both condition groups become readable stacks with distinct owner names. The ally group sits far left of the character, so the owner plate carries the association. The visible brighter and dimmer label phases are accepted as animation; the remaining concern is plaque depth and letter material, not duration or constant opacity."
+          }
+        }
+      }
+    },
+    "IOLITE": {
+      "system_overall": 8,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.3,
+            "palette": 8.5,
+            "typography": 8,
+            "material": 7.5,
+            "background": 7.1,
+            "composition": 8.4,
+            "readability": 8.5,
+            "coherence": 7.9
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "The pillow and book medallions at the left ends of the choice rows are conspicuously smooth and bright beside the painted fort textiles.",
+          "size_notes": {
+            "1600x900": "The finer choice rims and visible ornamental corners sit more comfortably beside the fort frame than a heavy outer box. The warm rim accents help separate rows, although the broad aubergine faces are still relatively uniform and the little icons look glossy.",
+            "1280x800": "Corner ornaments remain legible without overwhelming the choices. The lower rail gives the cropped third row a clear continuation boundary. The pillow stays unusually bright, and the long dark rail face still feels more graphic than the fort's dimensional shelf."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.3,
+            "palette": 8.5,
+            "typography": 8.1,
+            "material": 8,
+            "background": 7.8,
+            "composition": 8.5,
+            "readability": 8.7,
+            "coherence": 8.1
+          },
+          "overall": 8.1,
+          "fits_between_samples": false,
+          "worst_problem": "The Story Register rail's straight dark face and repeated bright lip feel less individually painted than the adjacent lectern carving.",
+          "size_notes": {
+            "1600x900": "Paper coloration and the carved support provide convincing depth; the fine top lip creates a clear occlusion edge for the next choice. The red bookmark is visible but remains smoother than the worn parchment and metal fittings.",
+            "1280x800": "The reduced scene preserves the paper, initial, full first choice and the lecturer-like staging of the lectern. The bottom face is restrained, but its long even band and abruptly squared end construction still separate it from the more organic painted furniture."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.5,
+            "palette": 8.5,
+            "typography": 8,
+            "material": 7.9,
+            "background": 8.2,
+            "composition": 8.7,
+            "readability": 8.5,
+            "coherence": 8.2
+          },
+          "overall": 8.3,
+          "fits_between_samples": false,
+          "worst_problem": "The right-hand Final Tricks entries have a smooth purple button-like finish that is less dimensional than the memorial architecture.",
+          "size_notes": {
+            "1600x900": "The central shrine remains the focus while the left record and right inventory retain distinct jobs. Vertical divisions in the long lower rail give it some construction, but the bright repeated upper strip remains very even across its full width.",
+            "1280x800": "The smaller layout keeps portraits, progress, discoveries, final card and deck rows distinguishable. Both lower edges are physical and labeled. The right list's nearly identical thin rims and small square number badges still look more like interface widgets than engraved objects."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.6,
+            "palette": 8.6,
+            "typography": 8,
+            "material": 8.1,
+            "background": 8.5,
+            "composition": 8.8,
+            "readability": 8.7,
+            "coherence": 8.4
+          },
+          "overall": 8.4,
+          "fits_between_samples": false,
+          "worst_problem": "The long straight shelf and card rims have overly consistent gold highlights compared with the worn, locally lit shop drapery.",
+          "size_notes": {
+            "1600x900": "The merchant and three cards are staged very successfully, with readable rules and hanging prices. Small divisions at the supporting shelf help it read as built furniture. The clean circular cost counters and flat shield marks still feel separate from the painted surroundings.",
+            "1280x800": "The three wares remain well separated and the shop occupies the frame confidently. The shelf joints read clearly; the lower Shop Shelves rail is restrained but still unusually uniform. Card nameplates and price tags keep a good hierarchy."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 7.7,
+            "palette": 8.3,
+            "typography": 7.8,
+            "material": 6.8,
+            "background": 8,
+            "composition": 8,
+            "readability": 8.7,
+            "coherence": 7.5
+          },
+          "overall": 7.7,
+          "fits_between_samples": false,
+          "worst_problem": "The condition faces and thin gold contours above both actors read as flat caption strips rather than carved enamel plaques.",
+          "size_notes": {
+            "1600x900": "The signs are clear and the owner cartouches provide context. The red and cyan words are bright against their dark backgrounds, while Strength is visibly dimmer. The rims have too little visible side depth to match the ornate frame nearby.",
+            "1280x800": "The two stacks preserve signs and readable owner labels. Native-size edges remain narrow and regular, and the dark plaque faces show little dimensional shaping. Different visible fade phases do not establish a timing or persistent-opacity problem."
+          }
+        }
+      }
+    },
+    "JADE": {
+      "system_overall": 7.9,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 7.8,
+            "palette": 8.5,
+            "typography": 8,
+            "material": 7.2,
+            "background": 7.1,
+            "composition": 8.3,
+            "readability": 8.5,
+            "coherence": 7.7
+          },
+          "overall": 7.8,
+          "fits_between_samples": false,
+          "worst_problem": "The right-hand choice panels have ruler-straight nested outlines with tiny corners that look too graphic beside the carved fort frame.",
+          "size_notes": {
+            "1600x900": "The fort painting and warm lantern retain a clear focal role. The choice rows are readable but their very small corner accents and smooth broad edge glow do not deliver the dimensional ornament of the references. The divided lower rail is restrained but somewhat featureless.",
+            "1280x800": "The layout remains balanced with readable choice titles and outcome cartouches. The third description continues behind a definite lower edge. At this size the tiny row corners nearly disappear, leaving long flat rectangles as the dominant construction."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.1,
+            "palette": 8.5,
+            "typography": 8.1,
+            "material": 7.8,
+            "background": 7.8,
+            "composition": 8.5,
+            "readability": 8.7,
+            "coherence": 8
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "The segmented brown Story Register rail has a smooth shaded face that feels flatter than the carved lectern it caps.",
+          "size_notes": {
+            "1600x900": "The parchment, drop cap, portraits and moon medallion form a strong narrative display. The lower rail is more subdued than the paper and its vertical seams make construction visible, but its broad smooth planes lack the support's irregular carved highlights.",
+            "1280x800": "The paper remains readable and the scroll edge is physically explicit. The seam-divided rail does not obscure the first choice; it simply terminates the visible paper. Its smooth brown fill and even upper highlight remain more schematic than the rest of the furniture."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.3,
+            "palette": 8.5,
+            "typography": 8,
+            "material": 7.8,
+            "background": 8.2,
+            "composition": 8.7,
+            "readability": 8.5,
+            "coherence": 8.1
+          },
+          "overall": 8.2,
+          "fits_between_samples": false,
+          "worst_problem": "The segmented Memorial Record rail looks like repeated smooth panel sections beside the worn central shrine.",
+          "size_notes": {
+            "1600x900": "The complete memorial hierarchy is retained and the featured card is strongly staged. The right deck entries have readable labels, but their regular thin outlines and small boxed costs are visibly less sculpted than the portrait frames.",
+            "1280x800": "The central card and the three information regions remain distinct. The lower deck entry passes behind the labeled rail in a convincing order. The long rail's evenly divided brown panels and bright straight lip still look too regular for the reference material."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.5,
+            "palette": 8.6,
+            "typography": 8,
+            "material": 7.9,
+            "background": 8.5,
+            "composition": 8.8,
+            "readability": 8.7,
+            "coherence": 8.3
+          },
+          "overall": 8.3,
+          "fits_between_samples": false,
+          "worst_problem": "The smooth segmented Shop Shelves rail below the stall does not have the worn carved depth of the supporting shelf above it.",
+          "size_notes": {
+            "1600x900": "The merchant, curtains, cards and hanging price tags remain a strong shop composition. The lower rail is restrained but its long smooth brown face feels like a separate material treatment. Pale cost disks and regular gold card edges are still overly clean.",
+            "1280x800": "All three cards and the merchant remain readable and well placed. The bottom rail's large smooth center section contrasts with the carved shelf, while the card interiors retain flat shield motifs that do not share the references' painted badge depth."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 7.7,
+            "palette": 8.3,
+            "typography": 7.8,
+            "material": 6.8,
+            "background": 8,
+            "composition": 8,
+            "readability": 8.7,
+            "coherence": 7.5
+          },
+          "overall": 7.7,
+          "fits_between_samples": false,
+          "worst_problem": "The upper condition plaques are mostly bright serif words inside thin regular gold perimeters, with insufficient carved body.",
+          "size_notes": {
+            "1600x900": "Both sides have readable signs and distinct owner cartouches. The ally labels span the upper left while the enemy labels form a compact vertical stack. The visible fills and type remain graphic rather than convincingly worn enamel; Strength is in a dimmer captured phase.",
+            "1280x800": "The left and right stacks remain legible and do not overlap each other. Owner names make grouping understandable even where the left stack is offset from the actor. The current animation phases are not treated as evidence for opacity or lifetime changes."
+          }
+        }
+      }
+    },
+    "ALMANDINE": {
+      "system_overall": 8.1,
+      "screens": {
+        "rest": {
+          "dimensions": {
+            "ornament": 8.3,
+            "palette": 8.5,
+            "typography": 8,
+            "material": 7.6,
+            "background": 7.1,
+            "composition": 8.4,
+            "readability": 8.5,
+            "coherence": 8
+          },
+          "overall": 8,
+          "fits_between_samples": false,
+          "worst_problem": "The bright smooth pillow and book icons in the right-hand choices break the painted-material continuity established by the fort and carved lower rail.",
+          "size_notes": {
+            "1600x900": "Fine ornamental corners tie the choice rows to the fort frame, and the carved brown lower rail reads as furniture. Warm accents give the rows some depth. The white pillow face remains conspicuously glossy, and the broad row interiors are still less richly modeled than the fort.",
+            "1280x800": "The fort and choice regions retain clear balance. The lower edge is narrow, physical and labeled, with readable carving in its face; the third row continues behind it. The icons remain a different finish from the illustrated fabrics, and the top title still looks uniformly beveled."
+          }
+        },
+        "event": {
+          "dimensions": {
+            "ornament": 8.4,
+            "palette": 8.5,
+            "typography": 8.1,
+            "material": 8.1,
+            "background": 7.8,
+            "composition": 8.6,
+            "readability": 8.7,
+            "coherence": 8.2
+          },
+          "overall": 8.2,
+          "fits_between_samples": false,
+          "worst_problem": "The red bookmark and the top title's even bevel remain smoother and more graphic than the worn parchment and carved lectern.",
+          "size_notes": {
+            "1600x900": "The carved Story Register face belongs convincingly with the lectern, and the narrow lip makes the paper continuation easy to parse. Portraits, candles, the illuminated initial and the moon badge support the story focus. The broad window shafts and regular title highlights still fall short of the references' fully unified painting.",
+            "1280x800": "The central paper remains crisp and the first option fully readable. The rail's carved face is visible at native size and shares the lectern's brown-gold palette. The red bookmark reads as an almost plain strip, and the moonlight shafts remain broad soft cones against the wall."
+          }
+        },
+        "gameover": {
+          "dimensions": {
+            "ornament": 8.5,
+            "palette": 8.5,
+            "typography": 8,
+            "material": 8.1,
+            "background": 8.2,
+            "composition": 8.8,
+            "readability": 8.5,
+            "coherence": 8.3
+          },
+          "overall": 8.4,
+          "fits_between_samples": false,
+          "worst_problem": "The Final Tricks rows and square numeric badges on the right remain much flatter than the central memorial and carved lower rails.",
+          "size_notes": {
+            "1600x900": "The portraits and extinguished candle lead into the progress and discoveries record, while the center card and right inventory maintain a clear hierarchy. The carved Memorial Record edge now shares the shrine's architectural material, although repeated motifs are noticeably regular.",
+            "1280x800": "The full memorial organization survives the smaller size: portraits, progression, record, central card, seed and inventory remain distinguishable. The two physical lower boundaries are clear. The purple rows and number badges still lack the side depth and local highlights of the surrounding carved frames."
+          }
+        },
+        "shop": {
+          "dimensions": {
+            "ornament": 8.6,
+            "palette": 8.6,
+            "typography": 8,
+            "material": 8.2,
+            "background": 8.5,
+            "composition": 8.8,
+            "readability": 8.7,
+            "coherence": 8.5
+          },
+          "overall": 8.5,
+          "fits_between_samples": false,
+          "worst_problem": "The cost disks, shield motifs and broad card rims are too clean and uniform beside the convincingly worn shop furniture.",
+          "size_notes": {
+            "1600x900": "The lantern-lit merchant, draped backdrop, three wares and hanging prices make a cohesive display. The lower carved rail reinforces the shop's furniture instead of introducing a visibly unrelated wood grain. The three pale cost disks and regular rim highlights remain conspicuously smooth.",
+            "1280x800": "The merchant and each card retain comfortable visual separation and legible rules. The carved bottom face still reads at this size and sits naturally with the shelf above. The card wells' flat shield silhouettes and almost identical rim brightness remain the main material mismatch."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {
+            "ornament": 7.7,
+            "palette": 8.3,
+            "typography": 7.8,
+            "material": 6.9,
+            "background": 8,
+            "composition": 8,
+            "readability": 8.7,
+            "coherence": 7.5
+          },
+          "overall": 7.8,
+          "fits_between_samples": false,
+          "worst_problem": "The upper condition name strips still lack the worn bevels and thick enamel bodies of the surrounding painted ornaments.",
+          "size_notes": {
+            "1600x900": "All condition signs and owner names are readable, with Strength visibly in a dimmer phase. The plaques have dark interiors and gold contours, but their planar text and shallow outlines remain detached from the dimensional frame and medallions nearby.",
+            "1280x800": "The ally and enemy stacks are cleanly separated with distinct owner cartouches. The left stack's offset from the actor makes its nameplate important. Visible phase differences are accepted; the desired improvement is native-scale plaque and letter material, not constant opacity or changed lifetime."
+          }
+        }
+      }
+    }
+  },
+  "ranking": {
+    "rest": [
+      "ALMANDINE",
+      "IOLITE",
+      "ZIRCON",
+      "JADE"
+    ],
+    "event": [
+      "ALMANDINE",
+      "IOLITE",
+      "JADE",
+      "ZIRCON"
+    ],
+    "gameover": [
+      "ALMANDINE",
+      "IOLITE",
+      "JADE",
+      "ZIRCON"
+    ],
+    "shop": [
+      "ALMANDINE",
+      "IOLITE",
+      "ZIRCON",
+      "JADE"
+    ],
+    "combat-floaters": [
+      "ALMANDINE",
+      "ZIRCON",
+      "IOLITE",
+      "JADE"
+    ]
+  },
+  "winner": "ALMANDINE",
+  "winner_fixes": [
+    "Combat-floaters: give each upper condition cartouche a visibly worn bevel, a dark side return and small localized metal highlights so its body reads at both native sizes; preserve the readable signs and local owner labels.",
+    "Rest: repaint the pillow and book medallions with irregular fabric or leather shading and warmer localized reflections so they share the blanket fort's material instead of appearing as smooth glossy symbols.",
+    "Rest: break up the long identical highlights on the right choice rims with restrained wear and locally lit joints, keeping the readable text and narrow physical lower boundary.",
+    "Gameover: give the right-hand Final Tricks rows and their number badges dimensional enamel faces, irregular edges and inset shadows that match the surrounding memorial frame while preserving the full memorial hierarchy.",
+    "Shop: weather the large card rims and pale cost disks with uneven painted highlights and edge wear, retaining the successful merchant, curtain, shelf and price-tag staging.",
+    "Shop: replace the flat shield silhouettes in the lower card wells with low-contrast painted or embossed shields that share the dimensional badge language of the references.",
+    "Event: add a folded edge, worn fiber and a small cast shadow to the red bookmark so it belongs to the aged parchment and carved lectern.",
+    "Event, rest, gameover and shop: make the lavender title letter planes less uniformly beveled, with irregular carved facets and selective worn edges visible at native size.",
+    "Gameover and shop: vary the repeated carving and local illumination along the long lower rails, with clearer small end returns, while retaining the narrow lip and explicit paper or row occlusion."
+  ],
+  "grafts": []
+}

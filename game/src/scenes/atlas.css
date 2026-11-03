@@ -99,10 +99,10 @@
   --light-a: 40%;
   width: clamp(430px, 36vw, 620px);
   top: calc(var(--at-corner) * .18);
-  animation-delay: -1.1s;
+  animation-delay: calc(-1.1s * var(--anim-scale));
 }
 .at-cornerglow--l { left: calc(var(--kit-edge) + var(--at-corner) * .56); }
-.at-cornerglow--r { left: calc(100vw - var(--kit-edge) - var(--at-corner) * .56); animation-delay: -2.6s; }
+.at-cornerglow--r { left: calc(100vw - var(--kit-edge) - var(--at-corner) * .56); animation-delay: calc(-2.6s * var(--anim-scale)); }
 .kit-board.has-backdrop .at-wallglow, .kit-board.has-backdrop .at-cornerglow { opacity: .6; }
 .at-root:has(.at-dos__act:not([hidden])) .at-wallglow { --light-a: 26%; }
 /* the board's corner candles, drawn small, as the Map draws them */
@@ -160,7 +160,7 @@
   min-height: clamp(112px, 14.6vh, 136px);
 }
 .at-logo { grid-column: 2; grid-row: 1; justify-self: center; z-index: 1; }
-.at-logo__title { font-size: clamp(24px, 2.1vw, 34px); }
+.at-logo__title { --reading-size: clamp(24px, 2.1vw, 34px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .at-back {
   grid-column: 1; grid-row: 1;
   justify-self: start; align-self: center;
@@ -168,7 +168,7 @@
   padding-left: calc(var(--plate-h) * 1.24);
   /* the medallion's overhang is inside the inset, not over the candle */
   margin: 4px 0 0 calc(var(--plate-h) * .34);
-  font-size: clamp(13px, 1vw, 15px);
+  --reading-size: clamp(13px, 1vw, 15px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   z-index: 2;
 }
 .at-back[hidden], .at-wide[hidden] { display: none; }
@@ -184,8 +184,8 @@
   gap: .5em;
   white-space: nowrap;
 }
-.at-tally .kit-enamel__value { font-size: calc(var(--h) * .56); }
-.at-tally .kit-enamel__label { font-size: clamp(11.5px, .8vw, 13px); color: var(--kit-text); letter-spacing: clamp(.11em, .01em + .1vw, .16em); }
+.at-tally .kit-enamel__value { --reading-size: calc(var(--h) * .56); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+.at-tally .kit-enamel__label { --reading-size: clamp(11.5px, .8vw, 13px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--kit-text); letter-spacing: clamp(.11em, .01em + .1vw, .16em); }
 
 /* ── body ─────────────────────────────────────────────────────────────────── */
 .at-body {
@@ -493,7 +493,7 @@
     calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
   white-space: nowrap;
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(12px, .84vw, 13.5px);
+  --reading-size: clamp(12px, .84vw, 13.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .08em; text-transform: uppercase;
   color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
@@ -533,7 +533,7 @@
   isolation: isolate;
   filter: drop-shadow(0 1px .5px rgba(40, 20, 8, .4)) drop-shadow(1px 3px 3px rgba(30, 14, 6, .34));
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(12px, .82vw, 13.5px);
+  --reading-size: clamp(12px, .82vw, 13.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   color: #2a2119;
   letter-spacing: .14em;
   text-transform: uppercase;
@@ -568,7 +568,7 @@
   top: clamp(40px, 3.2vw, 52px);
   --plate-h: 42px;
   padding-left: calc(var(--plate-h) * 1.24);
-  font-size: 12.5px;
+  --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
 }
 .at-wide__arrow { display: none; }
 .at-wide__medal { --md: calc(var(--plate-h) * 1.1); left: calc(var(--plate-h) * -.34); }
@@ -599,13 +599,13 @@
 .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__pf { --fk: .5; width: clamp(96px, 7.6vw, 124px); }
 .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__who { margin-top: 0; min-width: 0; }
 .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__name { padding-block: 8px 9px; }
-.at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__name { font-size: clamp(17px, 1.36vw, 23px); }
-.at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__form { font-size: clamp(12.5px, .9vw, 14px); }
+.at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__name { --reading-size: clamp(17px, 1.36vw, 23px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+.at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__form { --reading-size: clamp(12.5px, .9vw, 14px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__hint { display: none; }
 .at-dos__rule { display: none; }
 
 /* "✦ SECTION I ✦" */
-.at-dos__no { font-size: clamp(12px, .84vw, 13px); }
+.at-dos__no { --reading-size: clamp(12px, .84vw, 13px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .at-dos__no b { font-family: var(--font-num); font-size: 1.25em; color: var(--kit-lav); letter-spacing: .06em; }
 
 /* The wing's name in a gold-rimmed cartouche — the kit's violet enamel in its
@@ -636,7 +636,7 @@
   margin: 0;
   padding: clamp(11px, 1.6vh, 15px) calc(var(--h) * .66) clamp(12px, 1.7vh, 16px);
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(18px, 1.44vw, 24px);
+  --reading-size: clamp(18px, 1.44vw, 24px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   line-height: 1.14; letter-spacing: .05em; text-transform: uppercase;
   text-wrap: balance;
   color: var(--kit-lav);
@@ -651,7 +651,7 @@
   grid-row: 2; grid-column: 1;
   margin: 0;
   max-width: 34ch;
-  font-size: clamp(13.5px, .98vw, 15px);
+  --reading-size: clamp(13.5px, .98vw, 15px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   font-style: italic;
   line-height: 1.3;
   color: var(--kit-text-mid);
@@ -670,7 +670,7 @@
 .at-dos__heldlbl {
   margin-bottom: 7px;
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(12px, .8vw, 12.5px); letter-spacing: .2em;
+  --reading-size: clamp(12px, .8vw, 12.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .2em;
   color: var(--kit-gold);
 }
 /* `.pf`'s art is absolutely positioned, so the plate has no intrinsic height —
@@ -690,14 +690,14 @@
   margin-top: calc(var(--plate-h) * -.62);
   min-width: 62%;
 }
-.at-dos__cname { font-size: calc(var(--plate-h) * .38); letter-spacing: .01em; }
-.at-dos__ctitle { font-size: calc(var(--plate-h) * .27); }
+.at-dos__cname { --reading-size: calc(var(--plate-h) * .38); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .01em; }
+.at-dos__ctitle { --reading-size: calc(var(--plate-h) * .27); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .at-dos__held.is-empty .at-dos__pf { display: none; }
 .at-dos__held.is-empty .at-dos__who { margin-top: 0; }
 
 .at-dos__lbl {
   font-family: var(--font-display); font-weight: 700;
-  font-size: 12px;
+  --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .18em;
   text-transform: uppercase;
   color: var(--kit-text-lo);
@@ -707,19 +707,19 @@
    name is the longest ("The Bedframe Beast"), so its column is the widest and
    it may take two lines; the figures stay on the strip's one baseline. */
 .at-dos__facts { margin: 0; padding-block: 10px 9px; grid-auto-columns: auto; grid-template-columns: minmax(0, 1.55fr) minmax(0, .8fr) minmax(0, 1.15fr); }
-.at-dos__facts dt { font-size: 12px; letter-spacing: .12em; }
+.at-dos__facts dt { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .12em; }
 /* labels on one line along the top, figures under them; a second line of the
    keeper's name hangs below rather than lifting its label */
 .at-dos__facts > div { grid-template-rows: auto auto; align-content: start; }
 .at-dos__facts > div > dt:first-child { align-self: start; }
-.at-dos__facts dd { margin: 0; font-size: clamp(16px, 1.2vw, 19px); line-height: 1.1; text-wrap: balance; }
-.at-dossier[data-seen="0"] .at-dos__boss { font-style: italic; font-size: clamp(14px, 1vw, 16px); color: var(--kit-text-mid); }
+.at-dos__facts dd { margin: 0; --reading-size: clamp(16px, 1.2vw, 19px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.1; text-wrap: balance; }
+.at-dossier[data-seen="0"] .at-dos__boss { font-style: italic; --reading-size: clamp(14px, 1vw, 16px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--kit-text-mid); }
 .at-dossier[data-seen="0"] .at-dos__state { color: var(--kit-text-mid); font-style: italic; }
 .at-dossier[data-seen="1"] .at-dos__state { color: var(--kit-gold-hi); }
 
 .at-dos__hint {
   margin: 0;
-  font-size: clamp(13px, .92vw, 14.5px);
+  --reading-size: clamp(13px, .92vw, 14.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   font-style: italic;
   line-height: 1.4;
   color: var(--kit-text-mid);
@@ -767,7 +767,7 @@
   opacity: .9;
 }
 .mm-reduce-motion .at-trail__open { animation: none; }
-.at-root[data-choose="1"] .at-trail__open { animation: at-crawl 1.4s linear infinite; }
+.at-root[data-choose="1"] .at-trail__open { animation: at-crawl calc(1.4s * var(--anim-scale)) linear infinite; }
 @keyframes at-crawl { to { stroke-dashoffset: -13; } }
 
 .at-mark {
@@ -791,7 +791,7 @@
   border-color: var(--mark);
   border-width: calc(2.5px / var(--k, 1));
   background: color-mix(in srgb, var(--kit-candle) 12%, transparent);
-  animation: at-door 2.2s var(--ease-soft) infinite;
+  animation: at-door calc(2.2s * var(--anim-scale)) var(--ease-soft) infinite;
 }
 .at-root[data-choose="1"] .at-hot.is-open .at-hot__box::before { opacity: 1; }
 @keyframes at-door {
@@ -853,7 +853,7 @@
   position: absolute;
   left: 50%; bottom: -0.2em;
   font-family: var(--font-display);
-  font-size: clamp(10px, .8vw, 12px);
+  --reading-size: clamp(10px, .8vw, 12px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .16em;
   color: var(--kit-gold-hi);
   background: #120d10;
@@ -865,7 +865,7 @@
 /* ── the dossier's way-on block ───────────────────────────────────────────── */
 .at-dos__why {
   margin: 0;
-  font-size: clamp(13.5px, .98vw, 15px);
+  --reading-size: clamp(13.5px, .98vw, 15px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   line-height: 1.45;
   color: var(--kit-text);
   padding: 2px 0 2px var(--s-3);
@@ -884,7 +884,7 @@
   align-self: stretch;
   margin-right: calc(var(--plate-h) * .62);
   padding: 4px calc(var(--plate-h) * 1.02) 5px calc(var(--plate-h) * .6);
-  font-size: clamp(12.5px, .9vw, 14.5px);
+  --reading-size: clamp(12.5px, .9vw, 14.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .08em;
   line-height: 1.15;
 }
@@ -894,7 +894,7 @@
 .at-ballot {
   margin: 0;
   font-family: var(--font-display); font-weight: 700;
-  font-size: 11px;
+  --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--kit-text-mid);
@@ -939,7 +939,7 @@
   text-align: center;
 }
 .at-dos__inside[hidden] { display: none; }
-.at-dos__depth { margin: 0; font-size: clamp(14px, 1vw, 15.5px); color: var(--kit-text-mid); }
+.at-dos__depth { margin: 0; --reading-size: clamp(14px, 1vw, 15.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--kit-text-mid); }
 .at-dos__depth b { color: var(--kit-gold-hi); font-family: var(--font-num); font-size: 1.3em; font-variant-numeric: lining-nums tabular-nums; }
 
 .at-dos__cond { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 10px; }
@@ -953,7 +953,7 @@
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill /
     calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
   font-family: var(--font-display); font-weight: 700;
-  font-size: 11px;
+  --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--threat-200);
@@ -1240,7 +1240,7 @@
 .at-name__n {
   font-style: normal;
   font-family: var(--font-num, var(--font-display));
-  font-size: clamp(11px, .78vw, 12.5px);
+  --reading-size: clamp(11px, .78vw, 12.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .1em;
   line-height: 1;
   display: inline-flex; align-items: center; gap: .45em;
@@ -1251,7 +1251,7 @@
   background: currentColor; opacity: .7;
 }
 .at-name__t {
-  font-size: clamp(11.5px, .8vw, 13px);
+  --reading-size: clamp(11.5px, .8vw, 13px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .07em;
   line-height: 1.12;
 }
@@ -1348,7 +1348,7 @@
   transform-origin: 100% 100%;
   pointer-events: none;
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(11px, .76vw, 12.5px);
+  --reading-size: clamp(11px, .76vw, 12.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .08em; text-transform: uppercase;
   color: var(--kit-name);
   text-shadow: 0 0 3px rgb(22 12 4), 0 1px 1px rgb(0 0 0);
@@ -1450,7 +1450,7 @@
    pencil edge inside each unsurveyed outline are atlas.js _paintSurvey's.
    ═══════════════════════════════════════════════════════════════════════════ */
 .at-name__n {
-  font-size: clamp(12px, .84vw, 13.5px);
+  --reading-size: clamp(12px, .84vw, 13.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   opacity: 1;
   color: color-mix(in srgb, var(--kit-gold-hi) 70%, var(--kit-name));
   text-shadow: 0 0 2px rgb(16 8 2), 0 0 4px rgb(16 8 2 / .95), 0 1px 1px rgb(0 0 0), 0 0 8px rgb(16 8 2 / .7);
@@ -1513,10 +1513,10 @@
 .at-hot:not(.is-surveyed) .at-name__n {
   color: #5a1a10;
   text-shadow: none;
-  font-size: 12px;
+  --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
 }
 .at-hot:not(.is-surveyed) .at-name__t {
-  font-size: clamp(12px, .8vw, 13px);
+  --reading-size: clamp(12px, .8vw, 13px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   color: #22130a;
   text-shadow: 0 1px 0 rgb(255 236 196 / .3);
 }
@@ -1524,7 +1524,7 @@
 /* all surveyed: each name on a dark clipped-corner cartouche, in gilt */
 .at-root[data-few="0"] .at-hot.is-surveyed .at-name__t {
   padding: 3px 8px 2px;
-  font-size: clamp(12px, .8vw, 13px);
+  --reading-size: clamp(12px, .8vw, 13px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   color: #f0d79a;
   background: linear-gradient(180deg, #2a1a10, #1a0f08);
   border: 0; border-radius: 0;
@@ -1545,7 +1545,7 @@
 .at-key {
   gap: 6px;
   padding: 10px 15px 10px 13px;
-  font-size: 12px; letter-spacing: .12em;
+  --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .12em;
   color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgb(0 0 0 / .95);
   border: 0 solid transparent;
@@ -1591,7 +1591,7 @@
 }
 .at-floor__ledge::before { left: calc(var(--ledge-h) * -.3); }
 .at-floor__ledge::after { right: calc(var(--ledge-h) * -.3); }
-.scene--atlas .kit-enamel__label, .at-root .kit-enamel__label { font-size: max(12px, calc(var(--h) * .3)); }
+.scene--atlas .kit-enamel__label, .at-root .kit-enamel__label { --reading-size: max(12px, calc(var(--h) * .3)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    ROUND 42 GRAFT 2 — THE ATLAS: ZOISITE'S SHEET AND KEY, LAPIS'S BURN AND RIM
@@ -1642,7 +1642,7 @@
   background: none;
   box-shadow: none;
   color: var(--kit-gold-hi);
-  font-size: clamp(12px, .78vw, 12.5px);
+  --reading-size: clamp(12px, .78vw, 12.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .12em;
   text-shadow: 0 1px 0 rgb(0 0 0 / .95);
   filter: drop-shadow(0 3px 4px rgb(0 0 0 / .7));
@@ -1732,5 +1732,10 @@
    drawing rather than floating over it */
 .at-hot:not(.is-surveyed) .at-name { padding: 2px 7px 2px; }
 .at-hot:not(.is-surveyed) .at-name::before { background: #2a170a; filter: drop-shadow(0 1px 1.5px rgb(30 16 6 / .55)); }
-.at-hot:not(.is-surveyed) .at-name__t { font-size: clamp(12.5px, .84vw, 13.5px); }
-.at-hot:not(.is-surveyed) .at-name__n { font-size: 12px; }
+.at-hot:not(.is-surveyed) .at-name__t { --reading-size: clamp(12.5px, .84vw, 13.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+.at-hot:not(.is-surveyed) .at-name__n { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+
+/* The master layer now contains connecting galleries and level labels, not
+   duplicate scan ink. Keep these readable between the section footprints. */
+.at-root[data-hair="1"] .at-pencil { opacity:.78; }
+.at-root[data-hair="1"][data-zoom="1"] .at-pencil { opacity:.16; }

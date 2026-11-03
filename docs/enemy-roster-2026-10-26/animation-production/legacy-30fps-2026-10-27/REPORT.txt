@@ -1,0 +1,75 @@
+LEGACY ENEMY ANIMATIONS - 30 FPS TIMING MAINTENANCE
+2026-10-27T01:03:17.881806+00:00
+
+Completed: 29 original animated enemy identities / 118 clips now play at 30fps.
+29 idle, 29 attack, 29 hurt, 29 defeat and 2 cast clips (Butler/Governess).
+Only 118 fps number values changed across 29 index.json files; original formatting and line endings retained.
+No runtime code, global registry, image pixels, frame count/order, loop, hold, ping, fade, orientation or gameplay rules changed.
+
+SOURCE SHEETS AND PACKED FRAMES
+All 118 original source sheets use 9x9 grids with 81 occupied cells, verified using the existing pipeline clean-alpha occupancy rule.
+Original paths: animations/sprites/enemies/animations/SS_<source-key>_<state>.png; every exact source/runtime path and occupied index is in before.json.
+Current game atlases already contain 48 frames for idle/attack/hurt/cast; defeat contains 11-48 frames after the previous defeat cutoff. Total retained runtime frames: 5067.
+No rebuild, resampling, frame insertion, removal or restoration to 81 was performed.
+
+TIMING CHANGES
+idle: 11.85 -> 30fps; 48 frames, 4.050633 -> 1.6 seconds.
+attack/hurt: 35.56 -> 30fps; 48 frames, 1.349831 -> 1.6 seconds.
+cast: 28.44 -> 30fps; 48 frames, 1.687764 -> 1.6 seconds.
+defeat: 40 -> 30fps; 11-48 frames, 0.275-1.2 -> 0.366667-1.6 seconds.
+
+EFFECTIVE RUNTIME AND EVENTS
+game/src/ui/sprite.js ClipPlayer.frame uses floor(t*fps); duration computes frames/fps (or twice for ping). None of these 118 clips use ping or duration overrides.
+game/src/ui/enemy.js _tickClip forwards dt unchanged. No runtime configuration override was needed.
+30fps is per animation-clock second at normal 1x clock scale. Existing slow motion, pause, reduced-motion freezing and display frame dropping remain intentional behavior.
+Idle loops, one-shot idle fallback and defeat last-frame hold passed tests. Attack/cast/hurt start triggers and combat effect/contact scheduling are unchanged; their relation to painted poses may shift as durations change.
+EnemyView.die still begins lights-out after 0.7*defeat duration, then its existing 0.16s/0.62s stages (scaled by presentation speed). Faster presentation can hide a clip before its held end; no unrelated death/event choreography was rewritten.
+Existing prep_sprites.py still has its historical rates. Do not rebuild assets for this timing change; any future rebuild must intentionally retain/reapply this 30fps metadata policy.
+
+VALIDATION
+Real ClipPlayer and EnemyView._tickClip modules executed headlessly: 118 clips / 5067 frame samples, correct progression, idle wrap, one-shot returns, defeat holds, reduced-motion freeze, 60/144Hz updates. Wrong-15fps negative control rejected.
+Existing tests/enemy-clips/check.py static checks: 826 pass; 2 preexisting out-of-scope findings identify the paused provisional new folders/sheets absent from the live registry. No full suite or browser-rendered/gameplay verification claimed.
+353 targeted protected paths matched their before hashes, including all original source sheets/atlases, 50 provisional clips and their indexes, live registry and runtime/pipeline code.
+Original preservation baseline remains immutable: 3379 files unchanged, 29 explicitly authorized exact-hash fps-only index changes; no unexpected changes or missing files.
+Headless runtime evidence: runtime-test.json. Existing checker details: existing-static-checks.json. Asset preservation: preservation.json and ../preservation-validation.json.
+
+BACKUPS AND EXACT CHANGED GAME FILES
+Byte-for-byte original metadata backups: before/<enemy-id>/index.json. Before/after SHA256: changes.json.
+Per-clip timings and source/runtime paths: clip-timing-audit.csv.
+game/assets/sprites/enemy-clips/ancient-topiary/index.json
+game/assets/sprites/enemy-clips/blanket-blob/index.json
+game/assets/sprites/enemy-clips/blanket-creeper/index.json
+game/assets/sprites/enemy-clips/blanket-hydra/index.json
+game/assets/sprites/enemy-clips/butler/index.json
+game/assets/sprites/enemy-clips/button-baby/index.json
+game/assets/sprites/enemy-clips/candy-clump/index.json
+game/assets/sprites/enemy-clips/carnivorous-conservatory/index.json
+game/assets/sprites/enemy-clips/coatrack-crawler/index.json
+game/assets/sprites/enemy-clips/compost-colossus/index.json
+game/assets/sprites/enemy-clips/confectioner/index.json
+game/assets/sprites/enemy-clips/creeping-ivy/index.json
+game/assets/sprites/enemy-clips/door-greeter/index.json
+game/assets/sprites/enemy-clips/dough-blob/index.json
+game/assets/sprites/enemy-clips/dust-bunny/index.json
+game/assets/sprites/enemy-clips/governess/index.json
+game/assets/sprites/enemy-clips/jack-in-the-box/index.json
+game/assets/sprites/enemy-clips/jam-jar/index.json
+game/assets/sprites/enemy-clips/lost-luggage/index.json
+game/assets/sprites/enemy-clips/oven-maw/index.json
+game/assets/sprites/enemy-clips/pantry-mimic/index.json
+game/assets/sprites/enemy-clips/patchwork-giant/index.json
+game/assets/sprites/enemy-clips/patchwork-soldier/index.json
+game/assets/sprites/enemy-clips/red-carpet-runner/index.json
+game/assets/sprites/enemy-clips/slipper-skitter/index.json
+game/assets/sprites/enemy-clips/sugar-golem/index.json
+game/assets/sprites/enemy-clips/the-wardrobe/index.json
+game/assets/sprites/enemy-clips/toy-chest/index.json
+game/assets/sprites/enemy-clips/wardrobe-guest/index.json
+
+PAUSE
+New animation production stays paused: 12 enemies / 50 provisional actions; 0 final approved; 613 unproduced usable actions; 4 Scullion actions blocked.
+Sleepwalking Ghost remains an uncounted key-pose prototype. No generation, directional redesign, new upload, deployment, or scheduling was performed.
+Oven Maw alternate orientation assets were not changed or integrated; their historical rate must be reconciled if later selected.
+
+DIFF HYGIENE
+Scoped CRLF-aware git diff --check passed. Default whole-workspace check flags preserved CRLF endings and unrelated existing tests/critic-design/result.json content; no normalization of unrelated files performed.

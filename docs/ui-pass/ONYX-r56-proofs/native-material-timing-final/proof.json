@@ -1,0 +1,3852 @@
+{
+  "measuredCheckSHA256": "ac20c4d93c324f19b2ac41e1c17e071a9e6f2c49848372cb28bcf9ef292d1ac9",
+  "harnessSHA256": "2734f632c6d685c735332f78363d55258c090768a56e7935d635d8004437edd2",
+  "importedFixtureSHA256": "18336d776e228fadd10a66dbfbe3c876f367da33e1c03bda19f30e3c1affda8e",
+  "selection": "Maximum per-case frame p95 among two actual long-party crowded all-long cases in retained complete16-case queue proof",
+  "selectedFullRunCase": {
+    "width": 1600,
+    "kind": "crowd",
+    "mode": "all-long",
+    "frameTimes": {
+      "max": 54,
+      "p95": 41.89999997615814
+    }
+  },
+  "params": {
+    "seed": 42,
+    "companion": "crumbula",
+    "kid": "maya",
+    "region": "passages",
+    "room": "Narrow Corridor",
+    "tier": "standard",
+    "enemies": 4
+  },
+  "viewport": {
+    "width": 1600,
+    "height": 900
+  },
+  "flags": [
+    "--use-gl=angle",
+    "--use-angle=default",
+    "--force-color-profile=srgb"
+  ],
+  "baseline": "035efe6f43bfe09f4eb267e0cc931b009179b283",
+  "currentSource": "7269f14a63ac58f8e3556ec208c24048c5839d70",
+  "cssSHA256": {
+    "inherited": "fa59ab5b22345b85e59ca8ae794133de1df46945fb3c1f748855d1c760f1edfd",
+    "current": "88e7b745c731719976fd3f3c5ca7fa8e6903697ca3f809b1b1282dddf1291214"
+  },
+  "order": [
+    "inherited",
+    "current",
+    "current",
+    "inherited"
+  ],
+  "stylesheetRouting": "Native stylesheet URL retains /game/src/scenes/ base; original link disabled and routed replacement loaded in same cascade position",
+  "expectedAssets": [
+    {
+      "url": "http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp",
+      "sha256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443"
+    },
+    {
+      "url": "http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp",
+      "sha256": "9f501bdc91d328bf47b82e026d6d0cb10b39fbb81fd3fdabf19041722b7139e7"
+    }
+  ],
+  "samplePolicy": "Original every-frame DOM+Range/protected/UI/locality/lifecycle/FIFO proof; raw frame/layout times retained; no animation shortening. Screenshot target disabled (1e9): no screenshots or artificial pauses. Owner caption visibility uses engine-maintained inline style; caption font cached outside animation and reverified afterward; no getComputedStyle in measured CHECK. Actual effective font/color/filter/will-change/stroke/shadow/backing verified for all five kinds after CSS load, before measured animation plus1200ms settle, and reverified only after full drainage. These are geometry-harness frame intervals, not isolated game-only frame timings.",
+  "rows": [
+    {
+      "rawFrameTimes": [
+        18.299999982118607,
+        9.200000017881393,
+        11.599999994039536,
+        22.299999982118607,
+        40.80000001192093,
+        7.699999988079071,
+        11.900000005960464,
+        22,
+        28.5,
+        11.300000011920929,
+        16.19999998807907,
+        20.30000001192093,
+        15,
+        19.69999998807907,
+        15.800000011920929,
+        18.19999998807907,
+        20.599999994039536,
+        13.600000023841858,
+        27.599999994039536,
+        7.5,
+        15.5,
+        21.400000005960464,
+        13,
+        18.099999994039536,
+        16,
+        16.299999982118607,
+        18.80000001192093,
+        19,
+        41.69999998807907,
+        8.400000005960464,
+        16.80000001192093,
+        57.099999994039536,
+        32.900000005960464,
+        9.5,
+        15.799999982118607,
+        32.400000005960464,
+        24.400000005960464,
+        18.80000001192093,
+        15.5,
+        19.5,
+        16.099999994039536,
+        19.799999982118607,
+        18.700000017881393,
+        15.799999982118607,
+        28.30000001192093,
+        7.5999999940395355,
+        19,
+        14,
+        19.900000005960464,
+        16.19999998807907,
+        17.80000001192093,
+        21.19999998807907,
+        16,
+        13.900000005960464,
+        27.200000017881393,
+        48.39999997615814,
+        36.5,
+        27.900000005960464,
+        25.30000001192093,
+        5.699999988079071,
+        17.099999994039536,
+        17.700000017881393,
+        17.5,
+        18.69999998807907,
+        15.300000011920929,
+        24.799999982118607,
+        9.300000011920929,
+        20.099999994039536,
+        15.5,
+        18.80000001192093,
+        33.69999998807907,
+        36,
+        33.20000001788139,
+        35.29999998211861,
+        34.20000001788139,
+        36.29999998211861,
+        15.5,
+        18.80000001192093,
+        19.900000005960464,
+        16.5,
+        18.399999976158142,
+        17.100000023841858,
+        17,
+        16.69999998807907,
+        20,
+        15.099999994039536,
+        38.900000005960464,
+        15.199999988079071,
+        14.800000011920929,
+        53.5,
+        7.0999999940395355,
+        28.5,
+        20.700000017881393,
+        16.899999976158142,
+        20.600000023841858,
+        33.89999997615814,
+        34.900000005960464,
+        41.599999994039536,
+        33.10000002384186,
+        44.099999994039536,
+        26.599999994039536,
+        20.19999998807907,
+        20.100000023841858,
+        21,
+        21.19999998807907,
+        20.69999998807907,
+        15.200000017881393,
+        19.599999994039536,
+        21,
+        19.19999998807907,
+        14,
+        16.900000005960464,
+        18.5,
+        15.300000011920929
+      ],
+      "mode": "all-long",
+      "frames": 114,
+      "peak": 6,
+      "all": {
+        "labels": [
+          {
+            "serial": 1,
+            "text": "+2 Vulnerable",
+            "owner": "e0",
+            "rect": {
+              "left": 409.66650390625,
+              "right": 652.533447265625,
+              "top": 233.34661865234375,
+              "bottom": 269.83062744140625
+            },
+            "expected": {
+              "left": 395,
+              "right": 667.1690158139885,
+              "top": 231,
+              "bottom": 271.97079188018
+            }
+          },
+          {
+            "serial": 2,
+            "text": "+2 Vulnerable",
+            "owner": "e1",
+            "rect": {
+              "left": 561.66650390625,
+              "right": 804.533447265625,
+              "top": 137.34661865234375,
+              "bottom": 173.83062744140625
+            },
+            "expected": {
+              "left": 547,
+              "right": 819.1690158139885,
+              "top": 135,
+              "bottom": 175.97079188018
+            }
+          },
+          {
+            "serial": 3,
+            "text": "+2 Vulnerable",
+            "owner": "e2",
+            "rect": {
+              "left": 798.66650390625,
+              "right": 1041.533447265625,
+              "top": 185.34661865234375,
+              "bottom": 221.83062744140625
+            },
+            "expected": {
+              "left": 784,
+              "right": 1056.1690158139886,
+              "top": 183,
+              "bottom": 223.97079188018
+            }
+          },
+          {
+            "serial": 4,
+            "text": "+2 Vulnerable",
+            "owner": "e3",
+            "rect": {
+              "left": 1065.66650390625,
+              "right": 1308.533447265625,
+              "top": 134.34661865234375,
+              "bottom": 170.83062744140625
+            },
+            "expected": {
+              "left": 1051,
+              "right": 1323.1690158139886,
+              "top": 132,
+              "bottom": 172.97079188018
+            }
+          },
+          {
+            "serial": 5,
+            "text": "+2 Dexterity",
+            "owner": "player",
+            "rect": {
+              "left": 20.578109741210938,
+              "right": 248.0218963623047,
+              "top": 175.52548217773438,
+              "bottom": 213.5494842529297
+            },
+            "expected": {
+              "left": 12,
+              "right": 256.57210835025086,
+              "top": 174,
+              "bottom": 214.97079188018
+            }
+          },
+          {
+            "serial": 6,
+            "text": "+3 Regen",
+            "owner": "player",
+            "rect": {
+              "left": 303.2425842285156,
+              "right": 390.55743408203125,
+              "top": 184.9013214111328,
+              "bottom": 205.34132385253906
+            },
+            "expected": {
+              "left": 259.57210835025086,
+              "right": 434.2624609410868,
+              "top": 174,
+              "bottom": 214.97079188018
+            }
+          }
+        ],
+        "captions": [
+          {
+            "caption": true,
+            "text": "Dust Bunny",
+            "owner": "e0",
+            "rect": {
+              "left": 462.0766906738281,
+              "right": 600.09228515625,
+              "top": 205,
+              "bottom": 228
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Coatrack Crawler",
+            "owner": "e1",
+            "rect": {
+              "left": 580.5923461914062,
+              "right": 785.5767211914062,
+              "top": 109,
+              "bottom": 132
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Lost Luggage",
+            "owner": "e2",
+            "rect": {
+              "left": 842.3345336914062,
+              "right": 997.8345336914062,
+              "top": 157,
+              "bottom": 180
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Red Carpet Runner",
+            "owner": "e3",
+            "rect": {
+              "left": 1082.14697265625,
+              "right": 1292.02197265625,
+              "top": 106,
+              "bottom": 129
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Maya Chen & Count Crumbula",
+            "owner": "player",
+            "rect": {
+              "left": 66.36560821533203,
+              "right": 379.89685821533203,
+              "top": 148,
+              "bottom": 171
+            },
+            "font": 17
+          }
+        ],
+        "protectedBoxes": [
+          {
+            "left": 140.77984914779665,
+            "right": 276.8544802060494,
+            "top": 217.88777281687805,
+            "bottom": 502.7940315950948,
+            "element": "ref: <Node>",
+            "id": "player",
+            "x": 208.81716467692303,
+            "y": 360.3409022059864,
+            "name": "Maya Chen & Count Crumbula",
+            "type": "actor:player"
+          },
+          {
+            "left": 449.15625,
+            "right": 613.984375,
+            "top": 350.8125,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e0",
+            "x": 531.5703125,
+            "y": 430.359375,
+            "name": "Dust Bunny",
+            "type": "actor:e0"
+          },
+          {
+            "left": 642.78125,
+            "right": 793.5,
+            "top": 281.203125,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e1",
+            "x": 718.140625,
+            "y": 395.5546875,
+            "name": "Coatrack Crawler",
+            "type": "actor:e1"
+          },
+          {
+            "left": 822.296875,
+            "right": 1018.03125,
+            "top": 320.984375,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e2",
+            "x": 920.1640625,
+            "y": 415.4453125,
+            "name": "Lost Luggage",
+            "type": "actor:e2"
+          },
+          {
+            "left": 1046.828125,
+            "right": 1326.828125,
+            "top": 251.375,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e3",
+            "x": 1186.828125,
+            "y": 380.640625,
+            "name": "Red Carpet Runner",
+            "type": "actor:e3"
+          },
+          {
+            "left": 0,
+            "right": 1600,
+            "top": 0,
+            "bottom": 60,
+            "type": "ui:0"
+          },
+          {
+            "left": 48.875,
+            "right": 216.140625,
+            "top": 13.890625,
+            "bottom": 45.109375,
+            "type": "ui:1"
+          },
+          {
+            "left": 1442.546875,
+            "right": 1501.40625,
+            "top": 13.890625,
+            "bottom": 45.109375,
+            "type": "ui:2"
+          },
+          {
+            "left": 1512.40625,
+            "right": 1551.125,
+            "top": 10.140625,
+            "bottom": 48.859375,
+            "type": "ui:3"
+          },
+          {
+            "left": 486.1640625,
+            "right": 576.9609375,
+            "top": 275.015625,
+            "bottom": 356.8125,
+            "type": "ui:4"
+          },
+          {
+            "left": 486.1640625,
+            "right": 576.9609375,
+            "top": 278.015625,
+            "bottom": 356.8125,
+            "type": "ui:5"
+          },
+          {
+            "left": 449.1484375,
+            "right": 613.9765625,
+            "top": 435.40625,
+            "bottom": 578,
+            "type": "ui:6"
+          },
+          {
+            "left": 672.7421875,
+            "right": 763.5390625,
+            "top": 205.40625,
+            "bottom": 287.203125,
+            "type": "ui:7"
+          },
+          {
+            "left": 672.7421875,
+            "right": 763.5390625,
+            "top": 208.40625,
+            "bottom": 287.203125,
+            "type": "ui:8"
+          },
+          {
+            "left": 642.78125,
+            "right": 793.5,
+            "top": 459.40625,
+            "bottom": 578,
+            "type": "ui:9"
+          },
+          {
+            "left": 874.7578125,
+            "right": 965.5546875,
+            "top": 227.1875,
+            "bottom": 326.984375,
+            "type": "ui:10"
+          },
+          {
+            "left": 874.7578125,
+            "right": 965.5546875,
+            "top": 230.1875,
+            "bottom": 326.984375,
+            "type": "ui:11"
+          },
+          {
+            "left": 822.2890625,
+            "right": 1018.0234375,
+            "top": 459.40625,
+            "bottom": 578,
+            "type": "ui:12"
+          },
+          {
+            "left": 1141.4296875,
+            "right": 1232.2265625,
+            "top": 175.578125,
+            "bottom": 257.375,
+            "type": "ui:13"
+          },
+          {
+            "left": 1141.4296875,
+            "right": 1232.2265625,
+            "top": 178.578125,
+            "bottom": 257.375,
+            "type": "ui:14"
+          },
+          {
+            "left": 1080.828125,
+            "right": 1292.828125,
+            "top": 435.40625,
+            "bottom": 578,
+            "type": "ui:15"
+          },
+          {
+            "left": 301.1875,
+            "right": 584.609375,
+            "top": 56.59375,
+            "bottom": 82.59375,
+            "type": "ui:16"
+          },
+          {
+            "left": 30.390625,
+            "right": 244.78125,
+            "top": 531.5,
+            "bottom": 745.203125,
+            "type": "ui:17"
+          },
+          {
+            "left": 30.390625,
+            "right": 244.78125,
+            "top": 531.5,
+            "bottom": 631.203125,
+            "type": "ui:18"
+          },
+          {
+            "left": 31.3828125,
+            "right": 243.7734375,
+            "top": 501.17999267578125,
+            "bottom": 559.1799926757812,
+            "type": "ui:19"
+          },
+          {
+            "left": 30.390625,
+            "right": 244.78125,
+            "top": 631.203125,
+            "bottom": 745.203125,
+            "type": "ui:20"
+          },
+          {
+            "left": 349.6737060546875,
+            "right": 542.4144287109375,
+            "top": 635.6237182617188,
+            "bottom": 886.9932250976562,
+            "type": "ui:21"
+          },
+          {
+            "left": 746.4730224609375,
+            "right": 914.8668823242188,
+            "top": 611.3450317382812,
+            "bottom": 845.9000244140625,
+            "type": "ui:22"
+          },
+          {
+            "left": 932.5762939453125,
+            "right": 1113.408203125,
+            "top": 616.0050048828125,
+            "bottom": 859.3233032226562,
+            "type": "ui:23"
+          },
+          {
+            "left": 547.9318237304688,
+            "right": 728.7637329101562,
+            "top": 616.0050048828125,
+            "bottom": 859.3233032226562,
+            "type": "ui:24"
+          },
+          {
+            "left": 1118.935546875,
+            "right": 1311.67626953125,
+            "top": 635.6237182617188,
+            "bottom": 886.9932250976562,
+            "type": "ui:25"
+          },
+          {
+            "left": 198.03125,
+            "right": 274.328125,
+            "top": 755.53125,
+            "bottom": 854.71875,
+            "type": "ui:26"
+          },
+          {
+            "left": 1379.5625,
+            "right": 1562.40625,
+            "top": 748.796875,
+            "bottom": 880.203125,
+            "type": "ui:27"
+          },
+          {
+            "left": 1447.796875,
+            "right": 1524.09375,
+            "top": 617.953125,
+            "bottom": 717.140625,
+            "type": "ui:28"
+          },
+          {
+            "left": 1463.890625,
+            "right": 1588,
+            "top": 68,
+            "bottom": 106.390625,
+            "type": "ui:29"
+          },
+          {
+            "left": 72.93236688467172,
+            "right": 179.77932657742014,
+            "top": 416.1505643120179,
+            "bottom": 500.9805747347454,
+            "type": "ui:30"
+          }
+        ],
+        "layout": {
+          "fit": true,
+          "groups": 5,
+          "visited": 5,
+          "candidates": [
+            38,
+            48,
+            53,
+            68,
+            74
+          ]
+        }
+      },
+      "layoutTimes": [
+        2.4000000059604645,
+        1.699999988079071,
+        1.600000023841858,
+        2.4000000059604645,
+        3.300000011920929,
+        2.2000000178813934
+      ],
+      "frameTimes": {
+        "max": 57.099999994039536,
+        "p95": 41.599999994039536
+      },
+      "failures": [],
+      "actors": 4,
+      "heroLoaded": true,
+      "delivered": [
+        {
+          "key": "1 e0 +2 Vulnerable",
+          "delay": 27.5
+        },
+        {
+          "key": "2 e1 +2 Vulnerable",
+          "delay": 183.59999999403954
+        },
+        {
+          "key": "3 e2 +2 Vulnerable",
+          "delay": 358.09999999403954
+        },
+        {
+          "key": "4 e3 +2 Vulnerable",
+          "delay": 546.2999999821186
+        },
+        {
+          "key": "5 player +2 Dexterity",
+          "delay": 735.1999999880791
+        },
+        {
+          "key": "6 player +3 Regen",
+          "delay": 895.2999999821186
+        }
+      ],
+      "expired": [
+        {
+          "serial": 1,
+          "key": "e0 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0460666666666658
+        },
+        {
+          "serial": 2,
+          "key": "e1 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0414666666666645
+        },
+        {
+          "serial": 3,
+          "key": "e2 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0367333333333326
+        },
+        {
+          "serial": 4,
+          "key": "e3 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0414000000000017
+        },
+        {
+          "serial": 5,
+          "key": "player +2 Dexterity",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0368000000000008
+        },
+        {
+          "serial": 6,
+          "key": "player +3 Regen",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0367333333333346
+        }
+      ],
+      "starts": [
+        {
+          "serial": 1,
+          "text": "+2 Vulnerable",
+          "owner": "e0",
+          "delay": 16.399999976158142,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 2,
+          "text": "+2 Vulnerable",
+          "owner": "e1",
+          "delay": 172.19999998807907,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 3,
+          "text": "+2 Vulnerable",
+          "owner": "e2",
+          "delay": 350.59999999403954,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 4,
+          "text": "+2 Vulnerable",
+          "owner": "e3",
+          "delay": 537.7999999821186,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 5,
+          "text": "+2 Dexterity",
+          "owner": "player",
+          "delay": 710.7999999821186,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 6,
+          "text": "+3 Regen",
+          "owner": "player",
+          "delay": 887.5999999940395,
+          "duration": 1.0326795296952551
+        }
+      ],
+      "drainMs": 2420.7999999821186,
+      "pausedMs": 0,
+      "queued": 0,
+      "order": 0,
+      "variant": "inherited",
+      "width": 1600,
+      "kind": "crowd",
+      "computedBefore": {
+        "ownerFont": "17px",
+        "ownerVisible": "visible",
+        "ownerHidden": "hidden",
+        "ownerVisibilityControlled": true,
+        "linkDisabled": true,
+        "styleBeforeLink": true,
+        "replacementHref": "http://localhost:9562/game/src/scenes/combat.css?r54material=inherited",
+        "originalHref": "http://localhost:9562/game/src/scenes/combat.css",
+        "conditions": [
+          {
+            "kind": "status",
+            "color": "rgb(244, 239, 228)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "buff",
+            "color": "rgb(168, 236, 247)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "debuff",
+            "color": "rgb(255, 156, 138)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "counter",
+            "color": "rgb(255, 215, 94)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "blocked",
+            "color": "rgb(143, 183, 217)",
+            "font": "23px",
+            "lineHeight": "26.45px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          }
+        ]
+      },
+      "verifiedAssets": [
+        {
+          "url": "http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp",
+          "responseURL": "http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp",
+          "status": 200,
+          "type": "image/webp",
+          "bytes": 6722,
+          "expectedSHA256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443",
+          "actualSHA256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443",
+          "width": 240,
+          "height": 64
+        },
+        {
+          "url": "http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp",
+          "responseURL": "http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp",
+          "status": 200,
+          "type": "image/webp",
+          "bytes": 9568,
+          "expectedSHA256": "9f501bdc91d328bf47b82e026d6d0cb10b39fbb81fd3fdabf19041722b7139e7",
+          "actualSHA256": "9f501bdc91d328bf47b82e026d6d0cb10b39fbb81fd3fdabf19041722b7139e7",
+          "width": 240,
+          "height": 64
+        }
+      ],
+      "computedAfter": {
+        "ownerFont": "17px",
+        "ownerVisible": "visible",
+        "ownerHidden": "hidden",
+        "ownerVisibilityControlled": true,
+        "linkDisabled": true,
+        "styleBeforeLink": true,
+        "replacementHref": "http://localhost:9562/game/src/scenes/combat.css?r54material=inherited",
+        "originalHref": "http://localhost:9562/game/src/scenes/combat.css",
+        "conditions": [
+          {
+            "kind": "status",
+            "color": "rgb(244, 239, 228)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "buff",
+            "color": "rgb(168, 236, 247)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "debuff",
+            "color": "rgb(255, 156, 138)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "counter",
+            "color": "rgb(255, 215, 94)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "blocked",
+            "color": "rgb(143, 183, 217)",
+            "font": "23px",
+            "lineHeight": "26.45px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          }
+        ]
+      }
+    },
+    {
+      "rawFrameTimes": [
+        10.899999976158142,
+        3.4000000059604645,
+        24.700000017881393,
+        14.599999994039536,
+        25.299999982118607,
+        6.600000023841858,
+        8.799999982118607,
+        21.80000001192093,
+        14.099999994039536,
+        27.5,
+        9.099999994039536,
+        16.900000005960464,
+        16.80000001192093,
+        19.5,
+        19.19999998807907,
+        15.199999988079071,
+        20.80000001192093,
+        14,
+        16.19999998807907,
+        43.80000001192093,
+        10.099999994039536,
+        19.80000001192093,
+        13.5,
+        49.29999998211861,
+        9.100000023841858,
+        28.099999994039536,
+        28.5,
+        11.199999988079071,
+        15.700000017881393,
+        18.19999998807907,
+        16.5,
+        18.099999994039536,
+        20.30000001192093,
+        14.199999988079071,
+        19.900000005960464,
+        15.400000005960464,
+        26.599999994039536,
+        10.199999988079071,
+        17.400000005960464,
+        15.800000011920929,
+        19.799999982118607,
+        16.200000017881393,
+        20.599999994039536,
+        18.099999994039536,
+        16,
+        27.5,
+        7.0999999940395355,
+        18.700000017881393,
+        15.900000005960464,
+        19.5,
+        14.899999976158142,
+        20,
+        16,
+        17.30000001192093,
+        17.099999994039536,
+        26.30000001192093,
+        11,
+        18.599999994039536,
+        14.800000011920929,
+        23.799999982118607,
+        15,
+        25.30000001192093,
+        37.29999998211861,
+        40.5,
+        31.200000017881393,
+        38.69999998807907,
+        33.900000005960464,
+        21,
+        17.5,
+        18.69999998807907,
+        20.5,
+        15.5,
+        19.80000001192093,
+        20.099999994039536,
+        16.599999994039536,
+        19.30000001192093,
+        18.80000001192093,
+        14.699999988079071,
+        20.400000005960464,
+        16.299999982118607,
+        18.400000005960464,
+        14.5,
+        20.099999994039536,
+        15.600000023841858,
+        19.299999982118607,
+        17.200000017881393,
+        17.599999994039536,
+        19.799999982118607,
+        16.100000023841858,
+        20,
+        15.599999994039536,
+        18.5,
+        14.900000005960464,
+        19.69999998807907,
+        16.80000001192093,
+        34.29999998211861,
+        19.80000001192093,
+        16.19999998807907,
+        59,
+        8.5,
+        28,
+        19.30000001192093,
+        20.299999982118607,
+        15.900000005960464,
+        20.30000001192093,
+        17.799999982118607,
+        15.800000011920929,
+        21.599999994039536,
+        14.800000011920929,
+        21.5,
+        19,
+        16,
+        20.19999998807907,
+        18.80000001192093,
+        16.5,
+        19.099999994039536,
+        20,
+        20.80000001192093,
+        14.899999976158142,
+        18.400000005960464,
+        17.5,
+        18.599999994039536,
+        19.900000005960464,
+        15.599999994039536
+      ],
+      "mode": "all-long",
+      "frames": 124,
+      "peak": 6,
+      "all": {
+        "labels": [
+          {
+            "serial": 1,
+            "text": "+2 Vulnerable",
+            "owner": "e0",
+            "rect": {
+              "left": 409.66650390625,
+              "right": 652.533447265625,
+              "top": 233.34661865234375,
+              "bottom": 269.83062744140625
+            },
+            "expected": {
+              "left": 395,
+              "right": 667.1690158139885,
+              "top": 231,
+              "bottom": 271.97079188018
+            }
+          },
+          {
+            "serial": 2,
+            "text": "+2 Vulnerable",
+            "owner": "e1",
+            "rect": {
+              "left": 561.66650390625,
+              "right": 804.533447265625,
+              "top": 137.34661865234375,
+              "bottom": 173.83062744140625
+            },
+            "expected": {
+              "left": 547,
+              "right": 819.1690158139885,
+              "top": 135,
+              "bottom": 175.97079188018
+            }
+          },
+          {
+            "serial": 3,
+            "text": "+2 Vulnerable",
+            "owner": "e2",
+            "rect": {
+              "left": 798.66650390625,
+              "right": 1041.533447265625,
+              "top": 185.34661865234375,
+              "bottom": 221.83062744140625
+            },
+            "expected": {
+              "left": 784,
+              "right": 1056.1690158139886,
+              "top": 183,
+              "bottom": 223.97079188018
+            }
+          },
+          {
+            "serial": 4,
+            "text": "+2 Vulnerable",
+            "owner": "e3",
+            "rect": {
+              "left": 1065.66650390625,
+              "right": 1308.533447265625,
+              "top": 134.34661865234375,
+              "bottom": 170.83062744140625
+            },
+            "expected": {
+              "left": 1051,
+              "right": 1323.1690158139886,
+              "top": 132,
+              "bottom": 172.97079188018
+            }
+          },
+          {
+            "serial": 5,
+            "text": "+2 Dexterity",
+            "owner": "player",
+            "rect": {
+              "left": 18.73578643798828,
+              "right": 249.8642349243164,
+              "top": 175.19703674316406,
+              "bottom": 213.8370361328125
+            },
+            "expected": {
+              "left": 12,
+              "right": 256.57210835025086,
+              "top": 174,
+              "bottom": 214.97079188018
+            }
+          },
+          {
+            "serial": 6,
+            "text": "+3 Regen",
+            "owner": "player",
+            "rect": {
+              "left": 303.1827697753906,
+              "right": 390.6172180175781,
+              "top": 184.8863983154297,
+              "bottom": 205.35440063476562
+            },
+            "expected": {
+              "left": 259.57210835025086,
+              "right": 434.2624609410868,
+              "top": 174,
+              "bottom": 214.97079188018
+            }
+          }
+        ],
+        "captions": [
+          {
+            "caption": true,
+            "text": "Dust Bunny",
+            "owner": "e0",
+            "rect": {
+              "left": 462.0766906738281,
+              "right": 600.09228515625,
+              "top": 205,
+              "bottom": 228
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Coatrack Crawler",
+            "owner": "e1",
+            "rect": {
+              "left": 580.5923461914062,
+              "right": 785.5767211914062,
+              "top": 109,
+              "bottom": 132
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Lost Luggage",
+            "owner": "e2",
+            "rect": {
+              "left": 842.3345336914062,
+              "right": 997.8345336914062,
+              "top": 157,
+              "bottom": 180
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Red Carpet Runner",
+            "owner": "e3",
+            "rect": {
+              "left": 1082.14697265625,
+              "right": 1292.02197265625,
+              "top": 106,
+              "bottom": 129
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Maya Chen & Count Crumbula",
+            "owner": "player",
+            "rect": {
+              "left": 66.36560821533203,
+              "right": 379.89685821533203,
+              "top": 148,
+              "bottom": 171
+            },
+            "font": 17
+          }
+        ],
+        "protectedBoxes": [
+          {
+            "left": 140.77984914779665,
+            "right": 276.8544802060494,
+            "top": 217.88777281687805,
+            "bottom": 502.7940315950948,
+            "element": "ref: <Node>",
+            "id": "player",
+            "x": 208.81716467692303,
+            "y": 360.3409022059864,
+            "name": "Maya Chen & Count Crumbula",
+            "type": "actor:player"
+          },
+          {
+            "left": 449.15625,
+            "right": 613.984375,
+            "top": 350.8125,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e0",
+            "x": 531.5703125,
+            "y": 430.359375,
+            "name": "Dust Bunny",
+            "type": "actor:e0"
+          },
+          {
+            "left": 642.78125,
+            "right": 793.5,
+            "top": 281.203125,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e1",
+            "x": 718.140625,
+            "y": 395.5546875,
+            "name": "Coatrack Crawler",
+            "type": "actor:e1"
+          },
+          {
+            "left": 822.296875,
+            "right": 1018.03125,
+            "top": 320.984375,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e2",
+            "x": 920.1640625,
+            "y": 415.4453125,
+            "name": "Lost Luggage",
+            "type": "actor:e2"
+          },
+          {
+            "left": 1046.828125,
+            "right": 1326.828125,
+            "top": 251.375,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e3",
+            "x": 1186.828125,
+            "y": 380.640625,
+            "name": "Red Carpet Runner",
+            "type": "actor:e3"
+          },
+          {
+            "left": 0,
+            "right": 1600,
+            "top": 0,
+            "bottom": 60,
+            "type": "ui:0"
+          },
+          {
+            "left": 48.875,
+            "right": 216.140625,
+            "top": 13.890625,
+            "bottom": 45.109375,
+            "type": "ui:1"
+          },
+          {
+            "left": 1442.546875,
+            "right": 1501.40625,
+            "top": 13.890625,
+            "bottom": 45.109375,
+            "type": "ui:2"
+          },
+          {
+            "left": 1512.40625,
+            "right": 1551.125,
+            "top": 10.140625,
+            "bottom": 48.859375,
+            "type": "ui:3"
+          },
+          {
+            "left": 486.1640625,
+            "right": 576.9609375,
+            "top": 275.015625,
+            "bottom": 356.8125,
+            "type": "ui:4"
+          },
+          {
+            "left": 486.1640625,
+            "right": 576.9609375,
+            "top": 278.015625,
+            "bottom": 356.8125,
+            "type": "ui:5"
+          },
+          {
+            "left": 449.1484375,
+            "right": 613.9765625,
+            "top": 435.40625,
+            "bottom": 578,
+            "type": "ui:6"
+          },
+          {
+            "left": 672.7421875,
+            "right": 763.5390625,
+            "top": 205.40625,
+            "bottom": 287.203125,
+            "type": "ui:7"
+          },
+          {
+            "left": 672.7421875,
+            "right": 763.5390625,
+            "top": 208.40625,
+            "bottom": 287.203125,
+            "type": "ui:8"
+          },
+          {
+            "left": 642.78125,
+            "right": 793.5,
+            "top": 459.40625,
+            "bottom": 578,
+            "type": "ui:9"
+          },
+          {
+            "left": 874.7578125,
+            "right": 965.5546875,
+            "top": 227.1875,
+            "bottom": 326.984375,
+            "type": "ui:10"
+          },
+          {
+            "left": 874.7578125,
+            "right": 965.5546875,
+            "top": 230.1875,
+            "bottom": 326.984375,
+            "type": "ui:11"
+          },
+          {
+            "left": 822.2890625,
+            "right": 1018.0234375,
+            "top": 459.40625,
+            "bottom": 578,
+            "type": "ui:12"
+          },
+          {
+            "left": 1141.4296875,
+            "right": 1232.2265625,
+            "top": 175.578125,
+            "bottom": 257.375,
+            "type": "ui:13"
+          },
+          {
+            "left": 1141.4296875,
+            "right": 1232.2265625,
+            "top": 178.578125,
+            "bottom": 257.375,
+            "type": "ui:14"
+          },
+          {
+            "left": 1080.828125,
+            "right": 1292.828125,
+            "top": 435.40625,
+            "bottom": 578,
+            "type": "ui:15"
+          },
+          {
+            "left": 301.1875,
+            "right": 584.609375,
+            "top": 56.59375,
+            "bottom": 82.59375,
+            "type": "ui:16"
+          },
+          {
+            "left": 30.390625,
+            "right": 244.78125,
+            "top": 531.5,
+            "bottom": 745.203125,
+            "type": "ui:17"
+          },
+          {
+            "left": 30.390625,
+            "right": 244.78125,
+            "top": 531.5,
+            "bottom": 631.203125,
+            "type": "ui:18"
+          },
+          {
+            "left": 31.3828125,
+            "right": 243.7734375,
+            "top": 501.17999267578125,
+            "bottom": 559.1799926757812,
+            "type": "ui:19"
+          },
+          {
+            "left": 30.390625,
+            "right": 244.78125,
+            "top": 631.203125,
+            "bottom": 745.203125,
+            "type": "ui:20"
+          },
+          {
+            "left": 349.6737060546875,
+            "right": 542.4144287109375,
+            "top": 635.6237182617188,
+            "bottom": 886.9932250976562,
+            "type": "ui:21"
+          },
+          {
+            "left": 746.4730224609375,
+            "right": 914.8668823242188,
+            "top": 611.3450317382812,
+            "bottom": 845.9000244140625,
+            "type": "ui:22"
+          },
+          {
+            "left": 932.5762939453125,
+            "right": 1113.408203125,
+            "top": 616.0050048828125,
+            "bottom": 859.3233032226562,
+            "type": "ui:23"
+          },
+          {
+            "left": 547.9318237304688,
+            "right": 728.7637329101562,
+            "top": 616.0050048828125,
+            "bottom": 859.3233032226562,
+            "type": "ui:24"
+          },
+          {
+            "left": 1118.935546875,
+            "right": 1311.67626953125,
+            "top": 635.6237182617188,
+            "bottom": 886.9932250976562,
+            "type": "ui:25"
+          },
+          {
+            "left": 198.03125,
+            "right": 274.328125,
+            "top": 755.53125,
+            "bottom": 854.71875,
+            "type": "ui:26"
+          },
+          {
+            "left": 1379.5625,
+            "right": 1562.40625,
+            "top": 748.796875,
+            "bottom": 880.203125,
+            "type": "ui:27"
+          },
+          {
+            "left": 1447.796875,
+            "right": 1524.09375,
+            "top": 617.953125,
+            "bottom": 717.140625,
+            "type": "ui:28"
+          },
+          {
+            "left": 1463.890625,
+            "right": 1588,
+            "top": 68,
+            "bottom": 106.390625,
+            "type": "ui:29"
+          },
+          {
+            "left": 73.70943867426652,
+            "right": 182.49907036142855,
+            "top": 405.789649266463,
+            "bottom": 500.98057699272977,
+            "type": "ui:30"
+          }
+        ],
+        "layout": {
+          "fit": true,
+          "groups": 5,
+          "visited": 5,
+          "candidates": [
+            38,
+            48,
+            53,
+            68,
+            74
+          ]
+        }
+      },
+      "layoutTimes": [
+        0.9000000059604645,
+        1,
+        0.9000000059604645,
+        1.4000000059604645,
+        1.800000011920929,
+        1.300000011920929
+      ],
+      "frameTimes": {
+        "max": 59,
+        "p95": 34.29999998211861
+      },
+      "failures": [],
+      "actors": 4,
+      "heroLoaded": true,
+      "delivered": [
+        {
+          "key": "1 e0 +2 Vulnerable",
+          "delay": 14.299999982118607
+        },
+        {
+          "key": "2 e1 +2 Vulnerable",
+          "delay": 166.7999999821186
+        },
+        {
+          "key": "3 e2 +2 Vulnerable",
+          "delay": 359.2999999821186
+        },
+        {
+          "key": "4 e3 +2 Vulnerable",
+          "delay": 518.7999999821186
+        },
+        {
+          "key": "5 player +2 Dexterity",
+          "delay": 693.8999999761581
+        },
+        {
+          "key": "6 player +3 Regen",
+          "delay": 852.3999999761581
+        }
+      ],
+      "expired": [
+        {
+          "serial": 1,
+          "key": "e0 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0414666666666672
+        },
+        {
+          "serial": 2,
+          "key": "e1 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0368666666666662
+        },
+        {
+          "serial": 3,
+          "key": "e2 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0367333333333322
+        },
+        {
+          "serial": 4,
+          "key": "e3 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0367333333333348
+        },
+        {
+          "serial": 5,
+          "key": "player +2 Dexterity",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0413333333333334
+        },
+        {
+          "serial": 6,
+          "key": "player +3 Regen",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0415333333333354
+        }
+      ],
+      "starts": [
+        {
+          "serial": 1,
+          "text": "+2 Vulnerable",
+          "owner": "e0",
+          "delay": 9.299999982118607,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 2,
+          "text": "+2 Vulnerable",
+          "owner": "e1",
+          "delay": 157.59999999403954,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 3,
+          "text": "+2 Vulnerable",
+          "owner": "e2",
+          "delay": 349.19999998807907,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 4,
+          "text": "+2 Vulnerable",
+          "owner": "e3",
+          "delay": 507.5,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 5,
+          "text": "+2 Dexterity",
+          "owner": "player",
+          "delay": 683.5999999940395,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 6,
+          "text": "+3 Regen",
+          "owner": "player",
+          "delay": 845.0999999940395,
+          "duration": 1.0326795296952551
+        }
+      ],
+      "drainMs": 2384.2999999821186,
+      "pausedMs": 0,
+      "queued": 0,
+      "order": 1,
+      "variant": "current",
+      "width": 1600,
+      "kind": "crowd",
+      "computedBefore": {
+        "ownerFont": "17px",
+        "ownerVisible": "visible",
+        "ownerHidden": "hidden",
+        "ownerVisibilityControlled": true,
+        "linkDisabled": true,
+        "styleBeforeLink": true,
+        "replacementHref": "http://localhost:9562/game/src/scenes/combat.css?r54material=current",
+        "originalHref": "http://localhost:9562/game/src/scenes/combat.css",
+        "conditions": [
+          {
+            "kind": "status",
+            "color": "rgb(244, 239, 228)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "buff",
+            "color": "rgb(168, 236, 247)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "debuff",
+            "color": "rgb(255, 156, 138)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "counter",
+            "color": "rgb(255, 215, 94)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "blocked",
+            "color": "rgb(143, 183, 217)",
+            "font": "23px",
+            "lineHeight": "26.45px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          }
+        ]
+      },
+      "verifiedAssets": [
+        {
+          "url": "http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp",
+          "responseURL": "http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp",
+          "status": 200,
+          "type": "image/webp",
+          "bytes": 6722,
+          "expectedSHA256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443",
+          "actualSHA256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443",
+          "width": 240,
+          "height": 64
+        },
+        {
+          "url": "http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp",
+          "responseURL": "http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp",
+          "status": 200,
+          "type": "image/webp",
+          "bytes": 9568,
+          "expectedSHA256": "9f501bdc91d328bf47b82e026d6d0cb10b39fbb81fd3fdabf19041722b7139e7",
+          "actualSHA256": "9f501bdc91d328bf47b82e026d6d0cb10b39fbb81fd3fdabf19041722b7139e7",
+          "width": 240,
+          "height": 64
+        }
+      ],
+      "computedAfter": {
+        "ownerFont": "17px",
+        "ownerVisible": "visible",
+        "ownerHidden": "hidden",
+        "ownerVisibilityControlled": true,
+        "linkDisabled": true,
+        "styleBeforeLink": true,
+        "replacementHref": "http://localhost:9562/game/src/scenes/combat.css?r54material=current",
+        "originalHref": "http://localhost:9562/game/src/scenes/combat.css",
+        "conditions": [
+          {
+            "kind": "status",
+            "color": "rgb(244, 239, 228)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "buff",
+            "color": "rgb(168, 236, 247)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "debuff",
+            "color": "rgb(255, 156, 138)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "counter",
+            "color": "rgb(255, 215, 94)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "blocked",
+            "color": "rgb(143, 183, 217)",
+            "font": "23px",
+            "lineHeight": "26.45px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          }
+        ]
+      }
+    },
+    {
+      "rawFrameTimes": [
+        11.400000005960464,
+        5.5,
+        8.399999976158142,
+        12.700000017881393,
+        16.599999994039536,
+        26.400000005960464,
+        10.299999982118607,
+        8.100000023841858,
+        20.19999998807907,
+        15.199999988079071,
+        24.30000001192093,
+        11,
+        34.5,
+        19.5,
+        48.900000005960464,
+        8.299999982118607,
+        27.600000023841858,
+        27.799999982118607,
+        9.200000017881393,
+        20.299999982118607,
+        18.30000001192093,
+        15,
+        20,
+        16.599999994039536,
+        18.69999998807907,
+        19.200000017881393,
+        15.099999994039536,
+        26.5,
+        8.900000005960464,
+        19.900000005960464,
+        16.69999998807907,
+        17.69999998807907,
+        17.30000001192093,
+        18.80000001192093,
+        19.599999994039536,
+        14.5,
+        31.5,
+        22.5,
+        21.5,
+        14.699999988079071,
+        12.099999994039536,
+        10.600000023841858,
+        19,
+        21.099999994039536,
+        15.5,
+        26.900000005960464,
+        7.799999982118607,
+        19.5,
+        19.599999994039536,
+        14.200000017881393,
+        9.099999994039536,
+        17.900000005960464,
+        16.299999982118607,
+        21.700000017881393,
+        17.799999982118607,
+        23.30000001192093,
+        13,
+        14.900000005960464,
+        18.400000005960464,
+        16.899999976158142,
+        17.700000017881393,
+        19.69999998807907,
+        16.400000005960464,
+        20.599999994039536,
+        16.30000001192093,
+        19.799999982118607,
+        18.100000023841858,
+        17,
+        20.69999998807907,
+        19,
+        19.599999994039536,
+        21.099999994039536,
+        14.800000011920929,
+        19.30000001192093,
+        17.5,
+        18.599999994039536,
+        21.69999998807907,
+        19.700000017881393,
+        16.5,
+        24.599999994039536,
+        16.400000005960464,
+        19,
+        16.299999982118607,
+        17.80000001192093,
+        25.400000005960464,
+        16.099999994039536,
+        15.799999982118607,
+        20.900000005960464,
+        20.099999994039536,
+        22.900000005960464,
+        20.900000005960464,
+        40.099999994039536,
+        17.80000001192093,
+        17.69999998807907,
+        68.7000000178814,
+        8.399999976158142,
+        31.80000001192093,
+        21.400000005960464,
+        20.799999982118607,
+        15.800000011920929,
+        19.30000001192093,
+        18.5,
+        17.599999994039536,
+        21.400000005960464,
+        19,
+        18.899999976158142,
+        20.600000023841858,
+        16.69999998807907,
+        18.19999998807907,
+        21.400000005960464,
+        16.80000001192093,
+        20,
+        18.099999994039536,
+        21.69999998807907,
+        15.5,
+        19.5,
+        15.5,
+        19.30000001192093,
+        20.69999998807907,
+        20.80000001192093,
+        15.199999988079071,
+        19.80000001192093,
+        20.19999998807907,
+        15.700000017881393,
+        20.299999982118607,
+        19.80000001192093
+      ],
+      "mode": "all-long",
+      "frames": 126,
+      "peak": 6,
+      "all": {
+        "labels": [
+          {
+            "serial": 1,
+            "text": "+2 Vulnerable",
+            "owner": "e0",
+            "rect": {
+              "left": 409.66650390625,
+              "right": 652.533447265625,
+              "top": 233.34661865234375,
+              "bottom": 269.83062744140625
+            },
+            "expected": {
+              "left": 395,
+              "right": 667.1690158139885,
+              "top": 231,
+              "bottom": 271.97079188018
+            }
+          },
+          {
+            "serial": 2,
+            "text": "+2 Vulnerable",
+            "owner": "e1",
+            "rect": {
+              "left": 561.66650390625,
+              "right": 804.533447265625,
+              "top": 137.34661865234375,
+              "bottom": 173.83062744140625
+            },
+            "expected": {
+              "left": 547,
+              "right": 819.1690158139885,
+              "top": 135,
+              "bottom": 175.97079188018
+            }
+          },
+          {
+            "serial": 3,
+            "text": "+2 Vulnerable",
+            "owner": "e2",
+            "rect": {
+              "left": 798.66650390625,
+              "right": 1041.533447265625,
+              "top": 185.34661865234375,
+              "bottom": 221.83062744140625
+            },
+            "expected": {
+              "left": 784,
+              "right": 1056.1690158139886,
+              "top": 183,
+              "bottom": 223.97079188018
+            }
+          },
+          {
+            "serial": 4,
+            "text": "+2 Vulnerable",
+            "owner": "e3",
+            "rect": {
+              "left": 1065.66650390625,
+              "right": 1308.533447265625,
+              "top": 134.34661865234375,
+              "bottom": 170.83062744140625
+            },
+            "expected": {
+              "left": 1051,
+              "right": 1323.1690158139886,
+              "top": 132,
+              "bottom": 172.97079188018
+            }
+          },
+          {
+            "serial": 5,
+            "text": "+2 Dexterity",
+            "owner": "player",
+            "rect": {
+              "left": 18.73578643798828,
+              "right": 249.8642349243164,
+              "top": 175.19703674316406,
+              "bottom": 213.8370361328125
+            },
+            "expected": {
+              "left": 12,
+              "right": 256.57210835025086,
+              "top": 174,
+              "bottom": 214.97079188018
+            }
+          },
+          {
+            "serial": 6,
+            "text": "+3 Regen",
+            "owner": "player",
+            "rect": {
+              "left": 303.1827697753906,
+              "right": 390.6172180175781,
+              "top": 184.8863983154297,
+              "bottom": 205.35440063476562
+            },
+            "expected": {
+              "left": 259.57210835025086,
+              "right": 434.2624609410868,
+              "top": 174,
+              "bottom": 214.97079188018
+            }
+          }
+        ],
+        "captions": [
+          {
+            "caption": true,
+            "text": "Dust Bunny",
+            "owner": "e0",
+            "rect": {
+              "left": 462.0766906738281,
+              "right": 600.09228515625,
+              "top": 205,
+              "bottom": 228
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Coatrack Crawler",
+            "owner": "e1",
+            "rect": {
+              "left": 580.5923461914062,
+              "right": 785.5767211914062,
+              "top": 109,
+              "bottom": 132
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Lost Luggage",
+            "owner": "e2",
+            "rect": {
+              "left": 842.3345336914062,
+              "right": 997.8345336914062,
+              "top": 157,
+              "bottom": 180
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Red Carpet Runner",
+            "owner": "e3",
+            "rect": {
+              "left": 1082.14697265625,
+              "right": 1292.02197265625,
+              "top": 106,
+              "bottom": 129
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Maya Chen & Count Crumbula",
+            "owner": "player",
+            "rect": {
+              "left": 66.36560821533203,
+              "right": 379.89685821533203,
+              "top": 148,
+              "bottom": 171
+            },
+            "font": 17
+          }
+        ],
+        "protectedBoxes": [
+          {
+            "left": 140.77984914779665,
+            "right": 276.8544802060494,
+            "top": 217.88777281687805,
+            "bottom": 502.7940315950948,
+            "element": "ref: <Node>",
+            "id": "player",
+            "x": 208.81716467692303,
+            "y": 360.3409022059864,
+            "name": "Maya Chen & Count Crumbula",
+            "type": "actor:player"
+          },
+          {
+            "left": 449.15625,
+            "right": 613.984375,
+            "top": 350.8125,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e0",
+            "x": 531.5703125,
+            "y": 430.359375,
+            "name": "Dust Bunny",
+            "type": "actor:e0"
+          },
+          {
+            "left": 642.78125,
+            "right": 793.5,
+            "top": 281.203125,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e1",
+            "x": 718.140625,
+            "y": 395.5546875,
+            "name": "Coatrack Crawler",
+            "type": "actor:e1"
+          },
+          {
+            "left": 822.296875,
+            "right": 1018.03125,
+            "top": 320.984375,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e2",
+            "x": 920.1640625,
+            "y": 415.4453125,
+            "name": "Lost Luggage",
+            "type": "actor:e2"
+          },
+          {
+            "left": 1046.828125,
+            "right": 1326.828125,
+            "top": 251.375,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e3",
+            "x": 1186.828125,
+            "y": 380.640625,
+            "name": "Red Carpet Runner",
+            "type": "actor:e3"
+          },
+          {
+            "left": 0,
+            "right": 1600,
+            "top": 0,
+            "bottom": 60,
+            "type": "ui:0"
+          },
+          {
+            "left": 48.875,
+            "right": 216.140625,
+            "top": 13.890625,
+            "bottom": 45.109375,
+            "type": "ui:1"
+          },
+          {
+            "left": 1442.546875,
+            "right": 1501.40625,
+            "top": 13.890625,
+            "bottom": 45.109375,
+            "type": "ui:2"
+          },
+          {
+            "left": 1512.40625,
+            "right": 1551.125,
+            "top": 10.140625,
+            "bottom": 48.859375,
+            "type": "ui:3"
+          },
+          {
+            "left": 486.1640625,
+            "right": 576.9609375,
+            "top": 275.015625,
+            "bottom": 356.8125,
+            "type": "ui:4"
+          },
+          {
+            "left": 486.1640625,
+            "right": 576.9609375,
+            "top": 278.015625,
+            "bottom": 356.8125,
+            "type": "ui:5"
+          },
+          {
+            "left": 449.1484375,
+            "right": 613.9765625,
+            "top": 435.40625,
+            "bottom": 578,
+            "type": "ui:6"
+          },
+          {
+            "left": 672.7421875,
+            "right": 763.5390625,
+            "top": 205.40625,
+            "bottom": 287.203125,
+            "type": "ui:7"
+          },
+          {
+            "left": 672.7421875,
+            "right": 763.5390625,
+            "top": 208.40625,
+            "bottom": 287.203125,
+            "type": "ui:8"
+          },
+          {
+            "left": 642.78125,
+            "right": 793.5,
+            "top": 459.40625,
+            "bottom": 578,
+            "type": "ui:9"
+          },
+          {
+            "left": 874.7578125,
+            "right": 965.5546875,
+            "top": 227.1875,
+            "bottom": 326.984375,
+            "type": "ui:10"
+          },
+          {
+            "left": 874.7578125,
+            "right": 965.5546875,
+            "top": 230.1875,
+            "bottom": 326.984375,
+            "type": "ui:11"
+          },
+          {
+            "left": 822.2890625,
+            "right": 1018.0234375,
+            "top": 459.40625,
+            "bottom": 578,
+            "type": "ui:12"
+          },
+          {
+            "left": 1141.4296875,
+            "right": 1232.2265625,
+            "top": 175.578125,
+            "bottom": 257.375,
+            "type": "ui:13"
+          },
+          {
+            "left": 1141.4296875,
+            "right": 1232.2265625,
+            "top": 178.578125,
+            "bottom": 257.375,
+            "type": "ui:14"
+          },
+          {
+            "left": 1080.828125,
+            "right": 1292.828125,
+            "top": 435.40625,
+            "bottom": 578,
+            "type": "ui:15"
+          },
+          {
+            "left": 301.1875,
+            "right": 584.609375,
+            "top": 56.59375,
+            "bottom": 82.59375,
+            "type": "ui:16"
+          },
+          {
+            "left": 30.390625,
+            "right": 244.78125,
+            "top": 531.5,
+            "bottom": 745.203125,
+            "type": "ui:17"
+          },
+          {
+            "left": 30.390625,
+            "right": 244.78125,
+            "top": 531.5,
+            "bottom": 631.203125,
+            "type": "ui:18"
+          },
+          {
+            "left": 31.3828125,
+            "right": 243.7734375,
+            "top": 501.17999267578125,
+            "bottom": 559.1799926757812,
+            "type": "ui:19"
+          },
+          {
+            "left": 30.390625,
+            "right": 244.78125,
+            "top": 631.203125,
+            "bottom": 745.203125,
+            "type": "ui:20"
+          },
+          {
+            "left": 349.6737060546875,
+            "right": 542.4144287109375,
+            "top": 635.6237182617188,
+            "bottom": 886.9932250976562,
+            "type": "ui:21"
+          },
+          {
+            "left": 746.4730224609375,
+            "right": 914.8668823242188,
+            "top": 611.3450317382812,
+            "bottom": 845.9000244140625,
+            "type": "ui:22"
+          },
+          {
+            "left": 932.5762939453125,
+            "right": 1113.408203125,
+            "top": 616.0050048828125,
+            "bottom": 859.3233032226562,
+            "type": "ui:23"
+          },
+          {
+            "left": 547.9318237304688,
+            "right": 728.7637329101562,
+            "top": 616.0050048828125,
+            "bottom": 859.3233032226562,
+            "type": "ui:24"
+          },
+          {
+            "left": 1118.935546875,
+            "right": 1311.67626953125,
+            "top": 635.6237182617188,
+            "bottom": 886.9932250976562,
+            "type": "ui:25"
+          },
+          {
+            "left": 198.03125,
+            "right": 274.328125,
+            "top": 755.53125,
+            "bottom": 854.71875,
+            "type": "ui:26"
+          },
+          {
+            "left": 1379.5625,
+            "right": 1562.40625,
+            "top": 748.796875,
+            "bottom": 880.203125,
+            "type": "ui:27"
+          },
+          {
+            "left": 1447.796875,
+            "right": 1524.09375,
+            "top": 617.953125,
+            "bottom": 717.140625,
+            "type": "ui:28"
+          },
+          {
+            "left": 1463.890625,
+            "right": 1588,
+            "top": 68,
+            "bottom": 106.390625,
+            "type": "ui:29"
+          },
+          {
+            "left": 73.70943867426652,
+            "right": 182.49907036142855,
+            "top": 405.789649266463,
+            "bottom": 500.98057699272977,
+            "type": "ui:30"
+          }
+        ],
+        "layout": {
+          "fit": true,
+          "groups": 5,
+          "visited": 5,
+          "candidates": [
+            38,
+            48,
+            53,
+            68,
+            74
+          ]
+        }
+      },
+      "layoutTimes": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.4000000059604645,
+        1.600000023841858,
+        1.100000023841858
+      ],
+      "frameTimes": {
+        "max": 68.7000000178814,
+        "p95": 27.799999982118607
+      },
+      "failures": [],
+      "actors": 4,
+      "heroLoaded": true,
+      "delivered": [
+        {
+          "key": "1 e0 +2 Vulnerable",
+          "delay": 16.900000005960464
+        },
+        {
+          "key": "2 e1 +2 Vulnerable",
+          "delay": 170.09999999403954
+        },
+        {
+          "key": "3 e2 +2 Vulnerable",
+          "delay": 345.90000000596046
+        },
+        {
+          "key": "4 e3 +2 Vulnerable",
+          "delay": 524.5
+        },
+        {
+          "key": "5 player +2 Dexterity",
+          "delay": 703
+        },
+        {
+          "key": "6 player +3 Regen",
+          "delay": 852.1999999880791
+        }
+      ],
+      "expired": [
+        {
+          "serial": 1,
+          "key": "e0 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0415333333333354
+        },
+        {
+          "serial": 2,
+          "key": "e1 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.036866666666664
+        },
+        {
+          "serial": 3,
+          "key": "e2 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0415333333333308
+        },
+        {
+          "serial": 4,
+          "key": "e3 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0369333333333346
+        },
+        {
+          "serial": 5,
+          "key": "player +2 Dexterity",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0367333333333324
+        },
+        {
+          "serial": 6,
+          "key": "player +3 Regen",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0413333333333334
+        }
+      ],
+      "starts": [
+        {
+          "serial": 1,
+          "text": "+2 Vulnerable",
+          "owner": "e0",
+          "delay": 10,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 2,
+          "text": "+2 Vulnerable",
+          "owner": "e1",
+          "delay": 159,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 3,
+          "text": "+2 Vulnerable",
+          "owner": "e2",
+          "delay": 336.59999999403954,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 4,
+          "text": "+2 Vulnerable",
+          "owner": "e3",
+          "delay": 515.5,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 5,
+          "text": "+2 Dexterity",
+          "owner": "player",
+          "delay": 680.4000000059605,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 6,
+          "text": "+3 Regen",
+          "owner": "player",
+          "delay": 844.4000000059605,
+          "duration": 1.0326795296952551
+        }
+      ],
+      "drainMs": 2378.2999999821186,
+      "pausedMs": 0,
+      "queued": 0,
+      "order": 2,
+      "variant": "current",
+      "width": 1600,
+      "kind": "crowd",
+      "computedBefore": {
+        "ownerFont": "17px",
+        "ownerVisible": "visible",
+        "ownerHidden": "hidden",
+        "ownerVisibilityControlled": true,
+        "linkDisabled": true,
+        "styleBeforeLink": true,
+        "replacementHref": "http://localhost:9562/game/src/scenes/combat.css?r54material=current",
+        "originalHref": "http://localhost:9562/game/src/scenes/combat.css",
+        "conditions": [
+          {
+            "kind": "status",
+            "color": "rgb(244, 239, 228)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "buff",
+            "color": "rgb(168, 236, 247)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "debuff",
+            "color": "rgb(255, 156, 138)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "counter",
+            "color": "rgb(255, 215, 94)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "blocked",
+            "color": "rgb(143, 183, 217)",
+            "font": "23px",
+            "lineHeight": "26.45px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          }
+        ]
+      },
+      "verifiedAssets": [
+        {
+          "url": "http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp",
+          "responseURL": "http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp",
+          "status": 200,
+          "type": "image/webp",
+          "bytes": 6722,
+          "expectedSHA256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443",
+          "actualSHA256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443",
+          "width": 240,
+          "height": 64
+        },
+        {
+          "url": "http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp",
+          "responseURL": "http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp",
+          "status": 200,
+          "type": "image/webp",
+          "bytes": 9568,
+          "expectedSHA256": "9f501bdc91d328bf47b82e026d6d0cb10b39fbb81fd3fdabf19041722b7139e7",
+          "actualSHA256": "9f501bdc91d328bf47b82e026d6d0cb10b39fbb81fd3fdabf19041722b7139e7",
+          "width": 240,
+          "height": 64
+        }
+      ],
+      "computedAfter": {
+        "ownerFont": "17px",
+        "ownerVisible": "visible",
+        "ownerHidden": "hidden",
+        "ownerVisibilityControlled": true,
+        "linkDisabled": true,
+        "styleBeforeLink": true,
+        "replacementHref": "http://localhost:9562/game/src/scenes/combat.css?r54material=current",
+        "originalHref": "http://localhost:9562/game/src/scenes/combat.css",
+        "conditions": [
+          {
+            "kind": "status",
+            "color": "rgb(244, 239, 228)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "buff",
+            "color": "rgb(168, 236, 247)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "debuff",
+            "color": "rgb(255, 156, 138)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "counter",
+            "color": "rgb(255, 215, 94)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "blocked",
+            "color": "rgb(143, 183, 217)",
+            "font": "23px",
+            "lineHeight": "26.45px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          }
+        ]
+      }
+    },
+    {
+      "rawFrameTimes": [
+        15.300000011920929,
+        5,
+        7.299999982118607,
+        12,
+        20.200000017881393,
+        22.19999998807907,
+        7.800000011920929,
+        11.599999994039536,
+        15.900000005960464,
+        19.399999976158142,
+        26.900000005960464,
+        8.300000011920929,
+        16.900000005960464,
+        16.5,
+        19.899999976158142,
+        15.600000023841858,
+        16.69999998807907,
+        19.099999994039536,
+        15.5,
+        18,
+        27.099999994039536,
+        7.700000017881393,
+        17,
+        18.299999982118607,
+        19.400000005960464,
+        14.800000011920929,
+        16.799999982118607,
+        17.5,
+        16.900000005960464,
+        18.599999994039536,
+        22.900000005960464,
+        12.700000017881393,
+        16,
+        17,
+        16.899999976158142,
+        18.400000005960464,
+        21.200000017881393,
+        14.699999988079071,
+        18.400000005960464,
+        17.69999998807907,
+        30.099999994039536,
+        9.5,
+        19.200000017881393,
+        15.099999994039536,
+        21.099999994039536,
+        13.800000011920929,
+        21.900000005960464,
+        19.19999998807907,
+        19.900000005960464,
+        24.5,
+        10.199999988079071,
+        16,
+        18.700000017881393,
+        17.099999994039536,
+        19.099999994039536,
+        20.400000005960464,
+        16.099999994039536,
+        17.900000005960464,
+        16,
+        29.69999998807907,
+        13.200000017881393,
+        13,
+        19.5,
+        22.399999976158142,
+        19.100000023841858,
+        14.099999994039536,
+        19.400000005960464,
+        21.299999982118607,
+        14.5,
+        16.700000017881393,
+        18.5,
+        18.799999982118607,
+        16.900000005960464,
+        19.400000005960464,
+        16,
+        18.400000005960464,
+        19.599999994039536,
+        36.69999998807907,
+        15.5,
+        18.599999994039536,
+        51.20000001788139,
+        9.699999988079071,
+        28,
+        21.700000017881393,
+        15.099999994039536,
+        19.799999982118607,
+        15.600000023841858,
+        19,
+        16.5,
+        19.099999994039536,
+        19.099999994039536,
+        15.5,
+        27.19999998807907,
+        23.400000005960464,
+        24,
+        22.099999994039536,
+        20.900000005960464,
+        16.400000005960464,
+        19,
+        19.19999998807907,
+        15,
+        20.100000023841858,
+        15.5,
+        18.69999998807907,
+        16.400000005960464,
+        18.099999994039536,
+        16.69999998807907,
+        19,
+        16.200000017881393,
+        18.69999998807907,
+        20.400000005960464,
+        13.900000005960464,
+        16.19999998807907,
+        19.5,
+        19.900000005960464,
+        15.5,
+        19.19999998807907,
+        15.200000017881393,
+        19.099999994039536,
+        17.599999994039536,
+        19.200000017881393,
+        19.5,
+        16.399999976158142,
+        18,
+        21,
+        14.800000011920929,
+        15.800000011920929,
+        19.399999976158142,
+        18.700000017881393,
+        16.5,
+        19.19999998807907,
+        20.700000017881393
+      ],
+      "mode": "all-long",
+      "frames": 132,
+      "peak": 6,
+      "all": {
+        "labels": [
+          {
+            "serial": 1,
+            "text": "+2 Vulnerable",
+            "owner": "e0",
+            "rect": {
+              "left": 409.66650390625,
+              "right": 652.533447265625,
+              "top": 233.34661865234375,
+              "bottom": 269.83062744140625
+            },
+            "expected": {
+              "left": 395,
+              "right": 667.1690158139885,
+              "top": 231,
+              "bottom": 271.97079188018
+            }
+          },
+          {
+            "serial": 2,
+            "text": "+2 Vulnerable",
+            "owner": "e1",
+            "rect": {
+              "left": 561.66650390625,
+              "right": 804.533447265625,
+              "top": 137.34661865234375,
+              "bottom": 173.83062744140625
+            },
+            "expected": {
+              "left": 547,
+              "right": 819.1690158139885,
+              "top": 135,
+              "bottom": 175.97079188018
+            }
+          },
+          {
+            "serial": 3,
+            "text": "+2 Vulnerable",
+            "owner": "e2",
+            "rect": {
+              "left": 798.66650390625,
+              "right": 1041.533447265625,
+              "top": 185.34661865234375,
+              "bottom": 221.83062744140625
+            },
+            "expected": {
+              "left": 784,
+              "right": 1056.1690158139886,
+              "top": 183,
+              "bottom": 223.97079188018
+            }
+          },
+          {
+            "serial": 4,
+            "text": "+2 Vulnerable",
+            "owner": "e3",
+            "rect": {
+              "left": 1065.66650390625,
+              "right": 1308.533447265625,
+              "top": 134.34661865234375,
+              "bottom": 170.83062744140625
+            },
+            "expected": {
+              "left": 1051,
+              "right": 1323.1690158139886,
+              "top": 132,
+              "bottom": 172.97079188018
+            }
+          },
+          {
+            "serial": 5,
+            "text": "+2 Dexterity",
+            "owner": "player",
+            "rect": {
+              "left": 19.656951904296875,
+              "right": 248.94305419921875,
+              "top": 175.3612518310547,
+              "bottom": 213.69325256347656
+            },
+            "expected": {
+              "left": 12,
+              "right": 256.57210835025086,
+              "top": 174,
+              "bottom": 214.97079188018
+            }
+          },
+          {
+            "serial": 6,
+            "text": "+3 Regen",
+            "owner": "player",
+            "rect": {
+              "left": 297.8601379394531,
+              "right": 395.9398193359375,
+              "top": 183.5576629638672,
+              "bottom": 206.51766967773438
+            },
+            "expected": {
+              "left": 259.57210835025086,
+              "right": 434.2624609410868,
+              "top": 174,
+              "bottom": 214.97079188018
+            }
+          }
+        ],
+        "captions": [
+          {
+            "caption": true,
+            "text": "Dust Bunny",
+            "owner": "e0",
+            "rect": {
+              "left": 462.0766906738281,
+              "right": 600.09228515625,
+              "top": 205,
+              "bottom": 228
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Coatrack Crawler",
+            "owner": "e1",
+            "rect": {
+              "left": 580.5923461914062,
+              "right": 785.5767211914062,
+              "top": 109,
+              "bottom": 132
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Lost Luggage",
+            "owner": "e2",
+            "rect": {
+              "left": 842.3345336914062,
+              "right": 997.8345336914062,
+              "top": 157,
+              "bottom": 180
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Red Carpet Runner",
+            "owner": "e3",
+            "rect": {
+              "left": 1082.14697265625,
+              "right": 1292.02197265625,
+              "top": 106,
+              "bottom": 129
+            },
+            "font": 17
+          },
+          {
+            "caption": true,
+            "text": "Maya Chen & Count Crumbula",
+            "owner": "player",
+            "rect": {
+              "left": 66.36560821533203,
+              "right": 379.89685821533203,
+              "top": 148,
+              "bottom": 171
+            },
+            "font": 17
+          }
+        ],
+        "protectedBoxes": [
+          {
+            "left": 140.77984914779665,
+            "right": 276.8544802060494,
+            "top": 217.88777281687805,
+            "bottom": 502.7940315950948,
+            "element": "ref: <Node>",
+            "id": "player",
+            "x": 208.81716467692303,
+            "y": 360.3409022059864,
+            "name": "Maya Chen & Count Crumbula",
+            "type": "actor:player"
+          },
+          {
+            "left": 449.15625,
+            "right": 613.984375,
+            "top": 350.8125,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e0",
+            "x": 531.5703125,
+            "y": 430.359375,
+            "name": "Dust Bunny",
+            "type": "actor:e0"
+          },
+          {
+            "left": 642.78125,
+            "right": 793.5,
+            "top": 281.203125,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e1",
+            "x": 718.140625,
+            "y": 395.5546875,
+            "name": "Coatrack Crawler",
+            "type": "actor:e1"
+          },
+          {
+            "left": 822.296875,
+            "right": 1018.03125,
+            "top": 320.984375,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e2",
+            "x": 920.1640625,
+            "y": 415.4453125,
+            "name": "Lost Luggage",
+            "type": "actor:e2"
+          },
+          {
+            "left": 1046.828125,
+            "right": 1326.828125,
+            "top": 251.375,
+            "bottom": 509.90625,
+            "element": "ref: <Node>",
+            "id": "e3",
+            "x": 1186.828125,
+            "y": 380.640625,
+            "name": "Red Carpet Runner",
+            "type": "actor:e3"
+          },
+          {
+            "left": 0,
+            "right": 1600,
+            "top": 0,
+            "bottom": 60,
+            "type": "ui:0"
+          },
+          {
+            "left": 48.875,
+            "right": 216.140625,
+            "top": 13.890625,
+            "bottom": 45.109375,
+            "type": "ui:1"
+          },
+          {
+            "left": 1442.546875,
+            "right": 1501.40625,
+            "top": 13.890625,
+            "bottom": 45.109375,
+            "type": "ui:2"
+          },
+          {
+            "left": 1512.40625,
+            "right": 1551.125,
+            "top": 10.140625,
+            "bottom": 48.859375,
+            "type": "ui:3"
+          },
+          {
+            "left": 486.1640625,
+            "right": 576.9609375,
+            "top": 275.015625,
+            "bottom": 356.8125,
+            "type": "ui:4"
+          },
+          {
+            "left": 486.1640625,
+            "right": 576.9609375,
+            "top": 278.015625,
+            "bottom": 356.8125,
+            "type": "ui:5"
+          },
+          {
+            "left": 449.1484375,
+            "right": 613.9765625,
+            "top": 435.40625,
+            "bottom": 578,
+            "type": "ui:6"
+          },
+          {
+            "left": 672.7421875,
+            "right": 763.5390625,
+            "top": 205.40625,
+            "bottom": 287.203125,
+            "type": "ui:7"
+          },
+          {
+            "left": 672.7421875,
+            "right": 763.5390625,
+            "top": 208.40625,
+            "bottom": 287.203125,
+            "type": "ui:8"
+          },
+          {
+            "left": 642.78125,
+            "right": 793.5,
+            "top": 459.40625,
+            "bottom": 578,
+            "type": "ui:9"
+          },
+          {
+            "left": 874.7578125,
+            "right": 965.5546875,
+            "top": 227.1875,
+            "bottom": 326.984375,
+            "type": "ui:10"
+          },
+          {
+            "left": 874.7578125,
+            "right": 965.5546875,
+            "top": 230.1875,
+            "bottom": 326.984375,
+            "type": "ui:11"
+          },
+          {
+            "left": 822.2890625,
+            "right": 1018.0234375,
+            "top": 459.40625,
+            "bottom": 578,
+            "type": "ui:12"
+          },
+          {
+            "left": 1141.4296875,
+            "right": 1232.2265625,
+            "top": 175.578125,
+            "bottom": 257.375,
+            "type": "ui:13"
+          },
+          {
+            "left": 1141.4296875,
+            "right": 1232.2265625,
+            "top": 178.578125,
+            "bottom": 257.375,
+            "type": "ui:14"
+          },
+          {
+            "left": 1080.828125,
+            "right": 1292.828125,
+            "top": 435.40625,
+            "bottom": 578,
+            "type": "ui:15"
+          },
+          {
+            "left": 301.1875,
+            "right": 584.609375,
+            "top": 56.59375,
+            "bottom": 82.59375,
+            "type": "ui:16"
+          },
+          {
+            "left": 30.390625,
+            "right": 244.78125,
+            "top": 531.5,
+            "bottom": 745.203125,
+            "type": "ui:17"
+          },
+          {
+            "left": 30.390625,
+            "right": 244.78125,
+            "top": 531.5,
+            "bottom": 631.203125,
+            "type": "ui:18"
+          },
+          {
+            "left": 31.3828125,
+            "right": 243.7734375,
+            "top": 501.17999267578125,
+            "bottom": 559.1799926757812,
+            "type": "ui:19"
+          },
+          {
+            "left": 30.390625,
+            "right": 244.78125,
+            "top": 631.203125,
+            "bottom": 745.203125,
+            "type": "ui:20"
+          },
+          {
+            "left": 349.6737060546875,
+            "right": 542.4144287109375,
+            "top": 635.6237182617188,
+            "bottom": 886.9932250976562,
+            "type": "ui:21"
+          },
+          {
+            "left": 746.4730224609375,
+            "right": 914.8668823242188,
+            "top": 611.3450317382812,
+            "bottom": 845.9000244140625,
+            "type": "ui:22"
+          },
+          {
+            "left": 932.5762939453125,
+            "right": 1113.408203125,
+            "top": 616.0050048828125,
+            "bottom": 859.3233032226562,
+            "type": "ui:23"
+          },
+          {
+            "left": 547.9318237304688,
+            "right": 728.7637329101562,
+            "top": 616.0050048828125,
+            "bottom": 859.3233032226562,
+            "type": "ui:24"
+          },
+          {
+            "left": 1118.935546875,
+            "right": 1311.67626953125,
+            "top": 635.6237182617188,
+            "bottom": 886.9932250976562,
+            "type": "ui:25"
+          },
+          {
+            "left": 198.03125,
+            "right": 274.328125,
+            "top": 755.53125,
+            "bottom": 854.71875,
+            "type": "ui:26"
+          },
+          {
+            "left": 1379.5625,
+            "right": 1562.40625,
+            "top": 748.796875,
+            "bottom": 880.203125,
+            "type": "ui:27"
+          },
+          {
+            "left": 1447.796875,
+            "right": 1524.09375,
+            "top": 617.953125,
+            "bottom": 717.140625,
+            "type": "ui:28"
+          },
+          {
+            "left": 1463.890625,
+            "right": 1588,
+            "top": 68,
+            "bottom": 106.390625,
+            "type": "ui:29"
+          },
+          {
+            "left": 73.70943867426652,
+            "right": 182.49907036142855,
+            "top": 405.789649266463,
+            "bottom": 500.98057699272977,
+            "type": "ui:30"
+          }
+        ],
+        "layout": {
+          "fit": true,
+          "groups": 5,
+          "visited": 5,
+          "candidates": [
+            38,
+            48,
+            53,
+            68,
+            74
+          ]
+        }
+      },
+      "layoutTimes": [
+        1.199999988079071,
+        0.5999999940395355,
+        0.699999988079071,
+        1.0999999940395355,
+        1.5999999940395355,
+        1.7000000178813934
+      ],
+      "frameTimes": {
+        "max": 51.20000001788139,
+        "p95": 27.099999994039536
+      },
+      "failures": [],
+      "actors": 4,
+      "heroLoaded": true,
+      "delivered": [
+        {
+          "key": "1 e0 +2 Vulnerable",
+          "delay": 20.30000001192093
+        },
+        {
+          "key": "2 e1 +2 Vulnerable",
+          "delay": 171.90000000596046
+        },
+        {
+          "key": "3 e2 +2 Vulnerable",
+          "delay": 344.90000000596046
+        },
+        {
+          "key": "4 e3 +2 Vulnerable",
+          "delay": 519.8000000119209
+        },
+        {
+          "key": "5 player +2 Dexterity",
+          "delay": 699.6999999880791
+        },
+        {
+          "key": "6 player +3 Regen",
+          "delay": 864.5999999940395
+        }
+      ],
+      "expired": [
+        {
+          "serial": 1,
+          "key": "e0 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0461333333333367
+        },
+        {
+          "serial": 2,
+          "key": "e1 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0507333333333326
+        },
+        {
+          "serial": 3,
+          "key": "e2 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0460000000000005
+        },
+        {
+          "serial": 4,
+          "key": "e3 +2 Vulnerable",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0367999999999982
+        },
+        {
+          "serial": 5,
+          "key": "player +2 Dexterity",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.036800000000003
+        },
+        {
+          "serial": 6,
+          "key": "player +3 Regen",
+          "duration": 1.0326795296952551,
+          "elapsed": 1.0367333333333326
+        }
+      ],
+      "starts": [
+        {
+          "serial": 1,
+          "text": "+2 Vulnerable",
+          "owner": "e0",
+          "delay": 14.099999994039536,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 2,
+          "text": "+2 Vulnerable",
+          "owner": "e1",
+          "delay": 163.59999999403954,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 3,
+          "text": "+2 Vulnerable",
+          "owner": "e2",
+          "delay": 337.09999999403954,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 4,
+          "text": "+2 Vulnerable",
+          "owner": "e3",
+          "delay": 507.09999999403954,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 5,
+          "text": "+2 Dexterity",
+          "owner": "player",
+          "delay": 690.1999999880791,
+          "duration": 1.0326795296952551
+        },
+        {
+          "serial": 6,
+          "text": "+3 Regen",
+          "owner": "player",
+          "delay": 854.3000000119209,
+          "duration": 1.0326795296952551
+        }
+      ],
+      "drainMs": 2379.0999999940395,
+      "pausedMs": 0,
+      "queued": 0,
+      "order": 3,
+      "variant": "inherited",
+      "width": 1600,
+      "kind": "crowd",
+      "computedBefore": {
+        "ownerFont": "17px",
+        "ownerVisible": "visible",
+        "ownerHidden": "hidden",
+        "ownerVisibilityControlled": true,
+        "linkDisabled": true,
+        "styleBeforeLink": true,
+        "replacementHref": "http://localhost:9562/game/src/scenes/combat.css?r54material=inherited",
+        "originalHref": "http://localhost:9562/game/src/scenes/combat.css",
+        "conditions": [
+          {
+            "kind": "status",
+            "color": "rgb(244, 239, 228)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "buff",
+            "color": "rgb(168, 236, 247)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "debuff",
+            "color": "rgb(255, 156, 138)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "counter",
+            "color": "rgb(255, 215, 94)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "blocked",
+            "color": "rgb(143, 183, 217)",
+            "font": "23px",
+            "lineHeight": "26.45px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          }
+        ]
+      },
+      "verifiedAssets": [
+        {
+          "url": "http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp",
+          "responseURL": "http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp",
+          "status": 200,
+          "type": "image/webp",
+          "bytes": 6722,
+          "expectedSHA256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443",
+          "actualSHA256": "92beab591749b49c3dd4812cda881b2fe37dabc0d7f1c70a4d6fda9281375443",
+          "width": 240,
+          "height": 64
+        },
+        {
+          "url": "http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp",
+          "responseURL": "http://localhost:9562/game/assets/ui/r56-onyx/enamel-plaque.webp",
+          "status": 200,
+          "type": "image/webp",
+          "bytes": 9568,
+          "expectedSHA256": "9f501bdc91d328bf47b82e026d6d0cb10b39fbb81fd3fdabf19041722b7139e7",
+          "actualSHA256": "9f501bdc91d328bf47b82e026d6d0cb10b39fbb81fd3fdabf19041722b7139e7",
+          "width": 240,
+          "height": 64
+        }
+      ],
+      "computedAfter": {
+        "ownerFont": "17px",
+        "ownerVisible": "visible",
+        "ownerHidden": "hidden",
+        "ownerVisibilityControlled": true,
+        "linkDisabled": true,
+        "styleBeforeLink": true,
+        "replacementHref": "http://localhost:9562/game/src/scenes/combat.css?r54material=inherited",
+        "originalHref": "http://localhost:9562/game/src/scenes/combat.css",
+        "conditions": [
+          {
+            "kind": "status",
+            "color": "rgb(244, 239, 228)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "buff",
+            "color": "rgb(168, 236, 247)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "debuff",
+            "color": "rgb(255, 156, 138)",
+            "font": "20.75px",
+            "lineHeight": "23.8625px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "counter",
+            "color": "rgb(255, 215, 94)",
+            "font": "20px",
+            "lineHeight": "23px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          },
+          {
+            "kind": "blocked",
+            "color": "rgb(143, 183, 217)",
+            "font": "23px",
+            "lineHeight": "26.45px",
+            "padding": "1px 9px",
+            "borderImage": "url(\"http://localhost:9562/game/assets/ui/r55-iolite/enamel-plaque.webp\")",
+            "borderWidth": "6px 8px",
+            "filter": "none",
+            "textShadow": "rgb(7, 6, 13) 1px 1px 0px",
+            "stroke": "1px",
+            "willChange": "auto",
+            "backingContent": "none",
+            "backingFilter": "none",
+            "backingImage": "none",
+            "animation": "3.9s linear both cb-num-life",
+            "globalAnimationScale": "1.5000"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": []
+}

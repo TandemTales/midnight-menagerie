@@ -5,6 +5,7 @@
     python tools/package_release.py --out D:/somewhere # the parent of MidnightMenagerie-win64
     python tools/package_release.py --smoke            # ...then boot it hidden and check the title
     python tools/package_release.py --dry-run          # list what would ship, copy nothing
+    python tools/package_release.py --demo             # -> MidnightMenagerieDemo-win64 (see below)
 
 WHAT SHIPS
 ----------
@@ -25,10 +26,14 @@ WHAT SHIPS
 Electron's `resources/default_app.asar` is dropped, so the exe can only ever
 run `resources/app`.
 
-Game files come from `git ls-files game` read from the working tree, so an
-untracked folder someone dropped into game/assets (60 MB of source paintings
-sat there on 2026-10-23) can never reach a player. A tracked game/ file with
-uncommitted edits is shipped as it is on disk, and release.json says dirty.
+Game files come from git's view of the working tree: everything tracked, plus
+anything untracked that .gitignore does not hide, minus NEVER_SHIP_DIRS. New
+work that has not been committed yet still has to run, and a build that shipped
+tracked files alone would import modules it had left behind. So nothing dropped
+into game/assets can reach a player unnoticed, the ones that have been are named
+in NEVER_SHIP_DIRS, and `check()` fails the build if any shipped source imports
+a file that is not in the package. A file with uncommitted work is shipped as it
+is on disk, and release.json says dirty.
 
 WHAT DOES NOT SHIP FROM game/ (each one proven unused, see docs/RELEASE.md)
     game/**/*.py                     dev scripts that wrote assets (analyze.py, generate_narration.py, make_thumbs.py)
@@ -44,6 +49,16 @@ THE APP ID
     shell/steam_appid.txt is read here and written into release.json as
     `steamAppId`; main.js prefers release.json when it exists. Empty is fine:
     the build packages and plays, without Steam. 480 (Spacewar) is refused.
+
+THE DEMO
+    --demo builds the same game with `"demo": true` in release.json, which limits
+    an expedition to DEMO_WINGS (game/src/state/run.js). A Steam demo is its own
+    app, so its id comes from shell/steam_appid_demo.txt, empty meaning no Steam.
+
+THE EXE
+    The icon and version strings are set with rcedit (shell/node_modules/rcedit,
+    a dev dependency) from shell/icon.ico. Without it the build says so and still
+    succeeds, wearing Electron's.
 
 The Electron runtime and steamworks.js are read from shell/node_modules. A
 worktree has none, so the main checkout's is used (found via git's common dir).
@@ -86,6 +101,8 @@ STEAMWORKS_COMMON = ["index.js", "package.json", "LICENSE"]
 # Dev-only files inside game/. Each has a line in docs/RELEASE.md saying why it is unused.
 EXCLUDE_EXT = {".py", ".md"}
 EXCLUDE_FILES = {"game/src/audio/analysis.json"}
+# Sat in game/assets, loaded by nothing: source art for what ui/hang.js really hangs.
+NEVER_SHIP_DIRS = ("game/assets/Portrait Paintings/",)
 
 MUST_SHIP = ["game/index.html", "game/vendor/LICENSE", "game/assets/fonts/OFL.txt", "THIRD-PARTY-NOTICES.md"]
 NEVER_TOP = {"art", "UI", "rooms", "animations", "audio", "tests", "tools", "docs", "shots"}
@@ -106,8 +123,8 @@ def default_out():
     return d if d.drive and pathlib.Path(d.drive + "/").exists() else pathlib.Path.home() / "MidnightMenagerie-release"
 
 
-def read_app_id():
-    p = REPO / "shell" / "steam_appid.txt"
+def read_app_id(name="steam_appid.txt"):
+    p = REPO / "shell" / name
     raw = p.read_text(encoding="utf-8").strip() if p.exists() else ""
     if not raw:
         return 0
@@ -120,10 +137,12 @@ def read_app_id():
 
 
 def game_files():
-    raw = git("ls-files", "-z", "--", "game")
+    raw = git("ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", "game")
     keep, dropped = [], []
-    for rel in sorted(x for x in raw.decode("utf-8").split("\0") if x):
+    for rel in sorted(set(x for x in raw.decode("utf-8").split("\0") if x)):
         if not (REPO / rel).is_file():          # deleted in the working tree
+            continue
+        if any(rel.startswith(d) for d in NEVER_SHIP_DIRS):
             continue
         if pathlib.PurePosixPath(rel).suffix.lower() in EXCLUDE_EXT or rel in EXCLUDE_FILES:
             dropped.append(rel)
@@ -147,8 +166,27 @@ def size_of(p):
     return sum(f.stat().st_size for f in p.rglob("*") if f.is_file())
 
 
+# A relative module or stylesheet a source file names by a literal path.
+IMPORT_RE = re.compile(
+    r"""(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s+|new\s+URL\s*\(\s*)['"](\.{1,2}/[^'"`$]+?\.(?:js|mjs|css))['"]""")
+
+
+def missing_imports(app):
+    """Every literal relative import in the package must land on a packaged file."""
+    out = []
+    root = app / "game" / "src"
+    for f in root.rglob("*.js"):
+        # Comments quote imports as examples; only real ones count.
+        text = re.sub(r"/\*.*?\*/", "", f.read_text(encoding="utf-8", errors="replace"), flags=re.S)
+        text = re.sub(r"^\s*//.*$", "", text, flags=re.M)
+        for m in IMPORT_RE.finditer(text):
+            if not (f.parent / m.group(1)).resolve().is_file():
+                out.append(f"{f.relative_to(app).as_posix()} imports {m.group(1)}, which is not in the package")
+    return out
+
+
 def check(out, app, dropped):
-    problems = []
+    problems = missing_imports(app)
     for rel in MUST_SHIP:
         if not (app / rel).is_file():
             problems.append(f"missing notice/entry file: resources/app/{rel}")
@@ -232,6 +270,22 @@ def smoke(out, plat):
     return ok
 
 
+def brand_exe(exe, nm, version, title):
+    """Icon and version strings, so Task Manager and Steam do not call it Electron."""
+    tool = nm / "rcedit" / "bin" / "rcedit-x64.exe"
+    icon = REPO / "shell" / "icon.ico"
+    if not tool.is_file() or not icon.is_file():
+        print(f"NOTE: exe not branded (missing {tool if not tool.is_file() else icon}); it still runs")
+        return
+    subprocess.run([str(tool), str(exe), "--set-icon", str(icon),
+                    "--set-file-version", version, "--set-product-version", version,
+                    "--set-version-string", "ProductName", title,
+                    "--set-version-string", "FileDescription", title,
+                    "--set-version-string", "OriginalFilename", exe.name,
+                    "--set-version-string", "InternalName", exe.stem], check=True)
+    print(f"exe branded: {title} {version}")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--out", type=pathlib.Path, default=default_out(), help="parent folder of the package")
@@ -239,6 +293,7 @@ def main():
     ap.add_argument("--electron-dist", type=pathlib.Path, help="Electron's dist/ (default: shell/node_modules/electron/dist)")
     ap.add_argument("--node-modules", type=pathlib.Path, help="where steamworks.js is installed (default: shell/node_modules)")
     ap.add_argument("--dry-run", action="store_true", help="list what would ship and exit")
+    ap.add_argument("--demo", action="store_true", help="the demo: three painted wings, its own App ID and folder")
     ap.add_argument("--smoke", action="store_true", help="boot the packaged exe hidden (in the GPU slot) and check it")
     a = ap.parse_args()
 
@@ -254,7 +309,7 @@ def main():
         if not need.is_file():
             sys.exit(f"not found: {need}  (is shell/node_modules installed? --electron-dist / --node-modules)")
 
-    app_id = read_app_id()
+    app_id = read_app_id("steam_appid_demo.txt" if a.demo else "steam_appid.txt")
     keep, dropped = game_files()
     shell_js = shell_files()
     print(f"game/: {len(keep)} files ship, {len(dropped)} dev-only left out:")
@@ -264,7 +319,7 @@ def main():
     if a.dry_run:
         return 0
 
-    out = (a.out / f"{NAME}-{a.platform}").resolve()
+    out = (a.out / f"{NAME}{'Demo' if a.demo else ''}-{a.platform}").resolve()
     if REPO.resolve() in out.parents or out == REPO.resolve():
         sys.exit(f"--out must be outside the repo: {out}")
     if out.exists():
@@ -291,7 +346,7 @@ def main():
     (app / "package.json").write_text(json.dumps(pkg, indent=2) + "\n", encoding="utf-8")
     head = git("rev-parse", "HEAD").decode().strip()
     dirty = bool(git("status", "--porcelain", "--untracked-files=no", "--", "game", "shell").strip())
-    rel_info = {"steamAppId": app_id, "commit": head, "dirty": dirty, "platform": a.platform,
+    rel_info = {"steamAppId": app_id, "demo": bool(a.demo), "commit": head, "dirty": dirty, "platform": a.platform,
                 "electron": (dist / "version").read_text().strip() if (dist / "version").is_file() else "",
                 "built": time.strftime("%Y-%m-%dT%H:%M:%S")}
     (app / "release.json").write_text(json.dumps(rel_info, indent=2) + "\n", encoding="utf-8")
@@ -301,6 +356,11 @@ def main():
         copy(REPO / rel, app / rel)
     copy(REPO / "THIRD-PARTY-NOTICES.md", app / "THIRD-PARTY-NOTICES.md")
     copy(REPO / "THIRD-PARTY-NOTICES.md", out / "THIRD-PARTY-NOTICES.md")
+    if (REPO / "shell" / "icon.ico").is_file():
+        copy(REPO / "shell" / "icon.ico", app / "icon.ico")
+    if a.platform == "win64":
+        brand_exe(out / plat["exe_to"], nm, src_pkg.get("version", "0.0.0"),
+                  f"{PRODUCT} Demo" if a.demo else PRODUCT)
     print(f"copied in {time.time() - t0:.0f} s; commit {head[:8]}{' (dirty)' if dirty else ''}")
 
     problems = check(out, app, dropped)

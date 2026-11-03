@@ -87,6 +87,10 @@ export const ACT = Object.freeze({
 
   /* every per-Kid room */
   ROOM_DONE: 'room.done',           // {}          this Kid's turn in here is over
+
+  /* the table itself */
+  SEAT_GONE: 'seat.gone',           // { to }      play on without that seat
+  SEAT_BACK: 'seat.back',           // {}          this seat has climbed back in
 });
 
 /**
@@ -101,7 +105,7 @@ export const ACT = Object.freeze({
  * `run:seat` — so the HUD would keep showing the Kid `resetSeat` chose while
  * `run.local` answered as whoever happened to click the map.
  */
-const PARTY_ACTS = new Set([ACT.MAP_VOTE]);
+const PARTY_ACTS = new Set([ACT.MAP_VOTE, ACT.SEAT_GONE, ACT.SEAT_BACK]);
 
 /**
  * The card at `index` in a Kid's deck, on THIS client.
@@ -242,9 +246,8 @@ function _room(run, msg, seat) {
       return c ? run.removeCard(c.uid) : null;
     }
     case ACT.EVENT_RESCUE:
-      // One pet comes home, for everybody: `rescued` is shared and it reaches
-      // the lifetime save. A Rescue is the one Curiosity that is not per Kid.
-      return run.rescueCompanion(msg.slug);
+      // Retired action retained for old clients; side rooms cannot free pets.
+      return false; // Rescue is exclusively awarded by the zone boss.
     case ACT.EVENT_LOOT: {
       if (msg.lostThings) run.addLostThings(msg.lostThings | 0);
       if (msg.clues) run.addClues(msg.clues | 0);
@@ -286,6 +289,11 @@ function _room(run, msg, seat) {
     case ACT.ROOM_DONE:
       return run.markRoomDone();
 
+    case ACT.SEAT_GONE:
+      return run.dropSeat(msg.to | 0);
+    case ACT.SEAT_BACK:
+      return run.returnSeat(seat);
+
     default:
       console.error('[net] unknown room act', msg.act, msg);
       return null;
@@ -305,7 +313,10 @@ export function act(run, input) {
   if (!s) return applyInput(run, { ...input, seat: input.seat === undefined ? run.localSeat : input.seat });
   const msg = s.input(input);
   if (!msg) return null;
-  return s.settled().then(() => msg.result);
+  /* Not `settled()`: an input can be waiting on the agreed order, and a scene that
+     moved on before its own Trick had landed could send a second one from a hand
+     that has not changed yet. */
+  return s.whenApplied(msg).then(() => msg.result);
 }
 
 /**
@@ -358,13 +369,35 @@ export function attachChoices(session, engine) {
   if (!session || !engine || !engine.choices) return () => {};
   const broker = engine.choices;
   const answers = new Map();          // seq -> picked[]
-  const waiting = new Map();          // seq -> resolve
+  const waiting = new Map();          // seq -> { resolve, seat, req }
+  /* Which fight an answer belongs to, because `seq` restarts at every fight.
+     Empty in a harness with no run behind the session. */
+  const fight = session.run?.pendingCombat?.nodeId || '';
+  /* A peer can answer before this client has built the fight at all (it is still
+     applying the input that walks in), and a rejoin arrives holding answers from
+     before it got here. The session keeps those; pick them up. */
+  if (fight && session._answers) {
+    for (const [key, picked] of session._answers) {
+      if (key.startsWith(`${fight}:`)) answers.set(Number(key.slice(fight.length + 1)), picked);
+    }
+  }
 
   const off = session.on('answer', (msg) => {
+    if (msg.fight && fight && msg.fight !== fight) return;   // the next fight's: kept by the session
     const seq = msg.seq2 | 0;
     answers.set(seq, msg.picked || []);
     const w = waiting.get(seq);
-    if (w) { waiting.delete(seq); w(msg.picked || []); }
+    if (w) { waiting.delete(seq); w.resolve(msg.picked || []); }
+  });
+
+  /* The table has agreed to play on without somebody. Any question they still
+     owe gets the deterministic rule, the only fallback every client computes alike. */
+  const offGone = session.on('gone', ({ seat }) => {
+    for (const [seq, w] of [...waiting]) {
+      if (w.seat !== seat) continue;
+      waiting.delete(seq);
+      w.resolve(broker.auto(w.req));
+    }
   });
 
   broker.setRemote(async (req, { seq, seat, mine }) => {
@@ -378,7 +411,7 @@ export function attachChoices(session, engine) {
         : broker.auto(req);
       // `seq2`, not `seq`: `session.input()` stamps its own `seq` for ordering
       // and would overwrite this one.
-      session.input({ t: INPUT.CHOICE, seq2: seq, forSeat: seat, picked });
+      session.input({ t: INPUT.CHOICE, seq2: seq, forSeat: seat, picked, fight });
       return picked;
     }
     /**
@@ -390,11 +423,11 @@ export function attachChoices(session, engine) {
      * game waits, and `session.rejoin()` is what ends the wait.
      */
     const pl = engine.players[seat | 0];
-    if (!pl || pl.fallen || !pl.alive) return broker.auto(req);
-    return new Promise(res => waiting.set(seq, res));
+    if (!pl || pl.fallen || pl.absent || !pl.alive || session.gone?.has(seat | 0)) return broker.auto(req);
+    return new Promise(resolve => waiting.set(seq, { resolve, seat: seat | 0, req }));
   });
 
-  return () => { off(); broker.setRemote(null); answers.clear(); waiting.clear(); };
+  return () => { off(); offGone(); broker.setRemote(null); answers.clear(); waiting.clear(); };
 }
 
 /**
@@ -431,10 +464,36 @@ export function attachSession(session, run) {
   };
   // A fight may already be up if this is a rejoin rather than a fresh start.
   if (run.combat) wire(run.combat);
-  const offStart = bus.on('run:combatStart', (ev) => wire(ev?.engine || run.combat));
+  const offStart = bus.on('run:combatStart', (ev) => {
+    const engine = ev?.engine || run.combat;
+    wire(engine);
+    watch(engine);
+  });
   const offEnd = bus.on('run:combatEnd', () => wire(null));
 
+  /* THE OUT-OF-SYNC CHECK HAS TO BE CALLED. `publishDigest` existed, with tests,
+     and nothing in the game called it, so two machines that drifted went on
+     playing two different games with both screens looking fine. Published from
+     inside the engine's own event, so an input cannot land between the moment
+     the turn opened and the moment it was fingerprinted. Each room gets one too:
+     shops and rewards never reach a turn boundary. */
+  let offTurn = null;
+  const watch = (engine) => {
+    try { offTurn?.(); } catch { /* the old fight is gone */ }
+    /* `playerReady` and not `turn:start`: only then is the hand dealt and the
+       turn really open (see `_beginPlayerTurn`, step 6b). */
+    offTurn = engine ? engine.on('phase', (ev) => {
+      if (ev?.phase === 'playerReady') session.publishDigest();
+    }) : null;
+  };
+  if (run.combat) watch(run.combat);
+  const offRoom = bus.on('run:enterNode', ({ node, run: r }) => {
+    if (r === run) session.publishRoomDigest(node?.id || '');
+  });
+
   return () => {
+    try { offRoom(); } catch { /* already gone */ }
+    try { offTurn?.(); } catch { /* already gone */ }
     try { offEnd(); } catch { /* already gone */ }
     try { offStart(); } catch { /* already gone */ }
     try { offChoices?.(); } catch { /* already gone */ }

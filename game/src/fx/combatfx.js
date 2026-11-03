@@ -245,8 +245,12 @@ export class CombatFX {
    */
   number(x, y, text, o = {}) {
     if (!this.showNumbers && o.kind !== 'status') return this;
+    const owned=['status','buff','debuff','counter','blocked'].includes(o.kind)&&o.actor;
+    if(owned&&!this._retryWord&&this.wordQueue?.some(e=>e.o.actorId===o.actorId)){
+      this._deferWord(x,y,text,o);return this;
+    }
     const s = this.nums.find(n => !n.live);
-    if (!s) return this;
+    if (!s) {if(owned&&!this._retryWord)this._deferWord(x,y,text,o);return this;}
     const mag = o.mag ?? (typeof text === 'number' ? text : 6);
     // scaled by magnitude — a 30 must not look like a 3
     const scale = clamp(0.82 + Math.log(1 + Math.max(0, mag)) * 0.30, 0.82, 2.15);
@@ -262,9 +266,177 @@ export class CombatFX {
     el.classList.toggle('is-big', scale > 1.5);
     el.style.display = '';
     el.style.opacity = '0';
-    s.y = this._lane(s, x, y, (el.offsetHeight || 20) * scale);
-    el.style.transform = `translate3d(${x}px,${s.y}px,0) scale(0.4)`;
+    const tag = ['status', 'buff', 'debuff', 'counter', 'blocked'].includes(o.kind);
+    s.actorId = tag && o.actor ? o.actorId : null;
+    s.ownerBounds = s.actorId ? o : null;
+    el.dataset.actorId = s.actorId || '';
+    delete el.dataset.side;
+    if (s.actorId) {
+      // Reserve the largest pop/fade scale. Fixed local groups retain the same
+      // pop, fade and lifetime without drifting across neighboring silhouettes.
+      // Measure without the previous pooled slot's animation transform. Text
+      // can extend asymmetrically outside its line box (notably Cinzel caps).
+      const priorTransform = el.style.transform;
+      el.style.transform = 'none';
+      const box = el.getBoundingClientRect();
+      const range = document.createRange(); range.selectNodeContents(el);
+      const ink = range.getBoundingClientRect();
+      const left = Math.min(box.left, ink.left), right = Math.max(box.right, ink.right);
+      const top = Math.min(box.top, ink.top), bottom = Math.max(box.bottom, ink.bottom);
+      el.style.transform = priorTransform;
+      // Include scale rounding (three decimals) and translation rounding (tenths).
+      const maximum = scale * 1.12 + .0005;
+      s.wordW = (right - left) * maximum + .1;
+      s.wordH = (bottom - top) * maximum + .1;
+      // A constant offset at maximum scale nests every smaller envelope around
+      // the DOM transform center, including independent translate: -50% -50%.
+      s.wordDX = ((box.left + box.right) - (left + right)) * maximum / 2;
+      s.wordDY = ((box.top + box.bottom) - (top + bottom)) * maximum / 2;
+      s.drift = 0; s.rise = 0; s.y = y;
+      if(!this._fitWords(o)){
+        s.live=0;el.style.display='none';
+        if(!this._retryWord)this._deferWord(x,y,text,o);
+        return this;
+      }
+      this._lastWordFit=true;
+    } else {
+      s.y = this._lane(s, x, y, (el.offsetHeight || 20) * scale);
+    }
+    el.style.transform = `translate3d(${s.x}px,${s.y}px,0) scale(0.4)`;
     return this;
+  }
+
+  /** One measured cartouche per owner, reserved alongside the ribbon envelopes. */
+  _ownerCaption(actor) {
+    this.ownerCaptions ??= new Map();
+    let cap=this.ownerCaptions.get(actor.id);
+    if(!cap){
+      const el=document.createElement('div');el.className='cb-fx-owner';
+      el.dataset.fxOwner=actor.id;el.style.visibility='hidden';this.$nums.appendChild(el);
+      cap={el};this.ownerCaptions.set(actor.id,cap);
+    }
+    cap.ownerElement=actor.element;
+    const name=actor.name||actor.id;
+    if(cap.el.textContent!==name){
+      cap.el.textContent=name;
+      const range=document.createRange();range.selectNodeContents(cap.el);
+      const box=cap.el.getBoundingClientRect(),text=range.getBoundingClientRect();
+      cap.dx=Math.max(0,box.left-text.left);cap.dy=Math.max(0,box.top-text.top);
+      cap.w=Math.max(box.right,text.right)-Math.min(box.left,text.left);
+      cap.h=Math.max(box.bottom,text.bottom)-Math.min(box.top,text.top);
+    }
+    return cap;
+  }
+
+  _syncOwnerCaptions() {
+    for(const [id,cap] of this.ownerCaptions||[]){
+      const live=this.nums.filter(n=>n.live&&n.actorId===id);
+      if(cap.ownerElement&&!cap.ownerElement.isConnected){for(const n of live){n.live=0;n.el.style.display='none';}cap.el.remove();this.ownerCaptions.delete(id);continue;}
+      if(!live.length){cap.el.remove();this.ownerCaptions.delete(id);continue;}
+      cap.el.style.visibility=live.some(n=>n.t>=0&&+n.el.style.opacity>0)?'visible':'hidden';
+    }
+  }
+
+  /** Fit actor-local groups. Dense overflow waits instead of covering the board. */
+  _fitWords(bounds) {
+    const gap=3, inset=12;
+    const hit=(a,b)=>a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
+    const obstacles=[...bounds.actors,...bounds.plates].map(b=>({left:b.left-2,right:b.right+2,top:b.top-2,bottom:b.bottom+2}));
+    const groups=new Map();
+    for(const n of this.nums)if(n.live&&n.actorId){
+      if(!groups.has(n.actorId))groups.set(n.actorId,[]);groups.get(n.actorId).push(n);
+    }
+    const domains=[];
+    for(const words of groups.values()){
+      const actor=bounds.actors.find(a=>a.id===words[0].actorId)||words[0].ownerBounds.actor;
+      const cap=this._ownerCaption(actor);
+      const candidates=[];
+      // A label's centre stays in its actor's horizontal neighborhood. This
+      // avoids a clear but misleading ribbon above somebody else's head.
+      const neighbors=bounds.actors.filter(a=>a.id!==actor.id);
+      const leftNeighbor=neighbors.filter(a=>a.x<actor.x).sort((a,b)=>b.x-a.x)[0];
+      const rightNeighbor=neighbors.filter(a=>a.x>actor.x).sort((a,b)=>a.x-b.x)[0];
+      const ownerLeft=leftNeighbor?(leftNeighbor.x+actor.x)/2:inset;
+      const ownerRight=rightNeighbor?(rightNeighbor.x+actor.x)/2:this.w-inset;
+      for(let cols=1;cols<=Math.min(words.length,3);cols++){
+        let y=cap.h+gap,w=cap.w;const cells=[];
+        for(let i=0;i<words.length;i+=cols){
+          let x=0,h=0;
+          for(const n of words.slice(i,i+cols)){cells.push({n,left:x,right:x+n.wordW,top:y,bottom:y+n.wordH});x+=n.wordW+gap;h=Math.max(h,n.wordH);}
+          w=Math.max(w,x-gap);y+=h+gap;
+        }
+        const h=y-gap;
+        cells.push({cap,left:(w-cap.w)/2,right:(w+cap.w)/2,top:0,bottom:cap.h});
+        const xs=new Set([inset,actor.x-w/2,ownerLeft-w/2+1,ownerRight-w/2-1,actor.left-w-gap,actor.right+gap]);
+        const ys=new Set([68,actor.top-219-cap.h/2,actor.top-h-gap,actor.top,actor.bottom+gap]);
+        for(const b of obstacles){xs.add(b.left-w-gap);xs.add(b.right+gap);ys.add(b.top-h-1);ys.add(b.bottom+1);}
+        for(const x0 of xs){const x=Math.round(x0);
+          if(x<inset||x+w>this.w-inset||Math.abs(x+w/2-actor.x)>Math.max(230,(actor.right-actor.left)/2+180))continue;
+          for(const y0 of ys){const y=Math.round(y0);
+            if(y<inset||y+h>this.h-inset)continue;
+            const cx=x+w/2,cy=y+h/2;
+            if(cy<actor.top-180||cy>actor.bottom+80)continue;
+            const boxes=cells.map(c=>({left:x+c.left,right:x+c.right,top:y+c.top,bottom:y+c.bottom}));
+            if(boxes.some(box=>(box.top+box.bottom)/2<actor.top-220||(box.top+box.bottom)/2>actor.bottom+100||(box.left+box.right)/2<ownerLeft||(box.left+box.right)/2>ownerRight||Math.abs((box.left+box.right)/2-actor.x)>Math.max(230,(actor.right-actor.left)/2+180)||obstacles.some(b=>hit(box,b))))continue;
+            const score=Math.hypot(cx-actor.x,(cy-actor.top)*.9)+w*.08+h*.03;
+            candidates.push({boxes,cells,score,actor});
+          }
+        }
+      }
+      candidates.sort((a,b)=>a.score-b.score);domains.push({words,candidates:candidates.slice(0,100)});
+    }
+    domains.sort((a,b)=>a.candidates.length-b.candidates.length);
+    const chosen=[];let visited=0;
+    // Forward-filter each remaining domain: impossible crowded sets stop early
+    // instead of revisiting the same incompatible rectangles down every branch.
+    const solve=(i,options)=>{
+      if(i===domains.length)return true;if(++visited>384)return false;
+      for(const c of options[i]){
+        if(visited>=384)return false;
+        const next=options.slice();let viable=true;
+        for(let j=i+1;j<domains.length;j++){
+          next[j]=options[j].filter(other=>!c.boxes.some(box=>other.boxes.some(b=>hit(box,b))));
+          if(!next[j].length){viable=false;break;}
+        }
+        if(!viable)continue;
+        chosen.push(c);if(solve(i+1,next))return true;chosen.pop();
+      }return false;
+    };
+    const fit=solve(0,domains.map(d=>d.candidates));
+    this.wordLayout={fit,groups:domains.length,visited,candidates:domains.map(g=>g.candidates.length)};
+    if(!fit)return false;
+    chosen.forEach(c=>c.cells.forEach((cell,j)=>{
+      const box=c.boxes[j];
+      if(cell.cap){cell.cap.box=box;cell.cap.el.style.transform=`translate3d(${box.left+(cell.cap.dx||0)}px,${box.top+(cell.cap.dy||0)}px,0)`;return;}
+      const n=cell.n;n.x=(box.left+box.right)/2+n.wordDX;n.y=(box.top+box.bottom)/2+n.wordDY;n.wordBox=box;
+      // Publish a group's new positions atomically, retaining each ribbon's current pop scale.
+      n.el.style.transform=n.el.style.transform.replace(/^translate3d\([^)]*\)/,`translate3d(${n.x}px,${n.y}px,0)`);
+      n.el.dataset.side=n.x<c.actor.left?'left':n.x>c.actor.right?'right':'above';
+    }));
+    return true;
+  }
+
+  _deferWord(x,y,text,o){
+    (this.wordQueue??=[]).push({x,y,text,o});
+  }
+
+  _flushWords(){
+    if(!this.wordQueue?.length)return;
+    const blocked=new Set();
+    for(const entry of [...this.wordQueue]){
+      if(blocked.has(entry.o.actorId))continue;
+      const fresh=entry.o.refreshBounds?.();
+      // Despawned owners have no place for pending presentation. Retire the
+      // entry once instead of repeatedly spawning an unowned label on retry.
+      if(fresh&&!fresh.actor){
+        this.wordQueue.splice(this.wordQueue.indexOf(entry),1);continue;
+      }
+      this._retryWord=true;this._lastWordFit=false;
+      this.number(entry.x,entry.y,entry.text,{...entry.o,...fresh});
+      this._retryWord=false;
+      if(this._lastWordFit)this.wordQueue.splice(this.wordQueue.indexOf(entry),1);
+      else blocked.add(entry.o.actorId);
+    }
   }
 
   /**
@@ -279,19 +451,24 @@ export class CombatFX {
   _lane(s, x, y, h) {
     s.h = h;
     let ny = y;
-    const near = this.nums.filter((o) => o !== s && o.live && Math.abs(o.x - x) < 130
+    const near = this.nums.filter((o) => o !== s && o.live && (s.actorId && o.actorId === s.actorId || Math.abs(o.x - x) < 130)
       && Math.max(0, o.t) < o.dur * 0.75)
-      .sort((a, b) => a.y - b.y);
+      .sort((a, b) => s.actorId ? b.y - a.y : a.y - b.y);
     for (const o of near) {
       const gap = ((o.h || 20) + h) / 2 + 3;
-      if (Math.abs(o.y - ny) < gap) ny = o.y + gap;
+      if (Math.abs(o.y - ny) < gap) ny = s.actorId ? o.y - gap : o.y + gap;
+    }
+    if (s.actorId && ny < 96) {
+      const shift = 96 - ny;
+      for (const o of this.nums) if (o !== s && o.live && o.actorId === s.actorId) o.y += shift;
+      ny = 96;
     }
     return ny;
   }
 
   /** A word, not a number: "LETHAL", "BLOCKED", "Weak". */
-  word(x, y, text, kind = 'status') {
-    return this.number(x, y, text, { kind, mag: 4 });
+  word(x, y, text, kind = 'status', owner = {}) {
+    return this.number(x, y, text, { kind, mag: 4, ...owner });
   }
 
   /* ── frame ──────────────────────────────────────────────────────────────── */
@@ -386,12 +563,13 @@ export class CombatFX {
   }
 
   _updateNumbers(dt) {
+    let released=false;
     for (const s of this.nums) {
       if (!s.live) continue;
       s.t += dt;
       if (s.t < 0) continue;
       const p = s.t / s.dur;
-      if (p >= 1) { s.live = 0; s.el.style.display = 'none'; continue; }
+      if (p >= 1) { s.live = 0; s.el.style.display = 'none'; released=true; continue; }
       // pop in fast, drift up, fade late
       const pop = p < 0.16 ? easeOutBack(p / 0.16) : 1;
       const rise = easeOutCubic(Math.min(1, p * 1.25));
@@ -401,6 +579,11 @@ export class CombatFX {
       s.el.style.transform =
         `translate3d(${(s.x + s.drift * rise).toFixed(1)}px,${(s.y - s.rise * rise).toFixed(1)}px,0) scale(${sc.toFixed(3)})`;
     }
+    this._wordRetryIn=(this._wordRetryIn||0)-dt;
+    if(released||(this.wordQueue?.length&&this._wordRetryIn<=0)){
+      this._wordRetryIn=.25;this._flushWords();
+    }
+    this._syncOwnerCaptions();
     return this;
   }
 
@@ -421,6 +604,9 @@ export class CombatFX {
   }
 
   clear() {
+    this.wordQueue=[];
+    for(const cap of this.ownerCaptions?.values()||[])cap.el.remove();
+    this.ownerCaptions?.clear();
     this.n = 0;
     for (const s of this.nums) { s.live = 0; s.el.style.display = 'none'; }
     this.g.clearRect(0, 0, this.w, this.h);

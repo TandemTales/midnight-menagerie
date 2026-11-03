@@ -1,0 +1,24 @@
+CHECKPOINT — 2026-10-26
+
+DELIVERED
+Hall Mirror source: animations/sprites/enemies/hallMirror.png (256x256 RGBA PNG).
+Hall Mirror runtime still: game/assets/sprites/enemies/hall-mirror.webp (106x245 RGBA WebP).
+Full resolution generated original: docs/enemy-roster-2026-10-26/art-production/hall-mirror-original.png (1254x1254 RGBA).
+Visual review: foyer-checkpoint-contact.jpg. One narrow antique mirror, one friendly offset reflection, matching warm ornate wood/brass and colored glow. Full silhouette and feet visible. Runtime dimensions follow content-trimmed existing convention; source follows regular-enemy 256-square convention.
+
+COVERAGE
+187 unique roster identities; 17 regions validated at 7 regular / 3 elite / 1 boss.
+31 existing matching sprites, 1 new validated sprite, 155 pending, 0 currently blocked.
+29 mandatory animated identities preserved. SHA-256 verifies all 367 preexisting source/atlas/metadata files in the inventoried enemy folders unchanged.
+20 additional stills are preserved but not counted as roster matches. Their names/designs differ; see unmatched-existing-art.json. No filename collisions.
+No gameplay, registry or animation changes. New production IDs are art identifiers only; runtime integration is intentionally pending.
+
+SAVE INCIDENT AND PROVENANCE
+Built-in imagegen succeeded first and returned only image_url containing PNG base64, with no saved path or generation ID. A single large apply_patch attempted hall-mirror-original.b64; after 4290.6 seconds its only returned outcome was 'aborted by user'. No detailed write error or approval denial was provided. Filesystem inspection found no resulting file. The functions store no longer held the first payload after interruption; local .codex/generated_images contained only older images.
+Before the parent instruction to avoid regeneration arrived, a second built-in imagegen call referenced the prior image (num_last_images_to_include=1) and requested only preserved design with safer margins. It succeeded. Its base64 was saved in sequential 16000-character PowerShell WriteAllText/AppendAllText chunks to the authorized project folder and decoded locally. This saved PNG is the second render, not a recovered byte-identical first render. No further image generation followed the parent's checkpoint instruction.
+The large-patch route was interrupted, not confirmed denied. There is no current save blocker; chunked saving is verified. The second payload remains as hall-mirror-original.b64 as an audit/recovery copy. The original first result is visible in task conversation but has no accessible saved-file reference here.
+
+RESUME
+Use coverage-manifest.json and CSV, ordered by level/slot. Next missing entry: Portrait Greeter (level 1 R7), followed by Grand Mirror and Foyer Chandelier. Then continue levels 2–17. Do not regenerate Hall Mirror or the 31 existing matches.
+Keep originals and prompt logs per asset, one imagegen call per identity. Save data before any risky long operation. Save source camelCase PNG beside existing originals, runtime kebab-case WebP beside existing stills. Existing prep_sprites.build_enemy_still may be called for a single NEW output, but do not run its full build/main (which can rewrite registries and remove assets).
+The inventory.py script records the INITIAL baseline and must not be rerun over the current manifest. finalize-hall-mirror.py refuses existing output paths. Neither script changes gameplay.

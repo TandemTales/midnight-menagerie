@@ -1,0 +1,83 @@
+[
+  {
+    "version": "baseline",
+    "exit": 1,
+    "results": [
+      {
+        "name": "removed owner cancels pending visual once",
+        "initial": {
+          "queued": 1,
+          "live": 1
+        },
+        "settled": {
+          "queued": 1,
+          "live": 1
+        },
+        "error": "Expected values to be strictly equal:\n\n1 !== 0\n"
+      },
+      {
+        "name": "live owner still receives one full label",
+        "initial": {
+          "queued": 0,
+          "live": 1
+        },
+        "settled": {
+          "queued": 0,
+          "live": 0
+        },
+        "error": null
+      },
+      {
+        "name": "retiring one owner preserves another pending label",
+        "initial": {
+          "queued": 1,
+          "owners": [
+            null,
+            "survivor"
+          ]
+        },
+        "error": "Expected values to be strictly equal:\n\n1 !== 0\n"
+      }
+    ]
+  },
+  {
+    "version": "prototype",
+    "exit": 0,
+    "results": [
+      {
+        "name": "removed owner cancels pending visual once",
+        "initial": {
+          "queued": 0,
+          "live": 0
+        },
+        "settled": {
+          "queued": 0,
+          "live": 0
+        },
+        "error": null
+      },
+      {
+        "name": "live owner still receives one full label",
+        "initial": {
+          "queued": 0,
+          "live": 1
+        },
+        "settled": {
+          "queued": 0,
+          "live": 0
+        },
+        "error": null
+      },
+      {
+        "name": "retiring one owner preserves another pending label",
+        "initial": {
+          "queued": 0,
+          "owners": [
+            "survivor"
+          ]
+        },
+        "error": null
+      }
+    ]
+  }
+]

@@ -1,0 +1,41 @@
+{
+  "regions": 17,
+  "scenes": 156,
+  "legacyInspectionActions": 4,
+  "investigations": 3,
+  "tests": 6,
+  "uniqueIds": 169,
+  "changedConditionGuards": 8,
+  "cases": [
+    {
+      "region": "foyer",
+      "clue": "NR-foyer-clue-2",
+      "case": "CASE-foyer-bells",
+      "tests": [
+        "CASE-foyer-bells-water",
+        "CASE-foyer-bells-home"
+      ],
+      "guardianReaction": "NR-foyer-before-investigated"
+    },
+    {
+      "region": "attic-observatory",
+      "clue": "NR-attic-observatory-clue-2",
+      "case": "CASE-attic-window",
+      "tests": [
+        "CASE-attic-window-cards",
+        "CASE-attic-window-ball"
+      ],
+      "guardianReaction": "NR-attic-observatory-before-investigated"
+    },
+    {
+      "region": "lampworks",
+      "clue": "NR-lampworks-clue-1",
+      "case": "CASE-lampworks-shadow",
+      "tests": [
+        "CASE-lampworks-shadow-panel",
+        "CASE-lampworks-shadow-turn"
+      ],
+      "guardianReaction": "NR-lampworks-before-investigated"
+    }
+  ]
+}

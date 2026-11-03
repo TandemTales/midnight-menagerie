@@ -1,0 +1,72 @@
+{
+  "created_utc": "2026-10-27T00:35:21.049163+00:00",
+  "enemy": "rain-chain",
+  "states": [
+    "idle",
+    "attack",
+    "hurt",
+    "defeat",
+    "cast"
+  ],
+  "method": "Three original copper cups and links rotate hierarchically beneath the original stationary hook. Overlapping connector regions preserve attachment. One soft painted-style water bead is an added action effect; no swarm or stream.",
+  "validation": "batch-06/rain-chain-v5-left/validation.json",
+  "quality_gate": "technical_pass_visual_review_pending",
+  "files": [
+    {
+      "path": "animations/sprites/enemies/animations/SS_rainChain_idle.png",
+      "sha256": "819f5753eaec80919c59d6e910c0ac79754785e587ce6a1f89d6b3b34b5049f4",
+      "bytes": 3663015
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rain-chain/idle.webp",
+      "sha256": "272d95eea7cf80eb4430fb7f924eafe3b2f723059f0753b3956a53aec998913f",
+      "bytes": 1820362
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rainChain_attack.png",
+      "sha256": "b00545d687aa6483aa6ff183559b26cdff8d45562e90773b15f18a08d2927edf",
+      "bytes": 2921807
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rain-chain/attack.webp",
+      "sha256": "5086014301b9d07ef3066f8a4eb808071f6d07c896670e9497a9d312263259e8",
+      "bytes": 1460180
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rainChain_hurt.png",
+      "sha256": "4546334f0308d0fbab31609aea3f7e27d66b7c038e3f1340a8d45647ffcd47b8",
+      "bytes": 1486905
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rain-chain/hurt.webp",
+      "sha256": "25986088fa2c7009e60e68a68130eb2f4960fb4fd9f053c7bfe3cefdcb8ff904",
+      "bytes": 742092
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rainChain_defeat.png",
+      "sha256": "7ed10be2ce915f996ecec4ccd18ac20cb0a737725e2bd97195ce66c6920987c1",
+      "bytes": 2816989
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rain-chain/defeat.webp",
+      "sha256": "c9308d13902752ab56b40610bf081713e4033575ef6b99f0835f6b2d486d3192",
+      "bytes": 1385254
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_rainChain_cast.png",
+      "sha256": "e5c0de260ef30b3d844b3e31845dd0a68cc55047c3ba7b27b630b80eb434b716",
+      "bytes": 3558697
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rain-chain/cast.webp",
+      "sha256": "2cbc2df3828f54f8009a1deae00bf9e36ee5d626dbb1c5c3dd50331a57354adf",
+      "bytes": 1797166
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/rain-chain/index.json",
+      "sha256": "50c44ed6977726ac22a490ed053ccf0f0a2fc78d01c04dfdee83cb3f9afddd67",
+      "bytes": 3245
+    }
+  ],
+  "complete": true
+}

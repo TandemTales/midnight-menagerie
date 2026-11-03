@@ -1,0 +1,161 @@
+{
+  "results": [
+    {
+      "room": "bathhouse",
+      "view": "above",
+      "viewport": [
+        1280,
+        800
+      ],
+      "floor": 417,
+      "arena": "normal",
+      "actors": 4,
+      "shifted": 3,
+      "failures": []
+    },
+    {
+      "room": "bathhouse",
+      "view": "above",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "floor": 669,
+      "arena": "normal",
+      "actors": 4,
+      "shifted": 3,
+      "failures": []
+    },
+    {
+      "room": "bathhouse",
+      "view": "above",
+      "viewport": [
+        1024,
+        768
+      ],
+      "floor": 394,
+      "arena": "normal",
+      "actors": 4,
+      "shifted": 3,
+      "failures": []
+    },
+    {
+      "room": "pumpkin",
+      "view": "along",
+      "viewport": [
+        1280,
+        800
+      ],
+      "floor": 417,
+      "arena": "normal",
+      "actors": 4,
+      "shifted": 4,
+      "failures": []
+    },
+    {
+      "room": "pumpkin",
+      "view": "along",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "floor": 669,
+      "arena": "normal",
+      "actors": 4,
+      "shifted": 4,
+      "failures": []
+    },
+    {
+      "room": "pumpkin",
+      "view": "along",
+      "viewport": [
+        1024,
+        768
+      ],
+      "floor": 394,
+      "arena": "normal",
+      "actors": 4,
+      "shifted": 4,
+      "failures": []
+    },
+    {
+      "room": "study",
+      "view": null,
+      "viewport": [
+        1280,
+        800
+      ],
+      "floor": 390,
+      "arena": "boss",
+      "actors": 3,
+      "shifted": 3,
+      "failures": []
+    },
+    {
+      "room": "study",
+      "view": null,
+      "viewport": [
+        1920,
+        1080
+      ],
+      "floor": 624,
+      "arena": "boss",
+      "actors": 3,
+      "shifted": 3,
+      "failures": []
+    },
+    {
+      "room": "study",
+      "view": null,
+      "viewport": [
+        1024,
+        768
+      ],
+      "floor": 367,
+      "arena": "boss",
+      "actors": 3,
+      "shifted": 3,
+      "failures": []
+    },
+    {
+      "room": "passages",
+      "view": null,
+      "viewport": [
+        1280,
+        800
+      ],
+      "floor": 417,
+      "arena": "normal",
+      "actors": 6,
+      "shifted": 1,
+      "failures": []
+    },
+    {
+      "room": "passages",
+      "view": null,
+      "viewport": [
+        1920,
+        1080
+      ],
+      "floor": 669,
+      "arena": "normal",
+      "actors": 6,
+      "shifted": 1,
+      "failures": []
+    },
+    {
+      "room": "passages",
+      "view": null,
+      "viewport": [
+        1024,
+        768
+      ],
+      "floor": 394,
+      "arena": "normal",
+      "actors": 6,
+      "shifted": 1,
+      "failures": []
+    }
+  ],
+  "errors": []
+}

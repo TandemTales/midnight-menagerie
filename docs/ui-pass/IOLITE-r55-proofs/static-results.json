@@ -1,0 +1,45 @@
+{
+  "source": "c59235be77bafe1508cb069bdef208e3fe92f6bb",
+  "base": "1bfcea516055b63b9f8e9274718f2212e8b9841b",
+  "sceneCSS": {
+    "exit": 0,
+    "conflicts": 0
+  },
+  "tokens": {
+    "exit": 0,
+    "undefined": 0
+  },
+  "endings": {
+    "exit": 0,
+    "repaired": 0
+  },
+  "pythonCompile": {
+    "exit": 0,
+    "paths": [
+      "tests/ui-r55-iolite",
+      "tools/prep_r55_iolite.py"
+    ]
+  },
+  "productionJSChanged": [],
+  "offlineLayout": {
+    "exit": 0,
+    "script": "tests/ui-r51-spinel/offline-layout.mjs"
+  },
+  "envelope": {
+    "exit": 0,
+    "script": "tests/ui-r51-spinel/ribbon-envelope.mjs",
+    "animatedSamples": 16000,
+    "numericMotionPreserved": true
+  },
+  "lifecycleUnits": {
+    "exit": 0,
+    "script": "tests/ui-r50/queue-lifecycle.mjs",
+    "passed": 3
+  },
+  "seams": {
+    "reports": 4,
+    "unchanged": "game/src/state/floorplan.js local Map calls",
+    "raw": "seams.json"
+  },
+  "note": "Portable checks ran once before browser work; this records those completed results without an unnecessary rerun."
+}

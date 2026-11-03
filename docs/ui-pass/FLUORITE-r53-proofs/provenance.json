@@ -1,0 +1,1289 @@
+{
+  "visual_source_commit": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2",
+  "head": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2",
+  "canonical": [
+    {
+      "screen": "rest",
+      "exit": 0,
+      "visual_source_commit": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2",
+      "sha256": "1f3514dd6a1c328a9d581ca12d896626d445bdb6d236b69dc1312d268e6ec4c1"
+    },
+    {
+      "screen": "rest-1280",
+      "exit": 0,
+      "visual_source_commit": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2",
+      "sha256": "181b14f5938293dab7ffc0f6ea647949e300f2008d9131f5af1975b924a5ab63"
+    },
+    {
+      "screen": "event",
+      "exit": 0,
+      "visual_source_commit": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2",
+      "sha256": "561ae354910df5b4732b572c8ae7770887afeee707fdb45457350ebfc89ad80e"
+    },
+    {
+      "screen": "event-1280",
+      "exit": 0,
+      "visual_source_commit": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2",
+      "sha256": "c2f040552d84555e2737e86ebc060c212cef954e0847f7b64e4e2b833bbfae88"
+    },
+    {
+      "screen": "gameover",
+      "exit": 0,
+      "visual_source_commit": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2",
+      "sha256": "863a28a1fba292e7b3ecc72979ba579c170f4340b800db77a184fc8c3572fb1e"
+    },
+    {
+      "screen": "gameover-1280",
+      "exit": 0,
+      "visual_source_commit": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2",
+      "sha256": "94552b87253072bf67d7c3982d71e08e36c8a3a412298e022462d22c9d56720c"
+    },
+    {
+      "screen": "shop",
+      "exit": 0,
+      "visual_source_commit": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2",
+      "sha256": "b72b08249af7b772373bec7e3ace6e768c9e89ff20790ac2038e96c0284551f7"
+    },
+    {
+      "screen": "shop-1280",
+      "exit": 0,
+      "visual_source_commit": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2",
+      "sha256": "4bcdd69154a270bbe7df6777fa3401bf20920fe02fc88f6a1a30247096b25d63"
+    },
+    {
+      "screen": "combat-floaters",
+      "exit": 0,
+      "visual_source_commit": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2",
+      "sha256": "24bcd375d9538f393f8676d3ddbd5d6cf982f4af050ca335c9ac93d72cfb5077"
+    },
+    {
+      "screen": "combat-floaters-1280",
+      "exit": 0,
+      "visual_source_commit": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2",
+      "sha256": "39b6dd34aaba96ce6d9f00e5f8e72b43efe435d748e3952958ba66c84e8b0a47"
+    }
+  ],
+  "images": [
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\combat-floaters-1280.png",
+      "sha256": "39b6dd34aaba96ce6d9f00e5f8e72b43efe435d748e3952958ba66c84e8b0a47",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=combat&seed=7&companion=bones&kid=maya&encounter=foyer-boss",
+        "state": "{\"scene\":\"combat\",\"run\":null}",
+        "perf": {
+          "fps": 145,
+          "mem": 33,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 44.94,
+          "warmMs": 24725,
+          "settleMs": 534,
+          "band": 42.7
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\combat-floaters.png",
+      "sha256": "24bcd375d9538f393f8676d3ddbd5d6cf982f4af050ca335c9ac93d72cfb5077",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=combat&seed=7&companion=bones&kid=maya&encounter=foyer-boss",
+        "state": "{\"scene\":\"combat\",\"run\":null}",
+        "perf": {
+          "fps": 141,
+          "mem": 33,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 43.57,
+          "warmMs": 29509,
+          "settleMs": 696,
+          "band": 41.2
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\event-1280.png",
+      "sha256": "c2f040552d84555e2737e86ebc060c212cef954e0847f7b64e4e2b833bbfae88",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=event&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"event\",\"run\":null}",
+        "perf": {
+          "fps": 145,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 52.84,
+          "warmMs": 31605,
+          "settleMs": 305,
+          "band": 50.4
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\event.png",
+      "sha256": "561ae354910df5b4732b572c8ae7770887afeee707fdb45457350ebfc89ad80e",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=event&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"event\",\"run\":null}",
+        "perf": {
+          "fps": 128,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 51.9,
+          "warmMs": 38423,
+          "settleMs": 209,
+          "band": 47.0
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\gameover-1280.png",
+      "sha256": "94552b87253072bf67d7c3982d71e08e36c8a3a412298e022462d22c9d56720c",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=gameover&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"gameover\",\"run\":null}",
+        "perf": {
+          "fps": 83,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 47.09,
+          "warmMs": 10179,
+          "settleMs": 427,
+          "band": 40.7
+        },
+        "void": false,
+        "errors": [],
+        "logs": []
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\gameover.png",
+      "sha256": "863a28a1fba292e7b3ecc72979ba579c170f4340b800db77a184fc8c3572fb1e",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=gameover&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"gameover\",\"run\":null}",
+        "perf": {
+          "fps": 80,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 44.46,
+          "warmMs": 12568,
+          "settleMs": 313,
+          "band": 40.1
+        },
+        "void": false,
+        "errors": [],
+        "logs": []
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\rest-1280.png",
+      "sha256": "181b14f5938293dab7ffc0f6ea647949e300f2008d9131f5af1975b924a5ab63",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=rest&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"rest\",\"run\":null}",
+        "perf": {
+          "fps": 139,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 40.71,
+          "warmMs": 21398,
+          "settleMs": 321,
+          "band": 32.2
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\rest.png",
+      "sha256": "1f3514dd6a1c328a9d581ca12d896626d445bdb6d236b69dc1312d268e6ec4c1",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=rest&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"rest\",\"run\":null}",
+        "perf": {
+          "fps": 141,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 39.93,
+          "warmMs": 26741,
+          "settleMs": 316,
+          "band": 31.7
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\shop-1280.png",
+      "sha256": "4bcdd69154a270bbe7df6777fa3401bf20920fe02fc88f6a1a30247096b25d63",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=shop&seed=7&companion=bones&kid=maya",
+        "state": "{\"scene\":\"shop\",\"run\":null}",
+        "perf": {
+          "fps": 129,
+          "mem": 31,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 48.53,
+          "warmMs": 22234,
+          "settleMs": 214,
+          "band": 51.0
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\shop.png",
+      "sha256": "b72b08249af7b772373bec7e3ace6e768c9e89ff20790ac2038e96c0284551f7",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=shop&seed=7&companion=bones&kid=maya",
+        "state": "{\"scene\":\"shop\",\"run\":null}",
+        "perf": {
+          "fps": 134,
+          "mem": 31,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 44.7,
+          "warmMs": 26901,
+          "settleMs": 429,
+          "band": 47.3
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\event-initial-1280.png",
+      "sha256": "74cd31ecddd74fc17d5343bf402fd50babd47062aca4f80335bd7d635040a7d1",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\event-initial-1600.png",
+      "sha256": "d93f0242860e3da9bb34513478bd53c77c281a703ddae41da6d352df56607a37",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\event-interactions-1280.png",
+      "sha256": "dfbfa5c9822001fc10e92eed1a497a8193f172816ea990a12ad095fd3253d8f1",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\event-interactions-1600.png",
+      "sha256": "b981bfc2d331eb23ae1a3d62fbcacabff14e6b371e849c02fbe26d58316e1800",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\gameover-initial-1280.png",
+      "sha256": "97c7c38859d4f9b5d6412f100468d67b31d76a4a5e33a270a57ffe879fb01dd5",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\gameover-initial-1600.png",
+      "sha256": "a4dbe45bb36d1f274f65e099ccb00e899efdb2af0c76e24eb8d538b6c94acba1",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\gameover-interactions-1280.png",
+      "sha256": "890b9e734f80cc19c123b3c1e44ae8fc763c2a408ef6f390a8a4a8fcc5d85281",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\gameover-interactions-1600.png",
+      "sha256": "a0bb4b9c77dbfd89278e1a76c858b5feb2ef5cd97dae8a288f980856a244a533",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\keepsakes-1280.png",
+      "sha256": "8595a781a62a79c7f4093746e3e840d252d79bf4e3b23f36c31a1db7f1b85b34",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\keepsakes-1600.png",
+      "sha256": "3b3a0d3038ff6616d2bd53cc1e0d9a205558237690d733ae84a2927d3d433eea",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\memorial-geometry-1280.png",
+      "sha256": "7e65e5cf6f8bcdc7fcffbfdb4a9b9c7ce6bed8568cef55df3665ef5b54efe492",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\memorial-geometry-1600.png",
+      "sha256": "dd27e4ff2ad3d056a19279c18350ec20a1ee3518318c7fd28e1f60042b333215",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\rest-initial-1280.png",
+      "sha256": "c66fe5ad6bfc99c0d3699c31c9dbace353c027a760ca4a20f03af306ca83df1f",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\rest-initial-1600.png",
+      "sha256": "f02cf7875b008fce614ba30243712b514597684460d9740da49b329f0da93e1a",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\rest-interactions-1280.png",
+      "sha256": "c5f380da93f21e55df12fa509ceca267b2b01b4dc3aa0637ef310e907c4c30b0",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\rest-interactions-1600.png",
+      "sha256": "cfe76f1627eb615fe28c1f75137de6376fa6fefaa0acac85e4193a53c9d8e2e7",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\shop-initial-1280.png",
+      "sha256": "68c1a10264b78abad2f9acd8b5359a708f6f5419da67f97bc4593ac29bdc8a47",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\shop-initial-1600.png",
+      "sha256": "53d1de7d45b7b921f9a841198ea7b2f5e99ebfc126d995190243cb131e82138d",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\shop-interactions-1280.png",
+      "sha256": "5033efc2bb67d257a08e714ac5649fcb2fa7c3aa3307426bda98cc09d8458e07",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\shop-interactions-1600.png",
+      "sha256": "d9978c311b1d52093e499b6ff38a40eda34589cbc00ba7c608c43fe40fa8d762",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\event-boundary\\initial-1280.png",
+      "sha256": "71a9ef6dc8cee2eae3115306e8fe86e93fc8792bab4394cbbbc638256b316155",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\event-boundary\\initial-1600.png",
+      "sha256": "666273f8be5192a386cfe089fb5aa8f3f4432608042e43ff375563e2791c8acc",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-seamed-rail\\FLUORITE-event.png",
+      "sha256": "fd82e51ba7db32f1e853e9029e490bda3fe77a985d2088c8bc201aba66014af4",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=event&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"event\",\"run\":null}",
+        "perf": {
+          "fps": 131,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 52.0,
+          "warmMs": 36303,
+          "settleMs": 213,
+          "band": 47.0
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-seamed-rail\\rest-1280.png",
+      "sha256": "b2a27ba240460461422b92ff9685f5a9e590ebd0068ca8897efcd0322111c758",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=rest&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"rest\",\"run\":null}",
+        "perf": {
+          "fps": 143,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 40.98,
+          "warmMs": 20911,
+          "settleMs": 319,
+          "band": 32.2
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-seamed-rail\\rest.png",
+      "sha256": "dbd98074a88f97cc9a850ed636fd3bccaa3aa9731ed744424ca48289ca0bdb10",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=rest&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"rest\",\"run\":null}",
+        "perf": {
+          "fps": 144,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 40.05,
+          "warmMs": 27468,
+          "settleMs": 324,
+          "band": 31.7
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-transparent-lip\\event-1280.png",
+      "sha256": "2304da77b7f8f17aa92884a2edc0287f620230e87e3785d9bfbcc5cb6589a54b",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=event&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"event\",\"run\":null}",
+        "perf": {
+          "fps": 132,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 52.79,
+          "warmMs": 29897,
+          "settleMs": 320,
+          "band": 50.4
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-transparent-lip\\event.png",
+      "sha256": "3d60112219cf6ccdb8f6af97d4e6d62fa0093a01e3af0d70a4c05263c4dd8731",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=event&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"event\",\"run\":null}",
+        "perf": {
+          "fps": 124,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 51.89,
+          "warmMs": 37386,
+          "settleMs": 207,
+          "band": 47.0
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-transparent-lip\\gameover-1280.png",
+      "sha256": "7d406e4e961f80f3618717d04be5f7b3631789fa478d1aa689eaa08dba4e617d",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=gameover&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"gameover\",\"run\":null}",
+        "perf": {
+          "fps": 96,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 47.73,
+          "warmMs": 10416,
+          "settleMs": 552,
+          "band": 40.7
+        },
+        "void": false,
+        "errors": [],
+        "logs": []
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-transparent-lip\\gameover.png",
+      "sha256": "a3b66e93a481df4d2c52fc7f2e42830ca58a19a288b8633cb252b4f036ad2d7c",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=gameover&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"gameover\",\"run\":null}",
+        "perf": {
+          "fps": 91,
+          "mem": 29,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 44.21,
+          "warmMs": 11560,
+          "settleMs": 322,
+          "band": 38.7
+        },
+        "void": false,
+        "errors": [],
+        "logs": []
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-transparent-lip\\rest-1280.png",
+      "sha256": "b2348064b26110ed19b9e8284baeb8e9aa16d03d0f8f41bb904847590f2aea81",
+      "size": [
+        1280,
+        800
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=rest&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"rest\",\"run\":null}",
+        "perf": {
+          "fps": 143,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 40.74,
+          "warmMs": 21259,
+          "settleMs": 429,
+          "band": 32.2
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\initial-transparent-lip\\rest.png",
+      "sha256": "60b99875551cc7b6855bd657301e178e12d38503713a09959579eb3c58708241",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=rest&seed=7&companion=bones&kid=maya&pics=1",
+        "state": "{\"scene\":\"rest\",\"run\":null}",
+        "perf": {
+          "fps": 141,
+          "mem": 30,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 40.08,
+          "warmMs": 25965,
+          "settleMs": 330,
+          "band": 31.7
+        },
+        "void": false,
+        "errors": [],
+        "logs": [
+          "[warning] THREE.WebGLProgram: Program Info Log: (989,1): warning X4000: use of potentially uninitialized variable (f_wfHallTable)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\lifecycle\\survivor.png",
+      "sha256": "f8e7e2422a2458aac070cb643f552e903b7fd387581d54844cfb194a78caa0b6",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\memorial\\bottom-1280.png",
+      "sha256": "7052ef6c161b8d7ab4f4c853c1b6b7d14d755fa556070bce4f3cf79b4397abb5",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\memorial\\bottom-1600.png",
+      "sha256": "10061ecf1556672fdb15ea3226cfd022e390035800aae90fb121973eb1bf32d5",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\memorial\\initial-1280.png",
+      "sha256": "0dc9bb7a0402d8420aa1851f412dd9a85b023152eef4acaa6f06762541126e6c",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\memorial\\initial-1600.png",
+      "sha256": "3ccfbb161d5743863be6794b7327196cacb93c35e6adcd96184ee9a831db2ef4",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\memorial-long\\bottom-1280.png",
+      "sha256": "6a27d71e773c9dac4621d4fd67583a9d8a8a0a31a46a7af85471cbd461a9363a",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\memorial-long\\bottom-1600.png",
+      "sha256": "46c5a74e0524ee5562013088a4b35f3143183ae48c24a20dc06fd218fc154c78",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\memorial-long\\initial-1280.png",
+      "sha256": "3421e8a81b933fb31feb551c8484dd85ef53d87c27f04d89df5a92788fba88bf",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\memorial-long\\initial-1600.png",
+      "sha256": "2b4756c26930a01f883805056e7c9bb6541680dfed12a73b71154cc11bc94f95",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\boss-0-1280.png",
+      "sha256": "69cbbdedf4d6d66338a34271e81020d4aea036b6f0ee40ab6ed8c6f6cb839cee",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\boss-0-1600.png",
+      "sha256": "aedc1de70ebe6eea2f415bc2e73b9461f360d13c3b13e704e43c2e407fd4b339",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\crowd-0-1280.png",
+      "sha256": "e8ce3c183cd0aae1aefa87d88d961c9f4d571488b77f4f2197f5d412b91aa265",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\crowd-0-1600.png",
+      "sha256": "8ac056f959c66dd1d57cb75f3323a09b7e708a4131fa5f6c8263ab8e25af2874",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\crowd-1-1280.png",
+      "sha256": "07d87a9a5c65449c81ae588703acde13170547e49c80236a630f5f05ae59941b",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\crowd-1-1600.png",
+      "sha256": "e9252ffb6df47e39439637ac15dcabfdc337799caf9997146687b506af780b75",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\crowd-2-1280.png",
+      "sha256": "61cf12fc96f5ce56a9389daf15c8fafeef8ba5af6fd26a1fe1276afbc5c7a09b",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\crowd-2-1600.png",
+      "sha256": "7326f8fc905e26765bcd64555da2ac50e5c4df154145b9250e72dc950c795718",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\crowd-3-1280.png",
+      "sha256": "29bbe138b87265ae97591194dccd5b64bd16b60abdfc6eb1bdaeb9defd8ca387",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\crowd-3-1600.png",
+      "sha256": "8627c01d5f5e05e72c6ebf1c1ca3b5917f37db6d8b5f6b14edaeffd365421f6c",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\crowd-all-1280.png",
+      "sha256": "d7d1f88eeab6b51d5bb94336d03107d6e28be702217368fe4e190d9a7ae2c1f5",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\crowd-all-1600.png",
+      "sha256": "678202c2bbeaadf66435d8e8f946f5c0b7c06da3a840ec58873a8892d40e21db",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\crowd-all-long-1280.png",
+      "sha256": "2817e62116c8134237bccb973a9ad14421941d7b1dc5201f9f571bc28c744846",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\crowd-all-long-1600.png",
+      "sha256": "1815da7e4a658ed901dcdeb3990e10df17800b780a0667a1e9951cba1924cf71",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\crowd-repeats-1280.png",
+      "sha256": "29977d0c0d3aa02e6b293a1bb53aa9d1e59585f97d5d09cc08f619a4f0e36a6f",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\crowd-repeats-1600.png",
+      "sha256": "9bc1309f52e3fd550d07f7c31f13279627855ae44f3b0ee4a5c0b60d30208f01",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\queue\\idle-resize.png",
+      "sha256": "8e83552747694189dbf895fa5cfc8d6d6ca93c8238839dae6df7b29c0c9ac3c3",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-controls-final\\auto.png",
+      "sha256": "8bf701304bb660ad7b6aa99685068b1944b7b2f6d10a43794e9538fd791e6965",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-controls-final\\baseline.png",
+      "sha256": "f51d0c81bc58438fb4a253f9b465eb4fad4580aef4e97b616cc309f81f971041",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-controls-final\\current.png",
+      "sha256": "65b11f8163462673aae6a065e0049810631aeb77a8c94e47b560c817764c8d7b",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-isolation\\auto.png",
+      "sha256": "0590d659fe375104b7a67e4e635088b226979e2de3249ffcbdd20b00ab584595",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-isolation\\backing.png",
+      "sha256": "89bdcb7debc3617ed05fcfbb1e371f4ac5f125befff57f4e5839a584c9602a1a",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-isolation\\baseline.png",
+      "sha256": "38dad44b38f824bb39c9c495d2f578b11a6215cfad2aa0e94eaa10ae2c37d87b",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-isolation\\current.png",
+      "sha256": "9543a554bc2e57654f721b7bf4c956b483799f6bb1a07ca83456a9571fbdac87",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-isolation\\shadow.png",
+      "sha256": "e13408be288d0df6986a2fe4ff8a6f68d4902aadaaddd0c5c105ef644fe201e4",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-long-timing\\0-baseline.png",
+      "sha256": "b6132b189213feb54d26217f2f176cbf7074eaa8811538248761c6585c7befb8",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-long-timing\\1-fixed.png",
+      "sha256": "6c4e297b6258ab2a9fb4950a0a130aa05719975d629bb5805d7d302108d2176b",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-long-timing\\2-fixed.png",
+      "sha256": "7a1583cb302d780f5b239a7e28fadd6712c56328a510b87892f3d0e98e96c573",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-long-timing\\3-baseline.png",
+      "sha256": "1172db99bbb83f1e14e97fa97c153a3e32bf95187555407d4217c28d4f338f9f",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-pixels\\current-auto.png",
+      "sha256": "160deaa6c06bed6bf2c0669fb0ac857dce86e9b299d075e1d357ca00abe8e2a6",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-pixels\\current-fixed.png",
+      "sha256": "fbd8dabe6c8d7f443e3f52bb013a4524a8432d23766ab6509d2c856ac30ba034",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-timing\\0-baseline.png",
+      "sha256": "d385fbc39d2fd49b52cdc00eedddb5aa128739455f6a5421c663b133cac0ab66",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-timing\\1-current.png",
+      "sha256": "2167288978b373167184f8df69afffa6dc855af8af2831e3a21df98fd1a1a9e4",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-timing\\2-fixed.png",
+      "sha256": "bf8c7276c1aeac3db7ce4663122bddd7900b6e055ff9ea58f5d07564808020ab",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-timing\\3-fixed.png",
+      "sha256": "63aca744700ec567134266f9fecbb3ec347cbcfdd0416929e51852832251131a",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-timing\\4-current.png",
+      "sha256": "241e599273ba3ac1b0af6e171b8cb08b5ddc66d249a373bdbc31ab74d779b544",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\raster-timing\\5-baseline.png",
+      "sha256": "0d10829bc981bb77fc9f8fff1f56c71eeae4a64dee69eb82d1104c8ded7c62cd",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\lifecycle\\survivor.png",
+      "sha256": "60b4e8fc8f258649b29a04e196f53dd0eaefcd951aa75b01d3ba14d3ba1c3e6a",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\boss-0-1280.png",
+      "sha256": "93beec792186ca8808089933360f990fce3eadc0d7fddcdacf8c8713e3aec8de",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\boss-0-1600.png",
+      "sha256": "d8dbe698ee916286a62981c7b9fa6e66326ec99f429d6e631d6c3a43729e29f8",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\crowd-0-1280.png",
+      "sha256": "cec87cfed35b191751b9cc8460a4c8c04948bbd1d1e1dc980d081aa9ffef1a66",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\crowd-0-1600.png",
+      "sha256": "1744686bbaf929b245b9ac0315e9d23d3e715401f17052775089a9b061649316",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\crowd-1-1280.png",
+      "sha256": "5ccb3f634878fdca215a9b8509c7671cd0a7e02e4309bd57f31512ca4a265434",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\crowd-1-1600.png",
+      "sha256": "710b4d244f1e73c9e513912b36b63ccbc168482632e1cecaf927127a46e62a12",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\crowd-2-1280.png",
+      "sha256": "068cb492bee39172655ae36b5e06719e1df7db607b24a5784cf95e0a3d39bb24",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\crowd-2-1600.png",
+      "sha256": "e4efc02fc434973c074b54644f7f94d0e994db01a655c6390b66742fe7f81e73",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\crowd-3-1280.png",
+      "sha256": "94032d2753ce10ad7c0af9954deb42787cd4440d5dd262a33040ea93701f9b1d",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\crowd-3-1600.png",
+      "sha256": "2131e5c2a77c3e946bad2d74ccaaeef707f064c6bc35794b6253250ba322ef9b",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\crowd-all-1280.png",
+      "sha256": "e28e45ce4c992741bdd4b342b2f1f0d94e336bf56c300362ee2b517b26777969",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\crowd-all-1600.png",
+      "sha256": "ea22cae5a82456f9dda43098265c05e7aeab00b754a1f93f6cd99824e6ba4bde",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\crowd-all-long-1280.png",
+      "sha256": "4058dc0a8004e73e21e4dc824cad5f8163f33e805a57bdd0adf11efb2f0dd3c6",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\crowd-all-long-1600.png",
+      "sha256": "dce5ddfb2ecf1ac804c871f7437d96b3098ef321445532b9ec25ce26d2fc820c",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\crowd-repeats-1280.png",
+      "sha256": "3b40096c921e2eec408cefbca4df3ff13785700ed0daaf7f884979935636c74f",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\crowd-repeats-1600.png",
+      "sha256": "9e83b87bd44c42d79d5b604c14b573e598b85cf2c7682de22d6845b6284b7f3f",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\docs\\ui-pass\\FLUORITE-r53-proofs\\auto-raster-initial\\queue\\idle-resize.png",
+      "sha256": "8e92633398ec56c9ba193ab679ee4d7332b8c63c920e3d08e8441a6c29db4391",
+      "size": [
+        1280,
+        800
+      ]
+    },
+    {
+      "path": "D:\\UILOOP\\r53-20261029\\c\\shots\\FLUORITE-title.png",
+      "sha256": "84accb96909bd54ddb539dc08dc1ef94fa7695dca1cb31d20f2e317b01a066b6",
+      "size": [
+        1600,
+        900
+      ],
+      "metadata": {
+        "url": "http://localhost:9533/game/index.html#scene=title&seed=7&companion=bones&kid=maya",
+        "state": "{\"scene\":\"title\",\"run\":null}",
+        "perf": {
+          "fps": 145,
+          "mem": 29,
+          "gl": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "software": false,
+          "glStd": 31.26,
+          "warmMs": 10384,
+          "settleMs": 533,
+          "band": 39.1
+        },
+        "void": false,
+        "errors": [],
+        "logs": []
+      }
+    }
+  ],
+  "proof_images_have_mixed_sources": true,
+  "proof_source_note": "Canonical rows and own title use final visual_source_commit; earlier investigation images use their folder provenance/notes.",
+  "own_title_visual_source_commit": "61f1fa10fe208241e32243fc721d5bf98cb2a7b2"
+}

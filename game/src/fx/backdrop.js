@@ -1633,24 +1633,27 @@ export class Backdrop {
       };
     }
     const halfW = room.w / 2;
-    /* WHERE THE FIGHT STANDS, on the screen: the Kid's column down the left,
-       whose boots are at 0.575 of the height, and the creature row across the
-       middle, whose feet are at ~0.50. A floor piece whose foot projects below
-       STAGE_FEET in either column is standing in front of them. */
+    /* Reserve visible floor above the highest combat baseline (44vh). Test
+       the full footprint, including near furniture after its authored size
+       overrides, instead of exempting free/hand-placed pieces. */
     const LS = lensOf(cam, aspect);
-    const onStage = (px, pz, pw) => {
-      const dx = -LS.ex, dy = 0.02 - LS.ey, dz = pz - LS.ez;
-      let hit = false;
-      for (const ox of [px - pw * 0.5, px, px + pw * 0.5]) {
-        const qx = dx + ox;
-        const d = qx * LS.fx + dy * LS.fy + dz * LS.fz;
-        if (d < 0.3) return true;                   // at or behind the lens: in the way
-        const sx = 0.5 + 0.5 * (qx * LS.rx + dz * LS.rz) / (d * LS.tanH);
-        const sy = 0.5 - 0.5 * (qx * LS.ux + dy * LS.uy + dz * LS.uz) / (d * LS.tanV);
-        if (sx > -0.02 && sx < 0.29 && sy > 0.50) hit = true;
-        if (sx >= 0.29 && sx < 0.84 && sy > 0.525) hit = true;
+    const portal = ['door', 'rail', 'gate'].includes(pal.frame);
+    const stageLens = pal.trueVert && !portal
+      ? lensOf({ ...cam, look: cam.y }, aspect) : LS;
+    const stageShift = stageLens === LS ? 0 : LS.fy / Math.hypot(LS.fx, LS.fz) / (2 * LS.tanV);
+    const onStage = (px, pz, pw, py = 0.02) => {
+      const L = stageLens, dy = py - L.ey, dz = pz - L.ez;
+      let bottom = -Infinity;
+      for (const ox of [px - pw * 0.5, px + pw * 0.5]) {
+        const dx = ox - L.ex;
+        const d = dx * L.fx + dy * L.fy + dz * L.fz;
+        if (d < 0.3) return true;
+        const sy = 0.5 - 0.5 * (dx * L.ux + dy * L.uy + dz * L.uz) / (d * L.tanV) + stageShift;
+        bottom = Math.max(bottom, sy);
       }
-      return hit;
+      // Include offscreen pieces: a wider window can bring them beside a
+      // fighter without rebuilding the room. Keep the whole depth band clear.
+      return bottom > 0.425;
     };
     /* THE FURNISHED DEPTH. A layout that spreads its props evenly to the back
        wall spends half of them past the props' own fog (12-30 m from the
@@ -1817,19 +1820,6 @@ export class Backdrop {
           const c = (lo + hi) / 2;
           x = c + (x > hi ? hi - c : lo - c) * (0.62 + 0.34 * rand());
         }
-      }
-      /* THE STAGE IS KEPT CLEAR (round 21). Now the rig is pitched to put the
-         floor under the fight (stageRig in fx/atmosphere.js), the band of
-         floor the Kid, the Companion and the creatures stand on is IN SHOT --
-         and the wings layout was dealing hall benches and column plinths into
-         it, so the Kid stood on a bench. A floor piece whose foot would land
-         in front of the combatants' own feet walks back along its line until
-         it stands behind them. */
-      /* (round 23 graft: a signature object placed by hand -- `free` --
-         stands where it was put, beside the creature row) */
-      if (!hang && !pal.noStage && how !== 'free') {
-        let g3 = 0;
-        while (g3++ < 40 && onStage(x, z, w) && z > -room.d + 1.2) z -= 0.5;
       }
       /* (round 23 graft, the Bathhouse's fight -- judges 1 and 3: "move the
          dark green tub and the palm out from behind the Kid at left") a
@@ -2365,6 +2355,24 @@ export class Backdrop {
          side away from the room's middle -- `slab`) */
       if (it.slab && out.length > n0) out[out.length - 1].slab = 1;
       if (!it.keep && yields(it, out[out.length - 1])) out.pop();
+    }
+    // Run after near-piece width/height overrides. Moving in room space
+    // keeps the furniture and its contact/cast shadows together; build()
+    // sorts the finished positions before uploading the instance buffers.
+    if (!pal.noStage) for (const p of out) {
+      if (p.hang || p.arch || p.hand || p.grave || p.slab) continue;
+      const originalZ = p.z;
+      for (let step = 0; step < 100 && onStage(p.x, p.z, p.w, p.y); step++) {
+        const z = Math.max(-room.d + 0.25, p.z - 0.35);
+        if (z === p.z) break;
+        p.z = z;
+        // Moving a near bath/bench back must not put it into a basin.
+        const pool = pal.pool;
+        if (pool && p.z < pool.z0 + 0.5 && p.z > pool.z1 - 0.5 && Math.abs(p.x) < pool.hw + p.w * 0.5) {
+          p.x = (Math.sign(p.x) || 1) * (pool.hw + p.w * 0.5 + 0.5);
+        }
+      }
+      p.stageShift = originalZ - p.z;
     }
     return out.slice(0, MAX_PROPS);
   }

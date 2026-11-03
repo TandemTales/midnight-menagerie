@@ -1,0 +1,149 @@
+{
+  "enemy": "imaginary-friend",
+  "technical_passed": false,
+  "errors": [
+    "defeat: initial_pose_differs_from_idle"
+  ],
+  "clips": {
+    "idle": {
+      "frames": 60,
+      "fps": 30,
+      "duration_seconds": 2.0,
+      "unique_visible_frames": 60,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 0.2709437484574993,
+      "max_adjacent_premultiplied_MAE": 0.39590497983047374,
+      "preview_frames": 60,
+      "preview_duration_ms": 2000,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "loop_boundary": true
+      },
+      "passed": true
+    },
+    "attack": {
+      "frames": 48,
+      "fps": 30,
+      "duration_seconds": 1.6,
+      "unique_visible_frames": 47,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 0.0,
+      "max_adjacent_premultiplied_MAE": 5.897350435942607,
+      "preview_frames": 48,
+      "preview_duration_ms": 1600,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "returns_exactly_to_first_pose": true
+      },
+      "passed": true
+    },
+    "hurt": {
+      "frames": 24,
+      "fps": 30,
+      "duration_seconds": 0.8,
+      "unique_visible_frames": 23,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 0.0,
+      "max_adjacent_premultiplied_MAE": 16.337271842873438,
+      "preview_frames": 24,
+      "preview_duration_ms": 800,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "returns_exactly_to_first_pose": true
+      },
+      "passed": true
+    },
+    "defeat": {
+      "frames": 45,
+      "fps": 30,
+      "duration_seconds": 1.5,
+      "unique_visible_frames": 45,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 30.002063393852545,
+      "max_adjacent_premultiplied_MAE": 1.8202578343077684,
+      "preview_frames": 45,
+      "preview_duration_ms": 1500,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "nonlooping_final_hold": true,
+        "ends_fully_erased": true
+      },
+      "passed": true
+    },
+    "cast": {
+      "frames": 60,
+      "fps": 30,
+      "duration_seconds": 2.0,
+      "unique_visible_frames": 59,
+      "fixed_attachment_max_difference": null,
+      "loop_or_endpoint_premultiplied_MAE": 0.0,
+      "max_adjacent_premultiplied_MAE": 2.8842378770084425,
+      "preview_frames": 60,
+      "preview_duration_ms": 2000,
+      "checks": {
+        "decoded": true,
+        "grid_bounds": true,
+        "row_major_source_order": true,
+        "unused_cells_transparent": true,
+        "constant_metadata_pivot": true,
+        "no_canvas_edge_clipping": true,
+        "changing_frames": true,
+        "all_adjacent_frames_change": true,
+        "preview_count": true,
+        "preview_duration": true,
+        "fps_30": true,
+        "returns_exactly_to_first_pose": true
+      },
+      "passed": true
+    }
+  },
+  "shared_ready_pose": {
+    "attack": true,
+    "hurt": true,
+    "defeat": false,
+    "cast": true
+  },
+  "method": "Continuous source-art crayon arm/head deformation; original face marks yaw within the head before reflection. Small drawn cyan doodle effects and spatial erasure are authored additions. No hidden anatomy or replacement face drawn.",
+  "visual_gate": "Chronological contacts inspected separately; full-speed intended-size visual review pending. Browser URL-policy denial respected; no browser attempt or alternate surface used.",
+  "integration": "No game registry or gameplay test performed."
+}

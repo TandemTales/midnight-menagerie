@@ -348,12 +348,12 @@ async function openFight(kid, backpack, { hpOffset = 0, endTurn = false, seed = 
     const authored = pip.meta.companion;
     check(STARTER_SLUGS.has(authored),
       `the Foyer's authored Rescue is a starter (${authored}) — the case that was broken`);
+    /* A wing holds only its own Companion, and there are no substitutes: the
+       Foyer's is at home, so its boss frees nobody rather than somebody else's. */
     const target = pip.rescueTargetFor('n1', authored);
-    check(!STARTER_SLUGS.has(target) && target !== pip.companion,
-      'rescueTargetFor() substitutes somebody still in the house', `${authored} -> ${target}`);
-    check(pip.missingCompanions().includes(target), 'and that Companion is in the missing set');
+    check(target === null, 'the Foyer frees nobody: its own Companion starts at home', `${authored} -> ${target}`);
     check(pip.rescueTargetFor('n1', authored) === target,
-      'the substitution is deterministic for a given seed and node');
+      'and the answer is the same every time for a given seed and node');
 
     /* These used to name slugs -- 'hush', 'mopsy', 'wink' -- and every one of
        them went stale the moment that Companion was built. They are DERIVED
@@ -364,17 +364,23 @@ async function openFight(kid, backpack, { hpOffset = 0, endTurn = false, seed = 
     const UNBUILT = COMPANIONS.map(c => c.slug).filter(s => !companionDef(s));
     const LAST_IN_HOUSE = BUILT.find(s => !STARTER_SLUGS.has(s));
     check(!!LAST_IN_HOUSE, 'there is a built non-starter to Rescue', LAST_IN_HOUSE || '(none)');
+    const homeOf = (slug) => COMPANIONS.find(c => c.slug === slug).region;
     const already = makeRun('marmalade', defaultLoadout('maya'));
     already.rescued = COMPANIONS.map(c => c.slug).filter(s => s !== LAST_IN_HOUSE);
     already.freedRoster = already.rescued.slice();
+    already.region = homeOf(LAST_IN_HOUSE);
     check(already.rescueTargetFor('n1', 'marmalade') === LAST_IN_HOUSE,
-      'with one Companion left in the house, that is who a Rescue frees');
+      'with one Companion left in the house, their own wing still frees them');
+    already.freedRoster = COMPANIONS.map(c => c.slug);
+    check(already.rescueTargetFor('n1', LAST_IN_HOUSE) === null,
+      'and once they are home it frees nobody, rather than freeing them twice');
 
     const wanted = makeRun('marmalade', defaultLoadout('maya'));
     wanted.rescued = [];
     wanted.freedRoster = [];
-    check(wanted.rescueTargetFor('n1', LAST_IN_HOUSE) === LAST_IN_HOUSE,
-      'an authored target who IS still missing is left alone');
+    wanted.region = homeOf(LAST_IN_HOUSE);
+    check(wanted.rescueTargetFor('n1', 'marmalade') === LAST_IN_HOUSE,
+      'whoever else the map authored, a wing holds its own Companion');
 
     const unbuilt = makeRun('marmalade', defaultLoadout('maya'));
     unbuilt.rescued = [];

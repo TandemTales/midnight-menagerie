@@ -1,0 +1,751 @@
+{
+  "level": 3,
+  "entries": [
+    {
+      "level": 3,
+      "region": "Sleeping Quarters",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Wardrobe Guest",
+      "existing_animation": true,
+      "description": "Narrow wardrobe opening to reveal purple eyes and a slender shadow guest. Peeks out as if trying to choose an outfit, then shyly closes the door.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: wardrobe-guest.",
+      "signature": "Signature Narrow single compartment and one slender guest; elite Wardrobe is broad and many-compartment.",
+      "asset_id": "wardrobe-guest",
+      "production_id": "wardrobe-guest",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\wardrobe-guest.webp",
+      "source_path": "animations\\sprites\\enemies\\wardrobeGuest.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          297,
+          481
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 32740,
+        "partial_alpha_pixels": 110061,
+        "alpha_bbox": [
+          0,
+          0,
+          297,
+          481
+        ],
+        "sha256": "a915e5dc277890bc2d1d610b54b09dbb1774bd63850aea4f9f5ff960f53b3d8d"
+      },
+      "blocker": null
+    },
+    {
+      "level": 3,
+      "region": "Sleeping Quarters",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Rocking Chair",
+      "existing_animation": false,
+      "description": "An empty low wooden rocker with a padded seat and gently curved runners. Rocks itself forward to reserve a favorite spot.",
+      "animation": "2D animation Idle rocking; tell runner lift; action short slide; resolve rock back.",
+      "signature": "Signature Low curved furniture silhouette and pendulum rocking, not a broad haunted bed.",
+      "production_id": "rocking-chair",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\rocking-chair.webp",
+      "source_path": "animations\\sprites\\enemies\\rockingChair.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            223,
+            187
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 20871,
+          "partial_alpha_pixels": 19540,
+          "alpha_bbox": [
+            0,
+            0,
+            223,
+            187
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            223,
+            186
+          ],
+          "sha256": "b4c5efdc65851e619464ee9a5193d546508f26645820652241bf89dc141cfeaa"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 42812,
+          "partial_alpha_pixels": 21434,
+          "alpha_bbox": [
+            12,
+            3,
+            248,
+            249
+          ],
+          "visible_bbox_alpha64": [
+            20,
+            36,
+            243,
+            222
+          ],
+          "sha256": "b01da3cea8b1dd833849ce283566a2ac0b4c40c397b3b6e3e464c3caa34ce052"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1052677,
+          "partial_alpha_pixels": 518624,
+          "alpha_bbox": [
+            0,
+            9,
+            1234,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            99,
+            178,
+            1188,
+            1089
+          ],
+          "sha256": "09ed2e082330094c753ed6841da2bbacdbc25bdd96a51ce3c342fd98feffd463"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\rocking-chair-original.png",
+        "visual": "Reviewed: low empty wooden rocker, two coherent runners and padded plum seat, complete gentle furniture silhouette.",
+        "conversion": "Tier-size source, isolated build_enemy_still; no registry integration",
+        "runtime_metadata": {
+          "file": "rocking-chair.webp",
+          "w": 223,
+          "h": 187,
+          "source": "rockingChair.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 3,
+      "region": "Sleeping Quarters",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Nightstand Poltergeist",
+      "existing_animation": false,
+      "description": "A compact bedside table with a pair of spectacles, one book and a tiny alarm clock. Rearranges the bedtime essentials into the least helpful order.",
+      "animation": "2D animation Idle drawer twitch; tell glasses lift; action three props swap; resolve drawer closes.",
+      "signature": "Signature Small square furniture and precise object swap, not wide writing desk or toy chest.",
+      "production_id": "nightstand-poltergeist",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\nightstand-poltergeist.webp",
+      "source_path": "animations\\sprites\\enemies\\nightstandPoltergeist.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            210,
+            222
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 19241,
+          "partial_alpha_pixels": 26683,
+          "alpha_bbox": [
+            0,
+            0,
+            210,
+            222
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            3,
+            210,
+            221
+          ],
+          "sha256": "e975d9fcaea2b1bb3aa54b3e1ee3199468e25861f2fa3b8f4c2936e79a427c4b"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 36291,
+          "partial_alpha_pixels": 28549,
+          "alpha_bbox": [
+            23,
+            15,
+            238,
+            242
+          ],
+          "visible_bbox_alpha64": [
+            26,
+            21,
+            236,
+            239
+          ],
+          "sha256": "ff43f9a1a0d6eb4c2e4053127018fe61dbeaea834e10af4941c83244c9c1a831"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 883755,
+          "partial_alpha_pixels": 688030,
+          "alpha_bbox": [
+            0,
+            31,
+            1238,
+            1238
+          ],
+          "visible_bbox_alpha64": [
+            127,
+            101,
+            1153,
+            1172
+          ],
+          "sha256": "c42da435ccf794e50b231efcaec6b2e845e29bab3a822d14ad6d588e0215bdfa"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\nightstand-poltergeist-original.png",
+        "visual": "Reviewed: compact one-drawer bedside table, exactly one book, one clock and hovering spectacles; complete props and feet.",
+        "conversion": "Tier-size source, isolated build_enemy_still; no registry integration",
+        "runtime_metadata": {
+          "file": "nightstand-poltergeist.webp",
+          "w": 210,
+          "h": 222,
+          "source": "nightstandPoltergeist.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 3,
+      "region": "Sleeping Quarters",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Blanket Creeper",
+      "existing_animation": true,
+      "description": "Low patterned blanket mound with many pale clawlike feet around its hem. Shuffles along as a stubborn moving blanket fort; existing feet remain but never grab or scratch visitors.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: blanket-creeper.",
+      "signature": "Signature Long low hem and many feet; no single peeking face or multiple plush heads.",
+      "asset_id": "blanket-creeper",
+      "production_id": "blanket-creeper",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\blanket-creeper.webp",
+      "source_path": "animations\\sprites\\enemies\\blanketCreeper.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          247,
+          156
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 12495,
+        "partial_alpha_pixels": 25878,
+        "alpha_bbox": [
+          0,
+          0,
+          247,
+          156
+        ],
+        "sha256": "d4555bdd72b91cadae8f1c493f9c6cc905700c17a6527d1fec366049cdab9187"
+      },
+      "blocker": null
+    },
+    {
+      "level": 3,
+      "region": "Sleeping Quarters",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Slipper Skitter",
+      "existing_animation": true,
+      "description": "Soft purple and pink slippers with bows, huge toe-eyes and pompomlike legs. Scurries to the wrong bedside and nervously doubles back.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: slipper-skitter.",
+      "signature": "Signature Paired low soft slippers with toe-eyes; frantic little scuttle instead of ballroom steps.",
+      "asset_id": "slipper-skitter",
+      "production_id": "slipper-skitter",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\slipper-skitter.webp",
+      "source_path": "animations\\sprites\\enemies\\slipperSkitter.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          235,
+          143
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 11715,
+        "partial_alpha_pixels": 21826,
+        "alpha_bbox": [
+          0,
+          0,
+          235,
+          143
+        ],
+        "sha256": "d2d8eb1ee462c54ef14d706c6c7a4df1f9cf7c7daabf196295a340848a1301e7"
+      },
+      "blocker": null
+    },
+    {
+      "level": 3,
+      "region": "Sleeping Quarters",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Bedsheet Apparition",
+      "existing_animation": false,
+      "description": "A plain white bedsheet floats upright over an invisible round form, with a gently scalloped hem. Practices a very small boo, then flutters apologetically.",
+      "animation": "2D animation Idle bob; tell sheet puffs; action short flutter; resolve sink.",
+      "signature": "Signature Tall simple white sheet silhouette, no feet, crochet, lace or stuffed heads.",
+      "production_id": "bedsheet-apparition",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\bedsheet-apparition.webp",
+      "source_path": "animations\\sprites\\enemies\\bedsheetApparition.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            173,
+            229
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 15750,
+          "partial_alpha_pixels": 23410,
+          "alpha_bbox": [
+            0,
+            0,
+            173,
+            229
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            173,
+            229
+          ],
+          "sha256": "32bd0d49390921d735e7a8a035b73666af6cc8a258e129aaabbb52a9aec3b4b1"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 40912,
+          "partial_alpha_pixels": 24167,
+          "alpha_bbox": [
+            40,
+            10,
+            217,
+            244
+          ],
+          "visible_bbox_alpha64": [
+            42,
+            13,
+            215,
+            241
+          ],
+          "sha256": "cba3a3f62788430a1babfbd94e24f34d8e095d191ed2b9dd803ac4788d069f3d"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 992726,
+          "partial_alpha_pixels": 578904,
+          "alpha_bbox": [
+            0,
+            9,
+            1245,
+            1228
+          ],
+          "visible_bbox_alpha64": [
+            207,
+            63,
+            1052,
+            1179
+          ],
+          "sha256": "28d687b913b052ca6214406b93a7cf1ed5939d5860231f9e08ad0ad28eb4649f"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\bedsheet-apparition-original.png",
+        "visual": "Reviewed: plain smooth white sheet, gently scalloped hem, no feet or extra body parts, friendly small boo expression, complete silhouette.",
+        "conversion": "Tier-size source, isolated build_enemy_still; no registry integration",
+        "runtime_metadata": {
+          "file": "bedsheet-apparition.webp",
+          "w": 173,
+          "h": 229,
+          "source": "bedsheetApparition.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 3,
+      "region": "Sleeping Quarters",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Sleepwalking Ghost",
+      "existing_animation": false,
+      "description": "A round-faced translucent sleeper in striped nightwear and a floppy cap, eyes closed. Sleepwalks a careful half-step and snores a tiny visible cloud.",
+      "animation": "2D animation Idle breathing; tell cap droops; action one drowsy step; resolve sleepy sway.",
+      "signature": "Signature Soft humanoid nightclothes and snore motion; distinct from sheet and furniture foes.",
+      "production_id": "sleepwalking-ghost",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\sleepwalking-ghost.webp",
+      "source_path": "animations\\sprites\\enemies\\sleepwalkingGhost.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            155,
+            219
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 14726,
+          "partial_alpha_pixels": 18579,
+          "alpha_bbox": [
+            0,
+            0,
+            155,
+            219
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            1,
+            155,
+            219
+          ],
+          "sha256": "fc8171c5c3a5cfa1113d262b01d1818687da7365a6edafccd6102701f9906d51"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 45202,
+          "partial_alpha_pixels": 19694,
+          "alpha_bbox": [
+            54,
+            16,
+            213,
+            239
+          ],
+          "visible_bbox_alpha64": [
+            57,
+            19,
+            211,
+            237
+          ],
+          "sha256": "e2677274da15f555fcc134137d046196703d251c220cd00d5c95989c15b16019"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1095448,
+          "partial_alpha_pixels": 476030,
+          "alpha_bbox": [
+            0,
+            0,
+            1210,
+            1230
+          ],
+          "visible_bbox_alpha64": [
+            278,
+            93,
+            1031,
+            1158
+          ],
+          "sha256": "45d4ac8a3cde891fbe6e45f82304ed23fe16ed7671f50362a6c1fc6e4121d514"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\sleepwalking-ghost-original.png",
+        "visual": "Reviewed: closed-eyed translucent sleeper in striped pajamas and floppy cap; two arms, two legs, one small snore cloud, gentle coherent half-step.",
+        "conversion": "Tier-size source, isolated build_enemy_still; no registry integration",
+        "runtime_metadata": {
+          "file": "sleepwalking-ghost.webp",
+          "w": 155,
+          "h": 219,
+          "source": "sleepwalkingGhost.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 3,
+      "region": "Sleeping Quarters",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Blanket Hydra",
+      "existing_animation": true,
+      "description": "Patchwork mound with plush rabbit, bear and dinosaurlike heads. Its heads disagree about bedtime and take turns peeking and yawning.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: blanket-hydra.",
+      "signature": "Signature Three different plush-head silhouettes, not a small blanket face or a low-footed fort.",
+      "asset_id": "blanket-hydra",
+      "production_id": "blanket-hydra",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\blanket-hydra.webp",
+      "source_path": "animations\\sprites\\enemies\\blanketHydra.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          491,
+          330
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 67797,
+        "partial_alpha_pixels": 94139,
+        "alpha_bbox": [
+          0,
+          0,
+          491,
+          330
+        ],
+        "sha256": "9a6def79515beb0220d3a37399036d08ab7489c1db7d39cb141ef4af454f8c05"
+      },
+      "blocker": null
+    },
+    {
+      "level": 3,
+      "region": "Sleeping Quarters",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Wardrobe",
+      "existing_animation": true,
+      "description": "Broad many-compartment cabinet containing glowing eyes and extending shadow arms. Presents an absurd number of outfits; hands fuss with sleeves rather than seize visitors.",
+      "animation": "2D animation Reuse existing clips unchanged. Asset ID: the-wardrobe.",
+      "signature": "Signature Wide segmented cabinet with several eye pairs and arms; not a larger single Wardrobe Guest.",
+      "asset_id": "the-wardrobe",
+      "production_id": "the-wardrobe",
+      "status": "existing",
+      "output_path": "game\\assets\\sprites\\enemies\\the-wardrobe.webp",
+      "source_path": "animations\\sprites\\enemies\\wardrobe.png",
+      "validation": {
+        "format": "WEBP",
+        "size": [
+          492,
+          441
+        ],
+        "mode": "RGBA",
+        "transparent_pixels": 87170,
+        "partial_alpha_pixels": 129749,
+        "alpha_bbox": [
+          0,
+          0,
+          492,
+          441
+        ],
+        "sha256": "5789df797df2acaef0e18ac9707d7f089f76c3502af2130d4f7f0f596990584c"
+      },
+      "blocker": null
+    },
+    {
+      "level": 3,
+      "region": "Sleeping Quarters",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Bedside Vigil",
+      "existing_animation": false,
+      "description": "Three gentle spectral caretakers gathered around a small empty cot: one with a candle, one with a folded sheet, one watching the clock. Over-coordinates a bedtime routine and keeps waking the room with courteous checks.",
+      "animation": "2D animation Idle shared sway; tell candle lifts; action three sequential gestures; resolve simultaneous shush.",
+      "signature": "Signature Fixed triangular group and tiny cot, staged as one sprite cluster; no deathbed imagery.",
+      "production_id": "bedside-vigil",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\bedside-vigil.webp",
+      "source_path": "animations\\sprites\\enemies\\bedsideVigil.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            487,
+            476
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 106997,
+          "partial_alpha_pixels": 123569,
+          "alpha_bbox": [
+            0,
+            0,
+            487,
+            476
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            486,
+            475
+          ],
+          "sha256": "4a213e8008ec6b52fb5df945b8517105aa9490eacf45af67147866093cc9535f"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 133467,
+          "partial_alpha_pixels": 127431,
+          "alpha_bbox": [
+            0,
+            16,
+            503,
+            496
+          ],
+          "visible_bbox_alpha64": [
+            14,
+            19,
+            500,
+            493
+          ],
+          "sha256": "2be4e41ee1d2f41b725ad63c05a137d2582f6ae547221d7e4c1c9f335f1bb5d2"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 802419,
+          "partial_alpha_pixels": 769363,
+          "alpha_bbox": [
+            0,
+            25,
+            1236,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            35,
+            46,
+            1225,
+            1208
+          ],
+          "sha256": "11f562a6245ab9c4ca52849a2a267cc06f4b007e80cac97acbab8d3a201082c0"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\bedside-vigil-original.png",
+        "visual": "Reviewed: three gentle caretakers, one each with candle, folded sheet and clock, gathered around a clearly empty small cot; complete anatomies and compact triangular group.",
+        "conversion": "Tier-size source, isolated build_enemy_still; no registry integration",
+        "runtime_metadata": {
+          "file": "bedside-vigil.webp",
+          "w": 487,
+          "h": 476,
+          "source": "bedsideVigil.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 3,
+      "region": "Sleeping Quarters",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Canopy Bed",
+      "existing_animation": false,
+      "description": "A broad four-poster bed with rounded finials, plump cushions and a tasseled canopy. Builds a cozy stage for an impossible bedtime, politely lowering its drapes and bouncing the pillows.",
+      "animation": "2D animation Idle tassel sway; tell cushions rise; action two curtain panels close and mattress bobs; resolve curtains part.",
+      "signature": "Signature Wide four-post architecture and soft mattress bounce; does not sprout teeth, limbs or animate an entire room.",
+      "production_id": "canopy-bed",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\canopy-bed.webp",
+      "source_path": "animations\\sprites\\enemies\\canopyBed.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            935,
+            850
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 271105,
+          "partial_alpha_pixels": 522731,
+          "alpha_bbox": [
+            0,
+            0,
+            935,
+            850
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            935,
+            850
+          ],
+          "sha256": "f0f290ac44ee3f6732ec6483149fd406f7adfb033318edf2d975714ee2ef6f01"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 502036,
+          "partial_alpha_pixels": 545626,
+          "alpha_bbox": [
+            24,
+            51,
+            1007,
+            980
+          ],
+          "visible_bbox_alpha64": [
+            46,
+            71,
+            981,
+            920
+          ],
+          "sha256": "04d9be1f2be7e3f373c8128227f1bfb6776933a9b47333951ee981391bf1dfa2"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1312,
+            1199
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 675445,
+          "partial_alpha_pixels": 897418,
+          "alpha_bbox": [
+            29,
+            9,
+            1290,
+            1199
+          ],
+          "visible_bbox_alpha64": [
+            59,
+            34,
+            1256,
+            1122
+          ],
+          "sha256": "843b0096070eb8e9ff2e4ab02834186230f74664924d9c057c1202724a904d34"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\canopy-bed-original.png",
+        "visual": "Reviewed: complete four-poster bed, coherent canopy and curtain architecture, plump empty bedding, no creature features. Nonsquare raw retained; aspect-preserving containment into 1024-square source.",
+        "conversion": "Tier-size source, isolated build_enemy_still; no registry integration",
+        "runtime_metadata": {
+          "file": "canopy-bed.webp",
+          "w": 935,
+          "h": 850,
+          "source": "canopyBed.png"
+        }
+      },
+      "blocker": null
+    }
+  ]
+}

@@ -176,6 +176,9 @@ async def main():
 
         await page.goto("http://localhost:8777/game/index.html#scene=select", wait_until="load", timeout=45000)
         await page.wait_for_timeout(2500)
+        # The story screens (ui/story.js) are their own suite's job, tests/narrative.
+        # A walk through the rooms has to get past them to reach anything.
+        await page.evaluate("() => { window.MM.ctx.narrativeRoute = () => null; }")
         # The party-size control replaced the two-state checkbox on 2026-08-28;
         # these screens are still driven as a pair.
         await page.click('.sel-pair__size[data-n="2"]'); await page.wait_for_timeout(200)

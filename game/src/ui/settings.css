@@ -286,7 +286,7 @@
 .mm-set__label { display: flex; flex-direction: column; gap: 2px; min-width: 0; cursor: pointer; }
 .mm-set__label > span:first-child {
   font-family: var(--font-body); font-weight: 600;
-  font-size: var(--name-fs); line-height: 1.2;
+  --reading-size: var(--name-fs); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.2;
   white-space: nowrap;
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
@@ -295,7 +295,7 @@
    no line left short on purpose */
 .mm-set__hint {
   margin-top: 1px;
-  font-size: var(--hint-fs); line-height: 1.28; font-style: italic;
+  --reading-size: var(--hint-fs); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.28; font-style: italic;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   text-wrap: pretty;
@@ -311,7 +311,7 @@
   gap: 0;
 }
 .mm-set__reading .kit-enamel__value {
-  font-size: calc(var(--h) * .54);
+  --reading-size: calc(var(--h) * .54); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .01em;
   padding-top: 1px;
 }
@@ -411,8 +411,8 @@
   gap: 6px 10px;
   padding: 6px 0 3px;
 }
-.mm-set__choice.kit-hw-choice { --plate-h: var(--choice-h); font-size: 11.5px; }
-@media (max-width: 1400px) { .mm-set__choice.kit-hw-choice { font-size: 11px; letter-spacing: .05em; gap: 5px; } }
+.mm-set__choice.kit-hw-choice { --plate-h: var(--choice-h); --reading-size: 11.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+@media (max-width: 1400px) { .mm-set__choice.kit-hw-choice { --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .05em; gap: 5px; } }
 /* the boards' four-point star, set before the chosen palette's name */
 .mm-set__star {
   display: none; flex: none;
@@ -448,7 +448,7 @@
 }
 
 /* ── the expedition and the danger rows ──────────────────────────────────── */
-.mm-set__row > .kit-btn { justify-self: end; --plate-h: calc(var(--read-h) + 4px); font-size: 12.5px; }
+.mm-set__row > .kit-btn { justify-self: end; --plate-h: calc(var(--read-h) + 4px); --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 /* a plate with a medallion on its end stands clear of the panel's right edge */
 .mm-set__row > .kit-btn.mm-dlg-btn--medal { margin-right: calc(var(--plate-h) * .42); }
 /* RESET is flanked: the house's skull struck on the plate's near end, the
@@ -486,7 +486,7 @@
 .mm-set__toggle { margin-block: -2px; }
 .mm-set__switch > .kit-hw-throw__word {
   min-width: 2.5em;
-  font-size: max(13px, calc(var(--sw-h) * .42));
+  --reading-size: max(13px, calc(var(--sw-h) * .42)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   color: color-mix(in oklab, var(--kit-text-lo) 86%, var(--kit-gold-lo));
 }
 .mm-set__switch:not([data-on="1"]) > .kit-hw-throw__word:first-child {
@@ -524,7 +524,7 @@
    never a black stadium -- and its note says why. */
 .mm-set__row > .kit-btn.mm-set__act {
   --plate-h: 40px;
-  font-size: 12.5px; letter-spacing: .085em; white-space: nowrap;
+  --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .085em; white-space: nowrap;
   padding-left: calc(var(--plate-h) * .46);
   margin-block: 1px;
 }
@@ -535,13 +535,13 @@
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .7)) saturate(.7) brightness(.8);
 }
 .mm-set__row > .mm-btn--danger.kit-btn.mm-set__act { padding-left: calc(var(--plate-h) * .3); }
-.mm-settings-modal .mm-modal__subtitle { font-size: 14px; font-style: normal; letter-spacing: .02em; }
+.mm-settings-modal .mm-modal__subtitle { --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-style: normal; letter-spacing: .02em; }
 /* a palette not chosen is still read: its name in the panel's text, not the
    brass's dark */
 .mm-set__choice--swatch.kit-hw-swatch:not([aria-checked="true"]) { color: color-mix(in oklab, var(--kit-text-mid) 88%, var(--kit-gold)); }
-.mm-set__choice--swatch.kit-hw-swatch { font-size: 14px; }
+.mm-set__choice--swatch.kit-hw-swatch { --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 /* the slip's pencilled "random" at the size it is read */
-.mm-set__text.kit-hw-slip { font-size: 15px; }
+.mm-set__text.kit-hw-slip { --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 
 /* ── HOUSE CONTROLS: the slider is a brass rail with a knob ──
    (ui/kit.css .kit-hw-rail). The knob is the house's cast brass boss with
@@ -572,7 +572,7 @@
 .mm-set__figure {
   flex: none; min-width: 2.75em; text-align: right;
   font-family: var(--font-num); font-weight: 600; font-style: normal;
-  font-size: 18px; line-height: 1;
+  --reading-size: 18px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   font-variant-numeric: lining-nums tabular-nums; letter-spacing: .02em;
   color: var(--kit-gold-hi);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 25%, transparent), 0 0 10px color-mix(in srgb, var(--kit-candle) 30%, transparent);
@@ -657,7 +657,7 @@
   padding: 1px 15px 0;
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 fill / calc(var(--fig-h) * 18 / 64) calc(var(--fig-h) * 34 / 64) stretch;
-  font-size: 16px; text-align: center;
+  --reading-size: 16px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); text-align: center;
   color: #f4dc9c;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 8px color-mix(in srgb, var(--kit-candle) 35%, transparent);
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
@@ -668,7 +668,7 @@
      with its rail, its studs and its cartouche must stand inside it */
   .mm-set { --slot-w: 86px; }
   .mm-set__rangewrap { gap: 8px; padding-left: 9px; }
-  .mm-set__figure { min-width: 52px; padding-inline: 12px; font-size: 15px; letter-spacing: 0; }
+  .mm-set__figure { min-width: 52px; padding-inline: 12px; --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: 0; }
   /* the next seed's slip stood over the Seed page's right frame at 1280 */
   .mm-set__text.kit-hw-slip { width: calc(var(--slip-h) * 2.45); }
 }
@@ -692,7 +692,7 @@
   --inlay-h: calc(var(--read-h) + 6px);
   justify-self: end;
   min-width: calc(var(--inlay-h) * 4.4);
-  font-size: max(14px, calc(var(--inlay-h) * .42));
+  --reading-size: max(14px, calc(var(--inlay-h) * .42)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
 }
 .mm-set__seed.kit-hw-inlay .kit-enamel__value { font: inherit; color: inherit; letter-spacing: inherit; text-shadow: inherit; }
 .mm-set__text.kit-hw-inlay {
@@ -700,10 +700,10 @@
   justify-self: end;
   width: calc(var(--inlay-h) * 4.3);
   text-align: center;
-  font-size: 15px;
+  --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   user-select: text;
 }
-.mm-set__text.kit-hw-inlay::placeholder { font-size: 15px; }
+.mm-set__text.kit-hw-inlay::placeholder { --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 @media (max-width: 1400px) {
   .mm-set__text.kit-hw-inlay { width: calc(var(--inlay-h) * 3.35); }
   .mm-set__seed.kit-hw-inlay { min-width: calc(var(--inlay-h) * 3.9); }
@@ -740,14 +740,14 @@
 .mm-set__seed.kit-hw-inlay--plate.is-blank .kit-enamel__value,
 .mm-set__text.kit-hw-inlay::placeholder {
   font-family: var(--font-body); font-style: normal; font-weight: 600;
-  font-size: 15px; letter-spacing: .03em;
+  --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .03em;
   color: var(--kit-lav);
   text-shadow: 0 1px 0 rgb(0 0 0 / .9), 0 0 8px color-mix(in srgb, var(--kit-lav) 22%, transparent);
 }
 @media (max-width: 1400px) {
   .mm-set__seed.kit-hw-inlay--plate.is-blank,
   .mm-set__seed.kit-hw-inlay--plate.is-blank .kit-enamel__value,
-  .mm-set__text.kit-hw-inlay::placeholder { font-size: 14px; }
+  .mm-set__text.kit-hw-inlay::placeholder { --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 }
 
 /* SAVE AND QUIT: DONE's own plate, filled; locked, the gilt a little dimmed
@@ -785,7 +785,7 @@
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/hw-plate-plain.webp") 14 30 fill / calc(var(--plate-h) * 14 / 56) calc(var(--plate-h) * 30 / 56) stretch;
   filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .8));
-  font-size: 14px;
+  --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
 }
 .mm-set__choice--swatch.kit-hw-swatch::before {
   content: ''; position: absolute; z-index: -1; pointer-events: none;
@@ -848,7 +848,7 @@
   background: none;
   -webkit-appearance: none; appearance: none;
   font-family: var(--font-display); font-weight: 600; font-style: normal;
-  font-size: 15px; line-height: 1; letter-spacing: .1em;
+  --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1; letter-spacing: .1em;
   font-variant-numeric: lining-nums;
   text-align: center; white-space: nowrap;
   color: var(--kit-gold-hi); caret-color: var(--kit-gold-hi);
@@ -864,7 +864,7 @@
 .mm-set__seed.mm-set__well.is-blank .kit-enamel__value,
 .mm-set__text.mm-set__well::placeholder {
   font-family: var(--font-body); font-style: italic; font-weight: 600;
-  font-size: 15px; letter-spacing: .02em;
+  --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .02em;
   color: #bfa9e2; opacity: 1;
   text-shadow: 0 1px 0 rgb(0 0 0 / .9);
 }
@@ -883,9 +883,9 @@
   .mm-set__seed.mm-set__well, .mm-set__text.mm-set__well { width: 152px; }
   .mm-set__seed.mm-set__well.is-blank,
   .mm-set__seed.mm-set__well.is-blank .kit-enamel__value,
-  .mm-set__text.mm-set__well::placeholder { font-size: 14px; }
+  .mm-set__text.mm-set__well::placeholder { --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 }
-:root[data-large-text="1"] .mm-set__well { font-size: 17px; }
+:root[data-large-text="1"] .mm-set__well { --reading-size: 17px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 
 /* the palettes: a medallion on a nameplate, two to a row */
 .mm-set__choices:has(> .mm-set__choice--swatch) { gap: 9px 14px; padding: 7px 0 4px 2px; }
@@ -912,7 +912,7 @@
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 fill / calc(var(--plate-h) * 18 / 64) calc(var(--plate-h) * 34 / 64) stretch;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
-  font-family: var(--font-body); font-weight: 600; font-size: 14px; letter-spacing: .02em;
+  font-family: var(--font-body); font-weight: 600; --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .02em;
   white-space: nowrap;
 }
 .mm-set__choice--swatch.kit-hw-swatch[aria-checked="true"] > .mm-set__choicename {
@@ -956,7 +956,7 @@
 }
 @media (max-width: 1400px) {
   .mm-set__choice--swatch.kit-hw-swatch { --disc: 38px; }
-  .mm-set__choice--swatch.kit-hw-swatch > .mm-set__choicename { font-size: 13px; padding-right: 9px; letter-spacing: 0; }
+  .mm-set__choice--swatch.kit-hw-swatch > .mm-set__choicename { --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); padding-right: 9px; letter-spacing: 0; }
 }
 /* at the Deck's width the next seed's name takes two lines, so its slot is
    as wide as the current one's and stands inside the page (it ran 22 px over
@@ -1048,7 +1048,7 @@
     linear-gradient(180deg, rgb(255 255 255 / .06), transparent 40%, rgb(0 0 0 / .35)),
     linear-gradient(#1a1024, #1a1024) 50% 50% / calc(100% - 3px) calc(100% - 3px) no-repeat,
     linear-gradient(180deg, var(--kit-gold-hi), var(--kit-gold) 45%, var(--kit-gold-lo));
-  font-family: var(--font-body); font-weight: 600; font-size: 14px; letter-spacing: 0;
+  font-family: var(--font-body); font-weight: 600; --reading-size: 14px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: 0;
   justify-content: center; text-align: center;
   color: color-mix(in oklab, var(--kit-text-mid) 88%, var(--kit-gold));
   filter: drop-shadow(0 2px 2px rgb(0 0 0 / .8));
@@ -1070,7 +1070,7 @@
 }
 @media (max-width: 1400px) {
   .mm-set__choice--swatch.kit-hw-swatch { --disc: 46px; --plate-h: 22px; }
-  .mm-set__choice--swatch.kit-hw-swatch > .mm-set__choicename { font-size: 12px; padding-inline: 1px; }
+  .mm-set__choice--swatch.kit-hw-swatch > .mm-set__choicename { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); padding-inline: 1px; }
 }
 @media (max-width: 1400px) and (max-height: 860px) {
   .mm-set__choices:has(> .mm-set__choice--swatch) { gap: 0 3px; padding: 4px 0 0; margin-bottom: 5px; }
@@ -1178,3 +1178,11 @@
 @media (max-width: 1400px) {
   .mm-set__choice--swatch.kit-hw-swatch { --plate-h: 25px; }
 }
+
+/* Reflow the ledger before larger labels collide with their controls. */
+@media (max-width: 1500px) {
+ .mm-set { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+}
+:root[data-large-text="1"] .mm-set { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.mm-set__choices:has(> .mm-set__choice--swatch) { flex-wrap: wrap; row-gap: 12px; }
+.mm-set__choice--swatch.kit-hw-swatch { min-width: 96px; }

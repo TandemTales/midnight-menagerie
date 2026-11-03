@@ -1,0 +1,21 @@
+create a composite image of sprites of the following enemies in a turn based ccg. make sure the final image has a truly transparent background. Make sure the images are good quality and will 2D animate well (nothing in mid-action pose, extra floating parts around it, etc.). Make sure the enemies match the visual style of the included menu screen with companion characters from another part of the game:
+
+1. Fuse Box (Level/Region 9)
+Old electrical cabinet whose switches flip, wires twitch, and sparks jump between open contacts.
+
+2. Gas Valve (Level/Region 9)
+Brass pipe valve turning itself while ghostly vapor escapes and forms temporary faces or hands.
+
+3. Soot Shadow (Level/Region 9)
+Humanlike silhouette made from smoke and soot, visible mainly where it stains nearby walls.
+
+4. Blue Flame (Level/Region 9)
+A small supernatural flame hovering without a candle or lamp, shaped only by wind and light rather than as a creature.
+
+5. Light Switch Shadow (Level/Region 9)
+A shadowy hand repeatedly appearing beside wall switches before vanishing into the plaster.
+
+6. Electric Arc (Level/Region 9)
+Living line of supernatural electricity jumping between fixtures, pipes, wires, and metal objects without forming a body.
+Production requirements: Create one static composite, one complete enemy design per numbered entry, with clear empty margins separating every enemy. Use the attached UI/selectCompanion.png as the primary visual reference and the accepted source sheets as rendering/style references only. Do not generate animation frames or sequences. All enemies face LEFT toward the players in neutral stable resting poses, no mid-action gesture or attack. Preserve each described identity; action wording above is character context, not a request to depict the action. Keep props held, supported, attached, contained, or touching the core design; omit loose particle effects and orbiting fragments. For inherently grouped enemies, keep the group compact and contained within its own distinct cell. No cropped silhouettes, merged enemies, stray anatomy, halos/matte fringes, text, labels, borders, floors, shadows detached from the sprite, or background scene. Cute, readable and spooky but not threatening; match the accepted art's rich material texture, soft dimensional shading and warm whimsical detail. Output PNG with genuine transparent alpha outside the sprites, never a painted checkerboard or solid-color background. Keep the character itself legible and sufficiently opaque; translucent ghost bodies may have partial alpha. The roster descriptions are quoted from the current original MM Enemies document, not the separate revised roster.
+Exactly 6 enemy designs in this batch.

@@ -1,0 +1,8 @@
+{
+  "enemy": "garden-shears",
+  "status": "full_clips_saved_provisional",
+  "source": "docs\\enemy-roster-2026-10-26\\art-production\\garden-shears-original.png",
+  "source_sha256": "ed6200810e7f02623e1916f527479c1009b08bdcdc6f89b421c380663f4495c7",
+  "method": "Separate authentic front and back halves, common flower rivet, local ribbon-tip deformation. Hidden joint geometry is not invented.",
+  "quality_gate": "Full clips saved after technical and leftward key-pose checks; final temporal visual approval pending. Prototype JPGs are not extra delivered actions."
+}

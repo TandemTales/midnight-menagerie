@@ -1,0 +1,28 @@
+{
+  "cases": 16,
+  "delivered": 96,
+  "expired": 96,
+  "frames": 3560,
+  "ordinaryDrainMaxMs": 5182.4000000059605,
+  "ordinaryOnsetMaxMs": 3635.5999999940395,
+  "repeats": [
+    {
+      "width": 1280,
+      "drainMs": 9495,
+      "onsetMs": 7912.800000011921
+    },
+    {
+      "width": 1600,
+      "drainMs": 4910.299999982119,
+      "onsetMs": 3421.2999999821186
+    }
+  ],
+  "layoutP95Ms": 2.199999988079071,
+  "layoutMaxMs": 3.7000000178813934,
+  "frameP95RangeMs": [
+    22.599999994039536,
+    119.2999999821186
+  ],
+  "frameMaxMs": 169.59999999403954,
+  "failures": 0
+}

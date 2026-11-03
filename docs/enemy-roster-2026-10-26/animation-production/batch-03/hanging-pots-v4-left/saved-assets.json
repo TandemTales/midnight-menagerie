@@ -1,0 +1,61 @@
+{
+  "created_utc": "2026-10-26T23:46:40.895392+00:00",
+  "enemy": "hanging-pots",
+  "states": [
+    "idle",
+    "attack",
+    "hurt",
+    "defeat"
+  ],
+  "method": "Three separate source-painted pots rotating about individual handle joints beneath authentic fixed rack/hook occluders. Premultiplied alpha sampling. No whole-rack motion.",
+  "validation": "batch-03/hanging-pots-v4-left/validation.json",
+  "quality_gate": "technical_pass_visual_review_pending",
+  "files": [
+    {
+      "path": "animations/sprites/enemies/animations/SS_hangingPots_idle.png",
+      "sha256": "1e26835af3ed16183a4c5085cef709c7560a643c1e7aa8c31d5504728806e350",
+      "bytes": 7195912
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hanging-pots/idle.webp",
+      "sha256": "1abbaae1b12bc2db80c06825aaa8b2c9f6e622ca4483f9d094f0463ada31c075",
+      "bytes": 3530582
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hangingPots_attack.png",
+      "sha256": "df3f79c6965022eac067c26be9fd16e7264e1394891065226533da3658e234c7",
+      "bytes": 6125244
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hanging-pots/attack.webp",
+      "sha256": "15cead31d41667e64e0d27f8a8e404323b8dc29da4804382a4b6c574eee722f5",
+      "bytes": 2900032
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hangingPots_hurt.png",
+      "sha256": "a9b7021923e442ff73571ea822a9cda0b72c1adfa7ee72a90a40ee3caaddb02a",
+      "bytes": 2966664
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hanging-pots/hurt.webp",
+      "sha256": "8b33c77bdf96d594416a39ec474ace57d8d5df2bcab19bbd4c8be4055114a32f",
+      "bytes": 1417320
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_hangingPots_defeat.png",
+      "sha256": "0ff9c6a3e5036178f429ed7b3e5cab353d0e13347d5fdb0267e97fdc0b6ce004",
+      "bytes": 5295799
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hanging-pots/defeat.webp",
+      "sha256": "cdd53bfa2e72948d7a3946c72eb79bdff56804d8d856b01becc83f1748c5d3bb",
+      "bytes": 2248656
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/hanging-pots/index.json",
+      "sha256": "90fdfa00c56bf60fac2377e7dc7d87d225a1e750343fbebd75299d9651e0097e",
+      "bytes": 2616
+    }
+  ],
+  "complete": true
+}

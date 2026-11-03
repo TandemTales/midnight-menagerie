@@ -194,10 +194,10 @@
    own padding and plate, never its type */
 @media (max-width: 1400px) {
   .mm-tip[data-kind="keywords"] { padding: 12px 11px 11px; --fl: 15px; }
-  .mm-tip[data-kind="keywords"] .mm-tip__title { padding: 2px 14px 3px; border-image-width: 8px 14px; font-size: 13.5px; }
-  .mm-tip[data-kind="keywords"] .mm-tip__sub { font-size: 10px; letter-spacing: .1em; }
+  .mm-tip[data-kind="keywords"] .mm-tip__title { padding: 2px 14px 3px; border-image-width: 8px 14px; --reading-size: 13.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+  .mm-tip[data-kind="keywords"] .mm-tip__sub { --reading-size: 10px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .1em; }
   .mm-tip[data-kind="keywords"] .mm-tip__head { margin-bottom: 3px; }
-  .mm-tip[data-kind="keywords"] .mm-tip__body { font-size: 13px; line-height: 1.32; }
+  .mm-tip[data-kind="keywords"] .mm-tip__body { --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.32; }
 }
 .mm-tip__block + .mm-tip__block {
   margin-top: var(--s-3);

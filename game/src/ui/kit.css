@@ -278,10 +278,10 @@
     color-mix(in srgb, var(--kit-candle) 12%, transparent) 38%,
     transparent 100%);
   mix-blend-mode: screen;
-  animation: kit-flicker 3.8s ease-in-out infinite;
+  animation: kit-flicker calc(3.8s * var(--anim-scale)) ease-in-out infinite;
 }
 .kit-dress__flame--l { left: calc(var(--kit-edge) + clamp(190px, 17.5vw, 290px) * .56 - clamp(120px, 11vw, 190px) / 2); }
-.kit-dress__flame--r { right: calc(var(--kit-edge) + clamp(190px, 17.5vw, 290px) * .56 - clamp(120px, 11vw, 190px) / 2); animation-delay: -1.7s; }
+.kit-dress__flame--r { right: calc(var(--kit-edge) + clamp(190px, 17.5vw, 290px) * .56 - clamp(120px, 11vw, 190px) / 2); animation-delay: calc(-1.7s * var(--anim-scale)); }
 @keyframes kit-flicker {
   0%, 100% { opacity: 1;   transform: scale(1); }
   23%      { opacity: .82; transform: scale(.97); }
@@ -353,7 +353,7 @@
   margin: 0 0 1px;
   padding: 0 var(--cart-pad-x);
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(26px, 2.45vw, 40px);
+  --reading-size: clamp(26px, 2.45vw, 40px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   line-height: 1.04;
   letter-spacing: .045em;
   text-transform: uppercase;
@@ -400,7 +400,7 @@
 
 /* compact: for boards that need the height for what is on them */
 .kit-titleblock--compact { --cart-h: clamp(108px, 13.6vh, 128px); }
-.kit-titleblock--compact .kit-cartouche__title { font-size: clamp(24px, 2.2vw, 36px); }
+.kit-titleblock--compact .kit-cartouche__title { --reading-size: clamp(24px, 2.2vw, 36px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .kit-titleblock--compact .kit-cartouche__sub { font-size: var(--fs-sm); }
 
 /* where the room is: engraved small caps in the lavender-grey of the plaque's
@@ -427,7 +427,7 @@
   border-image-width: 0 calc(var(--rib-h) * 47 / 49) 0 calc(var(--rib-h) * 52 / 49);
   border-image-repeat: stretch;
   font-family: var(--font-display); font-weight: 700;
-  font-size: calc(var(--rib-h) * .5);
+  --reading-size: calc(var(--rib-h) * .5); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
   /* cut into the gilt the way "CHOOSE YOUR KID" is: near-black letters with
      the light catching the lower lip of each cut, on a ribbon lifted to the
@@ -569,7 +569,7 @@
 .kit-enamel--dark { border-image-source: url("../../assets/ui/kit/cartouche-dark.webp"); }
 .kit-enamel__value {
   font-family: var(--font-num); font-weight: 600; font-style: normal;
-  font-size: calc(var(--h) * .5); line-height: 1;
+  --reading-size: calc(var(--h) * .5); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
   color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 -1px 0 rgba(0, 0, 0, .35);
@@ -577,7 +577,7 @@
 /* engraved small caps: cut into the enamel, the light on the lower lip */
 .kit-enamel__label {
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(11.5px, calc(var(--h) * .3)); line-height: 1.05;
+  --reading-size: max(11.5px, calc(var(--h) * .3)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.05;
   letter-spacing: .18em; text-transform: uppercase;
   padding-left: .18em;                  /* the tracking hangs off the last letter */
   color: var(--kit-text-mid);
@@ -620,14 +620,14 @@
 }
 .kit-plate__name {
   font-family: var(--font-body); font-weight: 600;
-  font-size: calc(var(--plate-h) * .36); line-height: 1.05;
+  --reading-size: calc(var(--plate-h) * .36); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.05;
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .8);
   font-variant-numeric: lining-nums tabular-nums;
 }
 .kit-plate__epithet {
   font-family: var(--font-body); font-style: italic;
-  font-size: calc(var(--plate-h) * .25); line-height: 1.1;
+  --reading-size: calc(var(--plate-h) * .25); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.1;
   color: color-mix(in oklab, var(--kit-name) 76%, var(--kit-text-mid));
 }
 
@@ -687,7 +687,7 @@
   border-image-slice: 0 47 0 52 fill;
   border-image-width: 0 calc(var(--rib-h) * 47 / 49) 0 calc(var(--rib-h) * 52 / 49);
   border-image-repeat: stretch;
-  font-size: calc(var(--rib-h) * .47);
+  --reading-size: calc(var(--rib-h) * .47); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .16em;
   white-space: nowrap;
   color: #140b04;
@@ -708,7 +708,7 @@
 .kit-heading--ribbon.kit-heading--inline > em {
   position: static; transform: none; grid-column: auto;
   margin: 0 0 0 .75em;
-  font-size: calc(var(--rib-h) * .46); font-weight: 600; letter-spacing: .01em;
+  --reading-size: calc(var(--rib-h) * .46); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 600; letter-spacing: .01em;
   color: #1c1006; text-shadow: 0 1px 0 rgba(255, 232, 178, .34);
 }
 /* clasp: a ribbon laid along a .kit-panel's top rail and parted by the
@@ -784,7 +784,7 @@
    engraved small caps cut into its enamel â€” never a bordered box (round 5) */
 .kit-btn kbd {
   display: inline-grid; place-items: center;
-  font-family: var(--font-display); font-size: 10.5px; font-weight: 700; letter-spacing: .08em;
+  font-family: var(--font-display); --reading-size: 10.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 700; letter-spacing: .08em;
   text-transform: uppercase;
   min-width: 2.2em; height: 2.1em; padding: 1px .66em 0;
   border: 0 solid transparent; border-radius: 0;
@@ -855,7 +855,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 .kit-tag > i {
   display: inline-flex; align-items: center;
   font-style: normal; font-family: var(--font-display); font-weight: 700;
-  font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase;
+  --reading-size: 11.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .16em; text-transform: uppercase;
   color: inherit;
 }
 .kit-tag > i::after {
@@ -883,7 +883,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   border-radius: 50%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 30%, transparent), color-mix(in srgb, var(--kit-candle) 9%, transparent) 45%, transparent);
   mix-blend-mode: screen;
-  animation: kit-flicker 3.4s ease-in-out infinite;
+  animation: kit-flicker calc(3.4s * var(--anim-scale)) ease-in-out infinite;
 }
 .rm.is-still .kit-prop--candle::after { animation: none; }
 
@@ -933,7 +933,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   border-radius: 50%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--kit-candle) 34%, transparent), color-mix(in srgb, var(--kit-candle) 10%, transparent) 42%, transparent);
   mix-blend-mode: screen;
-  animation: kit-flicker 3.6s ease-in-out infinite;
+  animation: kit-flicker calc(3.6s * var(--anim-scale)) ease-in-out infinite;
 }
 .rm.is-still .kit-sconce::after { animation: none; }
 @media (prefers-reduced-motion: reduce) {
@@ -1150,7 +1150,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 }
 .kit-stats__label {
   font-family: var(--font-display); font-weight: 700;
-  font-size: 11.5px; line-height: 1.2; letter-spacing: .12em; text-transform: uppercase;
+  --reading-size: 11.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.2; letter-spacing: .12em; text-transform: uppercase;
   color: var(--kit-text-lo);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   text-wrap: balance;
@@ -1216,7 +1216,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     transparent 100%);
   mix-blend-mode: screen;
 }
-.kit-light--candle { animation: kit-flicker 3.6s ease-in-out infinite; }
+.kit-light--candle { animation: kit-flicker calc(3.6s * var(--anim-scale)) ease-in-out infinite; }
 .kit-light--moon { --light: var(--kit-moon); --light-a: 16%; }
 .kit-still .kit-light, .rm.is-still .kit-light { animation: none; }
 @media (prefers-reduced-motion: reduce) {
@@ -1362,7 +1362,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
    each stroke and the candle catching the one under it */
 .kit-price__value {
   font-family: var(--font-num); font-weight: 700; font-style: normal;
-  font-size: calc(var(--price-h) * .68); line-height: 1;
+  --reading-size: calc(var(--price-h) * .68); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
   letter-spacing: .02em;
   padding-top: 2px;
@@ -1379,7 +1379,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(11.5px, calc(var(--buy-d) * .27)); line-height: 1; letter-spacing: .03em;
+  --reading-size: max(11.5px, calc(var(--buy-d) * .27)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1; letter-spacing: .03em;
   padding: 1px 0 0 .04em;
   text-transform: uppercase; white-space: nowrap;
   color: var(--kit-gold-hi);
@@ -1395,7 +1395,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: calc(var(--num) * .42); line-height: 1;
+  --reading-size: calc(var(--num) * .42); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   padding-top: 1px;
   color: var(--kit-gold-hi);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 80%, transparent);
@@ -1547,7 +1547,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   display: flex; align-items: center; justify-content: center; gap: 1px;
   padding-bottom: 1px;
   font-family: var(--font-num); font-weight: 700;
-  font-size: max(11px, calc(var(--tube-h) * .56)); line-height: 1;
+  --reading-size: max(11px, calc(var(--tube-h) * .56)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
   letter-spacing: .02em;
   color: #fff8ee;
@@ -1591,7 +1591,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   padding: 0 calc(var(--coin) * .2) 0;
   border-radius: 999px;
   font-family: var(--font-num); font-weight: 700; font-style: normal;
-  font-size: calc(var(--coin) * .72); line-height: 1;
+  --reading-size: calc(var(--coin) * .72); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
   color: #1d1208;
   text-shadow: 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 55%, white);
@@ -1679,7 +1679,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   -webkit-appearance: none; appearance: none;
   outline: none;
   font-family: var(--font-body); font-weight: 600;
-  font-size: calc(var(--field-h) * .42);
+  --reading-size: calc(var(--field-h) * .42); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   font-variant-numeric: lining-nums tabular-nums;
   letter-spacing: .05em;
   text-align: center;
@@ -1727,7 +1727,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   -webkit-appearance: none; appearance: none;
   background: none;
   outline: none;
-  font-family: var(--font-body); font-weight: 600; font-size: calc(var(--field-h) * .36);
+  font-family: var(--font-body); font-weight: 600; --reading-size: calc(var(--field-h) * .36); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .75));
@@ -1788,7 +1788,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   border: 0; border-radius: 50%;
   background: url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
   font-family: var(--font-num); font-weight: 600; font-style: normal;
-  font-size: calc(var(--md) * .46); line-height: 1;
+  --reading-size: calc(var(--md) * .46); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
   color: var(--kit-text);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
@@ -1839,7 +1839,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   border-image-repeat: stretch;
   background: none;
   font-family: var(--font-display); font-weight: 700;
-  font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; white-space: nowrap;
+  --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .14em; text-transform: uppercase; white-space: nowrap;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .75)) saturate(.6) brightness(.84);
@@ -1879,7 +1879,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   grid-column: 1;
   display: flex; align-items: baseline; min-width: 0;
   font-family: var(--font-display); font-weight: 700;
-  font-size: 11.5px; letter-spacing: .15em; text-transform: uppercase;
+  --reading-size: 11.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .15em; text-transform: uppercase;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   white-space: nowrap;
@@ -1894,7 +1894,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   grid-column: 2;
   margin: 0;
   font-family: var(--font-num); font-weight: 600;
-  font-size: 19px; line-height: 1.15;
+  --reading-size: 19px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.15;
   font-variant-numeric: lining-nums tabular-nums;
   text-align: right;
   color: var(--kit-gold-hi);
@@ -1960,8 +1960,8 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   width: 10px; height: 15px; border-radius: 45% 45% 55% 55% / 40% 40% 60% 60%;
   background: radial-gradient(circle at 40% 30%, #fff8e6 0 18%, var(--flame-200) 38%, var(--flame-400) 70%, var(--flame-500));
   box-shadow: 0 0 10px 2px color-mix(in srgb, var(--flame-glow) 55%, transparent), 0 0 34px 10px color-mix(in srgb, var(--flame-glow) 18%, transparent);
-  animation: kit-bulb 3.4s var(--ease-soft) infinite;
-  animation-delay: calc(var(--i) * -.42s);
+  animation: kit-bulb calc(3.4s * var(--anim-scale)) var(--ease-soft) infinite;
+  animation-delay: calc(var(--i) * calc(-.42s * var(--anim-scale)));
 }
 .kit-bulbs > i::before {
   content: ''; position: absolute; left: 50%; top: -5px; width: 6px; height: 6px; translate: -50% 0;
@@ -2271,7 +2271,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     color-mix(in srgb, var(--kit-candle) 8%, transparent) 55%,
     transparent 100%);
   mix-blend-mode: screen;
-  animation: kit-lamp-breathe 5.6s var(--ease-soft) infinite;
+  animation: kit-lamp-breathe calc(5.6s * var(--anim-scale)) var(--ease-soft) infinite;
 }
 @keyframes kit-lamp-breathe { 0%, 100% { opacity: .84; } 50% { opacity: 1; } }
 .kit-still .kit-lamp::after, .rm.is-still .kit-lamp::after { animation: none; }
@@ -2366,7 +2366,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     color-mix(in srgb, var(--kit-candle) 4%, transparent) 64%,
     transparent 100%);
   mix-blend-mode: screen;
-  animation: kit-flicker 3.9s ease-in-out infinite;
+  animation: kit-flicker calc(3.9s * var(--anim-scale)) ease-in-out infinite;
 }
 .kit-still .kit-lantern::before, .rm.is-still .kit-lantern::before { animation: none; }
 @media (prefers-reduced-motion: reduce) {
@@ -2383,7 +2383,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   position: absolute; pointer-events: none;
   width: var(--charm-w); height: calc(var(--charm-len) + var(--charm-w));
   transform-origin: 50% 0;
-  animation: kit-charm-sway 7.5s ease-in-out infinite;
+  animation: kit-charm-sway calc(7.5s * var(--anim-scale)) ease-in-out infinite;
 }
 .kit-charm::before {
   content: ''; position: absolute; left: 50%; top: 0;
@@ -2494,7 +2494,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   border-image-width: calc(var(--rub-h) * 18 / 64) calc(var(--rub-h) * 34 / 64);
   border-image-repeat: stretch;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(10.5px, calc(var(--rub-h) * .43)); line-height: 1;
+  --reading-size: max(10.5px, calc(var(--rub-h) * .43)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   letter-spacing: .2em; text-transform: uppercase; white-space: nowrap;
   color: var(--kit-gold-hi);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 20%, transparent);
@@ -2806,7 +2806,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   display: grid; place-items: center;
   margin: 0;
   font-family: var(--font-body); font-weight: 800;
-  font-size: max(12px, calc(var(--cut-w) * .135)); line-height: 1;
+  --reading-size: max(12px, calc(var(--cut-w) * .135)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   letter-spacing: .02em; text-transform: uppercase; text-align: center; white-space: nowrap;
   color: #1e1a15;
   text-shadow: 0 0 .5px rgba(30, 26, 21, .6);
@@ -3037,7 +3037,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
     color-mix(in srgb, var(--pool-c) calc(var(--pool-a) * .22), transparent) 62%,
     transparent 100%);
   mix-blend-mode: screen;
-  animation: kit-flicker 3.4s ease-in-out infinite;
+  animation: kit-flicker calc(3.4s * var(--anim-scale)) ease-in-out infinite;
 }
 .kit-still .kit-pool, .rm.is-still .kit-pool { animation: none; }
 @media (prefers-reduced-motion: reduce) {
@@ -3308,7 +3308,7 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   margin: 0; padding: 1px 0 0 .04em;
   border: 0; border-radius: 50%;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(11px, calc(var(--en) * .27)); line-height: 1;
+  --reading-size: max(11px, calc(var(--en) * .27)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
   color: var(--kit-gold-hi);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-lav-hi) 22%, transparent);
@@ -3357,7 +3357,7 @@ button.kit-hw-enamel:focus-visible {
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/hw-tag.webp") 0 20 0 44 fill / 0 calc(var(--tag-h) * 20 / 56) 0 calc(var(--tag-h) * 44 / 56) stretch;
   font-family: var(--font-num); font-weight: 700; font-style: normal;
-  font-size: calc(var(--tag-h) * .5); line-height: 1;
+  --reading-size: calc(var(--tag-h) * .5); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   font-variant-numeric: lining-nums tabular-nums; letter-spacing: .1em;
   color: #2a1a09;
   text-shadow: 0 1px 0 rgba(255, 236, 190, .45), 0 -1px 0 rgba(20, 10, 2, .35);
@@ -3380,7 +3380,7 @@ button.kit-hw-enamel:focus-visible {
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/hw-plate.webp") 14 30 fill / calc(var(--plate-h) * 14 / 56) calc(var(--plate-h) * 30 / 56) stretch;
   font-family: var(--font-num); font-weight: 600; font-style: normal;
-  font-size: max(14px, calc(var(--plate-h) * .38)); line-height: 1.1;
+  --reading-size: max(14px, calc(var(--plate-h) * .38)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.1;
   font-variant-numeric: lining-nums tabular-nums;
   white-space: nowrap;
   color: var(--kit-gold-hi);
@@ -3406,7 +3406,7 @@ button.kit-hw-enamel:focus-visible {
   border-image: url("../../assets/ui/kit/hw-plate-plain.webp") 14 30 fill / calc(var(--plate-h) * 14 / 56) calc(var(--plate-h) * 30 / 56) stretch;
   background: none;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(11px, calc(var(--plate-h) * .33)); line-height: 1;
+  --reading-size: max(11px, calc(var(--plate-h) * .33)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   letter-spacing: .09em; text-transform: uppercase; white-space: nowrap;
   color: color-mix(in oklab, var(--kit-text-lo) 86%, var(--kit-gold-lo));
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold) 16%, transparent);
@@ -3487,7 +3487,7 @@ button.kit-hw-enamel:focus-visible {
   width: calc(100% * 82 / 240);
   display: grid; place-items: center;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(11px, calc(var(--sw-h) * .4)); line-height: 1;
+  --reading-size: max(11px, calc(var(--sw-h) * .4)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   letter-spacing: .16em; padding-left: .16em; text-transform: uppercase;
   color: color-mix(in oklab, var(--kit-text-lo) 80%, var(--kit-gold-lo));
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold) 18%, transparent);
@@ -3551,7 +3551,7 @@ button.kit-hw-enamel:focus-visible {
   top: calc(var(--dial-h) * 3 / 72); height: calc(var(--dial-h) * 27 / 72);
   display: grid; place-items: center;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(11.5px, calc(var(--dial-h) * .215)); line-height: 1;
+  --reading-size: max(11.5px, calc(var(--dial-h) * .215)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   letter-spacing: .18em; padding-left: .18em; text-transform: uppercase; white-space: nowrap;
   color: #24140a;
   text-shadow: 0 1px 0 rgba(255, 238, 196, .5), 0 -1px 0 rgba(20, 10, 2, .25);
@@ -3567,7 +3567,7 @@ button.kit-hw-enamel:focus-visible {
   -webkit-appearance: none; appearance: none;
   background: none; outline: none;
   font-family: var(--font-body); font-weight: 600; font-style: normal;
-  font-size: max(13px, calc(var(--dial-h) * .3)); line-height: 1;
+  --reading-size: max(13px, calc(var(--dial-h) * .3)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   text-align: center; text-align-last: center;
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
@@ -3603,7 +3603,7 @@ button.kit-hw-enamel:focus-visible {
   -webkit-appearance: none; appearance: none;
   outline: none;
   font-family: var(--font-body); font-weight: 600; font-style: italic;
-  font-size: calc(var(--slip-h) * .42); line-height: 1;
+  --reading-size: calc(var(--slip-h) * .42); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   letter-spacing: .02em;
   color: var(--kit-paper-ink);
   caret-color: var(--kit-ink-oxblood);
@@ -3659,7 +3659,7 @@ button.kit-hw-enamel:focus-visible {
   padding: 0;
   background: var(--obj-unlit, none) 50% 0 / 100% auto no-repeat;
   font-family: var(--font-num); font-weight: 700;
-  font-size: max(11px, calc(var(--md) * .34));
+  --reading-size: max(11px, calc(var(--md) * .34)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
 }
@@ -3823,7 +3823,7 @@ button.kit-hw-enamel:focus-visible {
 .kit-hw-throw__word {
   min-width: 2.2em; text-align: center;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(11px, calc(var(--sw-h) * .37)); line-height: 1;
+  --reading-size: max(11px, calc(var(--sw-h) * .37)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   letter-spacing: .16em; padding-left: .16em; text-transform: uppercase;
   color: color-mix(in oklab, var(--kit-text-lo) 70%, var(--kit-gold-lo));
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold) 16%, transparent);
@@ -3872,7 +3872,7 @@ button.kit-hw-enamel:focus-visible {
   background: none; border: 0; border-radius: 0;
   /* the name as the select boards letter a name on a plate: the serif */
   font-family: var(--font-body); font-weight: 600; font-style: normal;
-  font-size: max(13px, calc(var(--disc) * .44)); line-height: 1.05;
+  --reading-size: max(13px, calc(var(--disc) * .44)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.05;
   letter-spacing: .01em; white-space: nowrap; text-align: left;
   color: color-mix(in oklab, var(--kit-text-lo) 80%, var(--kit-gold-lo));
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold) 14%, transparent);
@@ -3918,7 +3918,7 @@ button.kit-hw-enamel:focus-visible {
 .kit-hw-cycle__label {
   grid-area: label; justify-self: center;
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: max(11.5px, calc(var(--cy-h) * .34)); line-height: 1;
+  --reading-size: max(11.5px, calc(var(--cy-h) * .34)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   letter-spacing: .2em; padding-left: .2em; text-transform: uppercase; white-space: nowrap;
   color: var(--kit-gold);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 6px color-mix(in srgb, var(--kit-candle) 25%, transparent);
@@ -3940,7 +3940,7 @@ button.kit-hw-enamel:focus-visible {
   -webkit-appearance: none; appearance: none;
   background: none; outline: none;
   font-family: var(--font-body); font-weight: 600; font-style: normal;
-  font-size: max(13px, calc(var(--cy-h) * .4)); line-height: 1;
+  --reading-size: max(13px, calc(var(--cy-h) * .4)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   text-align: center; text-align-last: center;
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
@@ -3965,7 +3965,7 @@ button.kit-hw-enamel:focus-visible {
    survey judges. The epithet under or beside a plate's words letters at 13px
    at the least, a weight up, and the keycap's word at 11px. */
 .kit-btn em { font-size: max(13px, var(--fs-xs)); font-weight: 500; }
-.kit-btn kbd { font-size: 11px; }
+.kit-btn kbd { --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 
 /* ===========================================================================
    ROUND 26 GRAFT — appended; nothing above is changed.
@@ -4394,14 +4394,14 @@ button.kit-hw-enamel:focus-visible {
 .kit-hw-stop__txt { display: grid; gap: 1px; min-width: 0; }
 .kit-hw-stop__label {
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: 11.5px; line-height: 1.05; letter-spacing: .2em; text-transform: uppercase;
+  --reading-size: 11.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.05; letter-spacing: .2em; text-transform: uppercase;
   white-space: nowrap;
   color: var(--kit-gold);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-hi) 18%, transparent);
 }
 .kit-hw-stop__value {
   font-family: var(--font-body); font-weight: 600; font-style: normal;
-  font-size: 16px; line-height: 1.08; white-space: nowrap;
+  --reading-size: 16px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.08; white-space: nowrap;
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
 }
@@ -4462,14 +4462,14 @@ button.kit-hw-enamel:focus-visible {
 .kit-beltpouch__txt { display: grid; gap: 2px; line-height: 1; }
 .kit-beltpouch__label {
   font-family: var(--font-display); font-weight: 700; font-style: normal;
-  font-size: 11.5px; line-height: 1; letter-spacing: .1em; text-transform: uppercase;
+  --reading-size: 11.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1; letter-spacing: .1em; text-transform: uppercase;
   white-space: nowrap;
   color: var(--kit-gold);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95);
 }
 .kit-beltpouch__n {
   font-family: var(--font-num); font-weight: 700; font-style: normal;
-  font-size: 16px; line-height: .95;
+  --reading-size: 16px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: .95;
   font-variant-numeric: lining-nums tabular-nums;
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
@@ -4498,12 +4498,12 @@ button.kit-hw-enamel:focus-visible {
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
 }
 .kit-beltpouch--cart .kit-beltpouch__label {
-  font-size: 12.5px; line-height: 1; letter-spacing: .07em;
+  --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1; letter-spacing: .07em;
   color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 -1px 0 rgba(0, 0, 0, .5), 0 0 8px color-mix(in srgb, var(--kit-candle) 22%, transparent);
 }
 .kit-beltpouch--cart .kit-beltpouch__n {
-  font-size: 15px; line-height: 1; translate: 0 -1px;
+  --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1; translate: 0 -1px;
   color: #fff3d6;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 8px color-mix(in srgb, var(--kit-candle) 35%, transparent);
 }
@@ -4546,7 +4546,7 @@ button.kit-hw-enamel:focus-visible {
   outline-offset: calc(var(--inlay-h) * -.12);
   -webkit-appearance: none; appearance: none;
   font-family: var(--font-display); font-weight: 600; font-style: normal;
-  font-size: max(13px, calc(var(--inlay-h) * .4)); line-height: 1;
+  --reading-size: max(13px, calc(var(--inlay-h) * .4)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   font-variant-numeric: lining-nums;
   letter-spacing: .1em; text-transform: none;
   color: var(--kit-gold-hi);
@@ -4600,7 +4600,7 @@ button.kit-hw-enamel:focus-visible {
      --kit-type-floor   the floor, in px (tokens.css)
    =========================================================================== */
 /* the keycap's word on a plate (was 11px) */
-.kit-btn kbd { font-size: max(var(--kit-type-floor, 12px), 12px); }
+.kit-btn kbd { --reading-size: max(var(--kit-type-floor, 12px), 12px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 /* a card's type line holds the floor in SCREEN px through --cpx (the line it
    held before, 11.5 px, set "POWER · SELF" at 10.9 on a shop shelf) */
 .kit-cards .mm-card[data-rarity][data-type] { --type-u: max(12.5, 12.6 / var(--cpx, 1)); }
@@ -4615,20 +4615,20 @@ button.kit-hw-enamel:focus-visible {
 
 /* the fight's small plates, a size up to the floor: the counters' words, the
    piles' and the dial's nameplates, the Companion's epithet, END TURN's key */
-html .cb-count i, html .cb-count u, html .cb-count--mine em { font-size: 12px; }
+html .cb-count i, html .cb-count u, html .cb-count--mine em { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 html .cb-count--mine i, html .cb-count--mine em { letter-spacing: .07em; }
 html .cb-count--mine { padding-inline: 11px; }
-html .cb-nerve__lbl, html .cb-pile__lbl { font-size: 12px; letter-spacing: .12em; }
-html .cb-player__title { font-size: clamp(12px, .8vw, 12.5px); }
-html .cb-endturn__hint { font-size: 12px; }
+html .cb-nerve__lbl, html .cb-pile__lbl { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .12em; }
+html .cb-player__title { --reading-size: clamp(12px, .8vw, 12.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+html .cb-endturn__hint { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 /* where the room is, under a board's plaque (was 11.5 px at 1280) */
 .kit-titleblock__note { font-size: max(var(--kit-type-floor, 12px), var(--fs-xs)); letter-spacing: .18em; }
-.kit-enamel__label { font-size: max(var(--kit-type-floor, 12px), calc(var(--h) * .3)); }
+.kit-enamel__label { --reading-size: max(var(--kit-type-floor, 12px), calc(var(--h) * .3)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 /* ...and a long type line ("POWER · SELF") never closes its size under the
    floor: the tab has 196u to spread into, and the old 159u allowance left it
    short of it */
 .kit-cards .mm-card[data-rarity][data-type][data-uid] .mm-card__type {
-  font-size: calc(max(12.2 / var(--cpx, 1), min(var(--type-u), 176 / (var(--type-em, 6) + 1.9))) * var(--u));
+  font-size: calc(max(var(--card-reading-floor) / var(--cpx, 1), min(var(--type-u), 176 / (var(--type-em, 6) + 1.9))) * var(--u));
 }
 
 /* ── ROUND 40 GRAFT: a lone boss's conditions on his plate (IOLITE's) ──
@@ -4667,3 +4667,110 @@ html .cb-endturn__hint { font-size: 12px; }
 /* (the round 40 repair seats no boss on the rail -- ui/enemy.js _seatStatuses
    -- so nothing sets the row's balance any more: it is none) */
 .cb-enemy__name > .cb-enemy__statuses.is-on-rail { --rail-bal: 0; }
+
+/* Card labels are measured in screen pixels through their existing scale. */
+.kit-cards .mm-card[data-uid] .mm-card__badges { font-size: calc(var(--card-reading-floor) / var(--cpx, 1) * var(--u)); }
+
+/* Round 49 RUBY: a fixed reading guide, above the footer's action row. */
+.r49-scrollcue { position: absolute; right: 32px; top: -32px; z-index: 8; padding: 9px 22px; min-height: 36px; color: var(--kit-gold-hi); font: 600 var(--fs-sm) var(--font-body); background: var(--kit-void); border: 0 solid transparent; border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 9px 16px stretch; cursor: pointer; box-shadow: 0 3px 8px var(--kit-void); }
+.r49-scrollcue:focus-visible { outline: 2px solid var(--kit-gold-hi); outline-offset: 3px; }
+.r49-scrollcue[data-end="true"] { color: var(--kit-text); }
+.r49-scrollcue[hidden] { display: none; }
+
+
+/* Round 50 GARNET: continuation furniture is a dedicated sibling row. */
+.r50-scrollrail { position: relative; z-index: 5; min-height: 35px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 4px 18px; margin: 0 40px 4px; box-sizing: border-box; color: var(--kit-text-mid); background: url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") center / cover; border-top: 1px solid var(--kit-gold-lo); border-bottom: 1px solid var(--kit-gold-lo); }
+.r50-scrollrail[hidden] { display: none; }
+.r50-scrollrail > span { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--kit-gold); letter-spacing: .06em; }
+.r50-scrollrail > .r49-scrollcue { position: relative; top: auto; right: auto; z-index: auto; min-height: 28px; padding: 3px 16px; box-shadow: none; }
+.rm:has(> .r50-scrollrail) { grid-template-rows: auto auto minmax(0,1fr) auto auto; }
+
+
+/* Round 51 SPINEL: named brass-inlaid rails reserve their own continuation bay. */
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .r50-scrollrail { border: 0 solid transparent; border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 9px 20px stretch; min-height: 42px; padding: 6px 22px; background: url("../../assets/ui/r51-spinel/shelf-v1.webp") center / 100% 100% no-repeat; box-shadow: inset 0 2px 2px var(--kit-gold-lo), 0 5px 6px -3px var(--kit-void); }
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .r50-scrollrail > span { color: var(--kit-name); text-shadow: 0 1px 1px var(--kit-void); }
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .r50-scrollrail > .r49-scrollcue { flex: none; background: transparent; }
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) :is(.kit-cartouche__title,.kit-heading,.go-sh,.sh-heading,.rs-title) { color: var(--kit-name); -webkit-text-stroke: 0; text-shadow: 0 2px 1px var(--kit-void), 0 -1px 0 var(--kit-violet-lo); }
+
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .kit-cartouche__title { -webkit-text-fill-color: var(--kit-name); background: none; }
+
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .kit-cartouche__title { color: var(--kit-lav); -webkit-text-fill-color: var(--kit-lav); filter: none; text-shadow: 0 2px 1px var(--kit-void), 0 -1px 0 var(--kit-violet-lo); }
+
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .r50-scrollrail { border-image-slice: 18 34 18 34; background: linear-gradient(color-mix(in srgb, var(--kit-void) 25%, transparent), color-mix(in srgb, var(--kit-void) 25%, transparent)), url("../../assets/ui/r51-spinel/shelf-v1.webp") center / 100% 100% no-repeat; }
+
+/* Round 52 TOURMALINE: lavender paint cut by an engraved edge. */
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) :is(.kit-cartouche__title,.kit-heading,.go-sh,.sh-heading,.rs-title) { color: var(--kit-lav); -webkit-text-stroke: .65px var(--kit-violet-lo); paint-order: stroke fill; text-shadow: 0 -1px 0 color-mix(in srgb,var(--kit-parchment) 65%,var(--kit-lav)), 1px 2px 0 var(--kit-void), 0 3px 1px var(--kit-violet-lo); }
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .kit-cartouche__title { -webkit-text-fill-color: var(--kit-lav); }
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .r50-scrollrail { border-image: url("../../assets/ui/r51-spinel/shelf-v1.webp") 22 140 22 140 fill / 8px 49px stretch; background: none; box-shadow: 0 -3px 4px -2px var(--kit-void),0 5px 5px -3px var(--kit-void); }
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .r50-scrollrail > span { padding: 3px 12px; white-space: nowrap; border: 0 solid transparent; border-image: url("../../assets/ui/kit/frame.webp") 52 / 6px stretch; background: url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") center / cover; box-shadow: inset 0 1px 3px var(--kit-void); color: var(--kit-text); }
+
+
+/* Round 53 FLUORITE: live painted letter faces and separately fitted rail pieces. */
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .kit-cartouche__title {
+ background: linear-gradient(176deg,color-mix(in srgb,var(--kit-parchment) 28%,transparent),transparent 35%,color-mix(in srgb,var(--kit-violet-lo) 28%,transparent) 78%),url("../../assets/ui/r53-fluorite/lavender-paint-v1.webp") 30% 48% / 160px 144px;
+ background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+ -webkit-text-stroke: .35px color-mix(in srgb,var(--kit-lav) 70%,var(--kit-parchment));
+ text-shadow: none; filter: drop-shadow(-.5px -.7px 0 var(--kit-lav-hi)) drop-shadow(1px 2px 0 var(--kit-void));
+}
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .r50-scrollrail {
+ border-image: none; min-height: 42px; padding: 6px 22px; isolation: isolate;
+ background: url("../../assets/ui/r53-fluorite/rail-left-v1.webp") left top / 46px 42px no-repeat,url("../../assets/ui/r53-fluorite/rail-right-v1.webp") right top / 46px 42px no-repeat,url("../../assets/ui/r53-fluorite/rail-center-v1.webp") center 14px / 67px 28px no-repeat,url("../../assets/ui/r53-fluorite/rail-grain-v1.webp") left top / 126px 16px repeat-x,url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") center / 300px 100% repeat;
+ box-shadow: 0 -2px 2px var(--kit-void),0 4px 4px -3px var(--kit-void);
+}
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .r50-scrollrail > span {
+ padding: 3px 16px; border-image: url("../../assets/ui/r53-fluorite/velvet-cartouche-v1.webp") 18 34 18 34 fill / 7px 13px stretch;
+ background: none; box-shadow: none; color: var(--kit-name); text-shadow: 0 1px 0 var(--kit-void);
+}
+
+/* Round54 PERIDOT: carved lavender faces, with small-scale material in the live glyphs. */
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .kit-cartouche__title {
+ background: linear-gradient(176deg,color-mix(in srgb,var(--kit-parchment) 35%,transparent),transparent 29%,color-mix(in srgb,var(--kit-violet-lo) 22%,transparent) 66%,transparent 78%),url("../../assets/ui/r54-peridot/lavender-paint-v1.webp") 23% 47% / 84px 76px;
+ background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+ -webkit-text-stroke: .45px color-mix(in srgb,var(--kit-lav) 80%,var(--kit-parchment));
+ filter: drop-shadow(-.5px -.7px 0 var(--kit-lav-hi)) drop-shadow(.65px 1px 0 var(--kit-violet-lo)) drop-shadow(1px 2px 0 var(--kit-void));
+}
+/* Fixed-aspect carving ends seat on an opaque warm member. The center is quiet wood. */
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .r50-scrollrail {
+ min-height: 38px; padding-block: 4px;
+ background: url("../../assets/ui/r53-fluorite/rail-left-v1.webp") left top / 42px 38px no-repeat,url("../../assets/ui/r53-fluorite/rail-right-v1.webp") right top / 42px 38px no-repeat,url("../../assets/ui/r53-fluorite/rail-center-v1.webp") center 15px / 43px 18px no-repeat,url("../../assets/ui/r54-peridot/wood-rail-v1.webp") left top / 155px 38px repeat-x;
+ background-color: var(--kit-paper-ink);
+ box-shadow: inset 0 -2px 1px var(--kit-void),0 -2px 2px var(--kit-void),0 4px 4px -3px var(--kit-void);
+}
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .r50-scrollrail > span {
+ border-image-source: url("../../assets/ui/r54-peridot/worn-plaque-v1.webp");
+}
+
+/* Round55 IOLITE: cut lavender planes, local edge wear and joined furniture. */
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .kit-cartouche__title {
+ background: conic-gradient(from 28deg at 32% 48%,transparent 0deg 74deg,color-mix(in srgb,var(--kit-lav-hi) 42%,transparent) 75deg 118deg,transparent 119deg 227deg,color-mix(in srgb,var(--kit-violet-lo) 34%,transparent) 228deg 286deg,transparent 287deg) 13px 4px / 53px 39px,linear-gradient(173deg,color-mix(in srgb,var(--kit-lav-hi) 44%,transparent),transparent 33%,color-mix(in srgb,var(--kit-violet-lo) 28%,transparent) 68%,transparent),url("../../assets/ui/r54-peridot/lavender-paint-v1.webp") 17% 29% / 47px 42px;
+ background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+ -webkit-text-stroke: .25px var(--kit-lav); text-shadow: none;
+ filter: drop-shadow(.6px 1px 0 var(--kit-violet-lo)) drop-shadow(1px 2px 0 var(--kit-void));
+}
+.scene--event .kit-cartouche__title { background-position: 4px 9px,center,61% 42%; }
+.scene--gameover .kit-cartouche__title { background-position: 24px 2px,center,39% 73%; }
+.scene--shop .kit-cartouche__title { background-position: 31px 7px,center,71% 16%; }
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .r50-scrollrail {
+ background: url("../../assets/ui/r53-fluorite/rail-left-v1.webp") left top / 42px 38px no-repeat,url("../../assets/ui/r53-fluorite/rail-right-v1.webp") right top / 42px 38px no-repeat,url("../../assets/ui/r55-iolite/rail-wood.webp") left top / 122px 38px repeat-x;
+ background-color: var(--kit-paper-ink);
+ box-shadow: inset 0 -2px 1px var(--kit-void),0 -2px 1px var(--kit-void),0 4px 3px -2px var(--kit-void);
+}
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .r50-scrollrail > span { border-image-source: url("../../assets/ui/r55-iolite/enamel-plaque.webp"); }
+/* All joinery is inside reserved rail bounds, without additional layout or occlusion. */
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .r50-scrollrail::before {
+ content: ''; position: absolute; inset: 2px 0 1px; pointer-events: none; z-index: -1;
+ background: linear-gradient(90deg,var(--kit-void),var(--kit-gold-lo) 18%,var(--kit-paper-ink) 48%,var(--kit-void)) 18px center / 8px 100% no-repeat,linear-gradient(90deg,var(--kit-void),var(--kit-gold-lo) 20%,var(--kit-paper-ink) 51%,var(--kit-void)) calc(100% - 18px) center / 8px 100% no-repeat;
+}
+.scene--gameover .go-board > .r50-scrollrail::before {
+ background: linear-gradient(90deg,var(--kit-void),var(--kit-gold-lo) 18%,var(--kit-paper-ink) 48%,var(--kit-void)) 30% center / 8px 100% no-repeat,linear-gradient(90deg,var(--kit-void),var(--kit-gold-lo) 18%,var(--kit-paper-ink) 48%,var(--kit-void)) 68% center / 8px 100% no-repeat;
+}
+
+/* Round56 ONYX: irregular cut planes in live lavender faces, unchanged metrics. */
+:is(.scene--shop,.scene--rest,.scene--event,.scene--gameover) .kit-cartouche__title {
+ background: linear-gradient(111deg,transparent 0 21%,color-mix(in srgb,var(--kit-lav-hi) 60%,transparent) 22% 25%,transparent 26% 54%,color-mix(in srgb,var(--kit-violet-lo) 55%,transparent) 55% 64%,transparent 65%) 7px 0 / 41px 100%,linear-gradient(178deg,var(--kit-lav-hi),transparent 22%,color-mix(in srgb,var(--kit-violet-lo) 32%,transparent) 46%,transparent 49%,color-mix(in srgb,var(--kit-lav-hi) 38%,transparent) 58%,transparent 71%),url("../../assets/ui/r54-peridot/lavender-paint-v1.webp") 37% 29% / 62px 54px;
+ background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+ -webkit-text-stroke: .2px var(--kit-lav); filter: drop-shadow(.65px 1px 0 var(--kit-violet-lo)) drop-shadow(1px 2px 0 var(--kit-void));
+}
+.scene--event .kit-cartouche__title { background-position: 19px 0,center,61% 42%; }
+.scene--gameover .kit-cartouche__title { background-position: 3px 0,center,39% 73%; }
+.scene--shop .kit-cartouche__title { background-position: 29px 0,center,71% 16%; }

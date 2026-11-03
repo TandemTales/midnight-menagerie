@@ -1,0 +1,24 @@
+{
+  "original_alpha32_components": [
+    108958,
+    41448
+  ],
+  "original_components_y_ranges": [
+    [
+      50,
+      905
+    ],
+    [
+      911,
+      1189
+    ]
+  ],
+  "finding": "Original lower cup is separated from the hanging bead by a small intentional-looking alpha gap. The rig preserves two main opaque components of nearly identical proportions; it did not create a new disconnected limb. Connector was moved to the gold ring below the bead to avoid splitting the painted drop.",
+  "inspected_opaque_composites": [
+    "idle-opaque-review.jpg",
+    "attack-opaque-review.jpg",
+    "cast-opaque-review.jpg",
+    "defeat-opaque-review.jpg"
+  ],
+  "limits": "Selected poses visually inspected; full-speed review pending."
+}

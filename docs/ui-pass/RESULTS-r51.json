@@ -1,0 +1,95 @@
+{
+  "round": 51,
+  "status": "complete; selected build repaired, validated and applied as working changes",
+  "winner": "SPINEL",
+  "votes": [
+    "SPINEL",
+    "SPINEL"
+  ],
+  "selection": "two independent blind image-only reviews; no third judge required",
+  "system_scores_descriptive_only": {
+    "judge1": {
+      "OBSIDIAN": 7.3,
+      "MOONSTONE": 8,
+      "SPINEL": 8.25,
+      "ZIRCON": 7.9
+    },
+    "judge2": {
+      "ZIRCON": 7.5,
+      "SPINEL": 8,
+      "MOONSTONE": 7.5,
+      "OBSIDIAN": 6.6
+    }
+  },
+  "base": "c483cbb33fe2b458d0e0cd5e43443dfb6a198e29",
+  "comparison_source": "501ebb999a1015d2c3435169baae75ec0d36c4f9",
+  "comparison_notes_commit": "4a8ec4c28a38a55b3f90b4973d8c5a0b829b09b9",
+  "comparison_captures": "CAPTURES-r51.json",
+  "all_fit_thresholds_met": false,
+  "applied_to_main": true,
+  "main_committed_or_pushed": false,
+  "required_repair": {
+    "problem": "During pop/fade, buff/debuff/blocked text Range can exceed the reserved DOM ribbon envelope",
+    "maximum_observed_outside_pixels": 1.7307205200195312,
+    "assertion_tolerance_pixels": 1,
+    "failing_type_size_cases": 6,
+    "total_type_size_cases": 10,
+    "evidence": "D:/UILOOP/r51-20261029/ink-spinel/proof.json",
+    "status": "complete",
+    "selected_maximum_outside_pixels": 0,
+    "selected_type_size_cases_pass": 10,
+    "full_animation_cases": 16,
+    "full_label_lifetimes": 96,
+    "animated_frames_checked": 4167,
+    "ordinary_crowded_drain_seconds": 5.1661,
+    "layout_p95_ms": 1.6,
+    "layout_max_ms": 2.6,
+    "idle_recovery_seconds": 0.138,
+    "pending_and_visible_owner_teardown": "pass",
+    "fonts_and_lifetimes_preserved": true
+  },
+  "evidence_root": "D:/UILOOP/r51-20261029",
+  "selected_repair_commit": "01d122f3fd08e1ce3b3513b485a31de38cfe9521",
+  "validated_captures": "VALIDATED-CAPTURES-r51.json",
+  "applied_files_byte_verified": 52,
+  "main_index_preserved": true,
+  "browser_gates": [
+    {
+      "gate": "chrome/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "steam-deck/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "gamepad/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "events/check.py",
+      "exit": 0
+    },
+    {
+      "gate": "gameover-keeps/run.py",
+      "exit": 0
+    },
+    {
+      "gate": "seams/proof.py",
+      "exit": 0
+    },
+    {
+      "gate": "combat-scene/seam.py",
+      "exit": 0
+    }
+  ],
+  "static_checks": {
+    "scene_css_conflicts": 0,
+    "undefined_css_tokens": 0,
+    "seam_sites": 9110,
+    "unchanged_local_Map_false_positives": 4,
+    "syntax": "pass",
+    "endings": "pass"
+  },
+  "next_brief": "BRIEF-r52.md"
+}

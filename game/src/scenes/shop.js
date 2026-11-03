@@ -1,3 +1,4 @@
+import { boardScrollCue } from './r49-board-scroll.js';
 /**
  * Mr. Moth's — the Buttons market.  OWNER: meta-run.
  *
@@ -117,7 +118,7 @@ function paintDrape(w, h, lamp, lantern) {
 
 /** Mr. Moth says something when you arrive, when you buy, and when you leave. */
 const GREETING = [
-  'Buttons, keys, marbles, teeth. I take all of it. Look around.',
+  'Buttons buy things. Keys, marbles, teeth—those are for admiring.',
   'You have found things. I have found things. This is the basis of a relationship.',
   'Everything here was dropped by somebody who is not coming back for it.',
   'No haggling. I do not understand haggling. I understand swapping.',
@@ -195,6 +196,7 @@ export class ShopScene extends RoomScene {
     }
     this._buildFoot();
     this._bindKeys();
+    this._own(boardScrollCue(this.root, this.$body, 'wares'));
     bus.emit('shop:ready', { node: this.stock.nodeId });
   }
 
@@ -636,11 +638,17 @@ export class ShopScene extends RoomScene {
     // the Tricks start after — from it.
     const cab = this.root?.querySelector('.sh-counter--cards');
     if (cab?.clientHeight) cab.style.setProperty('--cab-h', `${cab.clientHeight}px`);
-    this._drapeSoon();
+    // Round 50: the generated velvet is a static painted material.
     // The shelf is read, not glanced at: rules type never prints smaller than
     // the pre-kit shop printed it at 1280x800, on a 228 px card (_cardfit.js).
     for (const { slot, view } of this._cardSlots || []) {
       fitCardToSlot(view, slot.querySelector('.sh-card__face'), { legibleAt: 232, rulesPx: [12.5, 15] });
+      // This scene owns a taller reading box; retain the user's text floor.
+      const cpx = slot.querySelector('.sh-card__face').clientWidth / 224;
+      const type = getComputedStyle(view.el);
+      const floor = parseFloat(type.getPropertyValue('--card-reading-floor')) || 14;
+      const cap = parseFloat(type.getPropertyValue('--card-reading-cap')) || 17;
+      if (cpx > 0) view.fitRules(176, 172, { lo: floor / cpx, hi: cap / cpx });
     }
     // The Forgetting card is drawn, not a CardView: its rules take the same lift.
     const svc = this.root?.querySelector('.sh-service__card');

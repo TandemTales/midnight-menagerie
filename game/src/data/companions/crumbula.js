@@ -951,7 +951,7 @@ const uncommons = [
   {
     id: 'crumbula/house-rules', name: 'House Rules', companion: SLUG, type: POWER, rarity: UNCOMMON,
     cost: 1, target: SELF, keywords: ['bite-mark'],
-    text: 'When a marked enemy dies, move up to {n} of its [Bite Mark]s to the living instead of losing them.',
+    text: 'When a marked enemy is defeated, move up to {n} of its [Bite Mark]s to the remaining enemies instead of losing them.',
     flavor: 'The house has rules. He wrote them.',
     nums: { n: 2 },
     effect: eff((c) => power(c, 'crumbula/house-rules', N(c).n, (x) => { U.mm(x).houseRules = true; })),
@@ -1405,7 +1405,7 @@ export default {
   startingEnergy: 3,
   mechanics: {
     appetite: { name: 'Appetite', kind: 'resource', desc: 'A 0-6 track starting at 2 and dropping 1 each turn. Hungry at 0-1, Sated at 4+. Both ends pay.', min: 0, max: 9, hooks: ['hungry', 'sated'] },
-    bite: { name: 'Bite Marks', kind: 'status', desc: 'A stacking enemy status that does nothing by itself — a prepared meal. Lost when the enemy dies.', min: 0, max: 99, hooks: ['bitten'] },
+    bite: { name: 'Bite Marks', kind: 'status', desc: 'A stacking enemy status that does nothing by itself — a prepared meal. Lost when the enemy is defeated.', min: 0, max: 99, hooks: ['bitten'] },
     feed: { name: 'Feed X', kind: 'system', desc: 'Remove up to X Bite Marks; each restores Courage and raises Appetite by 1. Resolves one mark at a time.', min: 0, max: 9, hooks: ['fed'] },
     queasy: { name: 'Queasy', kind: 'status', desc: 'Eating past maximum. One per Feed effect, stacks to 2, and costs that much Nerve at the start of your next turn.', min: 0, max: 2, hooks: [] },
     indulge: { name: 'Indulge', kind: 'system', desc: 'Voluntary Courage loss. Ignores Guard, counts as Courage lost, is not enemy damage, and never takes him below 1.', min: 0, max: 99, hooks: ['indulged'] },

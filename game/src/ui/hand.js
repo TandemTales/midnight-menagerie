@@ -1509,7 +1509,12 @@ export class Hand {
   _layout(o = {}) {
     const n = this.slots.length;
     if (!n) { this._syncHitBox(); return; }
-    const T = TUNE;
+    const type = getComputedStyle(this.el);
+    const floor = parseFloat(type.getPropertyValue('--card-reading-floor')) || 14;
+    const cap = parseFloat(type.getPropertyValue('--card-reading-cap')) || 17;
+    const T = { ...TUNE, readPx: floor, nameReadPx: floor, nameFloorPx: floor,
+      floorPx: floor, capPx: cap, openCapPx: cap, coverCapPx: floor + 1,
+      nameCapPx: floor + 1, typePx: floor };
     /* round 36: the fan is laid out over its PLACES -- a stack of copies is
        one place (see TUNE.stackDupes) -- and `nu` of them stand in it */
     const UM = this._unitMap();
@@ -1639,7 +1644,7 @@ export class Hand {
          fit its panel at `floorPx` climbs over its own art by what it needs
          (up to `riseMax`, ui/hand.css .is-stackfit), never shrinks under it */
       const lift = !!F.stackFit;
-      const hiU = Math.min(15.5, Math.max(T.openCapPx, 18.5 * uPx)) / uPx;
+      const hiU = T.openCapPx / uPx;
       for (const s of this.slots) {
         s.view.el.style.removeProperty('--fan-vis');
         s.view.el.classList.remove('is-name-squeezed');
@@ -1658,7 +1663,7 @@ export class Hand {
           // .mm-card__banner, .mm-card__name): 164u of measure, which
           // nameLadder's 12u ends make 188. At 208 it promised "Put Yourself
           // Back Together" three lines the plate then set in four.
-          const ladder = s.view.nameLadder?.(T.stackPlateU, { hi: Math.max(15.5, 13 / uPx), floor: T.nameFloorPx / uPx, maxLines: 4 }) || [];
+          const ladder = s.view.nameLadder?.(T.stackPlateU, { hi: Math.max(15.5, T.nameFloorPx / uPx), floor: T.nameFloorPx / uPx, maxLines: 4 }) || [];
           const plateOf = (o) => o.n * o.f * 1.04 + 12.5;
           // (rulesNeed takes the panel's 176u and keeps fitRules' own 5 %
           // slack; SPINEL's 176 * 0.95 took it twice and so rose for a line
@@ -1964,7 +1969,7 @@ export class Hand {
     e.preventDefault();
     this.hit.setPointerCapture(e.pointerId);
     this._setHover(slot);
-    this._readTargets();
+    this._readTargets(slot.card);
     this.drag = {
       slot, px: p.x, py: p.y, lastX: p.x, tilt: 0, moved: 0,
       // where and when the gesture started — a tap is judged against these,
@@ -2070,10 +2075,10 @@ export class Hand {
   }
 
   // ── targets, snapping, preview ───────────────────────────────────────────
-  _readTargets() {
+  _readTargets(card) {
     this._rect = this.el.getBoundingClientRect();
     const r = this._rect;
-    const list = this.getTargets() || [];
+    const list = this.getTargets(card) || [];
     this.targets = list.map((t) => {
       const b = t.el ? t.el.getBoundingClientRect() : null;
       return b
@@ -2530,7 +2535,7 @@ export class Hand {
       return;
     }
     if (this._needsTarget(s.card.def)) {
-      this._readTargets();
+      this._readTargets(s.card);
       if (!this.targets.length) { s.view.shake(8, 0.28); return; }
       this.aim = { slot: s, x: s.cur.x, y: 0, snap: this.targets[0], valid: true, key: true };
       this._applyPreview(this.targets[0].id);

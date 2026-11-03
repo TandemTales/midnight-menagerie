@@ -1,0 +1,21 @@
+create a composite image of sprites of the following enemies in a turn based ccg. make sure the final image has a truly transparent background. Make sure the images are good quality and will 2D animate well (nothing in mid-action pose, extra floating parts around it, etc.). Make sure the enemies match the visual style of the included menu screen with companion characters from another part of the game:
+
+1. Studying Ghost (Level/Region 7)
+Deep leather reading chair that glides through the room while a ghost reader sitting on it turns pages.
+
+2. Globe (Level/Region 7)
+Antique globe spinning by itself while continents shift position and tiny lights move across its surface.
+
+3. Bookmark Ribbon (Level/Region 7)
+Several long silk bookmarks floating through the air like streamers, wrapping around books and objects under invisible control.
+
+4. Writing Desk (Level/Region 7)
+Large desk whose drawers, blotter, papers, ink bottles, and correspondence all move under a single unseen presence.
+
+5. Library Clock (Level/Region 7)
+Tall clock whose hands reverse, accelerate, and stop while its chimes cause nearby books to react.
+
+6. Whispering Books (Level/Region 7)
+Small cluster of closed books floating together while voices murmur from between their pages without ever opening fully.
+Production requirements: Create one static composite, one complete enemy design per numbered entry, with clear empty margins separating every enemy. Use the attached UI/selectCompanion.png as the primary visual reference and the accepted source sheets as rendering/style references only. Do not generate animation frames or sequences. All enemies face LEFT toward the players in neutral stable resting poses, no mid-action gesture or attack. Preserve each described identity; action wording above is character context, not a request to depict the action. Keep props held, supported, attached, contained, or touching the core design; omit loose particle effects and orbiting fragments. For inherently grouped enemies, keep the group compact and contained within its own distinct cell. No cropped silhouettes, merged enemies, stray anatomy, halos/matte fringes, text, labels, borders, floors, shadows detached from the sprite, or background scene. Cute, readable and spooky but not threatening; match the accepted art's rich material texture, soft dimensional shading and warm whimsical detail. Output PNG with genuine transparent alpha outside the sprites, never a painted checkerboard or solid-color background. Keep the character itself legible and sufficiently opaque; translucent ghost bodies may have partial alpha. The roster descriptions are quoted from the current original MM Enemies document, not the separate revised roster.
+Exactly 6 enemy designs in this batch.

@@ -1,0 +1,15 @@
+{
+  "enemy": "rocking-chair",
+  "created_utc": "2026-10-27T00:40:59.078816+00:00",
+  "status": "left_in_inspected_keyposes",
+  "required": "screen-left",
+  "evidence": "Original seat front and leading runners project left. Attack rocks back right, scoots left, compresses the cushion and returns. Hurt recoils right; defeat tips left. Ground contact is computed before rasterization and verified throughout every clip.",
+  "contacts": [
+    "idle-contact.jpg",
+    "attack-contact.jpg",
+    "hurt-contact.jpg",
+    "defeat-contact.jpg"
+  ],
+  "limits": "Chronological key poses inspected; full-speed intended-size visual approval pending. No browser or game test.",
+  "text_handedness": "Original chair orientation retained without reflection."
+}

@@ -1,0 +1,17 @@
+{
+  "helpers": [
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\capture.py",
+      "sha256": "792c753726193cfb52da5635217c69c4e099de23fec2f78b99b9f27bb0a81cdf"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\chrome.py",
+      "sha256": "76eb9e758561d73303ae56fb5c3d875e6af17f7883b2dab238f82033856435a5"
+    },
+    {
+      "path": "D:\\UILOOP\\r56-20261029\\combat-capture.js",
+      "sha256": "14d89ffc8e76e5d3713d74985ff34b7743c05d22258064d0608af032b3c6fec6"
+    }
+  ],
+  "usedUnchanged": true
+}

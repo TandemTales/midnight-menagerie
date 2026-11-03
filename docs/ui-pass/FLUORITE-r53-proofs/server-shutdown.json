@@ -1,0 +1,8 @@
+{
+  "pid": 29064,
+  "port": 9533,
+  "command": "\"C:\\Users\\Josh\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\" tools/devserver.py 9533",
+  "verifiedUTC": "2026-10-29T21:47:41.9614659Z",
+  "listenerAbsent": true,
+  "pidAbsent": true
+}

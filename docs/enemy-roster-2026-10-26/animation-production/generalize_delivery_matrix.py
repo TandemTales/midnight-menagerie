@@ -1,0 +1,15 @@
+from pathlib import Path
+p=Path('docs/enemy-roster-2026-10-26/animation-production/build_matrix.py');s=p.read_text(encoding='utf-8')
+s=s.replace("entries=json.loads(ROSTER.read_text(encoding='utf-8'))['entries']", "entries=json.loads(ROSTER.read_text(encoding='utf-8'))['entries']\ndeliveries=json.loads((OUT/'animation-deliveries.json').read_text(encoding='utf-8')) if (OUT/'animation-deliveries.json').exists() else {}")
+s=s.replace("receipt=json.loads((OUT/'published-clips.json').read_text(encoding='utf-8'))", "receipt=json.loads((OUT/deliveries[eid]['receipt']).read_text(encoding='utf-8'))")
+s=s.replace("person.update(existing=preserved,completed=bool(old) and not preserved,", "person.update(existing=preserved,saved=bool(old) and not preserved,completed=bool(old) and not preserved and deliveries[eid]['status']=='completed',")
+s=s.replace("'status':'preserved' if preserved else 'completed'", "'status':'preserved' if preserved else deliveries[eid]['status']")
+s=s.replace("else 'representative-v3/validation.json: all frame-sequence, identity and packing checks passed; browser playback unverified'", "else deliveries[eid]['validation']+': technical checks passed; full-speed intended-size visual review pending'")
+s=s.replace("'new_final_actions':sum(r['status']=='completed' for r in rows),", "'new_final_actions':sum(r['status']=='completed' for r in rows),'new_saved_enemies':sum(p['saved'] for p in people),'new_saved_actions':sum(r['status'] in ('completed','produced_review_pending') for r in rows),'visual_review_pending_actions':sum(r['status']=='produced_review_pending' for r in rows),")
+s=s.replace("not p['existing'] and not p['completed'] and p['base_status']!='blocked'", "not p['existing'] and not p['saved'] and p['base_status']!='blocked'")
+old=[x for x in s.splitlines() if x.strip().startswith("state='preserved'")][0]
+s=s.replace(old," state='preserved' if p['existing'] else ('completed' if p['completed'] else ('produced / review pending' if p['saved'] else ('blocked' if p['base_status']=='blocked' else 'pending')))")
+s=s.replace('Hall Mirror: four new clips complete.', 'New source-art clips are saved; full-speed intended-size visual review is pending.')
+s=s.replace('Open completed Hall Mirror: idle, attack, hurt and defeat at 30 fps', 'Open corrected Hall Mirror: four 30 fps clips; visual review pending')
+s=s.replace('<h2>Earlier generated idle diagnostic', '<p><a href="batch-02-preview.html">Open Crib Curtains and Foyer Chandelier previews</a></p><h2>Earlier generated idle diagnostic')
+p.write_text(s,encoding='utf-8')

@@ -1,0 +1,190 @@
+{
+  "method": "Inherited sources equal snapshot; wrappers change evidence paths/paint expectation only. Any owned memorial variant is AST-identical after restoring one reviewed bounded same-predicate wait to its original150ms delay; original assertion remains.",
+  "base": "035efe6f43bfe09f4eb267e0cc931b009179b283",
+  "rows": [
+    {
+      "code": "TOPAZ",
+      "wrapper_sha256": "92e0eb78585f973253efeab93dc8e27bc80e210258d76b8457fb4d7a15d94f88",
+      "wrapper_replacements": [
+        [
+          "shots/ui-r51-spinel",
+          "docs/ui-pass/TOPAZ-r56-proofs"
+        ]
+      ],
+      "permitted_output_directory_environment_variables": [],
+      "inherited_checks": [
+        {
+          "path": "tests/ui-r51-spinel/probe-queue.py",
+          "sha256": "18336d776e228fadd10a66dbfbe3c876f367da33e1c03bda19f30e3c1affda8e",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 6
+        },
+        {
+          "path": "tests/ui-r51-spinel/probe-idle-resize.py",
+          "sha256": "ee06b1d97c2bc06f99e37e866791dc87ca7bef4292c8c804f28ea8eddafb1639",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 4
+        },
+        {
+          "path": "tests/ui-r51-spinel/queue-lifecycle.py",
+          "sha256": "0578e5c0739c3ebf603c54df86cf3a6fa84737d7e8adf95eb03a53c3b2af2e31",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 6
+        },
+        {
+          "path": "tests/ui-r51-spinel/memorial.py",
+          "sha256": "d0a26fdc395bb2524a3d9af232aa958cedd9cd1b69b93a710b6a0eb4b9a4e314",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 11
+        },
+        {
+          "path": "tests/ui-r51-spinel/keepsakes.py",
+          "sha256": "f6d0561e09aa079ca23e975a35fa1c9dc770869b9019647f984379cf4bcd11b4",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 10
+        },
+        {
+          "path": "tests/ui-r51-spinel/interactions.py",
+          "sha256": "19e02c64d867a04ffc9d5266b680f9fe961e6ef38c88165ec1ebb9af3f314c34",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 14
+        },
+        {
+          "path": "tests/ui-r51-spinel/event-boundary.py",
+          "sha256": "47d7c2e1f905bab11c6bbe88e487aa2b9aabf75cba55002705e46a89c2e74ef4",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 8
+        }
+      ],
+      "reviewed_owned_memorial_variant": {
+        "path": "tests\\ui-r56-topaz\\memorial.py",
+        "sha256": "ef24a70ae7e1de36c2f77cfbf429a5bc2a015b8ac26baad97eee01a6c30f1b0d",
+        "only_change": "Fixed150ms settling delay replaced by bounded5s wait for the same data-end predicate, with failure diagnostics; original assertion and all other AST nodes retained.",
+        "original_failure_retained": true,
+        "common_sync_protocol": "tmp/r56_memorial_wait_protocol.md"
+      }
+    },
+    {
+      "code": "ONYX",
+      "wrapper_sha256": "5c5e933c3387f6875f2fd3768bcae8a47f8efc1a88d83f421c44cd957998623f",
+      "wrapper_replacements": [
+        [
+          "shots/ui-r51-spinel",
+          "docs/ui-pass/ONYX-r56-proofs"
+        ]
+      ],
+      "permitted_output_directory_environment_variables": [],
+      "inherited_checks": [
+        {
+          "path": "tests/ui-r51-spinel/probe-queue.py",
+          "sha256": "18336d776e228fadd10a66dbfbe3c876f367da33e1c03bda19f30e3c1affda8e",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 6
+        },
+        {
+          "path": "tests/ui-r51-spinel/probe-idle-resize.py",
+          "sha256": "ee06b1d97c2bc06f99e37e866791dc87ca7bef4292c8c804f28ea8eddafb1639",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 4
+        },
+        {
+          "path": "tests/ui-r51-spinel/queue-lifecycle.py",
+          "sha256": "0578e5c0739c3ebf603c54df86cf3a6fa84737d7e8adf95eb03a53c3b2af2e31",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 6
+        },
+        {
+          "path": "tests/ui-r51-spinel/memorial.py",
+          "sha256": "d0a26fdc395bb2524a3d9af232aa958cedd9cd1b69b93a710b6a0eb4b9a4e314",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 11
+        },
+        {
+          "path": "tests/ui-r51-spinel/keepsakes.py",
+          "sha256": "f6d0561e09aa079ca23e975a35fa1c9dc770869b9019647f984379cf4bcd11b4",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 10
+        },
+        {
+          "path": "tests/ui-r51-spinel/interactions.py",
+          "sha256": "19e02c64d867a04ffc9d5266b680f9fe961e6ef38c88165ec1ebb9af3f314c34",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 14
+        },
+        {
+          "path": "tests/ui-r51-spinel/event-boundary.py",
+          "sha256": "47d7c2e1f905bab11c6bbe88e487aa2b9aabf75cba55002705e46a89c2e74ef4",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 8
+        }
+      ],
+      "reviewed_owned_memorial_variant": null
+    },
+    {
+      "code": "AMBER",
+      "wrapper_sha256": "7f1134efa61f1e41a772a970546440b5c4229fdc118b55df3cdc6aa9c35864fd",
+      "wrapper_replacements": [
+        [
+          "shots/ui-r51-spinel",
+          "docs/ui-pass/AMBER-r56-proofs"
+        ],
+        [
+          "lavender-paint-v1.webp",
+          "r56-amber/lavender-face.webp"
+        ]
+      ],
+      "permitted_output_directory_environment_variables": [],
+      "inherited_checks": [
+        {
+          "path": "tests/ui-r51-spinel/probe-queue.py",
+          "sha256": "18336d776e228fadd10a66dbfbe3c876f367da33e1c03bda19f30e3c1affda8e",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 6
+        },
+        {
+          "path": "tests/ui-r51-spinel/probe-idle-resize.py",
+          "sha256": "ee06b1d97c2bc06f99e37e866791dc87ca7bef4292c8c804f28ea8eddafb1639",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 4
+        },
+        {
+          "path": "tests/ui-r51-spinel/queue-lifecycle.py",
+          "sha256": "0578e5c0739c3ebf603c54df86cf3a6fa84737d7e8adf95eb03a53c3b2af2e31",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 6
+        },
+        {
+          "path": "tests/ui-r51-spinel/memorial.py",
+          "sha256": "d0a26fdc395bb2524a3d9af232aa958cedd9cd1b69b93a710b6a0eb4b9a4e314",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 11
+        },
+        {
+          "path": "tests/ui-r51-spinel/keepsakes.py",
+          "sha256": "f6d0561e09aa079ca23e975a35fa1c9dc770869b9019647f984379cf4bcd11b4",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 10
+        },
+        {
+          "path": "tests/ui-r51-spinel/interactions.py",
+          "sha256": "19e02c64d867a04ffc9d5266b680f9fe961e6ef38c88165ec1ebb9af3f314c34",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 14
+        },
+        {
+          "path": "tests/ui-r51-spinel/event-boundary.py",
+          "sha256": "47d7c2e1f905bab11c6bbe88e487aa2b9aabf75cba55002705e46a89c2e74ef4",
+          "unchanged_from_snapshot": true,
+          "python_assertions": 8
+        }
+      ],
+      "reviewed_owned_memorial_variant": {
+        "path": "tests\\ui-r56-amber\\memorial.py",
+        "sha256": "90fe4bf3884ffb2e337e30f03bd175e06cdd10dd08990a7bc6268efe34afd022",
+        "only_change": "Fixed150ms settling delay replaced by bounded5s wait for the same data-end predicate, with failure diagnostics; original assertion and all other AST nodes retained.",
+        "original_failure_retained": false,
+        "common_sync_protocol": "tmp/r56_memorial_wait_protocol.md"
+      }
+    }
+  ]
+}

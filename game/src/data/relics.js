@@ -364,7 +364,7 @@ export const RELICS = [
   },
   {
     id: 'tin-of-sardines', name: 'Tin of Sardines', rarity: 'uncommon', icon: 'tin',
-    desc: `Whenever an enemy dies, recover 3 ${TERMS.hp}. Something always comes to eat.`,
+    desc: `Whenever an enemy is defeated, recover 3 ${TERMS.hp}. Something always comes to eat.`,
     flavor: 'The key snapped off years ago. It opens anyway, for the right company.',
     hooks: {
       onDeath(h) {
@@ -429,7 +429,7 @@ export const RELICS = [
   },
   {
     id: 'hollow-birdcage', name: 'Hollow Birdcage', rarity: 'rare', icon: 'cage',
-    desc: `Whenever an enemy dies, draw 1 ${TERMS.card} and gain 4 ${TERMS.block}.`,
+    desc: `Whenever an enemy is defeated, draw 1 ${TERMS.card} and gain 4 ${TERMS.block}.`,
     flavor: 'The door has been open the entire time.',
     hooks: {
       onDeath(h) {
@@ -895,7 +895,7 @@ export const RELICS = [
     id: 'lantern-of-the-lamplighter', name: "Lamplighter's Wick", rarity: 'boss', icon: 'wick',
     desc: `Your first ${TERMS.card} each turn costs 1 less. You start every `
         + `${TERMS.combat} with 5 fewer ${TERMS.hp}.`,
-    flavor: 'It burns whatever is nearest. Tonight that is you.',
+    flavor: 'The flame burns brighter when someone feels brave.',
     hooks: {
       onCombatStart(h) {
         // Never the thing that ends a run before a turn has been taken.

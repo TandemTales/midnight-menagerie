@@ -124,10 +124,10 @@
 }
 .rs-art__plate .kit-plate__name {
   font-family: var(--font-display); font-weight: 700;
-  font-size: max(13px, calc(var(--plate-h) * .34)); letter-spacing: .14em; text-transform: uppercase;
+  --reading-size: max(13px, calc(var(--plate-h) * .34)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .14em; text-transform: uppercase;
   color: var(--kit-name);
 }
-.rs-art__plate .kit-plate__epithet { font-size: max(12px, calc(var(--plate-h) * .27)); }
+.rs-art__plate .kit-plate__epithet { --reading-size: max(12px, calc(var(--plate-h) * .27)); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .rs-scene > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 /* the lights painted over the picture ride the drawing, not the frame: this
    box is the SVGs' 420x410 window, sliced into the scene the same way (as
@@ -166,7 +166,7 @@
   -webkit-mask-image: linear-gradient(180deg, black 0%, black 85%, transparent 100%);
           mask-image: linear-gradient(180deg, black 0%, black 85%, transparent 100%);
 }
-.rm:not(.is-still) .rs-glow--lamp { animation: kit-flicker 3.8s ease-in-out infinite; }
+.rm:not(.is-still) .rs-glow--lamp { animation: kit-flicker calc(3.8s * var(--anim-scale)) ease-in-out infinite; }
 .kit-board.has-backdrop .rs-glow--moon, .kit-board.has-backdrop .rs-glow--rug { display: none; }
 /* the panels' own grain, laid over the whole picture so it reads as painted */
 .rs-scene::after {
@@ -323,13 +323,13 @@
 .rs-torchbody { fill: var(--kit-gold-lo); stroke: var(--kit-gold); stroke-width: .8; }
 .rs-lampcage { fill: none; stroke: var(--kit-gold); stroke-width: 1.3; }
 .rs-flame { fill: color-mix(in oklab, var(--kit-candle) 30%, white); stroke: var(--kit-candle); stroke-width: 1; transform-origin: 210px 226px; }
-.rm:not(.is-still) .rs-flame { animation: rs-flick 2.4s var(--ease-soft) infinite; }
+.rm:not(.is-still) .rs-flame { animation: rs-flick calc(2.4s * var(--anim-scale)) var(--ease-soft) infinite; }
 @keyframes rs-flick {
   0%, 100% { transform: scale(1, 1); opacity: 1; }
   35%      { transform: scale(.9, 1.09) translateX(.6px); opacity: .88; }
   70%      { transform: scale(1.06, .95) translateX(-.5px); opacity: 1; }
 }
-.rm:not(.is-still) .rs-pool, .rm:not(.is-still) .rs-halo { animation: rs-breathe 5s var(--ease-soft) infinite; }
+.rm:not(.is-still) .rs-pool, .rm:not(.is-still) .rs-halo { animation: rs-breathe calc(5s * var(--anim-scale)) var(--ease-soft) infinite; }
 @keyframes rs-breathe { 0%,100% { opacity: 1; } 50% { opacity: .74; } }
 .rs-kid { fill: color-mix(in srgb, var(--ink-900) 88%, var(--flame-500)); stroke: none; }
 .rs-pet { fill: color-mix(in srgb, var(--ink-900) 84%, var(--flame-500)); stroke: none; }
@@ -419,7 +419,7 @@
   grid-area: name; align-self: end; min-width: 0;
   display: block;
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(17px, 1.24vw, 20.5px); letter-spacing: .08em; text-transform: uppercase;
+  --reading-size: clamp(17px, 1.24vw, 20.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .08em; text-transform: uppercase;
   line-height: 1.1; color: var(--kit-gold-hi);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 color-mix(in srgb, var(--kit-gold-lo) 80%, transparent), 0 0 14px color-mix(in srgb, var(--kit-candle) 18%, transparent);
 }
@@ -446,7 +446,7 @@
   left: calc(clamp(18px, 1.6vw, 28px) + clamp(44px, 3.7vw, 62px) / 2); top: 0;
   translate: -50% -52%;
   font-family: var(--font-num); font-weight: 700;
-  font-size: calc(var(--num) * .5);
+  --reading-size: calc(var(--num) * .5); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   font-variant-numeric: lining-nums;
 }
 .rs-door__read b { font-weight: 400; color: var(--good-300); }
@@ -538,7 +538,7 @@
 @media (max-height: 860px) {
   .rs-door { padding-block: 21px 19px; --medal-k: .66; }
   .rs-door[data-medal="moon"] { --medal-k: .44; }
-  .rs-door__txt > b { font-size: 17px; letter-spacing: .07em; }
+  .rs-door__txt > b { --reading-size: 17px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .07em; }
   .rs-door__read.kit-hw-plate { --plate-h: 40px; min-width: calc(var(--plate-h) * 3.3); }
   .rs-choices { gap: 20px; }
   .rs-room { padding: 22px 0 10px; gap: 30px; }
@@ -549,8 +549,8 @@
   /* the plaque's sub is one long line: the plate grows a little to hold it
      clear of the SAFE ROOM ribbon, and the ribbon hangs lower */
   .scene--rest .kit-titleblock--compact { --cart-h: 102px; }
-  .scene--rest .kit-titleblock--compact .kit-cartouche__title { font-size: 24px; }
-  .scene--rest .kit-titleblock--compact .kit-cartouche__sub { font-size: 12px; }
+  .scene--rest .kit-titleblock--compact .kit-cartouche__title { --reading-size: 24px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
+  .scene--rest .kit-titleblock--compact .kit-cartouche__sub { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
   .scene--rest .kit-titleblock > .kit-ribbon { margin-top: calc(var(--cart-h) * -.1); }
 }
 /* ── a party's night: six choices, two columns of three ─────────────────────
@@ -758,3 +758,111 @@
   -webkit-mask-image: linear-gradient(180deg, black 0%, black 52.5%, transparent 55.5%);
           mask-image: linear-gradient(180deg, black 0%, black 52.5%, transparent 55.5%);
 }
+
+/* Larger reading sizes need room, including on a 1280px panel. */
+.rs-choices { min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 18px 12px 22px; gap: 24px; scrollbar-color: var(--kit-gold) var(--kit-panel); }
+.rs-choices > .rs-door { flex: 0 0 auto; }
+.rs-choices:has(> .rs-door:nth-child(5)) { align-content: start; }
+
+/* Round 48: four usable objects on four different materials. */
+.rs-door[data-opt="rest"] { background: radial-gradient(ellipse at 13% 50%, color-mix(in srgb, var(--kit-moon) 23%, transparent), transparent 64%), url("../../assets/ui/kit/flock.webp") center / cover, var(--kit-violet-lo); }
+.rs-door[data-opt="upgrade"] { background: repeating-linear-gradient(4deg, transparent 0 13px, color-mix(in srgb, var(--kit-gold-lo) 24%, transparent) 14px 15px), radial-gradient(ellipse at 10% 55%, color-mix(in srgb, var(--kit-candle) 24%, transparent), transparent 75%), var(--kit-void); }
+.rs-door[data-opt="forge"] { background: radial-gradient(ellipse at 13% 70%, color-mix(in srgb, var(--kit-candle) 36%, transparent), transparent 64%), url("../../assets/ui/kit/flock.webp") center / 230px, var(--kit-violet-lo); }
+.rs-door[data-opt="sit"] { background: radial-gradient(ellipse at 14% 50%, color-mix(in srgb, var(--kit-candle) 20%, transparent), transparent 65%), url("../../assets/ui/kit/flock.webp") center / 360px, var(--kit-ink-violet); }
+.rs-door__glyph.rs-door__vig { --vig: clamp(68px, 5.4vw, 86px); background: radial-gradient(ellipse at 50% 76%, color-mix(in srgb, var(--kit-void) 90%, transparent), transparent 58%), url("../../assets/ui/kit/socket-filigree.webp") center / 100% 100% no-repeat; }
+.rs-door__vig > i { width: 103%; filter: drop-shadow(2px 5px 2px var(--kit-void)) brightness(1.17); }
+.rs-door[data-opt="rest"] .rs-door__vig { rotate: -4deg; }
+.rs-door[data-opt="upgrade"] .rs-door__vig { rotate: 3deg; }
+.rs-door[data-opt="sit"] .rs-door__vig { rotate: -2deg; }
+.rs-cloth-relief { opacity: .9; }
+.rs-fort__paint .rs-fold { stroke-width: 6; stroke-opacity: .65; }
+.rs-fort__paint .rs-foldlit { stroke-width: 2.2; stroke-opacity: .7; }
+.rs-qp { fill-opacity: .64; }
+.rs-qseam { stroke-opacity: .6; }
+.rs-shaft { opacity: .42; }
+.rs-moonpane { opacity: .22; }
+.rs-moonbeam-edge { opacity: .08; }
+.rs-glow--moon::before { filter: blur(9px); }
+.rs-inpillow { filter: drop-shadow(0 3px 2px var(--kit-void)); }
+.scene--rest .rm-go { min-width: min(430px, 45vw); padding-block: 14px; row-gap: 5px; }
+.scene--rest .rm-go > em { white-space: normal; line-height: 1.25; }
+
+/* Reading rows span the full choice so explanatory copy has breathing room. */
+.rs-room { grid-template-columns: minmax(0,.8fr) minmax(0,1.2fr); }
+.rs-choices:not(:has(> .rs-door:nth-child(5))) { gap: 14px; padding-block: 16px 18px; }
+.rs-choices:not(:has(> .rs-door:nth-child(5))) > .rs-door { grid-template-rows: auto auto auto; grid-template-areas: "glyph name read" "glyph blurb blurb" "glyph note note"; padding-block: 8px; column-gap: 12px; }
+.rs-door__read.kit-hw-plate { min-width: 0; max-width: 245px; }
+.rs-door[data-opt="upgrade"] { background: radial-gradient(ellipse at 10% 55%, color-mix(in srgb, var(--kit-candle) 24%, transparent), transparent 75%), url("../../assets/ui/kit/flock.webp") center / cover, color-mix(in srgb, var(--kit-gold-lo) 40%, var(--kit-void)); }
+
+/* Round 49 RUBY: weighted painted cloth and readable cabinet drawers. */
+.rs-scene { background: radial-gradient(ellipse at 68% 65%, color-mix(in srgb, var(--kit-candle) 20%, transparent), transparent 70%), url("../../assets/ui/kit/flock.webp") center / cover, var(--kit-void); }
+.rs-painted-r49 { opacity: 1; }
+.rs-fort :is(.rs-torchbody,.rs-lampcage,.rs-flame) { opacity: 0; }
+.rs-choices:not(:has(> .rs-door:nth-child(5))) > .rs-door { padding: 18px 24px 18px 20px; row-gap: 9px; }
+.rs-door__glyph.rs-door__vig { --vig: clamp(62px, 4.8vw, 76px); margin-block: 0; }
+.rs-room { padding-bottom: 32px; }
+.rs-shelf { min-height: 88px; }
+.rs-art__plate { padding-bottom: 10px; }
+
+.rs-art__plate.kit-plate { min-height: 62px; box-sizing: border-box; padding: 10px 34px; gap: 3px; }
+.rs-fort :is(.rs-torchbody,.rs-lampcage,.rs-flame) { display: none; }
+.rs-door__read.kit-hw-plate { padding-inline: 16px; max-width: none; }
+
+
+/* Round 50 GARNET: quiet cloth reading interiors and local lantern weight. */
+.rs-door[data-opt] { background: url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") center / cover, var(--kit-void); }
+.rs-door::after { background: none; }
+.rs-choices:not(:has(> .rs-door:nth-child(5))) { gap: 12px; padding: 12px 12px 20px; }
+.rs-choices:not(:has(> .rs-door:nth-child(5))) > .rs-door { padding: 12px 22px 12px 18px; row-gap: 5px; }
+.rs-room { grid-template-rows: minmax(0,1fr) auto; row-gap: 0; padding-bottom: 12px; }
+.rs-stage { grid-column: 1; grid-row: 1 / 3; }
+.rs-choices { grid-column: 2; grid-row: 1; }
+.rs-room > .r50-scrollrail { grid-column: 2; grid-row: 2; margin-inline: 12px; }
+.rs-scene { background: url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") center / cover, var(--kit-void); }
+.rs-painted-r49 { filter: drop-shadow(0 11px 7px var(--kit-void)); }
+.rs-glow--lamp { width: 30%; height: 36%; opacity: .55; }
+
+/* Compact utility cartouches keep the fort's top corners in the painted kit. */
+.scene--rest .story-tools { gap: 5px; }
+.scene--rest .story-tools > button { border: 0 solid transparent; border-radius: 0; border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 8px 13px stretch; padding: 6px 15px; min-height: 34px; color: var(--kit-gold-hi); background: transparent; box-shadow: none; }
+
+/* Patinated cost plaques rest in the choice frame's worn brass recess. */
+.rs-door__read.kit-hw-plate { background: radial-gradient(ellipse at 30% 15%, color-mix(in srgb, var(--kit-gold-hi) 18%, transparent), transparent 70%), url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") center / cover; border: 0 solid transparent; border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 7px 12px stretch; box-shadow: inset 0 2px 3px var(--kit-void), 0 1px 0 var(--kit-gold-lo); }
+
+/* Round 52 TOURMALINE: worn purple wood with small pools of brass light. */
+.rs-door[data-opt] { background: radial-gradient(ellipse at 14% 5%,color-mix(in srgb,var(--kit-candle) 15%,transparent),transparent 49%),url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") center / cover; box-shadow: inset 0 2px 4px var(--kit-void),0 5px 5px -3px var(--kit-void); }
+.rs-door__read.kit-hw-plate { border-image: url("../../assets/ui/kit/frame.webp") 52 / 9px stretch; background: radial-gradient(ellipse at 22% 10%,color-mix(in srgb,var(--kit-gold-hi) 23%,transparent),transparent 60%),url("../../assets/ui/kit/flock.webp") center / 160px,color-mix(in srgb,var(--kit-gold-lo) 55%,var(--kit-violet-lo)); box-shadow: inset 0 2px 3px var(--kit-void),0 2px 2px var(--kit-void); }
+
+
+/* Fitted curved brass surrounds keep the violet fabric inside the silhouette. */
+.rs-door__read.kit-hw-plate {
+ border-image: url("../../assets/ui/r53-fluorite/velvet-cartouche-v1.webp") 18 34 18 34 fill / 9px 17px stretch;
+ background: none; box-shadow: none; filter: drop-shadow(0 2px 1px var(--kit-void));
+}
+.rs-door[data-opt] {
+ background: radial-gradient(ellipse at 5% 13%,color-mix(in srgb,var(--kit-candle) 21%,transparent),transparent 36%),radial-gradient(ellipse at 91% 80%,color-mix(in srgb,var(--kit-violet) 14%,transparent),transparent 43%),url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") center / 390px 350px;
+ box-shadow: inset 0 1px 0 color-mix(in srgb,var(--kit-gold-hi) 25%,transparent),inset 0 -3px 4px var(--kit-void),0 5px 5px -3px var(--kit-void);
+}
+
+/* Warm rubbed cloth at the icon, cool depth across the reading field. */
+.rs-door[data-opt] {
+ background: radial-gradient(ellipse at 9% 27%,color-mix(in srgb,var(--kit-candle) 25%,transparent),transparent 30%),linear-gradient(105deg,transparent 18%,color-mix(in srgb,var(--kit-violet-lo) 18%,transparent) 63%,transparent),url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") 13% 32% / 310px 280px;
+}
+.rs-door[data-opt]:nth-child(2n) { background-position: center,center,71% 63%; }
+.rs-door__read.kit-hw-plate { border-image-source: url("../../assets/ui/r54-peridot/worn-plaque-v1.webp"); }
+
+/* IOLITE: lantern-facing corners are rubbed, opposite edges stay quiet. */
+.rs-door[data-opt] { --lit-a: 0%; --moon-a: 0%; --mat-edge: .14;
+ background: radial-gradient(ellipse at 4% 25%,color-mix(in srgb,var(--kit-candle) 24%,transparent),transparent 23%),radial-gradient(ellipse at 51% 0%,color-mix(in srgb,var(--kit-gold) 12%,transparent),transparent 24%),url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") 17% 31% / 310px 280px;
+ box-shadow: inset 0 -2px 3px var(--kit-void),0 3px 3px -2px var(--kit-void);
+}
+.rs-door.kit-panel::after { border-color: color-mix(in srgb,var(--kit-gold-lo) 40%,transparent); opacity: .6; }
+.rs-door__read.kit-hw-plate { border-image-source: url("../../assets/ui/r55-iolite/enamel-plaque.webp"); }
+.rs-door[data-opt="rest"] .kit-obj { --obj: url("../../assets/ui/r55-iolite/pillow-folds.webp") !important; }
+
+/* Round56 ONYX: hand-painted cloth, stone and wax, scoped to the fort choices. */
+.rs-door[data-opt="rest"] .kit-obj { --obj: url("../../assets/ui/r56-onyx/pillow.webp") !important; }
+.rs-door[data-opt="upgrade"] .kit-obj { --obj: url("../../assets/ui/r56-onyx/whetstone.webp") !important; }
+.rs-door[data-opt="forge"] .kit-obj { --obj: url("../../assets/ui/r56-onyx/candle.webp") !important; }
+.rs-door__vig > i { filter: drop-shadow(1px 3px 1px var(--kit-void)); }
+.rs-door__read.kit-hw-plate { border-image-source: url("../../assets/ui/r56-onyx/enamel-plaque.webp"); }

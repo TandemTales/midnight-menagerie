@@ -1,4 +1,5 @@
 /** Frame loop + tween/sequence scheduler. All animation timing flows through here. */
+import { BASE_ANIMATION_RATE } from './motion.js';
 export class Clock {
   constructor() {
     this.t = 0; this.dt = 0; this.raf = 0; this.running = false;
@@ -16,7 +17,7 @@ export class Clock {
       if (!this.running) return;
       const raw = Math.min((now - this._last) / 1000, 0.1);
       this._last = now;
-      this.dt = raw * this.scale;
+      this.dt = raw * this.scale * BASE_ANIMATION_RATE;
       this.t += this.dt;
       this._runTweens(this.dt);
       this._runTimers(this.dt);

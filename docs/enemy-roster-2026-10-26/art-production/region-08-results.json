@@ -1,0 +1,1068 @@
+{
+  "level": 8,
+  "entries": [
+    {
+      "level": 8,
+      "region": "Moonlit Attic and Observatory",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Telescope Eye",
+      "existing_animation": false,
+      "description": "Antique brass telescope that turns and tracks the player by itself, with a faint blinking reflection deep inside the lens. Peers too closely, placing a conspicuous observing glint on its chosen subject.",
+      "animation": "2D animation Idle tube sway; tell lens gleam; action gentle extend; resolve retract.",
+      "signature": "Signature Long horizontal brass tube, not a freestanding mirror.",
+      "production_id": "telescope-eye",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\telescope-eye.webp",
+      "source_path": "animations\\sprites\\enemies\\telescopeEye.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            203,
+            185
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 23609,
+          "partial_alpha_pixels": 13287,
+          "alpha_bbox": [
+            0,
+            0,
+            203,
+            185
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            203,
+            184
+          ],
+          "sha256": "1b4aa31a30546973aa171119bd2b718fb761bb288cae39febd678c6239da5962"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 50495,
+          "partial_alpha_pixels": 14382,
+          "alpha_bbox": [
+            8,
+            5,
+            251,
+            230
+          ],
+          "visible_bbox_alpha64": [
+            27,
+            40,
+            230,
+            223
+          ],
+          "sha256": "411ed176ebc258fb72a54d8f624c79cea027541b5a4bc133681c3d487458de74"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1221848,
+          "partial_alpha_pixels": 350113,
+          "alpha_bbox": [
+            0,
+            20,
+            1240,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            133,
+            196,
+            1127,
+            1093
+          ],
+          "sha256": "2dddbd0dbb54c89b1436e5c3fdeb533d6a9da56357038a839ec8a5cb0f7ac34d"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\telescope-eye-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "telescope-eye.webp",
+          "w": 203,
+          "h": 185,
+          "source": "telescopeEye.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 8,
+      "region": "Moonlit Attic and Observatory",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Astrolabe",
+      "existing_animation": false,
+      "description": "Brass astronomical instrument spinning under invisible control while its rings align into impossible patterns. Aligns its rings to announce a comically inaccurate prediction.",
+      "animation": "2D animation Idle ring rock; tell pointers align; action rings rotate; resolve soft click.",
+      "signature": "Signature Open circular brass rings; no sphere or planet collection.",
+      "production_id": "astrolabe",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\astrolabe.webp",
+      "source_path": "animations\\sprites\\enemies\\astrolabe.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            155,
+            229
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 19096,
+          "partial_alpha_pixels": 14889,
+          "alpha_bbox": [
+            0,
+            0,
+            155,
+            229
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            154,
+            228
+          ],
+          "sha256": "a20363e054de22e6f9fcf18fdb7b41cd9974c24d34eb60f4edf48f51d4cb281c"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 47254,
+          "partial_alpha_pixels": 16772,
+          "alpha_bbox": [
+            49,
+            12,
+            208,
+            245
+          ],
+          "visible_bbox_alpha64": [
+            51,
+            15,
+            205,
+            242
+          ],
+          "sha256": "e10437cebeaf809400e61a606b13604dbd0d1b8a7b818503eff299d86e7ec520"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1158858,
+          "partial_alpha_pixels": 412324,
+          "alpha_bbox": [
+            21,
+            47,
+            1232,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            250,
+            72,
+            1007,
+            1186
+          ],
+          "sha256": "9b5d3a363b99dd76ff2b41fdf7b42d3189a573a43994e73fa755c094ba288f2f"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\astrolabe-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "astrolabe.webp",
+          "w": 155,
+          "h": 229,
+          "source": "astrolabe.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 8,
+      "region": "Moonlit Attic and Observatory",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Tripod Camera",
+      "existing_animation": false,
+      "description": "Old box camera on wooden legs that repositions itself and flashes without anyone operating it. Requests a portrait, then refuses to stop counting down.",
+      "animation": "2D animation Idle bellows breathe; tell shutter lifts; action soft flash overlay; resolve little print.",
+      "signature": "Signature Three-legged box silhouette; no startling flash or rapid strobe.",
+      "production_id": "tripod-camera",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\tripod-camera.webp",
+      "source_path": "animations\\sprites\\enemies\\tripodCamera.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            144,
+            235
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 20086,
+          "partial_alpha_pixels": 12990,
+          "alpha_bbox": [
+            0,
+            0,
+            144,
+            235
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            144,
+            234
+          ],
+          "sha256": "586cf34bd06cbe488983ab773fc448462259587ac421e4e2b30d4b80c99ca64f"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 50505,
+          "partial_alpha_pixels": 14267,
+          "alpha_bbox": [
+            23,
+            5,
+            219,
+            244
+          ],
+          "visible_bbox_alpha64": [
+            73,
+            7,
+            217,
+            241
+          ],
+          "sha256": "2d8566cfae582ac2365de7aae092e5efdf070308b05a8665b709101f47b38865"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1233928,
+          "partial_alpha_pixels": 338047,
+          "alpha_bbox": [
+            0,
+            19,
+            1224,
+            1236
+          ],
+          "visible_bbox_alpha64": [
+            358,
+            37,
+            1061,
+            1181
+          ],
+          "sha256": "c31b91534b70dbed01e67dceaefaeaf82cbf93e4bc4408a7865d403b354b4ffe"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\tripod-camera-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "tripod-camera.webp",
+          "w": 144,
+          "h": 235,
+          "source": "tripodCamera.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 8,
+      "region": "Moonlit Attic and Observatory",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Attic Trunk",
+      "existing_animation": false,
+      "description": "Large travel trunk sliding across the floor while its lid opens to reveal changing contents or impossible darkness. Reveals an absurdly small forgotten memento rather than its expected contents.",
+      "animation": "2D animation Idle lid wobble; tell clasp opens; action lid rises and one object floats; resolve close.",
+      "signature": "Signature Wide floor chest with three fixed memento swaps; no teeth or creature inside.",
+      "production_id": "attic-trunk",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\attic-trunk.webp",
+      "source_path": "animations\\sprites\\enemies\\atticTrunk.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            219,
+            155
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 6702,
+          "partial_alpha_pixels": 26713,
+          "alpha_bbox": [
+            0,
+            0,
+            219,
+            155
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            219,
+            155
+          ],
+          "sha256": "fa3ce4227aab5ee59aa2e670d28726f21103045dcc44f9260cb9349d6d5fdeb4"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 36866,
+          "partial_alpha_pixels": 28140,
+          "alpha_bbox": [
+            11,
+            11,
+            249,
+            254
+          ],
+          "visible_bbox_alpha64": [
+            21,
+            55,
+            240,
+            210
+          ],
+          "sha256": "9ccd9bc993b4365eb7a56350859a6a81278a0778106231752fe6de29dadadf72"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 892822,
+          "partial_alpha_pixels": 678939,
+          "alpha_bbox": [
+            0,
+            23,
+            1250,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            105,
+            272,
+            1173,
+            1027
+          ],
+          "sha256": "1be1d45e9ed723d102c4b7ed2ad6327563201e91a02de6f83c4ae98e2aac918d"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\attic-trunk-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "attic-trunk.webp",
+          "w": 219,
+          "h": 155,
+          "source": "atticTrunk.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 8,
+      "region": "Moonlit Attic and Observatory",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Spectral Assistant",
+      "existing_animation": false,
+      "description": "Faint translucent observatory attendant carrying charts, lenses, and notebooks while mostly ignoring the player. Consults an upside-down chart and mislabels the visitor as a constellation.",
+      "animation": "2D animation Idle chart scan; tell point; action stamp gesture; resolve puzzled head tilt.",
+      "signature": "Signature Small chart-bearing assistant, not a commanding elite or boss.",
+      "production_id": "spectral-assistant",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\spectral-assistant.webp",
+      "source_path": "animations\\sprites\\enemies\\spectralAssistant.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            134,
+            214
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 13600,
+          "partial_alpha_pixels": 14496,
+          "alpha_bbox": [
+            0,
+            0,
+            134,
+            214
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            134,
+            213
+          ],
+          "sha256": "c3b9ff46468c99c642645ed54494f3529750a60d5e86a1cc30e1f5b7412f4687"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 49463,
+          "partial_alpha_pixels": 15493,
+          "alpha_bbox": [
+            6,
+            19,
+            234,
+            237
+          ],
+          "visible_bbox_alpha64": [
+            66,
+            22,
+            200,
+            234
+          ],
+          "sha256": "990e40092822305fe6cf648345b17dedd05e6f5ce110c838a848f93982f214d5"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1200139,
+          "partial_alpha_pixels": 371769,
+          "alpha_bbox": [
+            25,
+            29,
+            1240,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            323,
+            107,
+            977,
+            1146
+          ],
+          "sha256": "012832cb328cd4a7605e455100a4c57d7fc6a282d27710bbd77a1cfd456d35fe"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\spectral-assistant-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "spectral-assistant.webp",
+          "w": 134,
+          "h": 214,
+          "source": "spectralAssistant.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 8,
+      "region": "Moonlit Attic and Observatory",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Moonbeam Figure",
+      "existing_animation": false,
+      "description": "Human silhouette visible only inside a column of moonlight, disappearing whenever it leaves the beam. Attempts to follow the visitor but can move only inside its own light.",
+      "animation": "2D animation Idle translucent sway; tell beam narrows; action sideways lean; resolve re-center.",
+      "signature": "Signature One pale silhouette confined to a vertical beam, no extra independent figures.",
+      "production_id": "moonbeam-figure",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\moonbeam-figure.webp",
+      "source_path": "animations\\sprites\\enemies\\moonbeamFigure.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            95,
+            231
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 5155,
+          "partial_alpha_pixels": 16790,
+          "alpha_bbox": [
+            0,
+            0,
+            95,
+            231
+          ],
+          "visible_bbox_alpha64": [
+            3,
+            7,
+            91,
+            226
+          ],
+          "sha256": "3cfbb41f82b371134bee3a3219999809013ace693cda825e3db11b37c4667d93"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 46760,
+          "partial_alpha_pixels": 18776,
+          "alpha_bbox": [
+            9,
+            7,
+            248,
+            256
+          ],
+          "visible_bbox_alpha64": [
+            84,
+            21,
+            172,
+            240
+          ],
+          "sha256": "c392f0f2ffe327bcca98cc7e34d7577c8b05184a0372a97cc22805fbf4401856"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1117598,
+          "partial_alpha_pixels": 454918,
+          "alpha_bbox": [
+            0,
+            9,
+            1244,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            413,
+            103,
+            845,
+            1178
+          ],
+          "sha256": "b9ec8e2725a09d93531e24b472ee7f643bf157fdd504224f2b96b16ca224a3ef"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\moonbeam-figure-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "moonbeam-figure.webp",
+          "w": 95,
+          "h": 231,
+          "source": "moonbeamFigure.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 8,
+      "region": "Moonlit Attic and Observatory",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Contrary Weather Vane",
+      "existing_animation": false,
+      "description": "A brass rooster and arrow balanced on a short roof finial, with N and S tags. Points confidently toward the wrong direction, then spins to correct itself too late.",
+      "animation": "2D animation Idle arrow tremble; tell rooster leans; action quarter-turn plate swap; resolve wobble.",
+      "signature": "Signature Crossed directional silhouette; angular swiveling rather than lens tracking or clock time.",
+      "production_id": "contrary-weather-vane",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\contrary-weather-vane.webp",
+      "source_path": "animations\\sprites\\enemies\\contraryWeatherVane.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            198,
+            210
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 28695,
+          "partial_alpha_pixels": 11844,
+          "alpha_bbox": [
+            0,
+            0,
+            198,
+            210
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            198,
+            210
+          ],
+          "sha256": "be00ca54d2d956f215d6408a6669773c471ae5ac5226e7cd08021800fae493de"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 50844,
+          "partial_alpha_pixels": 13651,
+          "alpha_bbox": [
+            28,
+            13,
+            241,
+            238
+          ],
+          "visible_bbox_alpha64": [
+            30,
+            26,
+            228,
+            236
+          ],
+          "sha256": "f442ba79fdcc33cc02b85cef0d913bd0ffd0f53583aa8fa2c4a367af69ea6fcb"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1235503,
+          "partial_alpha_pixels": 336327,
+          "alpha_bbox": [
+            33,
+            17,
+            1248,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            147,
+            127,
+            1115,
+            1156
+          ],
+          "sha256": "0831719eb0cc7e85dbd1cd7e0512e512b08a946b6923d82a9bf95acd64b1a3a0"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\contrary-weather-vane-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "contrary-weather-vane.webp",
+          "w": 198,
+          "h": 210,
+          "source": "contraryWeatherVane.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 8,
+      "region": "Moonlit Attic and Observatory",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Moon Lens",
+      "existing_animation": false,
+      "description": "Huge round lens in a suspended horseshoe-shaped brass frame; pale reflected clouds cross the glass. Magnifies one harmless detail until it becomes an enormous distraction.",
+      "animation": "2D animation Idle suspended sway; tell lens cloud clears; action soft magnified overlay; resolve blur.",
+      "signature": "Signature One clear circular disc; unlike the telescope\u2019s narrow tube, its action is magnification.",
+      "production_id": "moon-lens",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\moon-lens.webp",
+      "source_path": "animations\\sprites\\enemies\\moonLens.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            353,
+            470
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 92241,
+          "partial_alpha_pixels": 71814,
+          "alpha_bbox": [
+            0,
+            0,
+            353,
+            470
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            353,
+            470
+          ],
+          "sha256": "d8a89d80de07c57c6c79bd996443c9249351865c7ba03a0427b66dea1bd579bc"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 184116,
+          "partial_alpha_pixels": 76173,
+          "alpha_bbox": [
+            30,
+            4,
+            435,
+            496
+          ],
+          "visible_bbox_alpha64": [
+            80,
+            6,
+            433,
+            476
+          ],
+          "sha256": "7e4e28ebe40bd1446d454ab1d4943c5fdecaf7f02219c626a9a04a3e18c6ed4b"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1104282,
+          "partial_alpha_pixels": 467277,
+          "alpha_bbox": [
+            63,
+            13,
+            1218,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            196,
+            16,
+            1060,
+            1165
+          ],
+          "sha256": "208f3738314c10daaeb7c1162f96ff0a047fdffb1ef83e4417d302c1bcc07075"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\moon-lens-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "moon-lens.webp",
+          "w": 353,
+          "h": 470,
+          "source": "moonLens.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 8,
+      "region": "Moonlit Attic and Observatory",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Celestial Clock",
+      "existing_animation": false,
+      "description": "A broad astronomical clock with three oversized moon-phase discs and short brass hands. Announces the wrong night and makes its moon discs disagree.",
+      "animation": "2D animation Idle disc tick; tell all hands align; action discs step out of sync; resolve chime.",
+      "signature": "Signature Wide multi-disc face and lunar phase puzzle; not the library\u2019s tall pendulum clock.",
+      "production_id": "celestial-clock",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\celestial-clock.webp",
+      "source_path": "animations\\sprites\\enemies\\celestialClock.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            500,
+            327
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 59372,
+          "partial_alpha_pixels": 103099,
+          "alpha_bbox": [
+            0,
+            0,
+            500,
+            327
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            499,
+            327
+          ],
+          "sha256": "f7883e6a9547df8e5562ffba38f84ec5fcab9a547023f2372d7350575fde884c"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 155210,
+          "partial_alpha_pixels": 105905,
+          "alpha_bbox": [
+            4,
+            21,
+            508,
+            498
+          ],
+          "visible_bbox_alpha64": [
+            6,
+            81,
+            505,
+            407
+          ],
+          "sha256": "084ba825fb8a42faf09c55262568a3f2c0274fc336064f81ff7e2871929b1537"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 932588,
+          "partial_alpha_pixels": 639397,
+          "alpha_bbox": [
+            0,
+            29,
+            1240,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            16,
+            197,
+            1238,
+            996
+          ],
+          "sha256": "a2a540a1c7eabf628d92043aa03a21f4bc0ca00959eaa0de1488905b1142af96"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\celestial-clock-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "celestial-clock.webp",
+          "w": 500,
+          "h": 327,
+          "source": "celestialClock.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 8,
+      "region": "Moonlit Attic and Observatory",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Suspended Planetarium",
+      "existing_animation": false,
+      "description": "A low domed brass projector with star-shaped cutouts and one crescent shutter. Projects drifting star shapes over useful room markings, mischievously obscuring them until its crescent shutter closes.",
+      "animation": "2D animation Idle dotted glow; tell shutter lifts; action fixed star overlay drifts; resolve shutter lowers.",
+      "signature": "Signature Low dome silhouette and star projection, not another ring instrument or lens.",
+      "production_id": "suspended-planetarium",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\suspended-planetarium.webp",
+      "source_path": "animations\\sprites\\enemies\\suspendedPlanetarium.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            447,
+            383
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 100754,
+          "partial_alpha_pixels": 69070,
+          "alpha_bbox": [
+            0,
+            0,
+            447,
+            383
+          ],
+          "visible_bbox_alpha64": [
+            4,
+            1,
+            445,
+            382
+          ],
+          "sha256": "1c5be067a9ce5ffc887670fb26d2cbe7248e82833a43d1d850f9044b91a41038"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 183428,
+          "partial_alpha_pixels": 77339,
+          "alpha_bbox": [
+            26,
+            34,
+            488,
+            496
+          ],
+          "visible_bbox_alpha64": [
+            38,
+            43,
+            479,
+            424
+          ],
+          "sha256": "37b1df079603220059170c8dd26d632ed684b1061fd04fc4d5ce49731c51962c"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1097808,
+          "partial_alpha_pixels": 474115,
+          "alpha_bbox": [
+            47,
+            25,
+            1208,
+            1232
+          ],
+          "visible_bbox_alpha64": [
+            94,
+            105,
+            1172,
+            1039
+          ],
+          "sha256": "d3da434d443ecb000b5c6a8c53d13754f3124078d1c9ddaee49cfae082e866e8"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\suspended-planetarium-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "suspended-planetarium.webp",
+          "w": 447,
+          "h": 383,
+          "source": "suspendedPlanetarium.png"
+        }
+      },
+      "blocker": null
+    },
+    {
+      "level": 8,
+      "region": "Moonlit Attic and Observatory",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Watcher in the Rafters",
+      "existing_animation": false,
+      "description": "An enormous soft-edged shadow tucked along a short rafter arch, with two round curious eyes and long folded shadow limbs. Peeks from different openings as though hoping not to disturb anyone, shifting attention with telescopes and moonlight rather than lunging.",
+      "animation": "2D animation Idle eye blink; tell eyes glance toward next opening; action masked shadow slide between three fixed sockets; resolve bashful retreat.",
+      "signature": "Signature Wide overhead rafter silhouette; limbs behave like loose shadows, never spider fangs or predatory legs.",
+      "production_id": "watcher-in-the-rafters",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\watcher-in-the-rafters.webp",
+      "source_path": "animations\\sprites\\enemies\\watcherInTheRafters.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            982,
+            642
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 330862,
+          "partial_alpha_pixels": 298766,
+          "alpha_bbox": [
+            0,
+            0,
+            982,
+            642
+          ],
+          "visible_bbox_alpha64": [
+            2,
+            2,
+            980,
+            641
+          ],
+          "sha256": "02ae725024a3cb6e60d172cc0b1eac77530361eefef712193fb1e161b0488446"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 733843,
+          "partial_alpha_pixels": 313917,
+          "alpha_bbox": [
+            26,
+            25,
+            1023,
+            1024
+          ],
+          "visible_bbox_alpha64": [
+            31,
+            199,
+            1009,
+            838
+          ],
+          "sha256": "f791fd9234d0703b2c6d7854b2efbd394f5c4d5d2ff4938254579f24fe3a5d39"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1100593,
+          "partial_alpha_pixels": 471469,
+          "alpha_bbox": [
+            32,
+            31,
+            1253,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            37,
+            243,
+            1236,
+            1027
+          ],
+          "sha256": "49c990c907f891f0b2ea672294792081c8c154249f9ec13d84425b03e7283c8a"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\watcher-in-the-rafters-original.png",
+        "visual": "Reviewed full generated image: roster-specific silhouette/material preserved, complete object visible, coherent anatomy and cute nonthreatening mood. Contact sheet review follows region completion. Region contact sheet also visually reviewed and passed.",
+        "conversion": "Tier-size source square, existing isolated build_enemy_still function; no registry changes.",
+        "runtime_metadata": {
+          "file": "watcher-in-the-rafters.webp",
+          "w": 982,
+          "h": 642,
+          "source": "watcherInTheRafters.png"
+        }
+      },
+      "blocker": null
+    }
+  ],
+  "counts": {
+    "existing": 0,
+    "new": 11,
+    "pending": 0,
+    "blocked": 0
+  },
+  "contact_review": "Reviewed region-08-contact.jpg: all 11 silhouettes distinct and readable, complete and consistent in style. No clipping or visible anatomy defects. Observatory region complete."
+}

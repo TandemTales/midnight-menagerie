@@ -1,0 +1,16 @@
+boss 0 1280 frames 148 peak 6 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [12, 50]} fail 0 delivered 6 expired 6 drain 2393
+crowd 0 1280 frames 159 peak 3 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [4, 54]} fail 0 delivered 6 expired 6 drain 5687
+crowd 1 1280 frames 197 peak 2 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [6, 54]} fail 0 delivered 6 expired 6 drain 5560
+crowd 2 1280 frames 186 peak 2 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [54, 66]} fail 0 delivered 6 expired 6 drain 5388
+crowd 3 1280 frames 236 peak 2 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [16, 54]} fail 0 delivered 6 expired 6 drain 5366
+crowd all 1280 frames 129 peak 4 fit {'fit': False, 'groups': 5, 'visited': 1, 'candidates': [3, 18, 30, 52, 62]} fail 0 delivered 6 expired 6 drain 3938
+crowd repeats 1280 frames 342 peak 1 fit {'fit': True, 'groups': 1, 'visited': 1, 'candidates': [3]} fail 0 delivered 6 expired 6 drain 10072
+crowd all-long 1280 frames 128 peak 4 fit {'fit': True, 'groups': 4, 'visited': 4, 'candidates': [3, 16, 18, 52]} fail 0 delivered 6 expired 6 drain 4199
+boss 0 1600 frames 113 peak 6 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [27, 38]} fail 0 delivered 6 expired 6 drain 2410
+crowd 0 1600 frames 128 peak 5 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [6, 76]} fail 0 delivered 6 expired 6 drain 3166
+crowd 1 1600 frames 125 peak 5 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [16, 54]} fail 0 delivered 6 expired 6 drain 3012
+crowd 2 1600 frames 137 peak 5 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [16, 44]} fail 0 delivered 6 expired 6 drain 3145
+crowd 3 1600 frames 126 peak 5 fit {'fit': True, 'groups': 2, 'visited': 2, 'candidates': [16, 37]} fail 0 delivered 6 expired 6 drain 3092
+crowd all 1600 frames 99 peak 6 fit {'fit': True, 'groups': 5, 'visited': 5, 'candidates': [38, 48, 68, 69, 74]} fail 0 delivered 6 expired 6 drain 2403
+crowd repeats 1600 frames 198 peak 2 fit {'fit': True, 'groups': 1, 'visited': 1, 'candidates': [56]} fail 0 delivered 6 expired 6 drain 4972
+crowd all-long 1600 frames 84 peak 6 fit {'fit': True, 'groups': 5, 'visited': 5, 'candidates': [38, 48, 53, 68, 74]} fail 0 delivered 6 expired 6 drain 2436

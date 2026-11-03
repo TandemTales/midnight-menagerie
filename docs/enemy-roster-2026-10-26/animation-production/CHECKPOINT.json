@@ -1,0 +1,446 @@
+{
+  "updated_utc": "2026-10-27T04:35:36.276161+00:00",
+  "status": "paused_by_user_new_assets_rolled_back",
+  "identities": 187,
+  "preserved_enemies": 29,
+  "preserved_actions": 118,
+  "new_final_enemies": 0,
+  "new_final_actions": 0,
+  "new_saved_enemies": 0,
+  "new_saved_actions": 0,
+  "visual_review_pending_actions": 0,
+  "usable_enemies_pending": 0,
+  "dependency_blocked_enemies": 1,
+  "pending_actions": 0,
+  "dependency_blocked_actions": 4,
+  "action_totals": {
+    "attack": 187,
+    "defeat": 187,
+    "hurt": 187,
+    "idle": 187,
+    "cast": 37
+  },
+  "new_cast_actions": 35,
+  "orientation_status_actions": {
+    "left_derivative_or_pose_correction_required": 93,
+    "left_in_sampled_runtime_poses": 21,
+    "left_in_inspected_keyposes": 50,
+    "left_staging_required": 617,
+    "left_derivative_saved_integration_pending": 4
+  },
+  "fps": 30,
+  "deliveries": {
+    "hall-mirror": {
+      "receipt": "representative-v7-left/installed-assets.json",
+      "status": "rolled_back_archived",
+      "staging": "representative-v7-left",
+      "validation": "representative-v7-left/validation.json",
+      "previous_status": "produced_review_pending",
+      "active": false,
+      "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+    },
+    "crib-curtains": {
+      "receipt": "batch-02/crib-curtains-v3-left/installed-assets.json",
+      "status": "rolled_back_archived",
+      "staging": "batch-02/crib-curtains-v3-left",
+      "validation": "batch-02/crib-curtains-v3-left/validation.json",
+      "previous_status": "produced_review_pending",
+      "active": false,
+      "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+    },
+    "foyer-chandelier": {
+      "receipt": "batch-02/foyer-chandelier-v3-left/installed-assets.json",
+      "status": "rolled_back_archived",
+      "staging": "batch-02/foyer-chandelier-v3-left",
+      "validation": "batch-02/foyer-chandelier-v3-left/validation.json",
+      "previous_status": "produced_review_pending",
+      "active": false,
+      "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+    },
+    "hanging-pots": {
+      "receipt": "batch-03/hanging-pots-v4-left/saved-assets.json",
+      "status": "rolled_back_archived",
+      "staging": "batch-03/hanging-pots-v4-left",
+      "validation": "batch-03/hanging-pots-v4-left/validation.json",
+      "previous_status": "produced_review_pending",
+      "active": false,
+      "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+    },
+    "garden-shears": {
+      "receipt": "batch-03/garden-shears-v3-left/saved-assets.json",
+      "status": "rolled_back_archived",
+      "staging": "batch-03/garden-shears-v3-left",
+      "validation": "batch-03/garden-shears-v3-left/validation.json",
+      "previous_status": "produced_review_pending",
+      "active": false,
+      "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+    },
+    "bedsheet-apparition": {
+      "receipt": "batch-04/bedsheet-apparition-v2-left/saved-assets.json",
+      "status": "rolled_back_archived",
+      "staging": "batch-04/bedsheet-apparition-v2-left",
+      "validation": "batch-04/bedsheet-apparition-v2-left/validation.json",
+      "previous_status": "produced_review_pending",
+      "active": false,
+      "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+    },
+    "topiary-hare": {
+      "receipt": "batch-04/topiary-hare-v1-left/saved-assets.json",
+      "status": "rolled_back_archived",
+      "staging": "batch-04/topiary-hare-v1-left",
+      "validation": "batch-04/topiary-hare-v1-left/validation.json",
+      "previous_status": "produced_review_pending",
+      "active": false,
+      "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+    },
+    "servant-bell": {
+      "receipt": "batch-05/servant-bell-v2-left/saved-assets.json",
+      "status": "rolled_back_archived",
+      "staging": "batch-05/servant-bell-v2-left",
+      "validation": "batch-05/servant-bell-v2-left/validation.json",
+      "previous_status": "produced_review_pending",
+      "active": false,
+      "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+    },
+    "masquerade-mask": {
+      "receipt": "batch-05/masquerade-mask-v2-left/saved-assets.json",
+      "status": "rolled_back_archived",
+      "staging": "batch-05/masquerade-mask-v2-left",
+      "validation": "batch-05/masquerade-mask-v2-left/validation.json",
+      "previous_status": "produced_review_pending",
+      "active": false,
+      "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+    },
+    "imaginary-friend": {
+      "receipt": "batch-06/imaginary-friend-v3-left/saved-assets.json",
+      "status": "rolled_back_archived",
+      "staging": "batch-06/imaginary-friend-v3-left",
+      "validation": "batch-06/imaginary-friend-v3-left/validation.json",
+      "previous_status": "produced_review_pending",
+      "active": false,
+      "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+    },
+    "rain-chain": {
+      "receipt": "batch-06/rain-chain-v5-left/saved-assets.json",
+      "status": "rolled_back_archived",
+      "staging": "batch-06/rain-chain-v5-left",
+      "validation": "batch-06/rain-chain-v5-left/validation.json",
+      "previous_status": "produced_review_pending",
+      "active": false,
+      "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+    },
+    "rocking-chair": {
+      "receipt": "batch-07/rocking-chair-v3-left/saved-assets.json",
+      "status": "rolled_back_archived",
+      "staging": "batch-07/rocking-chair-v3-left",
+      "validation": "batch-07/rocking-chair-v3-left/validation.json",
+      "previous_status": "produced_review_pending",
+      "active": false,
+      "rollback_manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json"
+    }
+  },
+  "legacy_derivatives": [
+    {
+      "enemy": "oven-maw",
+      "actions": 4,
+      "receipt": "orientation-audit/legacy-derivatives/oven-maw/saved-assets.json",
+      "status": "legacy_derivative_saved_integration_pending",
+      "files_checked": 9
+    }
+  ],
+  "current_review_reels": [
+    {
+      "path": "docs/enemy-roster-2026-10-26/animation-production/review-reels/batch-03-left-30fps.mp4",
+      "sha256": "651163977acb17df988d68ee70c76058bdb479ef0481cc256e452a46d769e687",
+      "fps": 30,
+      "decoded_frames": 267,
+      "duration_seconds": 8.9,
+      "bytes": 374381,
+      "validation": "review-reels/batch-03-left-30fps.json"
+    },
+    {
+      "path": "docs/enemy-roster-2026-10-26/animation-production/review-reels/batch-04-left-30fps.mp4",
+      "sha256": "719148bc909b7e902814ad1e20be389b53dce69c6d1ac737ff25a56e00f29877",
+      "fps": 30,
+      "decoded_frames": 267,
+      "duration_seconds": 8.9,
+      "bytes": 288169,
+      "validation": "review-reels/batch-04-left-30fps.json"
+    },
+    {
+      "path": "docs/enemy-roster-2026-10-26/animation-production/review-reels/batch-05-left-30fps.mp4",
+      "sha256": "3fb28bcdf82730ed7af97e19309c40c583b24cbd676425806a595aa0f15869f4",
+      "fps": 30,
+      "decoded_frames": 267,
+      "duration_seconds": 8.9,
+      "bytes": 498878,
+      "validation": "review-reels/batch-05-left-30fps.json"
+    },
+    {
+      "path": "docs/enemy-roster-2026-10-26/animation-production/review-reels/batch-06-left-30fps.mp4",
+      "sha256": "93cba4a3d655ced28c25c0c166d535bc9e7078f1698ae46f51f3f2cfd2c420ce",
+      "fps": 30,
+      "decoded_frames": 327,
+      "duration_seconds": 10.9,
+      "bytes": 463704,
+      "validation": "review-reels/batch-06-left-30fps.json"
+    },
+    {
+      "path": "docs/enemy-roster-2026-10-26/animation-production/review-reels/first-three-enemies-left-30fps.mp4",
+      "sha256": "7ea77c50525b11af7a24f29ae56c2ec28fa4c0da02c0ae8bf1f73b4cc930cff6",
+      "fps": 30,
+      "decoded_frames": 267,
+      "duration_seconds": 8.9,
+      "bytes": 468089,
+      "validation": "review-reels/first-three-enemies-left-30fps.json"
+    }
+  ],
+  "historical_superseded_reels": [
+    {
+      "path": "docs/enemy-roster-2026-10-26/animation-production/review-reels/first-three-enemies-30fps.mp4",
+      "sha256": "00ee93ec42c9a18410b2ddd414ff8dc9e97708f284fbd7007cc7c8a8e18f2a54",
+      "fps": 30,
+      "decoded_frames": 267,
+      "duration_seconds": 8.9,
+      "bytes": 467912,
+      "validation": "review-reels/first-three-enemies-30fps.json"
+    }
+  ],
+  "preservation": {
+    "checked": 3408,
+    "unchanged": 3379,
+    "authorized_timing_changes": [
+      "game/assets/sprites/enemy-clips/ancient-topiary/index.json",
+      "game/assets/sprites/enemy-clips/blanket-blob/index.json",
+      "game/assets/sprites/enemy-clips/blanket-creeper/index.json",
+      "game/assets/sprites/enemy-clips/blanket-hydra/index.json",
+      "game/assets/sprites/enemy-clips/butler/index.json",
+      "game/assets/sprites/enemy-clips/button-baby/index.json",
+      "game/assets/sprites/enemy-clips/candy-clump/index.json",
+      "game/assets/sprites/enemy-clips/carnivorous-conservatory/index.json",
+      "game/assets/sprites/enemy-clips/coatrack-crawler/index.json",
+      "game/assets/sprites/enemy-clips/compost-colossus/index.json",
+      "game/assets/sprites/enemy-clips/confectioner/index.json",
+      "game/assets/sprites/enemy-clips/creeping-ivy/index.json",
+      "game/assets/sprites/enemy-clips/door-greeter/index.json",
+      "game/assets/sprites/enemy-clips/dough-blob/index.json",
+      "game/assets/sprites/enemy-clips/dust-bunny/index.json",
+      "game/assets/sprites/enemy-clips/governess/index.json",
+      "game/assets/sprites/enemy-clips/jack-in-the-box/index.json",
+      "game/assets/sprites/enemy-clips/jam-jar/index.json",
+      "game/assets/sprites/enemy-clips/lost-luggage/index.json",
+      "game/assets/sprites/enemy-clips/oven-maw/index.json",
+      "game/assets/sprites/enemy-clips/pantry-mimic/index.json",
+      "game/assets/sprites/enemy-clips/patchwork-giant/index.json",
+      "game/assets/sprites/enemy-clips/patchwork-soldier/index.json",
+      "game/assets/sprites/enemy-clips/red-carpet-runner/index.json",
+      "game/assets/sprites/enemy-clips/slipper-skitter/index.json",
+      "game/assets/sprites/enemy-clips/sugar-golem/index.json",
+      "game/assets/sprites/enemy-clips/the-wardrobe/index.json",
+      "game/assets/sprites/enemy-clips/toy-chest/index.json",
+      "game/assets/sprites/enemy-clips/wardrobe-guest/index.json"
+    ],
+    "changed": [],
+    "missing": [],
+    "passed": true,
+    "note": "Immutable original baseline retained. Only explicitly authorized, exact-hash legacy index changes containing fps=30 and no other semantic changes are accepted."
+  },
+  "new_asset_hashes_checked": 112,
+  "limits": {
+    "method": "Enemy-specific 2D source-art articulation, not fully redrawn animation or AI video. Each creature/body/prop needs its own appropriate rig and quality review.",
+    "visual": "All new clips remain provisional. Chronological key poses and authored direction curves inspected; all frame timing/order/alpha/bounds/loop/endpoint checks passed. Full-speed intended-size visual approval is pending.",
+    "browser": "Browser file URL opening was denied by policy; no browser navigation, alternate route or workaround used. MP4s were rendered and fully decoded locally as authorized review deliverables.",
+    "integration": "No game registry, gameplay, balance, publication or deployment edits. Oven Maw alternate is not selected by the live loader."
+  },
+  "blocked": [
+    {
+      "target": "Spectral Scullion / idle, attack, hurt, defeat",
+      "status": "denied_dependency",
+      "reason": "Base still unavailable after prior generation output moderation denial. No retry or bypass."
+    },
+    {
+      "target": "Browser full-speed playback check",
+      "status": "denied_route",
+      "reason": "Prior URL policy denial. Offline MP4 delivery completed; full-speed temporal visual review still pending."
+    },
+    {
+      "target": "Native local Library metadata on original MP4 files",
+      "status": "unsupported_platform",
+      "reason": "Both Library files created successfully through documented fallback. Required metadata helper attempted; os.setxattr unavailable on Windows. Identity retained in project receipt; no duplicate upload."
+    }
+  ],
+  "pending_work": "613 usable new actions unproduced; saved actions await final temporal review; legacy pose corrections/integration remain as recorded in orientation-audit/orientation-decisions.json.",
+  "library_delivery": {
+    "updated_utc": "2026-10-27T00:22:39.958001+00:00",
+    "status": "saved_library_local_metadata_unsupported",
+    "library_file_ids": [
+      "libfile_0f955f4c44008191abd0a54b1a7f7b6c",
+      "libfile_bb1fbd5ab6788191882a6de7e3d796f8"
+    ],
+    "attempts": [
+      {
+        "route": "current Library skill prepared-upload helper",
+        "result": "DNS failure during hosted-app service discovery",
+        "uploads_created": false
+      },
+      {
+        "route": "same current helper with authorized network execution",
+        "result": "Library prepare_uploads is not available",
+        "uploads_created": false
+      },
+      {
+        "route": "Skill-documented ordered direct-create fallback after prepared capability unavailable",
+        "result": "Both files created successfully",
+        "uploads_created": true
+      }
+    ],
+    "local_metadata": "Required helper attempted on both original files with complete returned xattrs; both failed: AttributeError, os.setxattr unavailable on Windows. Authoritative identity retained in library-direct-create-receipt.json; no native xattr persistence claimed.",
+    "retry": "No further create needed; later updates must replace the returned IDs, not create duplicates.",
+    "files": [
+      {
+        "path": "review-reels/first-three-enemies-left-30fps.mp4",
+        "bytes": 468089,
+        "library_file_id": "libfile_0f955f4c44008191abd0a54b1a7f7b6c",
+        "file_id": "file_00000000ead481fd8b686056442b1f0b",
+        "library_path": "/first-three-enemies-left-30fps.mp4",
+        "version": 0
+      },
+      {
+        "path": "review-reels/batch-03-left-30fps.mp4",
+        "bytes": 374381,
+        "library_file_id": "libfile_bb1fbd5ab6788191882a6de7e3d796f8",
+        "file_id": "file_00000000e27482308a3098a873916c04",
+        "library_path": "/batch-03-left-30fps.mp4",
+        "version": 0
+      }
+    ]
+  },
+  "user_pause": {
+    "updated_utc": "2026-10-27T00:43:53.598942+00:00",
+    "status": "paused_by_user_not_complete",
+    "reason": "User requested stopping animation work for now. No automatic resumption or scheduling.",
+    "saved_provisional_enemies": 12,
+    "saved_provisional_actions": 50,
+    "final_approved_actions": 0,
+    "unproduced_usable_actions": 613,
+    "dependency_blocked_actions": 4,
+    "preserved_legacy_enemies": 29,
+    "preserved_legacy_actions": 118,
+    "legacy_left_derivative_actions_saved": 4,
+    "legacy_left_corrections_remaining_actions": 93,
+    "latest_saved_stage": "batch-07/rocking-chair-v3-left",
+    "staged_not_delivered": [
+      {
+        "enemy": "sleepwalking-ghost",
+        "path": "batch-07/sleepwalking-ghost-v1-left",
+        "state": "Four-action key-pose prototypes and selected opaque joint-review images only; no full sheets, packed clips, completed validation or installation.",
+        "delivered_actions": 0
+      }
+    ],
+    "settled_operation": {
+      "target": "Sleepwalking Ghost selected-pose connection inspection",
+      "outcome": "Completed successfully after pause request; four inspected poses each had one main opaque component. This is not full clip validation or visual approval."
+    },
+    "still_running_operations": [],
+    "last_preservation_check": {
+      "checked": 3408,
+      "changed": [],
+      "missing": [],
+      "passed": true,
+      "checked_utc": "2026-10-27T00:41:10.207603+00:00"
+    },
+    "library_delivery": "Both previously requested Library reels remain saved; no duplicate upload. See library-delivery-status.json.",
+    "authorities": [
+      "enemy-action-matrix.json",
+      "animation-deliveries.json",
+      "CHECKPOINT.json"
+    ],
+    "resume": "Only resume on a new user instruction. Preserve current assets and retained historical stages."
+  },
+  "timing_maintenance": {
+    "completed_utc": "2026-10-27T01:03:17.881806+00:00",
+    "status": "completed_timing_only_new_production_remains_paused",
+    "legacy_enemies": 29,
+    "legacy_clips": 118,
+    "fps": 30,
+    "source_occupied_frames_per_sheet": 81,
+    "runtime_frames_preserved": 5067,
+    "runtime_test": "legacy-30fps-2026-10-27/runtime-test.json",
+    "report": "legacy-30fps-2026-10-27/REPORT.txt",
+    "changes": "legacy-30fps-2026-10-27/changes.json",
+    "image_pixels_unchanged": true,
+    "new_provisional_clips_unchanged": 50,
+    "orientation_work": "Still paused. Unselected Oven Maw left derivatives retain their historical timing; apply 30fps if later integrated.",
+    "subsequent_cleanup": "Generated new art archived; legacy timing retained."
+  },
+  "cleanup_maintenance": {
+    "status": "completed_verified_new_enemy_assets_archived_production_paused",
+    "completed_utc": "2026-10-27T04:35:36.276161+00:00",
+    "archive_root": "docs/rollbacks/2026-10-27-new-enemy-art/assets",
+    "manifest": "docs/rollbacks/2026-10-27-new-enemy-art/restoration-manifest.json",
+    "files_archived": 1326,
+    "bytes_archived": 2269705574,
+    "new_still_pairs_archived": 155,
+    "new_animation_enemies_archived": 12,
+    "new_provisional_actions_archived": 50,
+    "active_new_stills": 0,
+    "active_new_actions": 0,
+    "preserved_original_still_pairs": 51,
+    "preserved_legacy_enemies": 29,
+    "preserved_legacy_actions": 118,
+    "legacy_fps": 30,
+    "dust_bunny_left_facing": true,
+    "oven_maw_legacy_derivatives_preserved": 4,
+    "production_remains_paused": true,
+    "still_running_operations": [],
+    "validation": "docs/rollbacks/2026-10-27-new-enemy-art/archive-validation.json",
+    "no_permanent_deletion": true,
+    "limitations": "No browser/full-game visual playback or release build. Two unmatched rig-reference crops retained; diagnostic JPG/PNG report images retained. Library attachments unchanged."
+  },
+  "last_preservation_check": {
+    "checked_utc": "2026-10-27T04:34:05.876721+00:00",
+    "archive": {
+      "files": 1326,
+      "bytes": 2269705574,
+      "errors": []
+    },
+    "original_before_generation_baseline": {
+      "checked": 367,
+      "unchanged": 338,
+      "authorized_timing": 29,
+      "authorized_archived": 0,
+      "failed": [],
+      "passed": true
+    },
+    "animation_start_baseline_including_generated_stills": {
+      "checked": 3408,
+      "unchanged": 3069,
+      "authorized_timing": 29,
+      "authorized_archived": 310,
+      "failed": [],
+      "passed": true
+    },
+    "oven_maw_legacy_derivatives": {
+      "checked": 9,
+      "failed": []
+    },
+    "references": {
+      "generated_registered_ids": [],
+      "active_literal_hits": []
+    },
+    "static_checks": {
+      "passed": 828,
+      "failed": []
+    },
+    "passed": true
+  },
+  "legacy_left_corrections_remaining_actions": 89,
+  "archived_provisional_enemies": 12,
+  "archived_provisional_actions": 50,
+  "paused_unproduced_actions": 613,
+  "staged_not_delivered": [],
+  "still_running_operations": [],
+  "latest_saved_stage": null,
+  "reason": "User requested rollback of generated new enemy art; completed recoverably. New production remains paused.",
+  "resume": "No automatic resume. Archived files can be restored only on a new user instruction; see restoration manifest."
+}

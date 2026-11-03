@@ -12,6 +12,7 @@
 *,*::before,*::after { box-sizing: border-box; }
 html, body { margin:0; padding:0; height:100%; overflow:hidden; background:var(--ink-900); }
 body {
+  font-size: var(--fs-md);
   font-family: var(--font-body);
   color: var(--text-hi);
   -webkit-font-smoothing: antialiased;

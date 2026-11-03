@@ -1,4 +1,40 @@
+# Midnight Menagerie handoff · November 3, 2026
+
+**Co-op was rebuilt for a real wire on November 3, and round 56 is finished.** Nothing is committed: Codex's rounds 48-55, round 56 and the co-op work are all working changes on `dev` over `99bdba9f`. D: must be attached, because it holds the worktrees and evidence.
+
+## Steam demo: where it stands
+
+Read [the co-op notes](docs/notes/2026-11-03-co-op-on-a-real-wire.md) first. It has what was wrong, what the game does now, and what is unproven.
+
+**Green on this tree:** `tests/shell/check.py` (fake Steam, 95), `tests/net` (190), `tests/coop/run.py` (645), `lobby` (29), `rejoin` (25), `latency` (7, a whole fight over a simulated 60-180 ms wire with both players acting at once; it fails within four cards with the agreed order switched off), `vote` (35), `selectscreen`, `hotseat`, `rooms` (62), `matedeck`. `tools/package_release.py --smoke` builds and boots the depot.
+
+**Never run: anything against real Steam.** `shell/steam_appid.txt` is still empty and only Josh can fill it (never 480). Then: `npx electron . --smoke` must say `steam:true`, re-package, and do a real two-machine test with a friend who has a key. Watch for the overlay's `in-process-gpu` switch (`--no-steam-overlay` turns it off; boots clean with those switches and no Steam), the Invite button (needs the overlay), and the one-round-trip lag on your own card over a relay.
+
+**Josh's calls, not made:**
+1. **Commit.** The depot now ships uncommitted files (`package_release.py` takes tracked + untracked-not-ignored minus `NEVER_SHIP_DIRS`), so it builds either way, but this is a lot of work living only in a OneDrive working tree.
+2. **The App ID** and whether a demo gets its own App ID. **Demo scope:** 51 of 275 enemies are painted and 12 of 17 wings have none. A demo build limited to the five painted wings (foyer, nursery, sleeping-quarters, kitchens-cellars, greenhouse) was offered, not built.
+3. The rest of `docs/RELEASE.md` "Owned by Josh": copyright holder, credits, the 32 achievements, store page. Exe icon and version strings still say Electron (needs `rcedit`).
+
+## The UI loop
+
+**Round 56 ONYX is applied** (2 of 2 blind judges; 7.0 vs baseline 6.5, no screen reference-fit). 105 of 106 files are byte-identical to ONYX. `game/src/scenes/gameover.css` is merged with three pet-film rules main gained on 11-01, and all seven parent gates passed on the merged tree. Results in [RESULTS-r56.json](docs/ui-pass/RESULTS-r56.json), [the checkpoint](docs/ui-pass/ROUND-r56-2026-10-29.md).
+
+**Next: round 57**, briefed in [BRIEF-r57.md](docs/ui-pass/BRIEF-r57.md) and [RUBRIC-r57.md](docs/ui-pass/RUBRIC-r57.md): the rooms around the objects, from what both judges named. Set up with `tmp/ui_round_setup.py 57 ...` then `tmp/ui_round_prepare_helpers.py`, on D:. Keep 10% usage in reserve (`get_usage`). One browser/GPU lease at a time.
+
+**A trap for the loop's own scripts:** `tmp/rNN_integrate.py` asserts main still matches the round's snapshot and refuses otherwise (correctly), and `ui_round_finalize.py` writes "all N files match" whatever happened. Cut the next round's snapshot from the CURRENT tree so the multiplayer files are in it. `tmp/ui_candidate_proof_audit.py` expects one runtime-results.json per builder and a paused builder (AMBER) splits them, so its full mode failed; see the round's parent-review.
+
+The entries below are historical.
+
+**Timing correction discovered in Round56:** Earlier native ABBA runs retained per-frame caption style queries. See the [protocol erratum](docs/ui-pass/TIMING-ERRATUM-r56.md); raw evidence and functional passes are preserved.
+
 # Handoff — rounds 0-26 merged; the bug pass, the mercy rule and the dead upgrades done
+
+**Latest checkpoint, 2026-10-29:** Round56 ONYX is applied as working
+changes. All seven parent gates pass; all106 files byte-verified,
+main index preserved, no main commit/push. Selected commit602e7b359b97e812e5b95f3eb28859996a1759b8
+lives in its isolated worktree. Continue the full loop at Round57; stop at10% remaining.
+Read `docs/ui-pass/ROUND-r56-2026-10-29.md` and `RESULTS-r56.json`.
+Historical pushed/merged statements below do not describe these working changes.
 
 You are picking up Midnight Menagerie on `dev`. Everything below is pushed.
 

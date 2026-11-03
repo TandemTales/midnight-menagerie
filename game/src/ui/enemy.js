@@ -127,8 +127,9 @@ const ENEMY_WARM = ['attack', 'hurt', 'defeat', 'cast'];
    stills: each faces the way its still does. A new painting must be looked at
    and added here if it faces right; no measurement can tell a face from a
    tail. */
+// Dust Bunny: mirror its rightward muzzle and attack toward the heroes (2026-10-27).
 const DRAWN_FACING_RIGHT = new Set([
-  'bedframe-beast', 'blanket-hydra', 'night-terror', 'nightlight-snuffer', 'slipper-skitter',
+  'bedframe-beast', 'blanket-hydra', 'dust-bunny', 'night-terror', 'nightlight-snuffer', 'slipper-skitter',
 ]);
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -1131,6 +1132,7 @@ export class EnemyView {
     if (len > 22) this.$name.dataset.len = 'xlong';
     else if (len > 16) this.$name.dataset.len = 'long';
     this._statusKey = '';
+    this._presentWard();
     this.setState(snap);
     this.a.spawn = 1;
   }
@@ -1149,7 +1151,7 @@ export class EnemyView {
    *
    * Called from the scene on resize / turn boundaries only — never per frame.
    */
-  setPlateLimit(limitY) {
+  setPlateLimit(limitY, maxRise = BOSS_RISE_MAX) {
     if (!this.$plate || !Number.isFinite(limitY)) return 0;
     /* THE BOSS KEEPS HIS FEET. A lifted plate climbs over whatever stands
        above it, and on the boss that was The Butler's legs: his nameplate lay
@@ -1174,7 +1176,7 @@ export class EnemyView {
       const roundel = parseFloat(stCss.getPropertyValue('--roundel')) || 26;
       const reserve = beside || this.$statuses.childElementCount ? 0 : Math.round(roundel * 1.2 + 4);
       const over = this.$plate.getBoundingClientRect().bottom + reserve - limitY;
-      const rise = over > 0 ? Math.min(Math.round(over), BOSS_RISE_MAX) : 0;
+      const rise = over > 0 ? Math.min(Math.round(over), BOSS_RISE_MAX, Math.max(0, maxRise)) : 0;
       this._rise = rise;
       this.el.style.setProperty('--e-rise', rise + 'px');
       this._plift = 0;
@@ -1272,6 +1274,22 @@ export class EnemyView {
   }
 
   /* ── state ──────────────────────────────────────────────────────────────── */
+  /** Ward animals use the shared board renderer but are not combat targets. */
+  _presentWard() {
+    if (this.role !== 'ward') return;
+    // Keep the name, Fright counters, status information and inspection button.
+    // Inline display also defeats the generic component's explicit flex rules.
+    for (const selector of ['.cb-enemy__bar', '.cb-enemy__guard', '.cb-enemy__intent']) {
+      const part = this.el.querySelector(selector);
+      part.hidden = true; part.style.display = 'none';
+    }
+    const label = document.createElement('span');
+    label.className = 'cb-enemy__protected';
+    label.textContent = 'Protected animal';
+    label.style.cssText = 'flex:1;text-align:center;font-size:var(--fs-md);font-family:var(--font-body);';
+    this.el.querySelector('.cb-enemy__vitals').prepend(label);
+  }
+
   setState(snap) {
     if (!snap) return this;
     const hpChanged = snap.hp !== this.hp;
@@ -1301,9 +1319,12 @@ export class EnemyView {
   /** The one spoken sentence for this creature. Cheap, and only on change. */
   _syncAria() {
     const tier = this.tier === 'boss' ? 'Boss' : this.tier === 'elite' ? 'Big Scare' : 'Enemy';
-    let s = `${this.name}. ${tier}. ${Math.max(0, this.hp)} of ${this.maxHp} Courage`;
+    const ward = this.def?.role === 'ward';
+    let s = ward
+      ? `${this.name}. Ward animal. Protected; cannot be attacked or hurt`
+      : `${this.name}. ${tier}. ${Math.max(0, this.hp)} of ${this.maxHp} Courage`;
     if (this.block > 0) s += `, ${this.block} Guard`;
-    if (this.lastIntent) s += `. Next: ${this.intentView.ariaLabel()}`;
+    if (!ward && this.lastIntent) s += `. Next: ${this.intentView.ariaLabel()}`;
     else s += '.';
     if (s === this._ariaKey) return;
     this._ariaKey = s;

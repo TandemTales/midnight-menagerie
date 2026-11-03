@@ -1,0 +1,56 @@
+{
+  "status": "prototype_saved_not_approved",
+  "enemy": "hall-mirror",
+  "action": "idle",
+  "source": "hall-mirror-idle-v1.png",
+  "image_size": [
+    1536,
+    1024
+  ],
+  "visible_poses": 40,
+  "observed_grid": [
+    10,
+    4
+  ],
+  "requested_grid": [
+    9,
+    4
+  ],
+  "alpha_min": 0,
+  "alpha_max": 254,
+  "transparent_pixels": 738919,
+  "partial_alpha_pixels": 833945,
+  "sha256": "1acef7acc4fe668fec5968689ccc6a47f9d0e07a8f08e578aa383c3550474c35",
+  "capabilities": "Built-in image generation returned raster sheet; Python/Pillow/SciPy available for legitimate packing and validation. No dedicated temporal animation generation tool found. Windows referenced_image_paths failed before generation; conversation-image references worked. Returned image had data URL, no savedPath; saved through bounded base64 transfer with no regeneration.",
+  "remaining_validation": [
+    "temporal coherence without stationary-frame flicker",
+    "full representative enemy attack/hurt/defeat and applicable cast",
+    "browser playback and controls"
+  ],
+  "completed_new_final_clips": 0,
+  "completed_new_enemies": 0,
+  "existing_enemies": 29,
+  "existing_clips": 118,
+  "usable_enemies_awaiting_animation": 157,
+  "blocked_missing_still": [
+    "spectral-scullion"
+  ],
+  "prior_save_outcome": "Large apply_patch transfer returned aborted by user; target absent on resume; bounded writes succeeded.",
+  "actual_frames": 40,
+  "diagnostic_preview": "animation-gallery.html",
+  "diagnostic_atlas": "hall-mirror-idle-diagnostic-atlas.png",
+  "requested_fps": 30,
+  "diagnostic_duration_seconds": 1.3333333333333333,
+  "quality_status": "pending_not_passed",
+  "quality_limitation": "Fixed gold frame texture changes between adjacent generated poses; no accepted full-action representative enemy. Do not count as final animation.",
+  "matrix": "enemy-action-matrix.json",
+  "pending_actions": 663,
+  "blocked_actions": 4,
+  "browser_validation": "not_verified",
+  "preservation": {
+    "checked": 3408,
+    "changed": 0,
+    "missing": 0,
+    "passed": true
+  }
+}

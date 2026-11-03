@@ -1,0 +1,18 @@
+{
+  "enemy": "bedsheet-apparition",
+  "source": "docs\\enemy-roster-2026-10-26\\art-production\\bedsheet-apparition-original.png",
+  "source_sha256": "28d687b913b052ca6214406b93a7cf1ed5939d5860231f9e08ad0ad28eb4649f",
+  "method": "Source-painted cloth mesh with separate head lean, body inflation, hem ripple and hem-anchored collapse. A small translucent breath puff travels left. Original holes and cloth folds are retained. Disconnected alpha speckles removed in derivative only.",
+  "actions": {
+    "idle": "Small buoyant bob with independent hem motion; head leans left.",
+    "attack": "Inflate and rise in anticipation, lean left for a tiny boo, release a leftward breath puff, flutter and recover.",
+    "hurt": "Recoil right, briefly compress the cloth, shake the hem and recover.",
+    "defeat": "Invisible form collapses; the sheet sinks from its head to a flat folded cloth at the original hem, then stays down."
+  },
+  "orientation": {
+    "required": "screen-left",
+    "method": "Unlettered source cloth is reflected, its head leans left, and the boo gesture and breath move left; recoil goes right and recovery returns left.",
+    "status": "prototype_review_pending"
+  },
+  "quality_gate": "Prototype; no delivered actions yet."
+}

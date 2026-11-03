@@ -1,0 +1,1354 @@
+[
+  {
+    "path": "animations/sprites/enemies/ancientTopiary.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ancientTopiary_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ancientTopiary_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ancientTopiary_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ancientTopiary_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketBlob_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketBlob_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketBlob_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketBlob_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketCreeper_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketCreeper_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketCreeper_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketCreeper_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketHydra_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketHydra_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketHydra_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_blanketHydra_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_butler_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_butler_cast.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_butler_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_butler_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_butler_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_buttonBaby_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_buttonBaby_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_buttonBaby_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_buttonBaby_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_candyClump_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_candyClump_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_candyClump_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_candyClump_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_coatrackCrawler_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_coatrackCrawler_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_coatrackCrawler_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_coatrackCrawler_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_compostColossus_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_compostColossus_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_compostColossus_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_compostColossus_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_confectioner_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_confectioner_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_confectioner_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_confectioner_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_conservatory_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_conservatory_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_conservatory_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_conservatory_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_creepingIvy_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_creepingIvy_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_creepingIvy_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_creepingIvy_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doorGreeter_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doorGreeter_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doorGreeter_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doorGreeter_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doughBlob_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doughBlob_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doughBlob_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_doughBlob_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_dustBunny_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_dustBunny_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_dustBunny_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_dustBunny_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_governess_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_governess_cast.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_governess_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_governess_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_governess_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_grandWardrobe_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_grandWardrobe_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_grandWardrobe_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_grandWardrobe_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jackInTheBox_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jackInTheBox_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jackInTheBox_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jackInTheBox_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jamJar_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jamJar_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jamJar_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_jamJar_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ovenMaw_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ovenMaw_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ovenMaw_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_ovenMaw_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_pantryMimic_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_pantryMimic_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_pantryMimic_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_pantryMimic_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkGiant_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkGiant_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkGiant_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkGiant_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkSoldier_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkSoldier_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkSoldier_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_patchworkSoldier_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_rug_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_rug_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_rug_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_rug_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_slipperSkitter_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_slipperSkitter_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_slipperSkitter_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_slipperSkitter_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_sugarGolem_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_sugarGolem_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_sugarGolem_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_sugarGolem_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_suitcase_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_suitcase_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_suitcase_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_suitcase_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_toyChest_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_toyChest_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_toyChest_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_toyChest_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_wardrobeGuest_attack.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_wardrobeGuest_defeat.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_wardrobeGuest_hurt.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/animations/SS_wardrobeGuest_idle.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/bedframeBeast.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/blanketBlob.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/blanketCreeper.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/blanketHydra.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/butler.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/buttonBaby.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/callingBell.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/candyClump.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/carnivorousConservatory.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/coatrackCrawler.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/compostColossus.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/confectioner.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/creepingIvy.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/doorGreeter.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/doughBlob.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/dustBunny.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/glassvine.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/governess.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/grandCoatcheck.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/headGardener.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/houseBell.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/jackInTheBox.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/jamJar.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/kitchenImp.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/lostLuggage.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/nightlightSnuffer.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/nightTerror.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/ovenMaw.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/pantryMimic.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/pantryPoltergeist.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/patchworkGiant.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/patchworkSoldier.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/pillowPuff.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/porcelainDoll.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/potling.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/prim.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/proper.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/redCarpetRunner.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/risingBatter.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/rockingHorse.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/slipperSkitter.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/snappingBlossom.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/sporepuff.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/sugarGolem.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/thingBeneath.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/topiaryBeast.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/toyChest.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/unwelcomeGuest.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/wardrobe.png",
+    "unchanged": true
+  },
+  {
+    "path": "animations/sprites/enemies/wardrobeGuest.png",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/ancient-topiary.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/bedframe-beast.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/blanket-blob.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/blanket-creeper.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/blanket-hydra.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/butler.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/button-baby.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/calling-bell.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/candy-clump.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/carnivorous-conservatory.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/coatrack-crawler.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/compost-colossus.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/confectioner.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/creeping-ivy.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/door-greeter.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/dough-blob.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/dust-bunny.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/glassvine.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/governess.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/grand-coatcheck.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/head-gardener.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/house-bell.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/jack-in-the-box.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/jam-jar.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/kitchen-imp.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/lost-luggage.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/night-terror.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/nightlight-snuffer.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/oven-maw.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/pantry-mimic.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/pantry-poltergeist.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/patchwork-giant.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/patchwork-soldier.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/pillow-puff.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/porcelain-doll.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/porcelain-twin-prim.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/porcelain-twin-proper.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/potling.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/red-carpet-runner.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/rising-batter.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/rocking-horse.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/slipper-skitter.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/snapping-blossom.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/spore-puff.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/sugar-golem.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/the-wardrobe.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/thing-beneath.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/topiary-beast.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/toy-chest.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/unwelcome-guest.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemies/wardrobe-guest.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/ancient-topiary/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/ancient-topiary/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/ancient-topiary/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/ancient-topiary/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-blob/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-blob/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-blob/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-blob/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-creeper/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-creeper/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-creeper/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-creeper/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-hydra/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-hydra/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-hydra/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/blanket-hydra/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/butler/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/butler/cast.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/butler/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/butler/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/butler/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/button-baby/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/button-baby/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/button-baby/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/button-baby/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/candy-clump/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/candy-clump/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/candy-clump/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/candy-clump/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/carnivorous-conservatory/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/carnivorous-conservatory/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/carnivorous-conservatory/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/carnivorous-conservatory/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/coatrack-crawler/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/coatrack-crawler/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/coatrack-crawler/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/coatrack-crawler/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/compost-colossus/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/compost-colossus/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/compost-colossus/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/compost-colossus/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/confectioner/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/confectioner/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/confectioner/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/confectioner/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/creeping-ivy/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/creeping-ivy/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/creeping-ivy/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/creeping-ivy/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/door-greeter/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/door-greeter/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/door-greeter/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/door-greeter/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dough-blob/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dough-blob/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dough-blob/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dough-blob/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dust-bunny/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dust-bunny/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dust-bunny/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/dust-bunny/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/governess/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/governess/cast.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/governess/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/governess/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/governess/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jack-in-the-box/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jack-in-the-box/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jack-in-the-box/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jack-in-the-box/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jam-jar/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jam-jar/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jam-jar/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/jam-jar/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/lost-luggage/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/lost-luggage/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/lost-luggage/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/lost-luggage/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/oven-maw/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/oven-maw/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/oven-maw/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/oven-maw/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/pantry-mimic/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/pantry-mimic/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/pantry-mimic/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/pantry-mimic/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-giant/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-giant/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-giant/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-giant/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-soldier/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-soldier/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-soldier/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/patchwork-soldier/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/red-carpet-runner/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/red-carpet-runner/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/red-carpet-runner/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/red-carpet-runner/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/slipper-skitter/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/slipper-skitter/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/slipper-skitter/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/slipper-skitter/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/sugar-golem/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/sugar-golem/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/sugar-golem/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/sugar-golem/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/the-wardrobe/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/the-wardrobe/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/the-wardrobe/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/the-wardrobe/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/toy-chest/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/toy-chest/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/toy-chest/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/toy-chest/idle.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/wardrobe-guest/attack.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/wardrobe-guest/defeat.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/wardrobe-guest/hurt.webp",
+    "unchanged": true
+  },
+  {
+    "path": "game/assets/sprites/enemy-clips/wardrobe-guest/idle.webp",
+    "unchanged": true
+  }
+]

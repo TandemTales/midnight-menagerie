@@ -1,0 +1,56 @@
+REGIONS 14 AND 15 COMPLETE
+22 new validated sprites, 44 final image files. No remaining assigned sprites or active blockers.
+Result manifests: region-14-results.json; region-15-results-v11.json.
+Final previews: region-14-contact-final.jpg; region-15-contact-final.jpg.
+Original PNGs, base64 recovery copies and full prompts retained under region-14/ and region-15/.
+Built-in imagegen only. Tier-size transparent source PNGs and isolated existing build_enemy_still WebP conversion.
+Full-image visual review and contact sheets verified. 22 unique IDs, each region7 regular/3 elite/1 boss.
+All367 baseline files verified unchanged. No game code, registry, animation or existing asset edits.
+
+Atomic rename region-15-results.tmp to region-15-results.json failed with OS PermissionError [WinError 5] Access is denied. No approval/user denial was returned. Denied rename not retried; preserved both paths and wrote immutable versioned manifests v07 through v11. Pace Cone image files were already saved and their hashes verified before v07 copy. No image regenerated for save incidents.
+
+FINAL FILES
+animations\sprites\enemies\towelPoltergeist.png
+game\assets\sprites\enemies\towel-poltergeist.webp
+animations\sprites\enemies\drainShade.png
+game\assets\sprites\enemies\drain-shade.webp
+animations\sprites\enemies\scrubBrush.png
+game\assets\sprites\enemies\scrub-brush.webp
+animations\sprites\enemies\soapDishSkater.png
+game\assets\sprites\enemies\soap-dish-skater.webp
+animations\sprites\enemies\tileQuartet.png
+game\assets\sprites\enemies\tile-quartet.webp
+animations\sprites\enemies\rainChain.png
+game\assets\sprites\enemies\rain-chain.webp
+animations\sprites\enemies\bathThermometer.png
+game\assets\sprites\enemies\bath-thermometer.webp
+animations\sprites\enemies\grandBath.png
+game\assets\sprites\enemies\grand-bath.webp
+animations\sprites\enemies\breathingRadiator.png
+game\assets\sprites\enemies\breathing-radiator.webp
+animations\sprites\enemies\rainCollector.png
+game\assets\sprites\enemies\rain-collector.webp
+animations\sprites\enemies\bathhouseMatron.png
+game\assets\sprites\enemies\bathhouse-matron.webp
+animations\sprites\enemies\waterBowlPoltergeist.png
+game\assets\sprites\enemies\water-bowl-poltergeist.webp
+animations\sprites\enemies\groomingMitt.png
+game\assets\sprites\enemies\grooming-mitt.webp
+animations\sprites\enemies\rewardClicker.png
+game\assets\sprites\enemies\reward-clicker.webp
+animations\sprites\enemies\fussingFan.png
+game\assets\sprites\enemies\fussing-fan.webp
+animations\sprites\enemies\treatPuzzle.png
+game\assets\sprites\enemies\treat-puzzle.webp
+animations\sprites\enemies\scentTin.png
+game\assets\sprites\enemies\scent-tin.webp
+animations\sprites\enemies\paceCone.png
+game\assets\sprites\enemies\pace-cone.webp
+animations\sprites\enemies\tagCollector.png
+game\assets\sprites\enemies\tag-collector.webp
+animations\sprites\enemies\fetchReturn.png
+game\assets\sprites\enemies\fetch-return.webp
+animations\sprites\enemies\portionBalance.png
+game\assets\sprites\enemies\portion-balance.webp
+animations\sprites\enemies\kennelmaster.png
+game\assets\sprites\enemies\kennelmaster.webp

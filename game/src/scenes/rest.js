@@ -1,3 +1,4 @@
+import { boardScrollCue } from './r49-board-scroll.js';
 /**
  * The Safe Room — a Blanket Fort.  OWNER: meta-run.
  *
@@ -13,7 +14,7 @@
  *   Rest    recover 30% of maximum Courage, stated as an exact before → after
  *   Sharpen upgrade a Trick, previewed on the real card
  *   Forge   +1 tier on a Keepsake, paid in maximum Courage, with before/after
- *   Sit     free: a Clue, and a line from your Companion you have not heard
+ *   Sit     spend the fort action: a Clue and a Companion moment
  *
  * Sitting exists because a Safe Room that is only two numbers is not a Safe
  * Room.  It is deliberately the weakest mechanical option and the best one to
@@ -22,6 +23,8 @@
 import { bus } from '../core/bus.js';
 import { TERMS, NodeType, COMPANIONS } from '../data/schema.js';
 import { cardById } from '../data/cards.js';
+import { COMPANION_STORIES } from '../data/narrative-relationships.js';
+import { storyState, commitStory } from '../state/narrative.js';
 import { plural } from '../util/plural.js';
 import { objectHtml, keepsakeKey } from '../ui/objects.js';
 import { houseGallery } from '../ui/hang.js';
@@ -56,39 +59,105 @@ const FORT_CAST = [
 
 const CSS_REST = new URL('./rest.css', import.meta.url).href;
 
-/** What your Companion says when you sit down with them. */
-const COMPANION_TALK = {
+/** Safe-room captions; these describe behavior, not human speech. */
+const COMPANION_TALK = Object.fromEntries(
+  Object.entries(COMPANION_STORIES).map(([slug, stages]) => [slug, stages[1]]));
+export const REPEAT_COMPANION_TALK = {
   marmalade: [
-    'She tells you the stair by the west landing is warm at eleven in the morning, and has been for fifty years, and she does not know why she knows that.',
-    'She lets you check her ear, which she has never done. There is a notch in it. She says a door did that. She will not say which door.',
-    'She sits with her back to you facing the door, which you eventually understand is not rudeness. It is a watch.',
+    'Marmalade kneads the blanket into a small hill. Then she sleeps beside it.',
+    'Marmalade catches the end of a loose thread. One paw holds it down while she looks innocent.',
+    'Marmalade rests her chin on the edge of your blanket. The purring starts very quietly.',
+  ],
+  wisp: [
+    'Wisp lights an empty cup from inside. A very grand lamp. A very small handle.',
+    'Wisp follows a moth around the fort. The moth follows Wisp. Neither has found the way out.',
+    'Wisp floats beside the blanket seam, lighting each tiny stitch.',
+  ],
+  crumbula: [
+    'Crumbula shakes out his cape. Three crumbs fall out. He arranges them on a saucer.',
+    'Crumbula bows to offer the last crumb. His cape bows into the cup.',
+    'Crumbula sets two saucers side by side. For once, the cape stays folded.',
+  ],
+  boggle: [
+    'Boggle peeks from under a cushion. You peek back. The cushion develops a second lookout hole.',
+    'A blanket corner lifts. Boggle slides a biscuit into the shade, then offers half back.',
+    'Two eyes blink beneath the table. A small hand pats the empty patch of rug beside them.',
   ],
   bones: [
-    'He brings you a bone that is definitely part of him, and is extremely proud, and will not take it back.',
-    'He does not remember his name. He remembers the sound of a gate and somebody running, and he is certain the running was towards him.',
-    'He falls asleep upside down against your leg and twitches like he is chasing something. You hope he catches it.',
+    'Bones brings a stick into the fort. It is wider than the doorway. He tries looking more hopeful.',
+    'Bones places a stick beside your hand, then lies down. His tail has a different plan.',
+    'Bones falls asleep with his chin on the stick. One paw stays stretched toward you.',
   ],
   pipkin: [
-    'She hums. The pumpkin resonates. It is genuinely the nicest sound in the building.',
-    'She has been collecting seeds in her hollow. She shows you all of them. It takes a while.',
-    'She asks, in the way frogs ask, whether outside is still there. You say yes. She sits with that.',
+    'Pipkin lowers into a cup of water. The water moves out to make room.',
+    'Pipkin stares at a wobbling drop on one leaf. Blink. The drop wins.',
+    'Pipkin settles in a shallow dish. A small ripple reaches the rim and comes back.',
   ],
   taffy: [
-    'He very carefully makes himself the exact shape of a mug so you have something to hold.',
-    'He remembers being made. He does not remember being alive before that, and he has decided this is fine, and mostly it is.',
-    'He is trying to learn to whistle. He does not have a mouth. He is undeterred.',
+    'Taffy retrieves the spoon. The napkin comes too. So does the other spoon. A very successful rescue.',
+    'Taffy stretches into the shape of a cushion. A cushion with a spoon sticking out.',
+    'Taffy rests beside your hand, close enough to touch. The last little wobble settles.',
+  ],
+  truffle: [
+    'Truffle noses a leaf into place. The pile is finished. One more leaf arrives. Work resumes.',
+    'Truffle backs into the leaf pile. A leaf follows when Truffle comes out. Excellent camouflage.',
+    'Truffle curls beneath the leaf roof. One small nose remains in the light.',
+  ],
+  hush: [
+    'Hush hides a button in the table’s shadow. The table has never looked so suspicious.',
+    'Hush slips beneath a blanket. A long shadow sneaks out the other side. Not quite hidden.',
+    'Hush curls where your shadow meets the blanket’s. Two small ears show at the edge.',
+  ],
+  mopsy: [
+    'Mopsy smooths a cushion, finds the lump, and carefully puts it back.',
+    'Mopsy gathers a loose thread into a neat coil. Then a neater coil. Then sits on it.',
+    'Mopsy rests against the cushion’s lumpy side. One soft ear lies across the empty space beside it.',
+  ],
+  drizzle: [
+    'Drizzle aims one drop at a cup. Plink. A second cup is placed nearby. Now there are decisions.',
+    'Drizzle drifts over an upside-down bowl. The next drop makes a surprisingly important noise.',
+    'Drizzle rains softly into a cup. Between drops, the fort is very still.',
+  ],
+  pudding: [
+    'Pudding settles onto one blanket. A wagging tail tidies the other three into a heap.',
+    'Pudding’s snore lifts a blanket corner. The next snore checks that it still works.',
+    'Pudding leans against your side and lets out a long, sleepy sigh.',
   ],
   wink: [
-    'She watches the door with four eyes and you with two, which is the most tactful thing anyone has done for you all night.',
-    'She has been mapping the wall cavities in web. She has done nine rooms. Nine rooms that are not on the blueprint.',
-    'She blinks slowly at you, one eye at a time, all the way round. Your Companion is telling you she is glad you came.',
+    'Wink adds a curtain to the tiny hammock. One eye peeks around it. Private, except for that bit.',
+    'Wink inspects a knot upside down. Then sideways. The knot has passed a very thorough inspection.',
+    'Wink settles into the hammock. One thread sways, then rests.',
+  ],
+  crinkle: [
+    'Crinkle folds a tiny paper cup. You offer water. Crinkle quickly folds a tiny paper warning sign.',
+    'Crinkle folds a paper hat, puts it on, and immediately improves the brim.',
+    'Crinkle unfolds a bent wing slowly. The soft paper rustle fills one small corner of the fort.',
+  ],
+  mossbit: [
+    'Mossbit approaches a crumb. You wait. The crumb is not going anywhere either.',
+    'A leaf lands on Mossbit’s shell. Mossbit pauses. The garden has acquired a new roof.',
+    'Mossbit rests beside the blanket. A little patch of moss brushes its edge.',
+  ],
+  brambleboo: [
+    'Brambleboo turns toward the light. The flowerpot takes a moment to catch up.',
+    'Brambleboo lifts a leaf over the cup. One drop falls in. The leaf stays ready for applause.',
+    'Brambleboo rests a root along the blanket seam. The leaves settle one at a time.',
   ],
 };
-const GENERIC_TALK = [
-  'They lean against you and go quiet, and for eleven minutes nothing in the house is frightening.',
-  'They show you something they have been carrying since before you met. You do not know what it is. You say it is very good.',
-  'They fall asleep. You keep watch. It is the first time all night that somebody else has been the one resting.',
-];
+
+/** Replay copy uses existing room history; no draw, new flag, or balance effect. */
+export function restCaption(run, seen) {
+  const first = COMPANION_TALK[run.companion];
+  if (!seen[`COMP-${run.companion}-1`] && first) return first[0];
+  const lines = REPEAT_COMPANION_TALK[run.companion];
+  if (!lines) return 'Your Companion settles beside the blanket.';
+  const priorForts = run.visitedIds.filter(id => {
+    if (id === run.currentNodeId) return false;
+    const node = run.nodeById(id);
+    return node && run.effectiveType(node) === NodeType.SAFE;
+  }).length;
+  return lines[(run.regionIndex + priorForts) % lines.length];
+}
 
 /* THE FORT, IN TWO LAYERS, both on the same 420x280 grid.
  *
@@ -234,7 +303,7 @@ const FORT_PAINT = `
     <filter id="rsBlur8" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="8"/></filter>
 
     <clipPath id="rsClipFront">
-      <path d="M58 257C66 214 84 168 102 128c68-6 148-6 218-2 6 44 10 88 14 131-7 4-18-3-26 1s-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-14-3-18-1Z"/>
+      <path d="M58 257C66 214 84 168 102 128c50 20 153 21 218-2 6 44 10 88 14 131-7 4-18-3-26 1s-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-14-3-18-1Z"/>
     </clipPath>
     <clipPath id="rsClipThrow">
       <path d="M290 134c16-16 38-32 66-38 14-2 22 8 25 24 6 44 14 88 22 137-10 5-22-5-32 1s-20-4-30 0-20-4-30 0c-4-42-6-84-21-124Z"/>
@@ -276,7 +345,7 @@ const FORT_PAINT = `
   <g class="rs-stars"><circle cx="365" cy="4" r=".9"/><circle cx="369" cy="26" r=".6"/><circle cx="365" cy="58" r=".9"/><circle cx="371" cy="84" r=".7"/><circle cx="395" cy="90" r=".8"/><circle cx="362" cy="98" r=".6"/><circle cx="386" cy="44" r=".6"/><circle cx="397" cy="66" r=".7"/></g>
   <path class="rs-mullion" d="M380 -18v124M357 34h46M357 72h46"/>
   <path class="rs-winsill" d="M344 108h72v7h-72Z"/>
-  <path d="M362 20 404 20 322 257 190 257Z" fill="url(#rsShaft)" class="rs-shaft"/>
+  <path d="M362 20 404 20 322 257 190 257Z" fill="url(#rsShaft)" class="rs-shaft" filter="url(#rsBlur8)"/>
   <path class="rs-moonbeam" d="M370 24 398 24 300 257 226 257Z"/>
   <path class="rs-moonbeam-edge" d="M370 24 226 257M398 24 300 257"/>
 
@@ -311,7 +380,7 @@ const FORT_PAINT = `
   <ellipse class="rs-spill" cx="212" cy="266" rx="120" ry="15" filter="url(#rsBlur8)"/>
   <!-- where the moonbeam lands: the window itself laid on the floor, four
        crisp panes of cold light with the mullions' shadow between them -->
-  <path class="rs-moonpane" d="M231 258h30l-5 9h-31ZM265 258h32l-6 9h-31ZM224 270h31l-6 10h-33ZM259 270h32l-7 10h-31Z"/>
+  <path class="rs-moonpane" filter="url(#rsBlur2)" d="M231 258h30l-5 9h-31ZM265 258h32l-6 9h-31ZM224 270h31l-6 10h-33ZM259 270h32l-7 10h-31Z"/>
 
   <!-- the chair the second blanket hangs off -->
   <g class="rs-chair">
@@ -353,13 +422,20 @@ const FORT_PAINT = `
   <!-- THE FORT: the quilt over the front, the throw off the chair, the drape
        over the table top; patchwork, folds and stitching, all in one cloth -->
   <g filter="url(#rsCloth)">
-    <path d="M58 257C66 214 84 168 102 128c68-6 148-6 218-2 6 44 10 88 14 131-7 4-18-3-26 1s-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-14-3-18-1Z" fill="url(#rsQuilt)"/>
+    <path d="M58 257C66 214 84 168 102 128c50 20 153 21 218-2 6 44 10 88 14 131-7 4-18-3-26 1s-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-18-4-26 0-14-3-18-1Z" fill="url(#rsQuilt)"/>
     <g clip-path="url(#rsClipFront)">
       <path class="rs-patch rs-patch--rose"   d="M108 170l30-3 3 36-32 3Z"/>
       <path class="rs-patch rs-patch--ochre"  d="M78 214l34 1-1 44-38-1Z"/>
       <path class="rs-patch rs-patch--indigo" d="M280 168l30 2-1 40-30-2Z"/>
       <path class="rs-patch rs-patch--rose"   d="M284 222l34 1 4 36-36-1Z"/>
       ${QUILT}
+      <g class="rs-cloth-relief">
+        <path d="M103 130C110 157 95 203 77 257L96 257C110 209 127 167 117 130Z" fill="url(#rsSide)"/>
+        <path d="M130 129C142 159 132 201 119 257L139 257C148 205 155 157 146 128Z" fill="url(#rsSide)"/>
+        <path d="M270 128C263 171 281 217 277 258L294 258C298 211 283 167 287 127Z" fill="url(#rsSide)"/>
+        <path d="M303 127C298 167 316 214 315 258L331 258C331 211 317 162 320 127Z" fill="url(#rsSide)"/>
+        <path class="rs-foldlit" d="M110 134C119 172 99 218 91 253M138 133C149 171 135 222 132 251M277 133C270 171 287 216 286 251M310 134C306 174 321 218 323 252"/>
+      </g>
       <path class="rs-stitchbox" d="M108 170l30-3 3 36-32 3ZM78 214l34 1-1 44-38-1ZM280 168l30 2-1 40-30-2ZM284 222l34 1 4 36-36-1Z"/>
       <path class="rs-stitch" d="M70 196c40-8 220-10 262-4M64 236c46-6 226-8 272-2"/>
       <path class="rs-fold" d="M118 158c-2 36-4 68-8 100M288 160c1 34 2 66 4 98M102 132c-6 44-12 86-16 126"/>
@@ -367,12 +443,12 @@ const FORT_PAINT = `
       <rect x="50" y="120" width="290" height="140" fill="url(#rsSide)"/>
       <rect x="50" y="228" width="290" height="32" fill="url(#rsFoot)"/>
     </g>
-    <path class="rs-ink" d="M58 257C66 214 84 168 102 128c68-6 148-6 218-2 6 44 10 88 14 131"/>
+    <path class="rs-ink" d="M58 257C66 214 84 168 102 128c50 20 153 21 218-2 6 44 10 88 14 131"/>
 
-    <path d="M94 132c56-14 156-16 212-4-4 10-8 22-14 30-6-10-16-10-24 2-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 2-8-8-14-16-18-26Z" fill="url(#rsDrapeG)"/>
+    <path d="M94 132c52 15 158 20 212-4-4 10-8 22-14 30-6-10-16-10-24 2-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 0-8-12-18-12-26 2-8-8-14-16-18-26Z" fill="url(#rsDrapeG)"/>
     <path class="rs-drapehem" d="M94 132c4 10 10 18 18 26 8-14 18-14 26 2 8-12 18-12 26 0 8-12 18-12 26 0 8-12 18-12 26 0 8-12 18-12 26 0 8-12 18-12 26 0 8-12 18-12 24-2 6-8 10-20 14-30"/>
-    <path class="rs-drapelit" d="M100 130c56-12 150-14 204-4"/>
-    <path class="rs-ink rs-ink--fine" d="M94 132c56-14 156-16 212-4"/>
+    <path class="rs-drapelit" d="M100 130c52 15 152 20 204-4"/>
+    <path class="rs-ink rs-ink--fine" d="M94 132c52 15 158 20 212-4"/>
   </g>
   <g class="rs-tassel">
     <path d="M112 158v6M138 160v6M164 160v6M190 160v6M216 160v6M242 160v6M268 160v6M292 158v6"/>
@@ -490,10 +566,18 @@ export class RestScene extends RoomScene {
     if (this._dead) return;
 
     this.used = false;
+    // visitedIds contains resolved rooms in this wing. Exclude the current
+    // node (standalone review fixtures may already mark it visited).
+    const returning = this.run.visitedIds.some(id => {
+      if (id === this.run.currentNodeId) return false;
+      const node = this.run.nodeById(id);
+      return node && this.run.effectiveType(node) === NodeType.SAFE;
+    });
     this._shell({
       eyebrow: TERMS.rest,
-      title: 'You Build the Fort',
-      sub: 'Door wedged. Table dragged over. Blankets down. Nothing gets in here without knocking things over first.',
+      title: returning ? 'A Quiet Stop' : 'You Build the Fort',
+      sub: returning ? 'Blankets down. Take a moment.'
+        : 'Door wedged. Table dragged over. Blankets down. Nothing gets in here without knocking things over first.',
     });
     // The fort and its four panels need the board's height more than the
     // plaque does — the same trade Mr. Moth's makes.
@@ -543,7 +627,7 @@ export class RestScene extends RoomScene {
     wrap.innerHTML = `
       <div class="rs-stage">
         <div class="rs-art kit-panel" data-medal="moon">
-          <div class="rs-scene">${FORT_PAINT}
+          <div class="rs-scene"><svg class="rs-fort__paint rs-painted-r49" viewBox="0 -130 420 410" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><image href="./assets/ui/r49-ruby/fort-v1.webp" x="-12" y="-22" width="444" height="296"/></svg>
             <span class="rs-glowbox" aria-hidden="true"><i class="rs-glow rs-glow--moon"></i><i class="rs-glow rs-glow--rug"></i></span>
             ${FORT_SVG}
             <span class="rs-glowbox rs-glowbox--front" aria-hidden="true"><i class="rs-glow rs-glow--lamp"></i></span>
@@ -552,7 +636,7 @@ export class RestScene extends RoomScene {
         <div class="rs-shelf">
           <i class="rs-shelf__ledge kit-ledge" aria-hidden="true"></i>
           <i class="rs-shelf__candle rs-shelf__candle--l kit-prop kit-prop--candle" aria-hidden="true"></i>
-          <p class="rs-art__plate kit-plate"><b class="kit-plate__name">The Blanket Fort</b><span class="kit-plate__epithet">${esc(kidName)} and ${esc(petName)}, until morning</span></p>
+          <p class="rs-art__plate kit-plate"><b class="kit-plate__name">The Blanket Fort</b><span class="kit-plate__epithet">A quiet stop for ${esc(kidName)} and ${esc(petName)}</span></p>
           <i class="rs-shelf__candle rs-shelf__candle--r kit-prop kit-prop--candle" aria-hidden="true"></i>
         </div>
       </div>
@@ -560,16 +644,17 @@ export class RestScene extends RoomScene {
     this.$body.appendChild(wrap);
     this._mountFort(wrap);
     const list = wrap.querySelector('.rs-choices');
+    this._own(boardScrollCue(this.root, list, 'choices'));
 
     this._options = [
       {
         id: 'rest', name: 'Rest',
-        blurb: `Sleep for two hours with somebody keeping watch.`,
+        blurb: `Take a nap while your Companion keeps watch.`,
         readout: healAmt > 0
           ? `${TERMS.hp} ${r.courage} <b>&rarr;</b> ${Math.min(r.maxCourage, r.courage + healAmt)}`
           : `No rest tonight`,
         note: healAmt > 0
-          ? (r.courage >= r.maxCourage ? 'You are already at full Courage.' : `Recovers ${healAmt}.`)
+          ? (r.courage >= r.maxCourage ? 'You are already at full Courage.' : `Recovers up to ${healAmt}.`)
           : 'A Keepsake you are carrying will not let you.',
         can: healAmt > 0,
         why: healAmt > 0 ? '' : 'The White Glove does not permit resting.',
@@ -589,7 +674,7 @@ export class RestScene extends RoomScene {
       },
       {
         id: 'forge', name: 'Forge a Keepsake',
-        blurb: `Hold it in the flame. It comes out meaning more, and you come out smaller.`,
+        blurb: `The flame strengthens a Keepsake. Its price is some of your maximum Courage.`,
         readout: `Costs ${forgeCost} maximum ${TERMS.hp}`,
         note: `${TERMS.hp} ${r.maxCourage} <b>&rarr;</b> ${r.maxCourage - forgeCost} &middot; the Keepsake fires twice`,
         can: forgeable.length > 0 && forgeAffordable,
@@ -633,9 +718,9 @@ export class RestScene extends RoomScene {
       }] : []),
       {
         id: 'sit', name: 'Sit with your Companion',
-        blurb: `Nothing useful. Ask them something.`,
+        blurb: `Share a quiet moment and see what catches their attention.`,
         readout: `+1 Clue`,
-        note: 'They have been in this house a long time.',
+        note: 'Spend your fort action to gain a Clue.',
         can: true, why: '',
         run: () => this._doSit(),
       },
@@ -647,7 +732,7 @@ export class RestScene extends RoomScene {
       b.dataset.opt = o.id;
       b.dataset.medal = DOOR_MEDAL[o.id] || 'star2';
       b.disabled = !o.can;
-      b.setAttribute('aria-label', `${o.name}. ${String(o.readout).replace(/<[^>]+>/g, ' ')}`);
+      b.setAttribute('aria-label', `${o.name}. ${String(o.readout).replace(/<[^>]+>/g, ' ').replace(/&rarr;/g, 'to').replace(/\s+/g, ' ').trim()}`);
       // The 1-4 keys choose the first four (_bindKeys): each of those wears its
       // key on a small enamel badge at the corner of its rail.
       b.innerHTML = `${i < 4 ? `<span class="rs-door__key kit-num" aria-hidden="true">${i + 1}</span>` : ''}
@@ -705,7 +790,7 @@ export class RestScene extends RoomScene {
     })).filter(c => c.def);
     const uid = await this.pickCard({
       title: `Which ${TERMS.card} do you want to be better at?`,
-      sub: 'Hover or arrow across them — the card shows you what it becomes.',
+      sub: 'Hover or arrow across the Tricks to compare before and after above.',
       cards, preview: 'upgrade', confirmLabel: 'Sharpen it',
     });
     if (!uid) return null;
@@ -753,7 +838,7 @@ export class RestScene extends RoomScene {
     if (!id) return null;
     const k = await act(this.run, { t: INPUT.ROOM, act: ACT.REST_FORGE, id });
     if (!k) return null;
-    return `${k.name} is forged. It costs you ${this.run.forgeCost()} maximum ${TERMS.hp} and it was worth it.`;
+    return `${k.name} is forged. Maximum ${TERMS.hp} reduced by ${this.run.forgeCost()}.`;
   }
 
   /* ── THE TWO OF THEM IN THE FORT ─────────────────────────────────
@@ -842,12 +927,11 @@ export class RestScene extends RoomScene {
   async _doSit() {
     // The clip this screen exists to give a home to. See _mountCompanion.
     this.pet?.play('affection');
-    const lines = COMPANION_TALK[this.run.companion] || GENERIC_TALK;
-    const g = this.run.fork(`sit:${this.run.currentNodeId}`);
-    const line = lines[g.int(lines.length)];
+    const storyId=`COMP-${this.run.companion}-1`;
+    const line = restCaption(this.run, storyState().seen);
     await act(this.run, { t: INPUT.ROOM, act: ACT.REST_SIT });
-    const name = COMPANIONS.find(c => c.slug === this.run.companion)?.name || 'They';
-    return `${name}: ${line}`;
+    await commitStory(s=>{s.seen[storyId]=true;});
+    return line;
   }
 
   /**

@@ -1,3 +1,4 @@
+import { presentationMs } from '../core/motion.js';
 /**
  * Title — the game's first impression.
  *
@@ -21,7 +22,7 @@
 import { Scene } from '../core/scenes.js';
 import { bus } from '../core/bus.js';
 import { Save } from '../core/save.js';
-import { COMPANIONS, TERMS } from '../data/schema.js';
+import { TERMS } from '../data/schema.js';
 import {
   ensureCss, fontsReady, menuArtSrc, bat, parallax,
   el, svg, rovingFocus, setReduceMotion, reduceMotion,
@@ -30,6 +31,7 @@ import {
 import { pauseStageFor } from './_stage.js';
 import { shouldPlayOpening } from './tutorial.js';
 import { openSettings } from '../ui/settings.js';
+import { isDemoBuild } from '../state/run.js';
 
 const CSS_KIT   = new URL('../ui/portrait.css', import.meta.url).href;
 const CSS_TITLE = new URL('./title.css', import.meta.url).href;
@@ -200,7 +202,7 @@ export class TitleScene extends Scene {
     bats.setAttribute('aria-hidden', 'true');
     for (const [cls, delay] of [['ti-bat--a', '-9s'], ['ti-bat--b', '-31s']]) {
       const b = svg(`<svg class="ti-bat ${cls}" viewBox="0 0 100 36" aria-hidden="true">${bat()}</svg>`);
-      b.style.animationDelay = delay;
+      b.style.animationDelay = `calc(${delay} * var(--anim-scale))`;
       bats.appendChild(b);
     }
     root.appendChild(bats);
@@ -228,13 +230,17 @@ export class TitleScene extends Scene {
        spend the entire game raising. Marmalade is named separately, because she
        is real and pickable, but she is not a rescue.
        `freedCompanions()` / `starterCount()` — see ui/portrait.js. */
-    const rescued = freedCompanions();
-    const starters = starterCount();
+    // Rescues in the continuing expedition are saved in its snapshot until
+    // the expedition ends. Include them so a reload does not lower the count.
+    const savedRun = Save?.loadRun?.();
+    const pendingRescues = Array.isArray(savedRun?.rescued) ? savedRun.rescued : [];
+    const rescued = freedCompanions(pendingRescues);
+    const starters = starterCount(pendingRescues);
 
     const panel = el('div', 'ti-panel');
     panel.appendChild(el('p', 'ti-tagline',
-      'Sixteen lost pets became something else inside that house.<br>' +
-      '<span>Eight kids are going in to bring the rest home.</span>'));
+      'Eight missing pets. One very peculiar house.<br>' +
+      '<span>Find strange friends. Follow the clues. Open the way home.</span>'));
     panel.appendChild(el('div', 'ti-rule'));
 
     const nav = el('nav', 'ti-menu');
@@ -258,13 +264,13 @@ export class TitleScene extends Scene {
        the menu column, putting the number alone on its own line. Same two
        facts, same separation of the two, one line at every resolution. */
     panel.appendChild(el('div', 'ti-count',
-      `<b>${rescued.size}</b> / ${COMPANIONS.length} Companions freed` +
+      `<b>${rescued.size}</b> Companions freed` +
       (starters ? `<span class="ti-count__dot"></span>` +
-        `<span class="ti-count__with">${starters} at the clubhouse</span>` : '')));
+        `<span class="ti-count__with">${starters} from the start</span>` : '')));
     root.appendChild(panel);
 
     const build = el('div', 'ti-build',
-      `Midnight Menagerie &middot; build ${window.MM?.version ?? '0.1.0'}`);
+      `Midnight Menagerie${isDemoBuild() ? ' &middot; demo' : ''} &middot; build ${window.MM?.version ?? '0.1.0'}`);
     root.appendChild(build);
 
     // ── behaviour ──────────────────────────────────────────────────────────
@@ -326,7 +332,7 @@ export class TitleScene extends Scene {
     root.classList.add('is-live');
     if (!reduceMotion()) {
       root.classList.add('is-entering');
-      this._entTimer = setTimeout(() => root.classList.remove('is-entering'), 2000);
+      this._entTimer = setTimeout(() => root.classList.remove('is-entering'), presentationMs(2000));
     }
     nav.querySelector('.ti-item')?.setAttribute('data-first', '');
     bus.emit('title:ready');
@@ -358,6 +364,9 @@ export class TitleScene extends Scene {
     switch (id) {
       case 'continue': {
         const run = Save?.loadRun?.();
+        /* A co-op expedition is resumed with the party or not at all: loaded on its
+           own it would quietly become one person playing everybody's Kid. */
+        if (run?.net?.room) { ctx.scenes?.go?.('lobby', { room: run.net.room, rejoin: run }); break; }
         bus.emit('run:continue', run || null);
         ctx.scenes?.go?.(run?.scene && ctx.scenes.registry?.has?.(run.scene) ? run.scene : 'map', run || {});
         break;

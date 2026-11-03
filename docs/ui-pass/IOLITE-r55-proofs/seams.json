@@ -1,0 +1,29 @@
+{
+ "sites": 9110,
+ "problems": [
+  {
+   "kind": "UNKNOWN-METHOD",
+   "file": "game/src/state/floorplan.js",
+   "line": 692,
+   "msg": "run.set() \u2014 not on the run surface"
+  },
+  {
+   "kind": "UNKNOWN-METHOD",
+   "file": "game/src/state/floorplan.js",
+   "line": 695,
+   "msg": "run.get() \u2014 not on the run surface"
+  },
+  {
+   "kind": "UNKNOWN-METHOD",
+   "file": "game/src/state/floorplan.js",
+   "line": 698,
+   "msg": "run.set() \u2014 not on the run surface"
+  },
+  {
+   "kind": "UNKNOWN-METHOD",
+   "file": "game/src/state/floorplan.js",
+   "line": 704,
+   "msg": "run.get() \u2014 not on the run surface"
+  }
+ ]
+}

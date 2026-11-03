@@ -1,0 +1,81 @@
+{
+  "base": "035efe6f43bfe09f4eb267e0cc931b009179b283",
+  "candidates": [
+    {
+      "code": "TOPAZ",
+      "commit": "51c26b3621d2b739e5d2a63a97c532d0f943b9db",
+      "changed_files": 95,
+      "game_source_changes": [
+        "game/src/scenes/combat.css",
+        "game/src/scenes/gameover.css",
+        "game/src/scenes/rest.css",
+        "game/src/scenes/shop.css",
+        "game/src/ui/kit.css"
+      ],
+      "raster_assets": [
+        "game/assets/ui/r56-topaz/disk-original.png",
+        "game/assets/ui/r56-topaz/disk.webp",
+        "game/assets/ui/r56-topaz/pillow-original.png",
+        "game/assets/ui/r56-topaz/pillow.webp",
+        "game/assets/ui/r56-topaz/plaque-original.png",
+        "game/assets/ui/r56-topaz/plaque.webp"
+      ],
+      "raster_asset_bytes": 5993818,
+      "game_javascript_unchanged": true,
+      "reviewed_additional_helpers": [],
+      "scope_pass": true
+    },
+    {
+      "code": "ONYX",
+      "commit": "602e7b359b97e812e5b95f3eb28859996a1759b8",
+      "changed_files": 106,
+      "game_source_changes": [
+        "game/src/scenes/combat.css",
+        "game/src/scenes/event.css",
+        "game/src/scenes/gameover.css",
+        "game/src/scenes/rest.css",
+        "game/src/scenes/shop.css",
+        "game/src/ui/kit.css"
+      ],
+      "raster_assets": [
+        "game/assets/ui/r56-onyx/candle.webp",
+        "game/assets/ui/r56-onyx/enamel-plaque.webp",
+        "game/assets/ui/r56-onyx/pillow.webp",
+        "game/assets/ui/r56-onyx/plaque-original.png",
+        "game/assets/ui/r56-onyx/rest-original.png",
+        "game/assets/ui/r56-onyx/whetstone.webp"
+      ],
+      "raster_asset_bytes": 3125715,
+      "game_javascript_unchanged": true,
+      "reviewed_additional_helpers": [],
+      "scope_pass": true
+    },
+    {
+      "code": "AMBER",
+      "commit": "5e98e25e0901f57d0d6dcc1bed286d627f5f865c",
+      "changed_files": 119,
+      "game_source_changes": [
+        "game/src/scenes/combat.css",
+        "game/src/scenes/gameover.css",
+        "game/src/scenes/rest.css",
+        "game/src/scenes/shop.css",
+        "game/src/ui/kit.css"
+      ],
+      "raster_assets": [
+        "game/assets/ui/r56-amber/disk-original.png",
+        "game/assets/ui/r56-amber/disk.webp",
+        "game/assets/ui/r56-amber/lavender-face.webp",
+        "game/assets/ui/r56-amber/pillow-original.png",
+        "game/assets/ui/r56-amber/pillow.webp",
+        "game/assets/ui/r56-amber/plaque-original.png",
+        "game/assets/ui/r56-amber/plaque.webp",
+        "game/assets/ui/r56-amber/whetstone-original.png",
+        "game/assets/ui/r56-amber/whetstone.webp"
+      ],
+      "raster_asset_bytes": 7032832,
+      "game_javascript_unchanged": true,
+      "reviewed_additional_helpers": [],
+      "scope_pass": true
+    }
+  ]
+}

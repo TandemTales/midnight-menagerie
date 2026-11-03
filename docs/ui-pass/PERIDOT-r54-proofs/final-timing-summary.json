@@ -1,0 +1,22 @@
+{
+  "cases": 16,
+  "delivered": 96,
+  "expired": 96,
+  "frames": 3696,
+  "ordinaryMaxDrainMs": 5270.5,
+  "repeatedDrainMs": [
+    9346.600000023842,
+    4852.800000011921
+  ],
+  "layoutMs": {
+    "p95": 2.199999988079071,
+    "max": 6.5999999940395355,
+    "samples": 243
+  },
+  "frameP95Range": [
+    22.900000005960464,
+    86.5
+  ],
+  "frameMax": 164.80000001192093,
+  "note": "Full fixture includes screenshot pauses; frame intervals are diagnostic harness values, not isolated ordinary game cost. Native ABBA comparison has no screenshots or pauses."
+}

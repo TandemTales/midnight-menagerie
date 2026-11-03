@@ -194,7 +194,7 @@
    nameplates still stand apart: the figures stay the largest thing on them */
 .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-intent { --iv: clamp(52px, 3.8vw, 62px); --ph: clamp(24px, 1.75vw, 28px); }
 .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy__name { --name-spill: 0px; }
-.cb-enemies:is([data-n="5"], [data-n="6"]) .cb-enemy:not([data-tier="boss"]) .cb-enemy__name { --np-h: 24px; font-size: 10.5px; letter-spacing: .06em; padding-inline: 13px; }
+.cb-enemies:is([data-n="5"], [data-n="6"]) .cb-enemy:not([data-tier="boss"]) .cb-enemy__name { --np-h: 24px; --reading-size: 10.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .06em; padding-inline: 13px; }
 .cb-enemies:is([data-n="5"], [data-n="6"]) .cb-enemy:not([data-tier="boss"]) .cb-enemy__vitals { --tube-h: 21px; }
 /* A ROW OF FIVE OR SIX IS TOO NARROW FOR A RIBBON EACH. Five Lamps' ASLEEP on the
    gold star ribbon ran into one another; on a crowded row a word goes back on
@@ -206,17 +206,17 @@
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
 }
 .cb-enemies:is([data-n="5"], [data-n="6"]) .cb-intent__chip[data-role="word"] b {
-  font-size: 10px; letter-spacing: .08em;
+  --reading-size: 10px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .08em;
   color: color-mix(in srgb, var(--frame-c) 70%, white); text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
 }
 .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-intent__chip[data-role="rule"] { --rib-h: 20px; min-width: 0; padding-inline: 21px; }
-.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-intent__chip[data-role="rule"] b { font-size: 10px; letter-spacing: .1em; }
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-intent__chip[data-role="rule"] b { --reading-size: 10px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .1em; }
 /* the master of the wing among five or six: the same plate, sized to its column */
 .cb-root[data-arena="boss"] .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__plate { width: min(300px, 100%); }
 .cb-root[data-arena="boss"] .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__name {
   --np-h: 36px;
   --bp-h: 40px;               /* the regalia plate, sized to its column (round 4) */
-  font-size: 12.5px; letter-spacing: .12em;
+  --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .12em;
 }
 /* FIVE BODIES — the Keeper plus its four Sanctuary Locks, the widest board in
    the game. The row is centred and carries up to 132px of left padding to stay
@@ -326,7 +326,7 @@
   display: inline-flex; align-items: center;
   min-height: var(--h);
   padding: 0 calc(var(--h) * .62) 1px;
-  font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
+  font-family: var(--font-display); font-weight: 700; --reading-size: 10.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .16em; text-transform: uppercase;
   white-space: nowrap;
   border: 0 solid transparent;
@@ -393,7 +393,7 @@
   color: var(--kit-text);
   text-align: center;
   cursor: help;
-  animation: cb-rule-in .4s var(--ease-out) both;
+  animation: cb-rule-in calc(.4s * var(--anim-scale)) var(--ease-out) both;
 }
 @keyframes cb-rule-in {
   from { opacity: 0; transform: translateY(-10px) scale(.96); }
@@ -407,7 +407,7 @@
   padding: 0 calc(var(--rib-h) * 1.25) 1px;
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/ribbon.webp") 0 47 0 52 fill / 0 calc(var(--rib-h) * 47 / 49) 0 calc(var(--rib-h) * 52 / 49) stretch;
-  font-style: normal; font-family: var(--font-display); font-weight: 700; font-size: 11px;
+  font-style: normal; font-family: var(--font-display); font-weight: 700; --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .16em; text-transform: uppercase; white-space: nowrap;
   color: #140b04;
   text-shadow: 0 1px 0 rgba(255, 232, 178, .38);
@@ -416,7 +416,7 @@
 .cb-rule b {
   display: block;
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(15px, 1.15vw, 18px); line-height: 1.15;
+  --reading-size: clamp(15px, 1.15vw, 18px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.15;
   letter-spacing: .08em; text-transform: uppercase;
   color: var(--kit-lav);
   background:
@@ -427,7 +427,7 @@
   filter: url("#kit-engrave");
   padding: 2px 4px 3px;
 }
-.cb-rule.is-long b { font-size: clamp(13px, .95vw, 15px); }
+.cb-rule.is-long b { --reading-size: clamp(13px, .95vw, 15px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .cb-rule.is-long span { font-size: var(--fs-xs); line-height: 1.28; }
 .cb-rule span {
   display: block; margin-top: 4px;
@@ -450,7 +450,7 @@
   position: absolute; left: 50%; top: 0; transform: translate(-50%, -88%);
   display: inline-flex; align-items: center;
   min-height: var(--h); padding: 0 calc(var(--h) * 1.08) 1px;
-  font-family: var(--font-display); font-weight: 700; font-size: 10.5px;
+  font-family: var(--font-display); font-weight: 700; --reading-size: 10.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .14em; text-transform: uppercase; white-space: nowrap;
   color: #140b04;
   text-shadow: 0 1px 0 rgba(255, 232, 178, .42);
@@ -480,7 +480,7 @@
 .cb-alt__l {
   max-width: 120px; text-align: center;
   font-family: var(--font-body); font-style: italic;
-  font-size: 11px; line-height: 1.2;
+  --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.2;
   color: var(--kit-text-mid);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 6px rgba(0, 0, 0, .9);
 }
@@ -767,16 +767,16 @@
   38%  { filter: brightness(1.5) saturate(.7); }
   100% { filter: none; }
 }
-.cb-enemy.is-hit .cb-enemy__stage { animation: cb-hitshake .22s var(--ease-out); }
+.cb-enemy.is-hit .cb-enemy__stage { animation: cb-hitshake calc(.22s * var(--anim-scale)) var(--ease-out); }
 .cb-enemy.is-hit .rg-trunk,
 .cb-enemy.is-hit .rg-trunk-lit,
-.cb-enemy.is-hit .rg-stillimg { animation: cb-hitflash .26s var(--ease-out); }
+.cb-enemy.is-hit .rg-stillimg { animation: cb-hitflash calc(.26s * var(--anim-scale)) var(--ease-out); }
 @keyframes cb-clank {
   0% { transform: translate3d(0,0,0) scale(1); }
   40% { transform: translate3d(-3px,0,0) scale(1.03, .97); }
   100% { transform: translate3d(0,0,0) scale(1); }
 }
-.cb-enemy.is-clank .cb-enemy__stage { animation: cb-clank .18s var(--ease-out); }
+.cb-enemy.is-clank .cb-enemy__stage { animation: cb-clank calc(.18s * var(--anim-scale)) var(--ease-out); }
 @keyframes cb-guardup {
   0% { opacity: 0; transform: translateY(6px) scale(.85); }
   40% { opacity: 1; }
@@ -787,7 +787,7 @@
   border-radius: 50%;
   border: 2px solid color-mix(in srgb, var(--guard-300) 70%, transparent);
   opacity: 0;                       /* the keyframe owns the visible window */
-  animation: cb-guardup .5s var(--ease-out);
+  animation: cb-guardup calc(.5s * var(--anim-scale)) var(--ease-out);
   pointer-events: none;
 }
 .cb-enemy.is-dying { pointer-events: none; }
@@ -855,7 +855,7 @@
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--np-h) * 18 / 64) calc(var(--np-h) * 34 / 64) stretch;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(11.5px, .82vw, 13px);
+  --reading-size: clamp(11.5px, .82vw, 13px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .12em; text-transform: uppercase;
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
@@ -905,7 +905,7 @@
   position: relative;
   margin-top: -8%;
   font-family: var(--font-num); font-weight: 700;
-  font-size: calc(var(--gs) * .42); line-height: 1;
+  --reading-size: calc(var(--gs) * .42); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
   color: #f1f6ff;
   -webkit-text-stroke: 3px #08101c;
@@ -933,22 +933,22 @@
 .cb-count:hover, .cb-count:focus-visible { transform: translateY(-2px) scale(1.06); }
 .cb-count i {
   font-style: normal; font-family: var(--font-display); font-weight: 700;
-  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .14em; text-transform: uppercase;
   color: var(--kit-text-mid);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .9);
 }
 .cb-count b {
-  font-family: var(--font-num); font-weight: 700; font-size: 15px; line-height: 1;
+  font-family: var(--font-num); font-weight: 700; --reading-size: 15px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
   color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
 }
-.cb-count u { text-decoration: none; font-size: 11px; color: var(--kit-text-mid); }
+.cb-count u { text-decoration: none; --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--kit-text-mid); }
 @keyframes cb-countbump {
   0% { transform: scale(1); } 35% { transform: scale(1.38); }
   100% { transform: scale(1); }
 }
-.cb-count.is-bumped { animation: cb-countbump .42s var(--ease-snap); }
+.cb-count.is-bumped { animation: cb-countbump calc(.42s * var(--anim-scale)) var(--ease-snap); }
 .cb-count.is-bumped b { color: #fff3d6; }
 
 /* CONDITIONS STACK WITHOUT COLLIDING. Each socket's stack count is a coin
@@ -1019,7 +1019,7 @@
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .85)) drop-shadow(0 0 14px color-mix(in srgb, var(--kit-candle) 32%, transparent));
   white-space: nowrap;
   transform-origin: 100% 0;
-  animation: cb-pop .16s var(--ease-snap);
+  animation: cb-pop calc(.16s * var(--anim-scale)) var(--ease-snap);
   pointer-events: none;
 }
 @keyframes cb-pop { from { opacity: 0; transform: scale(.78) translateY(6px); } to { opacity: 1; transform: scale(1) translateY(0); } }
@@ -1084,7 +1084,7 @@
   --roundel-e: color-mix(in oklab, var(--threat-500) 78%, #1c0409);
 }
 @keyframes cb-stpop { from { transform: scale(.4) translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
-.cb-status.is-new { animation: cb-stpop .26s var(--ease-snap); }
+.cb-status.is-new { animation: cb-stpop calc(.26s * var(--anim-scale)) var(--ease-snap); }
 
 /* ───────────────────────────────────────────── intents ─────────────────── */
 /* THE MEDALLION. An intent is set the way the Kid board sets its round buttons
@@ -1157,7 +1157,7 @@
 
 /* a big incoming hit is FELT: a larger setting, a hotter glyph, the bloom */
 .cb-intent.is-heavy { --iv: clamp(68px, 5.1vw, 82px); --glyph: #ffe6cf; }
-.cb-intent.is-lethal .cb-intent__halo { opacity: 1; animation: cb-lethal 1.1s var(--ease-soft) infinite; }
+.cb-intent.is-lethal .cb-intent__halo { opacity: 1; animation: cb-lethal calc(1.1s * var(--anim-scale)) var(--ease-soft) infinite; }
 @keyframes cb-lethal { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
 
 /* ── ONE grammar for all sixteen intent types ──────────────────────────────
@@ -1188,7 +1188,7 @@
 }
 .cb-intent__chip b {
   font-family: var(--font-num); font-weight: 700;
-  font-size: calc(var(--ph) * .76); line-height: 1;
+  --reading-size: calc(var(--ph) * .76); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
   color: #fff6e8;
   -webkit-text-stroke: 3px #0a0604;
@@ -1197,7 +1197,7 @@
 }
 .cb-intent__chip span {
   font-family: var(--font-num); font-weight: 700;
-  font-size: calc(var(--ph) * .52); line-height: 1;
+  --reading-size: calc(var(--ph) * .52); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   color: var(--kit-gold-hi); letter-spacing: .02em;
   -webkit-text-stroke: 2px #0a0604;
   paint-order: stroke fill;
@@ -1221,8 +1221,8 @@
   height: calc(var(--ph) * .8);
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85)) saturate(.6) brightness(.8);
 }
-.cb-intent__chip[data-role="splash"] b { font-size: calc(var(--ph) * .56); color: var(--kit-text-mid); }
-.cb-intent__chip[data-role="splash"] span { color: var(--kit-text-mid); text-transform: uppercase; letter-spacing: .06em; font-size: calc(var(--ph) * .4); }
+.cb-intent__chip[data-role="splash"] b { --reading-size: calc(var(--ph) * .56); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--kit-text-mid); }
+.cb-intent__chip[data-role="splash"] span { color: var(--kit-text-mid); text-transform: uppercase; letter-spacing: .06em; --reading-size: calc(var(--ph) * .4); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 /* ── THROUGH GUARD ────────────────────────────────────────────────────────
    The Governess's Sharp Correction ignores Guard in a party, because a table of
    four generates Guard faster than any boss can spend it. The number alone
@@ -1233,7 +1233,7 @@
 .cb-intent__chip[data-role="pierce"] { height: calc(var(--ph) * .8); }
 .cb-intent__chip[data-role="pierce"] b {
   font-family: var(--font-display); font-weight: 700;
-  font-size: 10px; color: var(--threat-200);
+  --reading-size: 10px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--threat-200);
   -webkit-text-stroke: 0; text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   text-transform: uppercase; letter-spacing: .12em;
 }
@@ -1251,11 +1251,11 @@
 /* the COUNT is the numeral now, and the card name is the label beside it —
    the same grammar as `[7 ×3]`, so "1 CLUTTER to discard" cannot be misread */
 .cb-intent__chip[data-role="cards"] b {
-  font-size: calc(var(--ph) * .6);
+  --reading-size: calc(var(--ph) * .6); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   color: var(--kit-gold-hi);
 }
 .cb-intent__chip[data-role="cards"] span {
-  font-family: var(--font-display); font-weight: 700; font-size: 11px;
+  font-family: var(--font-display); font-weight: 700; --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .1em; text-transform: uppercase;
   color: var(--kit-text);
   -webkit-text-stroke: 0; text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
@@ -1276,7 +1276,7 @@
   filter: brightness(1.2) saturate(.9) drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
 }
 .cb-intent__chip:is([data-role="rule"], [data-role="word"]) b {
-  font-family: var(--font-display); font-weight: 700; font-size: 12.5px;
+  font-family: var(--font-display); font-weight: 700; --reading-size: 12.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .15em; text-transform: uppercase;
   color: #140b04;
   -webkit-text-stroke: 0; text-shadow: 0 1px 0 rgba(255, 232, 178, .42);
@@ -1352,8 +1352,8 @@
   55% { transform: translateX(-50%) translateY(2px) scale(.78); }
   100% { transform: translateX(-50%) translateY(0) scale(1); }
 }
-.cb-intent.is-flip-up .cb-intent__vals { animation: cb-flipup .34s var(--ease-snap); }
-.cb-intent.is-flip-down .cb-intent__vals { animation: cb-flipdn .34s var(--ease-snap); }
+.cb-intent.is-flip-up .cb-intent__vals { animation: cb-flipup calc(.34s * var(--anim-scale)) var(--ease-snap); }
+.cb-intent.is-flip-down .cb-intent__vals { animation: cb-flipdn calc(.34s * var(--anim-scale)) var(--ease-snap); }
 .cb-intent.is-flip-up .cb-intent__chip b { color: var(--threat-100); }
 .cb-intent.is-flip-down .cb-intent__chip b { color: var(--spectre-200); }
 
@@ -1527,8 +1527,8 @@
   0%, 100% { transform: scale(1); }
   30% { transform: scale(.86, 1.1); }
 }
-.cb-hero.is-guarding .pr-rim { animation: cb-heroguard .5s var(--ease-out); }
-.cb-hero.is-guarding .pr-shadow { animation: cb-herobrace .5s var(--ease-out); transform-box: fill-box; transform-origin: 50% 50%; }
+.cb-hero.is-guarding .pr-rim { animation: cb-heroguard calc(.5s * var(--anim-scale)) var(--ease-out); }
+.cb-hero.is-guarding .pr-shadow { animation: cb-herobrace calc(.5s * var(--anim-scale)) var(--ease-out); transform-box: fill-box; transform-origin: 50% 50%; }
 @media (prefers-reduced-motion: reduce) {
   .cb-hero.is-guarding .pr-rim,
   .cb-hero.is-guarding .pr-shadow { animation: none; }
@@ -1581,7 +1581,7 @@
   background: radial-gradient(60% 70% at 44% 40%,
     color-mix(in srgb, var(--kit-candle) 22%, transparent) 0%, transparent 70%);
   mix-blend-mode: screen;
-  animation: cb-breathe 4.6s var(--ease-soft) infinite;
+  animation: cb-breathe calc(4.6s * var(--anim-scale)) var(--ease-soft) infinite;
   pointer-events: none;
 }
 @keyframes cb-breathe { 0%,100% { opacity: .45; } 50% { opacity: .9; } }
@@ -1632,7 +1632,7 @@
 .cb-player__guard b {
   position: relative; margin-top: -8%;
   font-family: var(--font-num); font-weight: 700;
-  font-size: calc(var(--gs) * .42); line-height: 1;
+  --reading-size: calc(var(--gs) * .42); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   font-variant-numeric: lining-nums tabular-nums;
   color: #f1f6ff;
   -webkit-text-stroke: 3px #08101c;
@@ -1666,10 +1666,10 @@
 }
 .cb-count--mine { --h: 26px; padding-inline: 13px; gap: 4px; }
 .cb-count--mine i { letter-spacing: .1em; }
-.cb-count--mine b { font-size: 16px; }
+.cb-count--mine b { --reading-size: 16px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .cb-count--mine em {
   font-style: normal;
-  font-family: var(--font-display); font-weight: 700; font-size: 11px;
+  font-family: var(--font-display); font-weight: 700; --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .14em; text-transform: uppercase;
   color: var(--flame-200);
   letter-spacing: .1em;
@@ -1702,14 +1702,14 @@
   100% { transform: none; }
 }
 .cb-player.is-windup .cb-player__figure {
-  animation: cb-plwind .18s var(--ease-out) forwards;
+  animation: cb-plwind calc(.18s * var(--anim-scale)) var(--ease-out) forwards;
 }
 .cb-player.is-striking .cb-player__figure {
-  animation: cb-plstrike .36s var(--ease-snap);
+  animation: cb-plstrike calc(.36s * var(--anim-scale)) var(--ease-snap);
 }
 /* the swing throws light off the portrait as it lands */
 .cb-player.is-striking .cb-player__glow {
-  animation: cb-plflare .36s var(--ease-out);
+  animation: cb-plflare calc(.36s * var(--anim-scale)) var(--ease-out);
 }
 @keyframes cb-plflare {
   0% { opacity: .5; }
@@ -1717,8 +1717,8 @@
   100% { opacity: .55; transform: scale(1); }
 }
 
-.cb-player.is-hit .cb-player__figure { animation: cb-plhit .26s var(--ease-out); }
-.cb-player.is-clank .cb-player__figure { animation: cb-plhit .16s var(--ease-out); }
+.cb-player.is-hit .cb-player__figure { animation: cb-plhit calc(.26s * var(--anim-scale)) var(--ease-out); }
+.cb-player.is-clank .cb-player__figure { animation: cb-plhit calc(.16s * var(--anim-scale)) var(--ease-out); }
 .cb-player.is-guarding .cb-player__figure { box-shadow: inset 0 0 30px rgba(0, 0, 0, .75), 0 0 26px color-mix(in srgb, var(--guard-300) 55%, transparent); }
 .cb-player.is-preview .cb-player__figure { box-shadow: inset 0 0 30px rgba(0, 0, 0, .75), 0 0 22px color-mix(in srgb, var(--kit-candle) 45%, transparent); }
 .cb-player.is-lethal .cb-player__figure { box-shadow: inset 0 0 36px color-mix(in srgb, var(--threat-500) 70%, transparent), 0 0 22px color-mix(in srgb, var(--threat-400) 60%, transparent); }
@@ -1746,13 +1746,13 @@
 }
 .cb-player__name {
   font-family: var(--font-body); font-weight: 600;
-  font-size: clamp(16px, 1.2vw, 19px); line-height: 1.02;
+  --reading-size: clamp(16px, 1.2vw, 19px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.02;
   color: var(--kit-name);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .85);
 }
 .cb-player__title {
   font-family: var(--font-body); font-style: italic;
-  font-size: clamp(11px, .8vw, 12.5px); line-height: 1.1;
+  --reading-size: clamp(11px, .8vw, 12.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.1;
   color: color-mix(in oklab, var(--kit-name) 78%, var(--kit-text-mid));
   text-shadow: 0 1px 0 rgba(0, 0, 0, .85);
 }
@@ -1787,7 +1787,7 @@
 /* The low-Courage tell on the portrait stays: it is a mood cue, and now it
    agrees with a bar that is six pixels away instead of 850. */
 .cb-player.is-low .cb-player__figure {
-  animation: cb-lowpulse 1.5s var(--ease-soft) infinite;
+  animation: cb-lowpulse calc(1.5s * var(--anim-scale)) var(--ease-soft) infinite;
 }
 @keyframes cb-lowpulse {
   0%,100% { box-shadow: inset 0 0 30px rgba(0, 0, 0, .75), 0 16px 30px -12px rgba(0, 0, 0, .9); }
@@ -1795,7 +1795,7 @@
                     0 0 18px color-mix(in srgb, var(--threat-400) 60%, transparent); }
 }
 .cb-player.is-snacking .cb-player__figure {
-  animation: cb-snack .34s var(--ease-snap);
+  animation: cb-snack calc(.34s * var(--anim-scale)) var(--ease-snap);
 }
 @keyframes cb-snack { 0% { transform: scale(1); } 40% { transform: scale(1.07) translateY(-3px); } 100% { transform: none; } }
 
@@ -1834,7 +1834,7 @@
 .cb-incoming[data-state="safe"] { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .85)) drop-shadow(0 0 5px color-mix(in srgb, var(--guard-300) 60%, transparent)); }
 .cb-inc__k {
   font-family: var(--font-display); font-weight: 700;
-  letter-spacing: .16em; text-transform: uppercase; color: var(--kit-text-mid); font-size: 10px;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--kit-text-mid); --reading-size: 10px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
 }
 .cb-inc__n, .cb-inc__t {
   font-family: var(--font-num); font-weight: 700; font-size: var(--fs-lg); line-height: 1;
@@ -1847,7 +1847,7 @@
 .cb-inc__t { color: var(--threat-100); font-size: var(--fs-xl); }
 .cb-incoming[data-state="safe"] .cb-inc__t { color: color-mix(in srgb, var(--guard-300) 60%, white); }
 .cb-inc__lethal {
-  font-family: var(--font-display); font-weight: 700; letter-spacing: .16em; font-size: 10.5px;
+  font-family: var(--font-display); font-weight: 700; letter-spacing: .16em; --reading-size: 10.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   color: #fff3ee;
   background: linear-gradient(90deg, var(--threat-500), var(--threat-400), var(--threat-500));
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--kit-gold) 70%, black);
@@ -2032,7 +2032,7 @@
    the board reads through them. A FILTER, not `opacity`: the Hand writes the
    opacity property inline during the discard arc and inline wins the cascade,
    whereas a filter composes with it. */
-.cb-handhost .mm-card { transition: filter 170ms linear; }
+.cb-handhost .mm-card { transition: filter calc(170ms * var(--anim-scale)) linear; }
 /* down instantly, back up gently: a transition on the way IN means the card is
    still at full opacity on the one frame that matters, the contact frame. */
 .cb-handhost.is-impact .mm-card { filter: opacity(.22); transition: none; }
@@ -2206,8 +2206,8 @@
   /* cut into the gold: the lit lower lip of the cut, the shadow of its upper edge */
   text-shadow: 0 calc(var(--nc) * .018) 0 rgba(255, 240, 196, .8), 0 calc(var(--nc) * -.012) 0 rgba(58, 32, 8, .55), 0 0 6px rgba(255, 226, 160, .3);
 }
-.cb-nerve__n b { font-size: calc(var(--nc) * .56); line-height: 1; letter-spacing: -.02em; }
-.cb-nerve__n span { font-size: calc(var(--nc) * .24); color: #3a2208; margin-left: .04em; -webkit-text-stroke: 0; }
+.cb-nerve__n b { --reading-size: calc(var(--nc) * .56); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1; letter-spacing: -.02em; }
+.cb-nerve__n span { --reading-size: calc(var(--nc) * .24); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: #3a2208; margin-left: .04em; -webkit-text-stroke: 0; }
 /* NERVE on a small dark nameplate across the setting's foot, over its drop */
 .cb-nerve__lbl, .cb-pile__lbl {
   --h: 20px;
@@ -2217,7 +2217,7 @@
   min-height: var(--h); padding: 0 13px 1px;
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
-  font-family: var(--font-display); font-weight: 700; font-size: 11px;
+  font-family: var(--font-display); font-weight: 700; --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .18em; text-transform: uppercase; color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   white-space: nowrap;
@@ -2228,8 +2228,8 @@
 .cb-nerve.is-empty .cb-nerve__n { color: #2a1c10; text-shadow: 0 1px 0 rgba(255, 240, 196, .35); }
 @keyframes cb-spend { 0% { transform: scale(1.14); } 100% { transform: scale(1); } }
 @keyframes cb-gain { 0% { transform: scale(.82); } 60% { transform: scale(1.1); } 100% { transform: scale(1); } }
-.cb-nerve.is-spend .cb-nerve__core { animation: cb-spend .26s var(--ease-out); }
-.cb-nerve.is-gain .cb-nerve__core { animation: cb-gain .38s var(--ease-snap); }
+.cb-nerve.is-spend .cb-nerve__core { animation: cb-spend calc(.26s * var(--anim-scale)) var(--ease-out); }
+.cb-nerve.is-gain .cb-nerve__core { animation: cb-gain calc(.38s * var(--anim-scale)) var(--ease-snap); }
 
 /* PILES ARE DECKS ON THE TABLE (round 5, GARNET's): the backs every Trick in the
    house shares (aubergine lacquer, the boards' damask, a gilt border and the Kid
@@ -2271,9 +2271,9 @@
   position: absolute; right: calc(var(--ph) * -.14); top: calc(var(--ph) * -.1); z-index: 3;
   --coin: max(20px, calc(var(--ph) * .32));
 }
-.cb-pile__lbl { --h: 19px; bottom: calc(var(--ph) * -.17); font-size: 11px; letter-spacing: .13em; padding: 0 11px 1px; color: var(--kit-text-mid); }
+.cb-pile__lbl { --h: 19px; bottom: calc(var(--ph) * -.17); --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .13em; padding: 0 11px 1px; color: var(--kit-text-mid); }
 @keyframes cb-shuffle { 0% { transform: rotate(0) } 25% { transform: rotate(-7deg) scale(1.06) } 60% { transform: rotate(5deg) } 100% { transform: rotate(0) } }
-.cb-pile.is-shuffle::before { animation: cb-shuffle .34s var(--ease-out); }
+.cb-pile.is-shuffle::before { animation: cb-shuffle calc(.34s * var(--anim-scale)) var(--ease-out); }
 
 /* END TURN: the right corner's medallion, an hourglass in the enamel, and its
    name on the kit's gold-lettered plate laid across the medallion's foot, with
@@ -2292,7 +2292,7 @@
   border: 0; border-image: none;
   background: none;
   overflow: visible;
-  font-size: clamp(14px, 1.08vw, 17px);
+  --reading-size: clamp(14px, 1.08vw, 17px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .12em;
 }
 .cb-endturn .cb-endturn__medal.kit-btn__medal {
@@ -2334,7 +2334,7 @@
   right: calc(var(--plate-h) * .5); bottom: calc(var(--plate-h) * .5);
   transform: translateY(50%);
   display: inline-grid; place-items: center;
-  font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: .04em;
+  font-family: var(--font-display); --reading-size: 11px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); font-weight: 700; letter-spacing: .04em;
   color: var(--kit-gold-hi);
   /* a brass-rimmed enamel key (keycap.webp, round 4), not a bordered box */
   min-width: 1.95em; height: 1.95em; padding: 0 0 1px;
@@ -2372,7 +2372,7 @@
   transform: none;
 }
 .cb-endturn.is-ready { color: #fff1d2; }
-.cb-endturn.is-ready .cb-endturn__glow { opacity: 1; animation: cb-etready 1.5s var(--ease-soft) infinite; }
+.cb-endturn.is-ready .cb-endturn__glow { opacity: 1; animation: cb-etready calc(1.5s * var(--anim-scale)) var(--ease-soft) infinite; }
 .cb-endturn.is-ready .cb-endturn__medal { filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8)) drop-shadow(0 0 10px color-mix(in srgb, var(--kit-candle) 60%, transparent)) brightness(1.12); }
 @keyframes cb-etready {
   0%,100% { opacity: .55; transform: scale(.96); }
@@ -2394,7 +2394,7 @@
   opacity: 0;
   white-space: nowrap;
 }
-.cb-banner__t { font-size: clamp(24px, 2.2vw, 36px); }
+.cb-banner__t { --reading-size: clamp(24px, 2.2vw, 36px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .cb-banner > .cb-banner__rib { display: none; }
 @keyframes cb-bannerin {
   0% { opacity: 0; transform: translate(-50%, 16px) scale(.92); }
@@ -2402,11 +2402,11 @@
   74% { opacity: 1; }
   100% { opacity: 0; transform: translate(-50%, -14px) scale(1.02); }
 }
-.cb-banner.is-on { animation: cb-bannerin 1.15s var(--ease-out) forwards; }
+.cb-banner.is-on { animation: cb-bannerin calc(1.15s * var(--anim-scale)) var(--ease-out) forwards; }
 /* `hold` only takes the class off; the animation is what the eye gets, so the
    moments that deserve a longer look get a longer run (the keyframes scale) */
-.cb-banner.is-on:is([data-kind="rule"], [data-kind="rulebreak"], [data-kind="elite"]) { animation-duration: 1.7s; }
-.cb-banner.is-on[data-kind="boss"] { animation-duration: 2.3s; }
+.cb-banner.is-on:is([data-kind="rule"], [data-kind="rulebreak"], [data-kind="elite"]) { animation-duration: calc(1.7s * var(--anim-scale)); }
+.cb-banner.is-on[data-kind="boss"] { animation-duration: calc(2.3s * var(--anim-scale)); }
 /* their turn: the same plaque, its lettering glowing ember instead of violet */
 .cb-banner[data-kind="enemy"] .cb-banner__t {
   filter: url("#kit-engrave") drop-shadow(0 0 14px color-mix(in srgb, var(--threat-400) 55%, transparent));
@@ -2453,7 +2453,7 @@
   80% { opacity: 1; }
   100% { opacity: 0; }
 }
-.cb-deny.is-on { animation: cb-denyin 1.5s var(--ease-out) forwards; }
+.cb-deny.is-on { animation: cb-denyin calc(1.5s * var(--anim-scale)) var(--ease-out) forwards; }
 /* while a chooser is open it sits just under the panel rather than across the
    cards it is talking about */
 .cb-deny.is-over-chooser {
@@ -2476,7 +2476,7 @@
   transform-origin: 50% 50%;
   will-change: transform, opacity;
   font-family: var(--font-num); font-weight: 700;
-  font-size: 30px; line-height: 1;
+  --reading-size: 30px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   white-space: nowrap;
   margin: -15px 0 0 0;
   -webkit-text-stroke: 3.5px var(--ink-900);
@@ -2492,25 +2492,25 @@
 }
 .cb-num[data-kind="damage"] { color: var(--flame-100); }
 .cb-num[data-kind="taken"]  { color: var(--threat-100); }
-.cb-num[data-kind="blocked"]{ color: var(--guard-300); font-size: 20px; }
+.cb-num[data-kind="blocked"]{ color: var(--guard-300); --reading-size: 20px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .cb-num[data-kind="block"]  { color: var(--spectre-100); }
 .cb-num[data-kind="heal"]   { color: var(--flame-200); }
-.cb-num[data-kind="buff"]   { color: var(--spectre-200); font-size: 17px; letter-spacing: .04em; }
-.cb-num[data-kind="debuff"] { color: var(--threat-200); font-size: 17px; letter-spacing: .04em; }
-.cb-num[data-kind="counter"]{ color: var(--pluck-300); font-size: 16px; }
+.cb-num[data-kind="buff"]   { color: var(--spectre-200); --reading-size: 17px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .04em; }
+.cb-num[data-kind="debuff"] { color: var(--threat-200); --reading-size: 17px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .04em; }
+.cb-num[data-kind="counter"]{ color: var(--pluck-300); --reading-size: 16px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 /* Guard breaking is called out on a dark nameplate in steel engraved caps, the
    same plate every name on the board wears, rather than a light pill */
 .cb-num[data-kind="shatter"]{
   -webkit-text-stroke: 0;
   color: color-mix(in srgb, var(--guard-300) 55%, white);
-  font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: .18em;
+  font-family: var(--font-display); font-weight: 700; --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .18em;
   padding: 6px 18px 7px;
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 10px 19px stretch;
   background: none;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
 }
-.cb-num[data-kind="status"] { color: var(--text-hi); font-size: 16px; }
+.cb-num[data-kind="status"] { color: var(--text-hi); --reading-size: 16px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .cb-num.is-big { -webkit-text-stroke: 4.5px var(--ink-900); }
 /* A NUMBER NEVER OUTLIVES ITS MOMENT. combatfx ages a floater by the clock's
    dt, which is clamped to a tenth of a second a frame, so on a machine that
@@ -2518,7 +2518,7 @@
    ten. This is a wall-clock ceiling behind it: the number is hidden 2.6s
    after it was spawned (display none to shown restarts the animation), which
    a number living its designed life never reaches. */
-.cb-num { animation: cb-num-life 2.6s linear both; }
+.cb-num { animation: cb-num-life calc(2.6s * var(--anim-scale)) linear both; }
 @keyframes cb-num-life { 0%, 99% { visibility: visible; } 100% { visibility: hidden; } }
 
 /* ── tooltip content ──────────────────────────────────────────────────────
@@ -2543,7 +2543,7 @@
 .cb-root.is-large .cb-enemy__name,
 .cb-root.is-large .cb-inc__k { font-size: var(--fs-sm); }
 .cb-root.is-large .cb-intent { --ph: clamp(30px, 2.2vw, 35px); }
-.cb-root.is-large .cb-count i, .cb-root.is-large .cb-badge { font-size: 12px; }
+.cb-root.is-large .cb-count i, .cb-root.is-large .cb-badge { --reading-size: 12px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 
 /* Keyboard focus stays unmissable, and on the metal it is drawn the kit's way:
    the gilt lights round its own silhouette (a web ring round a painted
@@ -2580,7 +2580,7 @@
   100% { box-shadow: none; }
 }
 .cb-handhost .mm-card.is-recovered {
-  animation: cb-recovered .85s var(--ease-out) forwards;
+  animation: cb-recovered calc(.85s * var(--anim-scale)) var(--ease-out) forwards;
   border-radius: var(--radius-md);
 }
 
@@ -2613,10 +2613,10 @@
 .cb-qslot:hover, .cb-qslot:focus-visible { transform: translateY(-2px); opacity: 1; }
 .cb-qslot i {
   position: absolute; left: -3px; top: -5px;
-  font-style: normal; font-family: var(--font-display); font-weight: 700; font-size: 9px;
+  font-style: normal; font-family: var(--font-display); font-weight: 700; --reading-size: 9px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   color: var(--kit-gold-hi); text-shadow: 0 1px 0 #000, 0 0 3px #000;
 }
-.cb-qslot b { font-family: var(--font-num); font-weight: 700; font-size: 13px; color: var(--kit-text); text-shadow: 0 1px 0 #000; }
+.cb-qslot b { font-family: var(--font-num); font-weight: 700; --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--kit-text); text-shadow: 0 1px 0 #000; }
 .cb-qslot[data-family="attack"] b { color: var(--threat-200); }
 .cb-qslot[data-family="defense"] b { color: var(--guard-300); }
 .cb-qslot[data-family="scheme"] b { color: var(--kit-lav); }
@@ -2635,7 +2635,7 @@
     color-mix(in srgb, var(--spectre-300) 60%, transparent) 0%, transparent 72%);
 }
 @keyframes cb-rulebreak { 0%,100% { filter: none; } 50% { filter: brightness(1.6) saturate(1.4); } }
-.cb-enemy.rule-broken .cb-enemy__stage { animation: cb-rulebreak .34s var(--ease-out) 2; }
+.cb-enemy.rule-broken .cb-enemy__stage { animation: cb-rulebreak calc(.34s * var(--anim-scale)) var(--ease-out) 2; }
 
 /* ── the chooser: "choose a Trick" is 70 cards' worth of agency ───────────
    A kit panel (.kit-panel, a star medallion on its top rail) laid over the
@@ -2746,7 +2746,7 @@
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
   pointer-events: none;
   font-family: var(--font-display); font-weight: 700;
-  font-size: 11.5px;
+  --reading-size: 11.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   letter-spacing: .24em; text-transform: uppercase;
   /* Round 3 settled this at 60% of --text-hi and then faded the whole element
      to opacity .3 — an effective 18% alpha over black, measured as
@@ -2756,7 +2756,7 @@
   text-shadow: 0 1px 0 rgba(0, 0, 0, .9);
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .8));
   white-space: nowrap;
-  animation: cb-roomin 1.2s var(--ease-soft) both;
+  animation: cb-roomin calc(1.2s * var(--anim-scale)) var(--ease-soft) both;
 }
 .cb-room[hidden] { display: none; }
 @keyframes cb-roomin {
@@ -2906,7 +2906,7 @@
   border-image: url("../../assets/ui/kit/boss-plate.webp") 0 188 0 188 fill / 0 var(--bp-cap) 0 var(--bp-cap) stretch;
   background: none;
   filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .8));
-  font-size: clamp(16px, 1.2vw, 19px); letter-spacing: .24em;
+  --reading-size: clamp(16px, 1.2vw, 19px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .24em;
   color: var(--kit-lav);
   text-shadow: none;
   white-space: nowrap;
@@ -3055,7 +3055,7 @@
 .cb-enemy.is-dying .cb-enemy__alcove,
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy.is-dying[data-tier="boss"]::before,
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy.is-dying[data-tier="boss"]::after {
-  opacity: 0; transition: opacity .9s var(--ease-soft) .3s;
+  opacity: 0; transition: opacity calc(.9s * var(--anim-scale)) var(--ease-soft) calc(.3s * var(--anim-scale));
 }
 @media (prefers-reduced-motion: reduce) {
   .cb-enemy.is-dying .cb-enemy__alcove,
@@ -3122,7 +3122,7 @@
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy.has-rule[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__plate::before {
   top: auto; bottom: calc(var(--tube-h, 28px) / 2 + 2px); left: calc(100% + 14px);
   width: 128px; min-width: 0; padding: 0 0 1px; justify-content: center;
-  font-size: 10px; letter-spacing: .12em;
+  --reading-size: 10px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .12em;
   transform: translateY(50%);
 }
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy.has-rule[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses {
@@ -3130,11 +3130,11 @@
 }
 /* a long name on a boss that shares the row sets closer on a lower plate */
 .cb-root[data-arena="boss"] .cb-enemies:not([data-n="1"]) .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__name[data-len="long"] {
-  font-size: clamp(14px, 1.05vw, 16px); letter-spacing: .14em;
+  --reading-size: clamp(14px, 1.05vw, 16px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .14em;
 }
 .cb-root[data-arena="boss"] .cb-enemies:not([data-n="1"]) .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__name[data-len="xlong"] {
   --bp-h: clamp(44px, 3.3vw, 52px);
-  font-size: clamp(12.5px, .95vw, 14.5px); letter-spacing: .06em;
+  --reading-size: clamp(12.5px, .95vw, 14.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .06em;
   padding-inline: calc(var(--bp-cap) * .9);
 }
 /* the trailing letter-space would sit the name left of centre on its plate.
@@ -3185,7 +3185,7 @@
 .cb-enemy.is-entering .cb-enemy__plate { opacity: 0; }
 .cb-enemy.has-entered .cb-enemy__above,
 .cb-enemy.has-entered .cb-enemy__plate {
-  animation: cb-plate-in .42s var(--ease-out) both;
+  animation: cb-plate-in calc(.42s * var(--anim-scale)) var(--ease-out) both;
 }
 /* THE `to { transform: none }` HERE WAS EATING TWO OTHER TRANSFORMS.
    `animation-fill-mode: both` leaves the last keyframe applied forever, so
@@ -3206,10 +3206,10 @@
    wordmark cartouche, the boss's name in its largest engraved caps */
 .cb-banner[data-kind="boss"] { --cart-h: clamp(118px, 15vh, 146px); top: calc(var(--hud-h) + 4vh); }
 .cb-banner[data-kind="boss"] .cb-banner__t {
-  font-size: clamp(34px, 3.3vw, 54px);
+  --reading-size: clamp(34px, 3.3vw, 54px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   filter: url("#kit-engrave") drop-shadow(0 0 18px color-mix(in srgb, var(--threat-400) 50%, transparent));
 }
-.cb-banner[data-kind="elite"] .cb-banner__t { font-size: clamp(28px, 2.7vw, 44px); }
+.cb-banner[data-kind="elite"] .cb-banner__t { --reading-size: clamp(28px, 2.7vw, 44px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 
 @media (prefers-reduced-motion: reduce) {
   .cb-room { animation: none; opacity: 1; }
@@ -3304,7 +3304,7 @@
   --h: 20px;
   display: inline-flex; align-items: center;
   min-height: var(--h); padding: 0 11px 1px;
-  font-family: var(--font-display); font-weight: 700; font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase;
+  font-family: var(--font-display); font-weight: 700; --reading-size: 9.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .16em; text-transform: uppercase;
   color: var(--spectre-200);
   border: 0 solid transparent;
   border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / calc(var(--h) * 18 / 64) calc(var(--h) * 34 / 64) stretch;
@@ -3332,7 +3332,7 @@
 .cb-mate__guard svg { display: none; }
 .cb-mate__guard b {
   position: relative; margin-top: -8%;
-  font-family: var(--font-num); font-weight: 700; font-size: 13px; line-height: 1;
+  font-family: var(--font-num); font-weight: 700; --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1;
   color: #f1f6ff; -webkit-text-stroke: 2.5px #08101c; paint-order: stroke fill;
 }
 
@@ -3507,7 +3507,7 @@
 .cb-status.kit-roundel > .kit-coin {
   --coin: max(18px, calc(var(--roundel) * .56));
   right: calc(var(--roundel) * -.2); bottom: calc(var(--roundel) * -.16);
-  font-size: calc(var(--coin) * .74);
+  --reading-size: calc(var(--coin) * .74); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
   box-shadow:
     inset 0 0 0 1px color-mix(in oklab, var(--kit-gold-lo) 78%, black),
     inset 0 0 0 2.5px color-mix(in oklab, var(--kit-gold-hi) 70%, white),
@@ -3668,7 +3668,7 @@
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses { --roundel: clamp(41px, 3.2vw, 48px); }
 .cb-status.kit-roundel > .kit-coin {
   --coin: max(23px, calc(var(--roundel) * .56));
-  font-size: calc(var(--coin) * .76);
+  --reading-size: calc(var(--coin) * .76); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
 }
 /* the boss's tray tucked up to his gauge's end knob, its medallions closer */
 .cb-root[data-arena="boss"] .cb-enemies[data-n="1"] .cb-enemy[data-tier="boss"]:not([data-role="bossPart"]) .cb-enemy__vitals > .cb-enemy__statuses {
@@ -3709,3 +3709,64 @@
     0 0 0 calc(1.5 * var(--u)) color-mix(in srgb, var(--kit-gold-hi) 85%, transparent),
     0 0 calc(18 * var(--u)) calc(2 * var(--u)) color-mix(in srgb, var(--kit-candle) 55%, transparent);
 }
+
+/* Larger reading sizes need room, including on a 1280px panel. */
+.cb-player__counters { max-width: 100%; }
+.cb-player__counters .cb-count--mine { flex-wrap: wrap; justify-content: center; height: auto; min-height: var(--h); max-width: 100%; padding-block: 4px; }
+.cb-player__counters .cb-count--mine i { white-space: normal; text-align: center; }
+
+/* Round 48: conditions arrive on little engraved ribbons beside the face. */
+.cb-num:is([data-kind="status"],[data-kind="buff"],[data-kind="debuff"],[data-kind="counter"],[data-kind="blocked"]) { font-family: var(--font-display); font-weight: 700; padding: 7px 17px 9px; line-height: 1.15; letter-spacing: .035em; border: 0 solid transparent; border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 9px 16px stretch; -webkit-text-stroke: 1.6px var(--ink-900); text-shadow: 0 2px 0 var(--ink-900); filter: drop-shadow(0 3px 2px var(--ink-900)); }
+
+/* Round 49 RUBY: short brass pointers bind each group to its actor. */
+.cb-num[data-actor-id]:not([data-actor-id=""])::after { content: ''; position: absolute; top: 50%; width: 17px; height: 2px; background: var(--kit-gold); box-shadow: 0 1px 1px var(--kit-void); }
+.cb-num[data-side="right"]::after { right: calc(100% - 3px); }
+.cb-num[data-side="left"]::after { left: calc(100% - 3px); }
+
+.cb-num[data-side="above"]::after { left: 50%; top: 100%; width: 2px; height: 13px; }
+
+/* Owned condition envelopes use centred coordinates; only empty ribbon padding is compacted. */
+.cb-num[data-actor-id]:not([data-actor-id=""]) { translate: -50% -50%; margin: 0; padding: 3px 9px; }
+
+/* Round 51 SPINEL: a stable engraved owner above the animated condition group. */
+.cb-fx-owner { position: absolute; left: 0; top: 0; width: max-content; box-sizing: border-box; padding: 3px 13px 4px; color: var(--kit-name); font-family: var(--font-display); font-size: 17px; font-weight: 700; line-height: 1.2; letter-spacing: .015em; white-space: nowrap; border: 0 solid transparent; border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 7px 12px stretch; text-shadow: 0 1px 1px var(--kit-void); pointer-events: none; }
+.cb-num[data-actor-id]:not([data-actor-id=""])::after { content: none; }
+.scene--combat .story-tools > button { border: 0 solid transparent; border-radius: 0; border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 8px 13px stretch; padding: 6px 15px; min-height: 34px; color: var(--kit-gold-hi); background: transparent; box-shadow: none; }
+
+.cb-fx-owner { line-height: 1.1; padding-block: 1px; border-image-width: 5px 12px; }
+
+/* Keep measured ink and animation intact; compact only empty vertical ribbon padding. */
+.cb-num[data-actor-id]:not([data-actor-id=""]) { padding-block: 1px; }
+
+/* Round 52 TOURMALINE: crisp colored enamel, unchanged measured geometry. */
+.cb-num:is([data-kind="status"],[data-kind="buff"],[data-kind="debuff"],[data-kind="counter"],[data-kind="blocked"]) { -webkit-text-stroke: .8px var(--ink-900); paint-order: stroke fill; text-shadow: 0 -1px 0 color-mix(in srgb,currentColor 45%,var(--kit-parchment)),1px 1px 0 var(--ink-900); filter: drop-shadow(0 2px 1px var(--ink-900)); }
+.cb-fx-owner { text-shadow: 0 -1px 0 var(--kit-violet-lo),0 1px 0 var(--kit-void); }
+
+
+/* Remove the post-composite blur and pale halo from colored condition ink.
+   Painted backing patina is separate from the live faces; geometry is retained. */
+.cb-num:is([data-kind="status"],[data-kind="buff"],[data-kind="debuff"],[data-kind="counter"],[data-kind="blocked"]) {
+ filter: none; will-change: auto; text-shadow: 1px 1px 0 var(--ink-900); -webkit-text-stroke: 1px var(--ink-900);
+ border-image-source: url("../../assets/ui/r53-fluorite/velvet-cartouche-v1.webp");
+}
+
+/* Preserve the proven measured bounds; narrow the rim inside them to clear signs. */
+.cb-num[data-actor-id]:not([data-actor-id=""]):is([data-kind="status"],[data-kind="buff"],[data-kind="debuff"],[data-kind="counter"],[data-kind="blocked"]) {
+ padding: 1px 9px; border-image-source: url("../../assets/ui/r54-peridot/worn-plaque-v1.webp");
+ border-image-width: 6px 8px;
+}
+.cb-fx-owner { border-image-source: url("../../assets/ui/r54-peridot/worn-plaque-v1.webp"); }
+
+/* IOLITE: new painted shallow enamel object, within the proven measured envelope. */
+.cb-num[data-actor-id]:not([data-actor-id=""]):is([data-kind="status"],[data-kind="buff"],[data-kind="debuff"],[data-kind="counter"],[data-kind="blocked"]) {
+ border-image-source: url("../../assets/ui/r55-iolite/enamel-plaque.webp");
+ border-image-width: 6px 8px; padding: 1px 9px;
+}
+.cb-fx-owner { border-image-source: url("../../assets/ui/r55-iolite/enamel-plaque.webp"); }
+
+/* Round56 ONYX: raised worn lip and recessed painted face inside the reserved envelope. */
+.cb-num[data-actor-id]:not([data-actor-id=""]):is([data-kind="status"],[data-kind="buff"],[data-kind="debuff"],[data-kind="counter"],[data-kind="blocked"]) {
+ border-image-source: url("../../assets/ui/r56-onyx/enamel-plaque.webp");
+ border-image-width: 6px 8px; padding: 1px 9px;
+}
+.cb-fx-owner { border-image-source: url("../../assets/ui/r56-onyx/enamel-plaque.webp"); }

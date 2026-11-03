@@ -1,0 +1,63 @@
+{
+  "created_utc": "2026-10-26T23:46:40.058283+00:00",
+  "enemy": "crib-curtains",
+  "states": [
+    "idle",
+    "attack",
+    "hurt",
+    "defeat"
+  ],
+  "method": "Two independently deformed authentic cloth panels, fixed rod/rings, local tieback lift and traveling hem deformation. Premultiplied alpha interpolation. No generic whole-image transform.",
+  "validation": "batch-02/crib-curtains-v3-left/validation.json",
+  "orientation_review": "batch-02/crib-curtains-v3-left/orientation-review.json",
+  "quality_gate": "technical_pass_visual_review_pending",
+  "supersedes": "revisions/crib-curtains-before-crib-curtains-v3-left/receipt.json",
+  "files": [
+    {
+      "path": "animations/sprites/enemies/animations/SS_cribCurtains_idle.png",
+      "sha256": "a92089ac3efa7f83559601a52a527e0c9c98195df86b806c1cb39f3ceb9026f6",
+      "bytes": 11458482
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/crib-curtains/idle.webp",
+      "sha256": "9996e2b0b0b8612121a41358453cd2632e45d46b23f981406746d8d6350db29a",
+      "bytes": 5349078
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_cribCurtains_attack.png",
+      "sha256": "86429f9957425c5436a34c8f52420338ac19b2a869e799e44ec3ddc292b09b12",
+      "bytes": 10004148
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/crib-curtains/attack.webp",
+      "sha256": "a98e5e40cd7d0d080cb5a59d14ca280fe22056ad5bcb5d79afdb4c6b01b42f57",
+      "bytes": 4598860
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_cribCurtains_hurt.png",
+      "sha256": "fa3bff2d9c2abd70aedc34bf5242d03327ca32506a91c900a8b01ed971c04259",
+      "bytes": 5034350
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/crib-curtains/hurt.webp",
+      "sha256": "0f36ede2c11d47533decb76bb224bb84f4fb4586a84962ba574abe405dfd7bd9",
+      "bytes": 2272054
+    },
+    {
+      "path": "animations/sprites/enemies/animations/SS_cribCurtains_defeat.png",
+      "sha256": "d280e4790cf187ddb93f743673bddb8164740f9838c4865ba55e20da39dbf722",
+      "bytes": 7855059
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/crib-curtains/defeat.webp",
+      "sha256": "9b9b09c4d6fb2c60efc7e8dceea113baa1bf5a1c9a360b46041f9fba9d30256b",
+      "bytes": 3954826
+    },
+    {
+      "path": "game/assets/sprites/enemy-clips/crib-curtains/index.json",
+      "sha256": "14988befae67f27f289db76d5fac2d31c08592dca9df10933c7623468242518b",
+      "bytes": 2609
+    }
+  ],
+  "complete": true
+}

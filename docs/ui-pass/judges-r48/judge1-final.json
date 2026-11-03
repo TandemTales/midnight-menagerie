@@ -1,0 +1,546 @@
+{
+  "judge": "judge1",
+  "round": 48,
+  "review_order": [
+    "ONYX",
+    "AMETRINE",
+    "HELIODOR",
+    "IOLITE"
+  ],
+  "scope": {
+    "images_reviewed": 40,
+    "reference_images_reviewed": [
+      "UI/title.png",
+      "UI/mainMenu.png",
+      "UI/selectCompanion.png",
+      "UI/selectKid.png"
+    ],
+    "scoring": "Each score summarizes the default and 1280x800 pair. No source, history, logs, notes, other judges, browser, or game execution consulted.",
+    "exclusions": "Harness banner, hung art identity/placement, and the combat room, actors, enemy plates, rail and cards are excluded. Combat background is a neutral 5 for every candidate because that dimension is excluded; it does not affect combat overall or ranking.",
+    "constraints": "Enlarged typography is retained. Boards support scrolling. Visible clipping and weak continuation cues are assessed, but unseen content is not inferred absent or unreachable.",
+    "standard": "The painted references are the bar. No candidate reaches same-hand coherence; every fits_between_samples is false."
+  },
+  "candidates": {
+    "ONYX": {
+      "rest": {
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6.5,
+        "material": 4.5,
+        "background": 4.5,
+        "composition": 6,
+        "readability": 6,
+        "coherence": 6,
+        "overall": 5.8,
+        "fits_between_samples": false,
+        "worst_problem": "On rest at both sizes, the left Blanket Fort illustration uses a rigid plaid facade, repeated scallops and a polygonal light patch instead of visibly weighted cloth folds and softly falling lantern light.",
+        "visual_observations": [
+          "Purple, antique-gold frames, moon medallions and candle dressing establish recognizable reference vocabulary.",
+          "Visible option rows have individual objects, but their large repeated rectangular purple panels still read as interface containers.",
+          "At 1280, the third row is cut by the board viewport with little visible scroll guidance; this does not establish that remaining choices are inaccessible.",
+          "Pack up and go on remains identifiable at 1280, although the footer sits tightly against the board."
+        ]
+      },
+      "event": {
+        "ornament": 7,
+        "palette": 6.5,
+        "typography": 7,
+        "material": 5,
+        "background": 4.5,
+        "composition": 5.5,
+        "readability": 6.5,
+        "coherence": 5.5,
+        "overall": 5.7,
+        "fits_between_samples": false,
+        "worst_problem": "On event at both sizes, the center parchment is a large upright framed rectangle without a convincing lectern or local reading lamp, while the side moonbeams terminate in hard pale polygons.",
+        "visual_observations": [
+          "The illuminated initial and dark ink give the narrative a clear reading hierarchy.",
+          "Smaller parchment choice strips have appealing irregular edges and legible dark text.",
+          "At 1280, risk and reward text wraps into awkward separated columns, but the first two choices remain readable.",
+          "The third choice is visibly cut at the bottom without an obvious continuation cue; scrolling may reveal it.",
+          "Grey-blue shafts brighten broad areas of the dark walls rather than behaving like painted light."
+        ]
+      },
+      "gameover": {
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 5,
+        "background": 4,
+        "composition": 5.5,
+        "readability": 4.5,
+        "coherence": 5.5,
+        "overall": 5.3,
+        "fits_between_samples": false,
+        "worst_problem": "On gameover-1280, the featured Dig Up a Fight card in the center has its first rules line intruding beneath the ATTACK banner, making the promised readable card visibly clipped.",
+        "visual_observations": [
+          "The extinguished candle and framed character pairing create a clear end-of-run focal point.",
+          "The right Final Tricks area is a two-column text table rather than individual cards or engraved cartouches.",
+          "Purple panel texture is coarse and uniform compared with the reference's shaded, painted materials.",
+          "At default size the stat strip is visibly caught behind the footer; the eight statistics cannot be assessed as readable in the supplied 1280 still.",
+          "Scrolling context prevents concluding that unseen statistics or tricks are absent."
+        ]
+      },
+      "shop": {
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 6.5,
+        "material": 5.5,
+        "background": 5,
+        "composition": 6.5,
+        "readability": 5,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "On shop-1280, the far-right Boomerang Bone card's rules are clipped at both the top and bottom of their inset, while the lower-left Knotted Handkerchief name spills beyond its cartouche.",
+        "visual_observations": [
+          "The curtain-backed card display and merchant niche give this board a strong staged-shop identity.",
+          "Jars and bell jars are recognizable, but each rests on an isolated gold plinth inside a flat purple box rather than a shared lit counter with grounded shadows.",
+          "The main card strip is dense enough that some rules and labels visibly collide with frames.",
+          "Snack descriptions remain legible at 1280; lower keepsake descriptions continue beyond the visible viewport.",
+          "Retain enlarged typography while increasing component space and improving wrapping."
+        ]
+      },
+      "combat-floaters": {
+        "ornament": 1,
+        "palette": 5,
+        "typography": 3.5,
+        "material": 1,
+        "background": 5,
+        "composition": 4,
+        "readability": 6,
+        "coherence": 2.5,
+        "overall": 3,
+        "fits_between_samples": false,
+        "worst_problem": "On combat-floaters at both sizes, bare bold condition text is laid directly across both heads and upper bodies without a house-style tag or ribbon.",
+        "visual_observations": [
+          "Condition words are individually legible through heavy shadow and cyan/coral coloring.",
+          "The two actor-centered clusters make ownership easier to infer than the later central columns, but obscure faces.",
+          "The bare floating lettering lacks engraved framing, surface texture and the reference's serif hierarchy.",
+          "Only the floating words and their treatment are judged."
+        ]
+      }
+    },
+    "AMETRINE": {
+      "rest": {
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6.5,
+        "material": 5,
+        "background": 5,
+        "composition": 6,
+        "readability": 6.5,
+        "coherence": 6,
+        "overall": 6.1,
+        "fits_between_samples": false,
+        "worst_problem": "On rest at both sizes, the fort's left cloth facade still repeats regular scallops and straight plaid bands rather than convincing sag, quilting and weighted folds.",
+        "visual_observations": [
+          "Softened light and vertical shading make the fort less geometric than ONYX, though still visibly constructed from regular shapes.",
+          "Individual option backings have distinct dark materials; the second nearly black field is flatter than the surrounding painted frame.",
+          "At 1280 the leave control is comfortably readable with a separate subtitle line.",
+          "The third row continues below the visible viewport, with weak scroll affordance; no inaccessible-content inference is made."
+        ]
+      },
+      "event": {
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 5.5,
+        "background": 5.5,
+        "composition": 6,
+        "readability": 6.5,
+        "coherence": 6,
+        "overall": 6.1,
+        "fits_between_samples": false,
+        "worst_problem": "On event at both sizes, the center page still reads as a front-facing rectangular panel, with a narrow glowing gold bar along its top that does not clearly read as a lectern lamp.",
+        "visual_observations": [
+          "Soft blue side illumination preserves the purple-black walls and avoids ONYX's hard floor wedges.",
+          "The bookmark and doubled page edges suggest a book-like object.",
+          "Readable narrative ink and irregular choice slips are useful strengths.",
+          "At 1280 the third choice starts below the visible viewport, and the first two options wrap cost/reward phrases across separate columns.",
+          "Page depth, support and local illumination remain less physically convincing than the reference."
+        ]
+      },
+      "gameover": {
+        "ornament": 6.5,
+        "palette": 7,
+        "typography": 6.5,
+        "material": 5.5,
+        "background": 4,
+        "composition": 6,
+        "readability": 6.5,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "On gameover at both sizes, the right Final Tricks items use plain rounded rectangular double borders that look like web tiles instead of engraved cartouches.",
+        "visual_observations": [
+          "The enlarged center card is readable at both sizes and gives the memorial display a stronger focal point.",
+          "The Final Tricks entries are separated clearly, but their plain rectangles break the ornament language.",
+          "At 1280 the featured card caption and bottom entry row meet the footer; a continuation cue would clarify scrolling.",
+          "The eight statistics are not visible in these stills, so their legibility cannot be certified; this is not a finding that they were removed.",
+          "The purple side-panel texture remains coarse and repetitive."
+        ]
+      },
+      "shop": {
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 6,
+        "background": 5.5,
+        "composition": 6,
+        "readability": 4.5,
+        "coherence": 6,
+        "overall": 5.9,
+        "fits_between_samples": false,
+        "worst_problem": "On shop-1280, the keepsake names split inside narrow lower-left cartouches into fragments such as HANDKER/CHIEF and POCKETFU/L, while the descriptions sit in low-contrast brown tags at the viewport edge.",
+        "visual_observations": [
+          "Shared gold counters and darker recesses ground the jars better than isolated plinths.",
+          "Draped fabric adds physical depth behind the upper card display.",
+          "At 1280 the far-right Boomerang Bone rules remain visibly clipped.",
+          "Description labels gain an object-like backing but lose contrast and usable room.",
+          "No unseen merchandise or description is assumed absent."
+        ]
+      },
+      "combat-floaters": {
+        "ornament": 4.5,
+        "palette": 6,
+        "typography": 6.5,
+        "material": 3.5,
+        "background": 5,
+        "composition": 3.5,
+        "readability": 6,
+        "coherence": 4.5,
+        "overall": 4.8,
+        "fits_between_samples": false,
+        "worst_problem": "On combat-floaters-1280, all six purple banners form one central column from head height to the boss name region, obscuring the Kid's face and making condition ownership ambiguous.",
+        "visual_observations": [
+          "Serif capitals and ribbon silhouettes are closer to the house vocabulary than bare bold text.",
+          "Broad purple fills and hard triangular ends remain flat and vector-like.",
+          "Labels are individually large and readable, but their combined vertical footprint dominates the fight.",
+          "The labels need owner-specific positions, not smaller text."
+        ]
+      }
+    },
+    "HELIODOR": {
+      "rest": {
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 7,
+        "material": 5.5,
+        "background": 5,
+        "composition": 6.5,
+        "readability": 6.5,
+        "coherence": 6.5,
+        "overall": 6.4,
+        "fits_between_samples": false,
+        "worst_problem": "On rest at both sizes, the right option panels place their explanatory bottom lines directly against the lower gold rules, so text and ornament compete for the same baseline.",
+        "visual_observations": [
+          "The four options have large, recognizable pillow, anvil, candle and cup objects and distinct surfaces.",
+          "Wider rows keep the enlarged headings on one line and establish a stronger choice hierarchy.",
+          "The fort roof has a visible sag, but its regular plaid and scallops still fall short of painted cloth.",
+          "At 1280 the fourth option's lower text continues below the viewport; a clear scrolling cue is needed.",
+          "The illustration remains legible, although surrounding wall space and short rows make the board feel less richly staged than the reference."
+        ]
+      },
+      "event": {
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6,
+        "background": 6,
+        "composition": 6,
+        "readability": 6.5,
+        "coherence": 6.5,
+        "overall": 6.4,
+        "fits_between_samples": false,
+        "worst_problem": "On event at both sizes, the center page remains too front-facing and rectangular to read as a lectern; its upper-left candle has little visible supporting structure or local falloff across the paper.",
+        "visual_observations": [
+          "Soft shafts retain dark colored walls and avoid hard polygon edges.",
+          "The candle, red bookmark and exposed page edges make the parchment a more plausible object.",
+          "Narrative text and the visible choice labels retain clear ink contrast.",
+          "At 1280 the risk/reward columns create awkward line breaks and the third choice begins below the viewport.",
+          "The page needs coherent perspective and physical support, rather than more decorative outlines."
+        ]
+      },
+      "gameover": {
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 7,
+        "material": 6,
+        "background": 4,
+        "composition": 6.5,
+        "readability": 6.5,
+        "coherence": 6.5,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "On gameover at both sizes, the enlarged center card's lower pedestal caption is cut by the footer, and the right collection ends in partial cartouches without a clear continuation cue.",
+        "visual_observations": [
+          "Individual gold-edged black Final Tricks cartouches fit the house language more convincingly than plain tables or tiles.",
+          "Visible entries remain readable at 1280, including long two-line names.",
+          "The center card rules are readable, with clear space below the ATTACK banner.",
+          "The eight statistics are not visible in the supplied stills, so their legibility remains unverified rather than judged absent.",
+          "Coarse purple side panels and mechanically repeated shiny cartouches still fall short of the painted reference."
+        ]
+      },
+      "shop": {
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 6.5,
+        "material": 6,
+        "background": 5,
+        "composition": 6.5,
+        "readability": 5.5,
+        "coherence": 6.5,
+        "overall": 6.2,
+        "fits_between_samples": false,
+        "worst_problem": "On shop-1280, the far-right Boomerang Bone rules remain clipped inside their upper card, while the lower description tags have dark ink on muddy grey-brown paper.",
+        "visual_observations": [
+          "A shared shelf, glass highlights and contact shadows make the lower jars read as displayed objects.",
+          "Keepsake names wrap at sensible word boundaries and remain readable.",
+          "The upper curtain is broad and comparatively flat, weakening the staged cloth material.",
+          "The rectangular hanging description tags need painted edges and better contrast.",
+          "Retain all five cards and enlarged text by providing sufficient card height and scrolling space."
+        ]
+      },
+      "combat-floaters": {
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6,
+        "background": 5,
+        "composition": 4.5,
+        "readability": 6,
+        "coherence": 6.5,
+        "overall": 6.2,
+        "fits_between_samples": false,
+        "worst_problem": "On combat-floaters-1280, the six cartouches form a central descending stack that crosses the boss name and health region, so the Kid's conditions no longer read as being beside the Kid's head.",
+        "visual_observations": [
+          "Gold-edged dark cartouches and serif capitals connect convincingly to the reference's nameplates.",
+          "Text is legible and the frames are less bulky than AMETRINE's filled ribbons.",
+          "The two owners' groups merge into a single vertical flow, with lower friendly labels approaching the enemy interface.",
+          "Older upper text is visibly translucent; this is treated as an animation moment rather than missing content.",
+          "Surface shading is still smooth and mechanically repeated rather than painted."
+        ]
+      }
+    },
+    "IOLITE": {
+      "rest": {
+        "ornament": 6.5,
+        "palette": 6.5,
+        "typography": 6.5,
+        "material": 4.5,
+        "background": 5,
+        "composition": 5.5,
+        "readability": 6,
+        "coherence": 5.5,
+        "overall": 5.6,
+        "fits_between_samples": false,
+        "worst_problem": "On rest at both sizes, the second right-hand choice is backed by an enlarged blurry wooden relief whose stretched carving competes with SHARPEN A TRICK and looks pasted into the frame.",
+        "visual_observations": [
+          "The fort gains soft light and visible folds, although the regular scallops and plaid still read geometrically.",
+          "Distinct row materials are a useful idea, but inconsistent scale and blurred detail weaken coherence.",
+          "At 1280 the third row is visibly cut at the viewport edge with weak continuation guidance.",
+          "Pack up and go on is identifiable, but its title is pressed against the top edge of the footer.",
+          "Readable enlarged type should be preserved while replacing the blurred row backings."
+        ]
+      },
+      "event": {
+        "ornament": 6.5,
+        "palette": 7,
+        "typography": 7,
+        "material": 5.5,
+        "background": 5.5,
+        "composition": 6,
+        "readability": 6.5,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "On event at both sizes, the upper-right reading lamp and oversized bright outer gold frame look like smooth geometric cutouts against the textured parchment and candle-painted room.",
+        "visual_observations": [
+          "The bookmark, lamp and frame give the center object a distinct silhouette.",
+          "Side illumination keeps the darks more successfully than ONYX's polygon shafts.",
+          "The lamp's hard-edged shade and broad gold frame highlights lack the reference's worn painted detail.",
+          "Visible narrative ink and choice text are readable.",
+          "At 1280 the third choice continues below the viewport; its absence from view is not evidence of unreachable content."
+        ]
+      },
+      "gameover": {
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 4,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 6.5,
+        "overall": 6.7,
+        "fits_between_samples": false,
+        "worst_problem": "On gameover-1280, the featured card pedestal caption and lowest visible Final Tricks plaques are cut by the footer, with little visual guidance that the board continues below.",
+        "visual_observations": [
+          "Compact, separately framed Final Tricks plaques are readable and give each entry a tangible engraved-object identity.",
+          "The center card's rules are clear at 1280, and the display has balanced spacing around the enlarged card.",
+          "Long names wrap within their own plaques without the broad empty tile areas of AMETRINE.",
+          "The eight statistics are not visible in these stills; their readability remains unverified, not assumed removed.",
+          "Repeated plaque frames and coarse purple side panels still read as assembled assets rather than the reference's single painted scene."
+        ]
+      },
+      "shop": {
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 6.5,
+        "material": 6.5,
+        "background": 5.5,
+        "composition": 6.5,
+        "readability": 5.5,
+        "coherence": 6.5,
+        "overall": 6.4,
+        "fits_between_samples": false,
+        "worst_problem": "On shop-1280, Boomerang Bone's upper-right card rules remain clipped and the lower-left Knotted Handkerchief name breaks inside a word across three lines.",
+        "visual_observations": [
+          "Wooden counters with contact shadows give the jars a more convincing shared surface.",
+          "The light parchment description slips have stronger ink contrast than AMETRINE or HELIODOR.",
+          "Sweeping curtain folds give the upper display more painted depth.",
+          "Lower description slips continue beneath the viewport; the visible pieces remain readable.",
+          "The keepsake cartouches need more room for enlarged names, not smaller lettering."
+        ]
+      },
+      "combat-floaters": {
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6,
+        "background": 5,
+        "composition": 4,
+        "readability": 5.5,
+        "coherence": 6.5,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "On combat-floaters-1280, the central cartouche stack places Vulnerable across the Kid's torso and Dexterity over the boss name region, making the two condition owners difficult to separate.",
+        "visual_observations": [
+          "Dark gold-edged cartouches use the house's visual vocabulary.",
+          "Individual condition labels remain legible, with useful cyan/coral differentiation.",
+          "The lower friendly group is shifted toward the boss, worsening ownership ambiguity.",
+          "The central stack has an excessive combined vertical footprint despite each tag being a reasonable text size.",
+          "The room, actors, enemy plates, rail and hand are excluded from scoring."
+        ]
+      }
+    }
+  },
+  "ranking": {
+    "rest": [
+      "HELIODOR",
+      "AMETRINE",
+      "ONYX",
+      "IOLITE"
+    ],
+    "event": [
+      "HELIODOR",
+      "AMETRINE",
+      "IOLITE",
+      "ONYX"
+    ],
+    "gameover": [
+      "IOLITE",
+      "HELIODOR",
+      "AMETRINE",
+      "ONYX"
+    ],
+    "shop": [
+      "IOLITE",
+      "HELIODOR",
+      "ONYX",
+      "AMETRINE"
+    ],
+    "combat-floaters": [
+      "HELIODOR",
+      "IOLITE",
+      "AMETRINE",
+      "ONYX"
+    ]
+  },
+  "winner": "HELIODOR",
+  "winner_reason": "HELIODOR is the most consistent system across five screen pairs: distinctive rest objects, softened event light, readable featured card, individual Final Tricks cartouches, grounded jars and house-style combat labels. IOLITE has the stronger gameover and shop treatments, but its blurry rest backings and geometric event lamp weaken the overall system. No candidate is close enough to the painted references for fits_between_samples.",
+  "winner_fixes": [
+    {
+      "screen": "combat-floaters",
+      "size": "both, especially 1280x800",
+      "region": "central floating-label column",
+      "fix": "Keep enlarged serif text and gold cartouches, but give each actor an independent nearby lane with clear separation; stagger labels within those lanes so friendly conditions do not descend over the boss name and health region."
+    },
+    {
+      "screen": "shop",
+      "size": "1280x800",
+      "region": "far-right Boomerang Bone card",
+      "fix": "Increase the rules inset and card height to show every rules line below the ATTACK banner, retaining all five Tricks and the current text size; let the board scroll with a visible continuation cue."
+    },
+    {
+      "screen": "rest",
+      "size": "both",
+      "region": "right option-panel lower edges",
+      "fix": "Add vertical padding or row height so every explanatory line clears its lower gold rule; keep all four distinct objects and existing enlarged type."
+    },
+    {
+      "screen": "rest",
+      "size": "both",
+      "region": "Blanket Fort illustration on left",
+      "fix": "Paint irregular weighted folds, sagging seams, quilted volume and cushion compression, replacing the regular scalloped plaid facade and giving lantern light a soft falloff into colored dark."
+    },
+    {
+      "screen": "gameover",
+      "size": "both, especially 1280x800",
+      "region": "lower collection, pedestal caption and statistics continuation",
+      "fix": "Give the scroll area a clearly visible house-style continuation marker and sufficient footer clearance so whole plaques and captions can be brought fully into view; preserve every Trick, all eight statistics and all controls."
+    },
+    {
+      "screen": "event",
+      "size": "both",
+      "region": "central parchment and upper-left candle",
+      "fix": "Make the page sit on a visibly supported lectern with coherent perspective, page thickness and a candle pool that falls across the paper, rather than a flat upright rectangle."
+    },
+    {
+      "screen": "shop",
+      "size": "both",
+      "region": "lower description tags",
+      "fix": "Replace muddy rectangular paper tags with lightly aged, irregular-edged parchment and stronger dark ink, keeping enough height for the full enlarged descriptions."
+    },
+    {
+      "screen": "shop",
+      "size": "both",
+      "region": "upper curtain and lower jar counter",
+      "fix": "Paint weighted curtain folds and uneven candle highlights, then give the jar shelf a wooden top with convincing contact shadows and warm reflected light."
+    },
+    {
+      "screen": "gameover",
+      "size": "both",
+      "region": "right Final Tricks collection and purple side-panel grounds",
+      "fix": "Use smaller-footprint engraved plaque frames around the existing readable names, with more varied worn gold and restrained fabric texture; gain density through surrounding geometry rather than reducing type."
+    }
+  ],
+  "grafts": [
+    {
+      "source": "IOLITE",
+      "screen": "gameover",
+      "region": "right Final Tricks collection",
+      "idea": "Adopt the separately engraved compact plaques, including their readable wrapped long names, to make every entry feel like an object while retaining the complete collection."
+    },
+    {
+      "source": "IOLITE",
+      "screen": "shop",
+      "region": "lower jar counters and description slips",
+      "idea": "Adopt the wooden counter tops, contact shadows and light irregular parchment slips; keep the stronger ink contrast and enlarge slips as needed for full text."
+    },
+    {
+      "source": "AMETRINE",
+      "screen": "shop",
+      "region": "upper curtain",
+      "idea": "Borrow the visibly draped diagonal fabric folds and warm lighting behind the cards, then paint them with less uniform sheen."
+    },
+    {
+      "source": "ONYX",
+      "screen": "combat-floaters",
+      "region": "two actor-local word clusters",
+      "idea": "Borrow only the clear separation into one group per owner; retain HELIODOR's cartouches and move the groups beside the heads so faces stay clear."
+    }
+  ],
+  "usage_remaining_percent": 96
+}

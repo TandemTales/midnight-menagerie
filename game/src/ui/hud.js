@@ -8,7 +8,7 @@
  *
  * Shows, left to right: Companion + region/wing, Courage, Buttons, Clues,
  * Luck, Snack slots, the Keepsake bar, the Backpack Gear bar, Haunt Level,
- * seed, the deck button and the settings button. Every chip on it is hoverable and
+ * the deck button and the settings button. Every chip on it is hoverable and
  * keyboard-focusable, and every tooltip is a plain-language sentence — the HUD
  * is the game's answer to "what do I actually have right now".
  *
@@ -35,7 +35,7 @@
  *   mount      Element to append to.
  *   variant    'bar' (default) | 'combat'
  *   fixed      pin to the top edge of the viewport (default true)
- *   compact    denser padding, hides the seed
+ *   compact    denser padding
  *   useSnacks  the Snack slots are ACTIVATABLE here (combat only). Outside a
  *              Scuffle they still show what you carry, but say so instead of
  *              offering a dead click.
@@ -54,7 +54,6 @@
  */
 
 import { icon } from './icons.js';
-import { formatSeed } from './portrait.js';
 import { openPile } from './deckview.js';
 import { openSettings } from './settings.js';
 import { plural, word } from '../util/plural.js';
@@ -287,7 +286,6 @@ export class HUD {
       <div class="mm-hud__group mm-hud__group--extra"></div>
       <div class="mm-hud__group mm-hud__group--meta">
         <div class="mm-hud__chip mm-hud__haunt" tabindex="0"></div>
-        <div class="mm-hud__chip mm-hud__seed" tabindex="0"></div>
         <button class="mm-hud__chip mm-hud__btn mm-hud__deck" type="button"></button>
         <button class="mm-hud__chip mm-hud__btn mm-hud__settings" type="button" aria-label="Settings"></button>
       </div>`;
@@ -305,7 +303,6 @@ export class HUD {
     this.$relics = root.querySelector('.mm-hud__relics');
     this.$gear = root.querySelector('.mm-hud__gear');
     this.$haunt = root.querySelector('.mm-hud__haunt');
-    this.$seed = root.querySelector('.mm-hud__seed');
     this.$deck = root.querySelector('.mm-hud__deck');
     this.$settings = root.querySelector('.mm-hud__settings');
 
@@ -333,7 +330,6 @@ export class HUD {
     this.$clueEcho = echo(); this.$clue.append(this.$clueEcho);
     this.$luckEcho = echo(); this.$luck.append(this.$luckEcho);
     this.$haunt.prepend(icon('res.haunt-level'));
-    this.$seed.prepend(icon('res.seed'));
     this.$deck.prepend(icon('res.deck'));
     this.$settings.appendChild(icon('ui.gear', { title: 'Settings' }));
 
@@ -810,15 +806,6 @@ export class HUD {
     this.$haunt.dataset.tip = haunt > 0
       ? `Every Haunt Level stacks another permanent difficulty modifier onto the whole expedition. You are running ${haunt} of them.`
       : 'The base difficulty. Win an expedition to unlock Haunt Level 1, which adds a permanent modifier.';
-
-    // One notation everywhere: Select and Game Over both print formatSeed(), so the HUD
-    // must too or the same run shows three different 'seeds'.
-    const seed = (r.seed === undefined || r.seed === null) ? '—' : formatSeed(r.seed);
-    this.$seed.textContent = '';
-    /* round 33 graft: the seed is labelled the way Haunt is (BONEBLACK) */
-    this.$seed.append(icon('res.seed'), wideWord('Seed '), text(seed));
-    this.$seed.dataset.tipTitle = 'Seed';
-    this.$seed.dataset.tip = `${seed} — this number generates the entire expedition. The same seed replays the same rooms, the same rewards and the same shop.`;
 
     const deck = Array.isArray(r.deck) ? r.deck : [];
     this.$deck.textContent = '';

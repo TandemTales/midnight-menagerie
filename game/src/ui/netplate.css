@@ -1,0 +1,38 @@
+/* The connection plate: a brass-edged note over whatever scene is up. See ui/netplate.js. */
+.net-plate {
+  position: absolute;
+  top: 74px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 900;
+  width: min(620px, calc(100% - 32px));
+  padding: 12px 18px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #f1e4c6;
+  background: linear-gradient(180deg, #2c1a33, #1a0f22);
+  border: 2px solid #b78d45;
+  border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 226, 164, .22);
+  pointer-events: auto;
+}
+.net-plate__words {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.32;
+}
+.net-plate__acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+/* The kit button is sized for a board's foot. Here two of them share one row. */
+.net-plate__acts .kit-btn {
+  min-height: 0;
+  padding: 7px 18px;
+  font-size: 14px;
+  letter-spacing: .08em;
+}

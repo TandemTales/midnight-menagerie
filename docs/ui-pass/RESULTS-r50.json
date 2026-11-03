@@ -1,0 +1,37 @@
+{
+  "round": 50,
+  "status": "complete; selected build repaired, validated and applied as working changes",
+  "winner": "GARNET",
+  "selection": "unanimous independent blind votes",
+  "votes": ["GARNET", "GARNET"],
+  "system_scores_descriptive_only": {
+    "judge1": {"AMBER": 7.0, "SAPPHIRE": 7.5, "GARNET": 7.8, "PERIDOT": 7.5},
+    "judge2": {"AMBER": 7.1, "SAPPHIRE": 7.6, "GARNET": 8.1, "PERIDOT": 7.8}
+  },
+  "base": "8dc9904a91448c8c41638f865aeade7fd0599ea2",
+  "comparison_source": "7c5e57cd",
+  "comparison_notes_commit": "b10ed4f0",
+  "selected_repair_commit": "649f198e9f5250824d36e4c7f5ddf202fe41de0d",
+  "comparison_captures": "CAPTURES-r50.json",
+  "validated_captures": "VALIDATED-CAPTURES-r50.json",
+  "all_fit_thresholds_met": false,
+  "applied_to_main": true,
+  "applied_files_byte_verified": 32,
+  "main_index_preserved": true,
+  "main_committed_or_pushed": false,
+  "browser_gates": {"chrome": "pass", "steam_deck": "pass", "gamepad": "pass", "events": "pass", "gameover_keeps": "pass", "seams_proof": "pass", "combat_scene_seam": "pass"},
+  "static_checks": {"scene_css_conflicts": 0, "undefined_css_tokens": 0, "seam_sites": 9108, "unchanged_local_Map_false_positives": 4, "syntax": "pass", "endings": "pass"},
+  "lifecycle_repair": {
+    "problem": "A queued label replayed indefinitely after its owner view left the scene",
+    "change": "Cancel obsolete pending presentation when refreshed bounds have no owner; preserve live-owner delivery",
+    "baseline_orphan_frames": 169,
+    "selected_orphan_frames": 0,
+    "selected_sampled_frames": 173,
+    "selected_queue_empty": true,
+    "surviving_player_delivered_full_lifetime": true,
+    "unit_cases_pass": 3,
+    "selected_browser_used_override": false
+  },
+  "next_brief": "BRIEF-r51.md",
+  "evidence_root": "D:/UILOOP/r50-20261029"
+}

@@ -1,0 +1,872 @@
+{
+  "level": 13,
+  "entries": [
+    {
+      "level": 13,
+      "region": "Secret Passages",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Peephole Watcher",
+      "existing_animation": false,
+      "description": "A small brass peephole set in a narrow diamond of paneled wood, its sliding cover shaped like a drooping eyelid. An unseen snoop checks whether anyone noticed it; the reflected glint looks away before the cover closes. Intent idea: reveal an upcoming choice.",
+      "animation": "2D animation Idle: cover quivers. Tell: glint brightens. Action: cover slides; glint darts sideways. Resolve: embarrassed snap shut.",
+      "signature": "Signature Tiny aperture and cover, not a fleshy eye, mirror or telescope.",
+      "production_id": "peephole-watcher",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\peephole-watcher.webp",
+      "source_path": "animations\\sprites\\enemies\\peepholeWatcher.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            138,
+            233
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 15253,
+          "partial_alpha_pixels": 16627,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            138,
+            233
+          ],
+          "sha256": "875314d884d3b366369e9ceb65685751fcd7bb30b598ea73041fa391ee9d3b5c"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 47929,
+          "partial_alpha_pixels": 17333,
+          "visible_bbox_alpha64": [
+            60,
+            7,
+            198,
+            240
+          ],
+          "sha256": "bbf1c2e1f47698c9b81b8236b7545cc92d351bfd9d786e113b5e807fbaff6522"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1165675,
+          "partial_alpha_pixels": 406269,
+          "visible_bbox_alpha64": [
+            296,
+            35,
+            968,
+            1175
+          ],
+          "sha256": "62e8dd5c80f7408d055f1078ec8fb08d0bf8514f11e40e5686f654ff69e2330e"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\peephole-watcher-original.png",
+        "visual": "Reviewed full generated image: narrow diamond wooden panel, brass aperture and drooping sliding cover, dark glass glint. No fleshy eyeball or separate character. Complete diamond tips visible.",
+        "runtime_metadata": {
+          "file": "peephole-watcher.webp",
+          "w": 138,
+          "h": 233,
+          "source": "peepholeWatcher.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 13,
+      "region": "Secret Passages",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Servant Bell",
+      "existing_animation": false,
+      "description": "One brass bell on a curled steel spring, mounted above a single blank enamel plaque with a taut wire rising behind it. It summons a servant who never arrives; its ringing shadow continues after the metal stops. Intent idea: call a small support effect.",
+      "animation": "2D animation Idle: wire twitches. Tell: spring tightens. Action: bell rings twice. Resolve: metal stills; shadow rings once more.",
+      "signature": "Signature A single spring-bell silhouette, not a multi-bell control panel or musical instrument swarm.",
+      "production_id": "servant-bell",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\servant-bell.webp",
+      "source_path": "animations\\sprites\\enemies\\servantBell.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            137,
+            226
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 16650,
+          "partial_alpha_pixels": 13780,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            135,
+            226
+          ],
+          "sha256": "683bc5c9b55bec0bcf4774d5ecebafa85dfa19879bf0bf84bc8cb413385e536d"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 48830,
+          "partial_alpha_pixels": 16174,
+          "visible_bbox_alpha64": [
+            74,
+            5,
+            209,
+            231
+          ],
+          "sha256": "55818e18e2b0e3bb20604ea6cfac3ce693e8ecc2eeb075acc6932be1699a1bbb"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1177274,
+          "partial_alpha_pixels": 394713,
+          "visible_bbox_alpha64": [
+            364,
+            25,
+            1025,
+            1129
+          ],
+          "sha256": "758a3e1439824c0dad360362b3fc9ee84e17d18d738c0086917ba1303d152601"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\servant-bell-original.png",
+        "visual": "Reviewed full generated image: one brass bell, curled steel spring, blank enamel plaque and short taut wire. Compact delayed bell shadow; entire assembly visible without extra bells or faces.",
+        "runtime_metadata": {
+          "file": "servant-bell.webp",
+          "w": 137,
+          "h": 226,
+          "source": "servantBell.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 13,
+      "region": "Secret Passages",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Floor Hatch",
+      "existing_animation": false,
+      "description": "A shallow square trapdoor in a short brass-edged floor frame, with an enormous flat iron ring handle. It plays peekaboo with a darkness that remains visible when the lid closes. Intent idea: briefly hide a small effect.",
+      "animation": "2D animation Idle: ring lifts. Tell: edge glows. Action: lid rises; one round shadow peeks over lip. Resolve: lid shuts; shadow slides beneath frame.",
+      "signature": "Signature Low horizontal hinged geometry; no hallway vista, creature mouth or upright door.",
+      "production_id": "floor-hatch",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\floor-hatch.webp",
+      "source_path": "animations\\sprites\\enemies\\floorHatch.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            232,
+            160
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 14727,
+          "partial_alpha_pixels": 21978,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            231,
+            159
+          ],
+          "sha256": "1b1eb5f82d86443eb0cc57cf746c83b2edc51b14ded885d3f32fc777df0df924"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 42440,
+          "partial_alpha_pixels": 22681,
+          "visible_bbox_alpha64": [
+            15,
+            71,
+            246,
+            230
+          ],
+          "sha256": "6b234905bd6eccd15f6fc2c262ba615c850f5534f57da8f7710678c4182cadff"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1030840,
+          "partial_alpha_pixels": 541246,
+          "visible_bbox_alpha64": [
+            74,
+            348,
+            1206,
+            1128
+          ],
+          "sha256": "9c99b3c6322975e6b61c19dd661dab1adf15a4b281a4b644d058b9960fa518ef"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\floor-hatch-original.png",
+        "visual": "Reviewed full generated image: low square brass-edged wood hatch, large flat iron ring and shallow opened lid. Dark violet interior is local to frame, no corridor or creature mouth.",
+        "runtime_metadata": {
+          "file": "floor-hatch.webp",
+          "w": 232,
+          "h": 160,
+          "source": "floorHatch.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 13,
+      "region": "Secret Passages",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Listening Tube",
+      "existing_animation": false,
+      "description": "A slender S-curved brass speaking tube with a flared ear-shaped funnel above and a smaller downward horn below. It repeats a confidential whisper from the wrong end; a tiny light travels backward through its metal. Intent idea: echo one weak effect.",
+      "animation": "2D animation Idle: funnel tilts. Tell: small horn glows. Action: backward light ripple; one comma-shaped whisper puff. Resolve: funnel shushes itself downward.",
+      "signature": "Signature Open curved tube, no mouth apparition, pipe swarm or steam-driven gauge.",
+      "production_id": "listening-tube",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\listening-tube.webp",
+      "source_path": "animations\\sprites\\enemies\\listeningTube.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            102,
+            237
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 15751,
+          "partial_alpha_pixels": 7974,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            102,
+            236
+          ],
+          "sha256": "ca52edded2211f0f5d6780e535b926628be9f20fb7d2eaa78e75075ccc8b7765"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 56242,
+          "partial_alpha_pixels": 8845,
+          "visible_bbox_alpha64": [
+            75,
+            7,
+            177,
+            243
+          ],
+          "sha256": "71f5f7b3a3699efbff38ac1d861f4a1fa632705aca9a60d7bc51a54639b955c4"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1362213,
+          "partial_alpha_pixels": 209985,
+          "visible_bbox_alpha64": [
+            368,
+            36,
+            865,
+            1192
+          ],
+          "sha256": "ff73d015d5e781f3ff291ae9a8da5df889d0d045fc37dc5e928164e961398d20"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\listening-tube-original.png",
+        "visual": "Reviewed full generated image: slender S-curved brass tube with flared ear-shaped upper funnel and smaller downward horn. Small comma puff and cool light line; complete curve visible without anatomical additions.",
+        "runtime_metadata": {
+          "file": "listening-tube.webp",
+          "w": 102,
+          "h": 237,
+          "source": "listeningTube.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 13,
+      "region": "Secret Passages",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Loose Brick",
+      "existing_animation": false,
+      "description": "A single oversized red brick hovering in a rough square of old cream mortar, with three chalky white fingerprints on one edge. It taps out a secret knock, then pretends it never moved. Its mortar outline stays suspended when it leaves. Intent idea: a small delayed surprise.",
+      "animation": "2D animation Idle: dust trembles. Tell: fingerprints brighten. Action: brick slides forward, taps twice. Resolve: retreats slightly off-center.",
+      "signature": "Signature Blunt horizontal masonry block and empty outline; no face, limbs or stone statue.",
+      "production_id": "loose-brick",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\loose-brick.webp",
+      "source_path": "animations\\sprites\\enemies\\looseBrick.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            198,
+            144
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 10859,
+          "partial_alpha_pixels": 16685,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            197,
+            143
+          ],
+          "sha256": "f96e6517607c3a1a9a083a09b3641371bc952fb30be4bc3548b5c58a4a92e6e1"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 46413,
+          "partial_alpha_pixels": 18155,
+          "visible_bbox_alpha64": [
+            30,
+            63,
+            227,
+            206
+          ],
+          "sha256": "304d591809a69774144d6a916131ad59a36e276ba654a8effa01405c0df44a22"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1125643,
+          "partial_alpha_pixels": 445767,
+          "visible_bbox_alpha64": [
+            148,
+            309,
+            1113,
+            1010
+          ],
+          "sha256": "f2d64d0f1459fe768ffa6807d3b9c3bd7dffc10123658b77913c9e7510c38fbf"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\loose-brick-original.png",
+        "visual": "Reviewed full generated image: single red horizontal brick floating before a rough suspended cream-mortar outline, exactly three white fingerprint marks. No face or limbs; complete brick and mortar perimeter visible.",
+        "runtime_metadata": {
+          "file": "loose-brick.webp",
+          "w": 198,
+          "h": 144,
+          "source": "looseBrick.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 13,
+      "region": "Secret Passages",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Squeaky Hinge",
+      "existing_animation": false,
+      "description": "A large open butterfly hinge, two mismatched brass leaves and a long capped pin, hovering at a comic slant. It loudly requests silence, pulling out its own pin while somehow staying together. Intent idea: interrupt a prepared effect.",
+      "animation": "2D animation Idle: leaves tremble. Tell: pin glows. Action: pin lifts; leaves clap once without contact. Resolve: pin drops back upside down.",
+      "signature": "Signature Flat double-winged hardware, not a complete door or a hand reaching from a wall.",
+      "production_id": "squeaky-hinge",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\squeaky-hinge.webp",
+      "source_path": "animations\\sprites\\enemies\\squeakyHinge.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            186,
+            194
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 16193,
+          "partial_alpha_pixels": 19233,
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            185,
+            194
+          ],
+          "sha256": "dbf4833ac0ce3633b237f502e7418ca5056f9b10af031db794796b0d6b0413fd"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 43924,
+          "partial_alpha_pixels": 20954,
+          "visible_bbox_alpha64": [
+            47,
+            25,
+            231,
+            219
+          ],
+          "sha256": "3529b85a6524d5138a5cf52eba598a21323562ab9a402f6f1322a2cc0471d444"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1060345,
+          "partial_alpha_pixels": 511734,
+          "visible_bbox_alpha64": [
+            230,
+            124,
+            1133,
+            1071
+          ],
+          "sha256": "5ad2d5c0df83878b580cbea552694cee334b0feef79f21935c9220aea125ede1"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\squeaky-hinge-original.png",
+        "visual": "Reviewed full generated image: two mismatched ornate brass hinge leaves, open holes and central long capped pin with warm glow. Clear flat hardware silhouette at comic angle, no insect or doorway.",
+        "runtime_metadata": {
+          "file": "squeaky-hinge.webp",
+          "w": 186,
+          "h": 194,
+          "source": "squeakyHinge.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 13,
+      "region": "Secret Passages",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Vent Grille",
+      "existing_animation": false,
+      "description": "A short rectangular iron air grille with five broad louvers and a cobweb tied like a tiny bow in one corner. It holds its breath to avoid discovery, then sneezes out a perfectly square dust puff. Intent idea: briefly obscure, then expose itself.",
+      "animation": "2D animation Idle: cobweb flutters inward. Tell: louvers pinch closed. Action: open in sequence; square puff escapes. Resolve: louvers straighten sheepishly.",
+      "signature": "Signature Low slatted rectangle and geometric dust; no humanoid drain shadow or vapor creature.",
+      "production_id": "vent-grille",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\vent-grille.webp",
+      "source_path": "animations\\sprites\\enemies\\ventGrille.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            195,
+            163
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 8912,
+          "partial_alpha_pixels": 22376,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            194,
+            163
+          ],
+          "sha256": "b1081c6b075d1b2a23ff2923b1fd263588b9a1a4a4ec1424b9bf765665bc5633"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            256,
+            256
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 41936,
+          "partial_alpha_pixels": 23103,
+          "visible_bbox_alpha64": [
+            31,
+            50,
+            225,
+            213
+          ],
+          "sha256": "f85ccb46dd6081acc959ccf297ed873c6961bc644fd08af83d486fad8ef1eb67"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1017142,
+          "partial_alpha_pixels": 555074,
+          "visible_bbox_alpha64": [
+            152,
+            246,
+            1103,
+            1041
+          ],
+          "sha256": "4c34af9c7dded2a19b00553ce2761b661d41c759e42633fc4b8d5d9afe50c157"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\vent-grille-v2-original.png",
+        "visual": "Reviewed corrected full image: exactly five broad horizontal louvers, small cobweb bow, aged iron rectangular frame, no face. First four-louver render retained but rejected; accepted v2 is fully framed.",
+        "runtime_metadata": {
+          "file": "vent-grille.webp",
+          "w": 195,
+          "h": 163,
+          "source": "ventGrille.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 13,
+      "region": "Secret Passages",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Silent Winch",
+      "existing_animation": false,
+      "description": "A broad wooden cable drum held between two iron cheeks, a large offset hand crank and one endless loop of pale rope disappearing into its own center. It draws up something that never arrives; one knotted bow passes again before the drum completes a turn. Intent idea: wind up a stronger effect that can be interrupted.",
+      "animation": "2D animation Idle: crank inches backward. Tell: rope pulls taut. Action: one deliberate turn; duplicate bow passes along the loop. Resolve: crank releases a quarter-turn and rope relaxes. Use a short scrolling rope texture.",
+      "signature": "Signature Horizontal drum and closed rope circuit; not a plumb bob, cage, cart or open portal.",
+      "production_id": "silent-winch",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\silent-winch.webp",
+      "source_path": "animations\\sprites\\enemies\\silentWinch.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            470,
+            392
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 95006,
+          "partial_alpha_pixels": 87376,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            470,
+            392
+          ],
+          "sha256": "70f6ab1186f5b4ea61be53ffd204a4243277089e839dc29ffab232ed255647c6"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 168408,
+          "partial_alpha_pixels": 91878,
+          "visible_bbox_alpha64": [
+            31,
+            61,
+            501,
+            453
+          ],
+          "sha256": "63396fe6292b55e2f4f2e2908b6adae2721bd07de9043792d7fc84a66099c09f"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1010337,
+          "partial_alpha_pixels": 561268,
+          "visible_bbox_alpha64": [
+            77,
+            150,
+            1226,
+            1109
+          ],
+          "sha256": "e48475279763ee559df701c91ca3d6e31d1417c1011f120e8a99940f2040b303"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\silent-winch-original.png",
+        "visual": "Reviewed full generated image: broad wooden drum between two iron cheeks, large offset hand crank, one pale rope loop returning into center and one visible bow. Whole mechanism visible without load, cage or person.",
+        "runtime_metadata": {
+          "file": "silent-winch.webp",
+          "w": 470,
+          "h": 392,
+          "source": "silentWinch.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 13,
+      "region": "Secret Passages",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Skeleton Lock",
+      "existing_animation": false,
+      "description": "An oversized brass mortise lock seen in side cutaway, its rectangular backplate supporting three chunky tumblers and a large empty keyhole. The name refers only to a skeleton key; there are no bones. Its proud inner mechanism locks and unlocks itself without anyone asking; the keyhole slides to avoid a nonexistent key. Intent idea: alternate two clearly signaled restrictions.",
+      "animation": "2D animation Idle: tumblers tick. Tell: keyhole brightens. Action: three tumblers hop; keyhole plate slides sideways. Resolve: latch returns, keyhole slowly recenters. No door or room beyond it.",
+      "signature": "Signature Exposed lockwork, not another cabinet, barred gate or crowd of keys.",
+      "production_id": "skeleton-lock",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\skeleton-lock.webp",
+      "source_path": "animations\\sprites\\enemies\\skeletonLock.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            436,
+            355
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 30866,
+          "partial_alpha_pixels": 122845,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            436,
+            354
+          ],
+          "sha256": "7158b8f377ac0b898ce184791e6a5e1f1d18dc20069c99615d2b0b53263dc08f"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 136206,
+          "partial_alpha_pixels": 124869,
+          "visible_bbox_alpha64": [
+            34,
+            67,
+            470,
+            421
+          ],
+          "sha256": "f2e421ecee35b9105af0fceb23b24f21745a5d9b04b461140540d2f1293d8759"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 818305,
+          "partial_alpha_pixels": 753538,
+          "visible_bbox_alpha64": [
+            83,
+            165,
+            1150,
+            1032
+          ],
+          "sha256": "a1e59e416e2b9f59f56adee137448635d42ee42c28d5ab38317e3fae125b4768"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\skeleton-lock-original.png",
+        "visual": "Reviewed full generated image: rectangular cutaway mortise lock with exactly three chunky tumblers, large empty purple-glint keyhole and latch tongue. No bones, keys, door or room; complete mechanism visible.",
+        "runtime_metadata": {
+          "file": "skeleton-lock.webp",
+          "w": 436,
+          "h": 355,
+          "source": "skeletonLock.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 13,
+      "region": "Secret Passages",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Folding Partition",
+      "existing_animation": false,
+      "description": "Three narrow plaster-and-lath panels joined by exposed vertical brass hinges. Their uneven tops and visible wooden ribs form a tall, crooked zigzag; no doorway is cut into them. They keep shortening an unused shortcut. A blue seam travels straight across all three panels even while they fold in opposite directions. Intent idea: temporary obstruction followed by an exposed opening.",
+      "animation": "2D animation Idle: hinge dust trembles. Tell: seam brightens. Action: crossfade between open and concertina-folded poses while the seam stays level. Resolve: panels unfold with one embarrassed creak. Two fixed poses; no moving camera.",
+      "signature": "Signature Folding internal wall fabric, not a staircase, freestanding door, domestic screen or miniature room.",
+      "production_id": "folding-partition",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\folding-partition.webp",
+      "source_path": "animations\\sprites\\enemies\\foldingPartition.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            290,
+            452
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 38352,
+          "partial_alpha_pixels": 91745,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            290,
+            452
+          ],
+          "sha256": "e7321f8e71196b3180f6cfaff9dfb3cf4a0504c64fc666d7d83317864a2fe18b"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            512,
+            512
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 166498,
+          "partial_alpha_pixels": 94663,
+          "visible_bbox_alpha64": [
+            116,
+            30,
+            406,
+            482
+          ],
+          "sha256": "b0d03649fefd23d08e2c509fadd40ebab207d064fef7933ab99e8ebf779484a5"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 996650,
+          "partial_alpha_pixels": 575386,
+          "visible_bbox_alpha64": [
+            286,
+            74,
+            993,
+            1180
+          ],
+          "sha256": "5c80957f57d384f3a548c43a4fc317402faad684b2c8015bccd7389334ce743e"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\folding-partition-original.png",
+        "visual": "Reviewed full generated image: exactly three uneven plaster-and-lath wall panels joined by brass hinges, crooked zigzag pose and thin blue seam. No doorway, furniture legs or room; all panel tips visible.",
+        "runtime_metadata": {
+          "file": "folding-partition.webp",
+          "w": 290,
+          "h": 452,
+          "source": "foldingPartition.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    },
+    {
+      "level": 13,
+      "region": "Secret Passages",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Man in the Walls",
+      "existing_animation": false,
+      "description": "A flat midnight-blue figure lives between two offset wallpaper strips. A long profile nose, soft hat and oversized mitten-like hands keep him recognizable and bashful; no stretched flesh or exposed anatomy. The mansion’s shy eavesdropper insists nobody saw him, even while his shadow waves hello. Intent idea: concealed preparation alternates with a visible interruption opportunity.",
+      "animation": "2D animation Idle: peek around paper. Tell: strips ripple outward. Action: silhouette slides halfway out and gestures “shh.” Resolve: hand retracts; delayed shadow waves. One silhouette rig, two paper layers and one shadow; no room or camera changes.",
+      "signature": "Signature A wall-bound peekaboo performer, not a free-standing shadow guest or many-part architectural guardian.",
+      "production_id": "man-in-the-walls",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\man-in-the-walls.webp",
+      "source_path": "animations\\sprites\\enemies\\manInTheWalls.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "size": [
+            455,
+            933
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 119753,
+          "partial_alpha_pixels": 303568,
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            454,
+            932
+          ],
+          "sha256": "3f87cee1214d67bb2f63f42a4287232a9abc451e6fec67e5302b6675058e8751"
+        },
+        "source": {
+          "format": "PNG",
+          "size": [
+            1024,
+            1024
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 735333,
+          "partial_alpha_pixels": 312049,
+          "visible_bbox_alpha64": [
+            284,
+            43,
+            738,
+            975
+          ],
+          "sha256": "8fb7bbec089f3b5991c4e0cb697dcc1da9a179fa4f13509f13bc26ab65d82816"
+        },
+        "original": {
+          "format": "PNG",
+          "size": [
+            1254,
+            1254
+          ],
+          "mode": "RGBA",
+          "transparent_pixels": 1103096,
+          "partial_alpha_pixels": 468556,
+          "visible_bbox_alpha64": [
+            348,
+            53,
+            904,
+            1195
+          ],
+          "sha256": "5e569614185356b1095bc30d2b47dc854e02c9f5c770c5228f118eb1b78ada62"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\man-in-the-walls-original.png",
+        "visual": "Reviewed full generated image: bashful midnight-blue half-figure between exactly two offset curling wallpaper strips, profile nose, soft hat and oversized mitten-like shushing hand. Delayed waving shadow stays on paper; no exposed anatomy or free-standing body. Full paper and hat tips visible.",
+        "runtime_metadata": {
+          "file": "man-in-the-walls.webp",
+          "w": 455,
+          "h": 933,
+          "source": "manInTheWalls.png"
+        },
+        "conversion": "Tier-size square PNG source, isolated existing build_enemy_still conversion; no game registry updates."
+      },
+      "blocker": null
+    }
+  ],
+  "counts": {
+    "existing": 0,
+    "new": 11,
+    "pending": 0,
+    "blocked": 0,
+    "total": 11
+  },
+  "contact_sheet": "docs/enemy-roster-2026-10-26/art-production/region-13-contact.jpg",
+  "contact_visual_review": "Reviewed all eleven finished sprites together; distinct silhouettes/materials, readable forms, no visible clipping or anomalous anatomy."
+}

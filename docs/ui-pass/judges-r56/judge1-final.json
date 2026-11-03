@@ -1,0 +1,258 @@
+{
+  "judge": 1,
+  "inspected": {
+    "references": 4,
+    "captures": 40,
+    "references_first": true,
+    "order": ["OBSIDIAN", "TOPAZ", "ONYX", "AMBER"],
+    "capture_order": ["rest", "rest-1280", "event", "event-1280", "gameover", "gameover-1280", "shop", "shop-1280", "combat-floaters", "combat-floaters-1280"]
+  },
+  "method": "Read both rubrics, then the four reference images, then each of the 40 candidate PNGs individually with the Read tool, in the supplied candidate order and capture order. No contact sheets, crops, source, metadata or other reviews. The candidates share one layout and differ in small regions: title faces, rest icons and plaques, memorial rows and badges, shop rims and cost disks, and combat condition plaques, so scores sit close together and were set against the references rather than against each other. Preview banners and combat room, actor and hand art were ignored. Condition word opacity was not scored from one frozen frame. Below-viewport content and large type were treated as intentional. Where two candidates looked the same in a region, the notes say so and the rank order there is a near tie.",
+  "candidates": {
+    "OBSIDIAN": {
+      "system_overall": 6.5,
+      "screens": {
+        "rest": {
+          "dimensions": {"ornament": 7, "palette": 6.5, "typography": 7, "material": 5.5, "background": 5, "composition": 7, "readability": 8, "coherence": 6},
+          "overall": 6.3,
+          "fits_between_samples": false,
+          "worst_problem": "The REST row's pillow icon is a pale, nearly white shape with little fold shading, so it sits on the dark medallion like a sticker and does not share the plum velvet of the blanket fort painting beside it.",
+          "size_notes": {
+            "1600x900": "The pillow and the white candle are the brightest flat values in the right column. The condition plaques are thin gold outlines around dark fill and have little thickness. The Discoveries plaque clips the right painting's corner.",
+            "1280x800": "The pillow still reads as a pale cut-out. Row text stays clear, but the plaques flatten further into outlined pills."
+          }
+        },
+        "event": {
+          "dimensions": {"ornament": 7.5, "palette": 7.5, "typography": 6.5, "material": 6.5, "background": 6, "composition": 7, "readability": 7.5, "coherence": 6.5},
+          "overall": 6.6,
+          "fits_between_samples": false,
+          "worst_problem": "The title THE LOST AND FOUND is a smooth violet gradient with a light outline, with none of the marbled, chipped surface of the title.png letters.",
+          "size_notes": {
+            "1600x900": "The title is large and dim against its cartouche. The parchment and red bookmark are convincing, though the moonlight cones read as airbrushed wedges.",
+            "1280x800": "The title holds up better at this size but is still a clean gradient. The parchment's straight edges look cut by a rectangle next to the torn choice slips."
+          }
+        },
+        "gameover": {
+          "dimensions": {"ornament": 7.5, "palette": 7, "typography": 6.5, "material": 6.5, "background": 6, "composition": 6.5, "readability": 7.5, "coherence": 6.5},
+          "overall": 6.5,
+          "fits_between_samples": false,
+          "worst_problem": "The right column's Final Tricks rows are shallow, but their wispy streaked fill and thin rims look like tinted bars rather than inlaid enamel, and the dull violet square cost badges have no metal to them.",
+          "size_notes": {
+            "1600x900": "The card's maroon rules well keeps its depth and stays clear, the best of the four here. The title remains a flat gradient.",
+            "1280x800": "The rows stay tidy and restrained. The third row's cut at the list boundary is clean, but the rows have little lit edge."
+          }
+        },
+        "shop": {
+          "dimensions": {"ornament": 7, "palette": 7, "typography": 7, "material": 6, "background": 7, "composition": 7, "readability": 7.5, "coherence": 6.5},
+          "overall": 6.4,
+          "fits_between_samples": false,
+          "worst_problem": "The cost disks at each card's top left are pale cream discs with a plain dark ring, the least metallic of the four, and they look pasted onto rims that are themselves fairly even bronze.",
+          "size_notes": {
+            "1600x900": "The curtain room and Mr. Moth's frame carry the screen. The card rims are an even bronze band with little local wear, and the deep blue rules wells are very quiet.",
+            "1280x800": "The flat disks are more obvious because they are proportionally larger. The price tags and BUY plaque hold up well."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {"ornament": 7, "palette": 7, "typography": 7, "material": 6, "background": 6.5, "composition": 6.5, "readability": 7, "coherence": 6.5},
+          "overall": 6.5,
+          "fits_between_samples": false,
+          "worst_problem": "The condition plaques around the actors are dark, thin-edged ribbons with little plate thickness, so the words seem to float on tinted strips instead of being mounted on metal.",
+          "size_notes": {
+            "1600x900": "The upper-right plaques have little body against the busy room. The +2 Weak plaque sits across the left candle sconce.",
+            "1280x800": "The three-high stacks at each side read clearly but stay flat. The top nameplates crowd the frame edge under the top bar."
+          }
+        }
+      }
+    },
+    "TOPAZ": {
+      "system_overall": 6.6,
+      "screens": {
+        "rest": {
+          "dimensions": {"ornament": 7, "palette": 6, "typography": 7, "material": 6, "background": 5, "composition": 7, "readability": 8, "coherence": 6},
+          "overall": 6.4,
+          "fits_between_samples": false,
+          "worst_problem": "The REST row's pillow is a candy pink that appears nowhere else in the plum and gold palette, and it pulls the eye away from the fort painting.",
+          "size_notes": {
+            "1600x900": "The condition plaques gain a warm purple fill and brighter gold rims, a real improvement in body. The sharpen and candle icons remain simple and clean-edged.",
+            "1280x800": "The pink pillow is still the off-palette note. The plaques hold their rim and fill at this size and are clearly legible."
+          }
+        },
+        "event": {
+          "dimensions": {"ornament": 7.5, "palette": 7.5, "typography": 6.5, "material": 6.5, "background": 6, "composition": 7, "readability": 7.5, "coherence": 6.5},
+          "overall": 6.6,
+          "fits_between_samples": false,
+          "worst_problem": "The title THE LOST AND FOUND remains a smooth violet gradient face, far from the carved, marbled planes of the title.png lettering.",
+          "size_notes": {
+            "1600x900": "This looks the same as OBSIDIAN's event: strong parchment and bookmark, dim smooth title, airbrushed light cones.",
+            "1280x800": "Also the same as OBSIDIAN's at this size. Reading the paragraph is easy and the title is still a clean gradient."
+          }
+        },
+        "gameover": {
+          "dimensions": {"ornament": 7.5, "palette": 6.5, "typography": 6.5, "material": 6, "background": 6, "composition": 6.5, "readability": 7, "coherence": 6},
+          "overall": 6.3,
+          "fits_between_samples": false,
+          "worst_problem": "The Final Tricks rows in the right column are saturated, even purple bars with heavy bright rims, reading as glossy UI buttons rather than shallow memorial inlays.",
+          "size_notes": {
+            "1600x900": "The gold domed cost coins are the best idea here and match the card cost medallion. The card's rules well carries a grey haze that weakens the rule text and the maroon.",
+            "1280x800": "The haze is gone and the card is firm, but the vivid rows are stronger than anything else in the column."
+          }
+        },
+        "shop": {
+          "dimensions": {"ornament": 7.5, "palette": 7, "typography": 7, "material": 6.5, "background": 7, "composition": 7, "readability": 7.5, "coherence": 6.5},
+          "overall": 6.7,
+          "fits_between_samples": false,
+          "worst_problem": "The bright, evenly glossy gold cost disks at each card's top left look new and polished against the old room, closer to a slick mobile coin than to the samples' antique metal.",
+          "size_notes": {
+            "1600x900": "The disks read as real domed metal and the rims are warmer, with some wear. They are the brightest objects on each card.",
+            "1280x800": "The disks are clear and strong, and the gloss is more uniform at this size. Rims and tags stay cohesive."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {"ornament": 7, "palette": 7, "typography": 7, "material": 6.5, "background": 6.5, "composition": 6.5, "readability": 7.5, "coherence": 6.5},
+          "overall": 6.8,
+          "fits_between_samples": false,
+          "worst_problem": "The condition plaques' purple fill glows evenly from end to end, so they lift off the room but read as lit UI tags rather than worn plates catching candlelight.",
+          "size_notes": {
+            "1600x900": "The words separate well from the room and the plaques have more body than OBSIDIAN's. The +2 Weak plaque still crosses the left sconce.",
+            "1280x800": "Strong legibility in both stacks. The fill's evenness shows more when three plaques are stacked."
+          }
+        }
+      }
+    },
+    "ONYX": {
+      "system_overall": 7.0,
+      "screens": {
+        "rest": {
+          "dimensions": {"ornament": 7.5, "palette": 7.5, "typography": 7.5, "material": 7.5, "background": 5, "composition": 7, "readability": 8, "coherence": 7},
+          "overall": 7.2,
+          "fits_between_samples": false,
+          "worst_problem": "The row icons are now the right materials, but the room behind the fort frame and under the rows is a dark, nearly empty ground that does not reach a painting's level of incident.",
+          "size_notes": {
+            "1600x900": "The mauve pillow has real folds, the sharpen icon reads as steel on stone, and the wax candle throws an amber glow into its medallion. All three belong with the fort painting. The title's carved mottling is closest to the references.",
+            "1280x800": "The pillow and candle get muddier when small and lose some separation from the medallion, but they still read as cloth and wax. The plaques keep their mottled fill."
+          }
+        },
+        "event": {
+          "dimensions": {"ornament": 7.5, "palette": 7.5, "typography": 7.5, "material": 7, "background": 6, "composition": 7, "readability": 7.5, "coherence": 7},
+          "overall": 7.0,
+          "fits_between_samples": false,
+          "worst_problem": "The two moonlight cones falling from the side windows are soft airbrushed wedges that end abruptly on the floor, and they are the least painted thing around the improved title and parchment.",
+          "size_notes": {
+            "1600x900": "The carved lavender title has irregular highlights that begin to echo the title.png letters. The folded red bookmark and parchment are strong. Some dark text sits low in contrast at the mottled right edge of the sheet.",
+            "1280x800": "The title remains the screen's anchor and its mottling survives. The sheet's straight edge looks ruled next to the torn choice slip."
+          }
+        },
+        "gameover": {
+          "dimensions": {"ornament": 7.5, "palette": 6.5, "typography": 7.5, "material": 6.5, "background": 6, "composition": 6.5, "readability": 7.5, "coherence": 6.5},
+          "overall": 6.7,
+          "fits_between_samples": false,
+          "worst_problem": "The Final Tricks rows at right are filled with loud diagonal violet streaks that look like a scratchy overlay, competing with the card and the title instead of sitting as shallow inlays.",
+          "size_notes": {
+            "1600x900": "The title is the best of the four and the card's maroon stays mostly intact. The row streaks are the most eye-catching texture on the screen.",
+            "1280x800": "The streaks read closer to marble but stay busy. The violet square cost badges remain plain against them."
+          }
+        },
+        "shop": {
+          "dimensions": {"ornament": 7.5, "palette": 7, "typography": 7.5, "material": 6.5, "background": 7, "composition": 7, "readability": 7.5, "coherence": 7},
+          "overall": 6.9,
+          "fits_between_samples": false,
+          "worst_problem": "The cost disks at each card's top left stay pale cream with a thin ring, so they do not share the tarnish now visible on the card rims around them.",
+          "size_notes": {
+            "1600x900": "The card rims have visible local darkening and lit breaks, which looks handled and old. The carved title sits well above the curtain room. The blue wells are quiet with little visible emboss.",
+            "1280x800": "Rim wear is most apparent here and makes the frames feel like objects. The pale disks stand out more against them."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {"ornament": 7.5, "palette": 7, "typography": 7.5, "material": 7, "background": 6.5, "composition": 6.5, "readability": 7.5, "coherence": 7},
+          "overall": 7.1,
+          "fits_between_samples": false,
+          "worst_problem": "The upper-right condition stack and the left stack still sit straight across the sconces and room detail in rigid rows, so the plaques feel placed over the painting rather than part of the scene.",
+          "size_notes": {
+            "1600x900": "The plaques are darker and more solid, with crisp faces, and they carry the words without glowing. The +2 Weak plaque crosses the left sconce.",
+            "1280x800": "The stacks are clean and legible with good rim definition. The top nameplates are tight beneath the top bar."
+          }
+        }
+      }
+    },
+    "AMBER": {
+      "system_overall": 6.8,
+      "screens": {
+        "rest": {
+          "dimensions": {"ornament": 7, "palette": 6.5, "typography": 6.5, "material": 6.5, "background": 5, "composition": 7, "readability": 8, "coherence": 6.5},
+          "overall": 6.6,
+          "fits_between_samples": false,
+          "worst_problem": "The title YOU BUILD THE FORT is so pale it reads as pinkish silver, losing the lavender that defines the sample wordmark, and the white candle icon in the FORGE row stays flat beside the better pillow.",
+          "size_notes": {
+            "1600x900": "The lilac pillow has shape, though its magenta glow is a little synthetic. The sharpen icon has a good dark blade. The plaques are thin like OBSIDIAN's.",
+            "1280x800": "The pale title has strong legibility but is off-hue. The flat candle stands out as the unfinished icon in the column."
+          }
+        },
+        "event": {
+          "dimensions": {"ornament": 7.5, "palette": 7, "typography": 7, "material": 7, "background": 6, "composition": 7, "readability": 8, "coherence": 6.5},
+          "overall": 6.7,
+          "fits_between_samples": false,
+          "worst_problem": "The carved title THE LOST AND FOUND has pitted, stony planes, but its near-white pink-lavender drains the violet out of the header and leaves it looking like weathered stone rather than the samples' marbled enamel.",
+          "size_notes": {
+            "1600x900": "The title is the most legible of the four with convincing wear, but it is too pale against the purple cartouche. The parchment and bookmark match the others.",
+            "1280x800": "The pale face is crisp and readable. The hue mismatch with the lavender accents elsewhere on screen is still visible."
+          }
+        },
+        "gameover": {
+          "dimensions": {"ornament": 7.5, "palette": 7, "typography": 6.5, "material": 7, "background": 6, "composition": 6.5, "readability": 7, "coherence": 7},
+          "overall": 6.9,
+          "fits_between_samples": false,
+          "worst_problem": "The title THE CANDLE GOES OUT looks crumbled and chipped, with letter edges breaking up, and it is the weakest element above an otherwise well-handled memorial column.",
+          "size_notes": {
+            "1600x900": "The Final Tricks rows are the best of the four: deep velvet fading from lit left to dark right under firm gold rims. The card's rules well carries a grey haze that weakens the text and maroon.",
+            "1280x800": "The rows hold beautifully and the card is firm with no haze. The title's broken edges are more noticeable when small."
+          }
+        },
+        "shop": {
+          "dimensions": {"ornament": 7.5, "palette": 7, "typography": 7, "material": 7, "background": 7, "composition": 7, "readability": 7.5, "coherence": 7},
+          "overall": 7.0,
+          "fits_between_samples": false,
+          "worst_problem": "The pale silver-lilac title THE MIDNIGHT MARKET is the coldest, brightest thing on a warm candlelit board and is off-hue from the samples' lavender.",
+          "size_notes": {
+            "1600x900": "The tarnished bronze cost disks and worn rims look like one aged metal, the most physically consistent cards of the four. The wells are quiet.",
+            "1280x800": "The disks keep their dark ring and aged face and sit well in the rims. The title's pallor is still the outlier."
+          }
+        },
+        "combat-floaters": {
+          "dimensions": {"ornament": 7, "palette": 7, "typography": 6.5, "material": 7, "background": 6.5, "composition": 6.5, "readability": 7, "coherence": 6.5},
+          "overall": 6.7,
+          "fits_between_samples": false,
+          "worst_problem": "The scuffed ends of the condition plaques chew into the leading plus signs and the small The Butler nameplate, so the wear hurts the words at the plaque edges.",
+          "size_notes": {
+            "1600x900": "The plates feel the most worn and physical, but the plus signs sit tight on the end caps and the nameplate looks nibbled.",
+            "1280x800": "The stacks stay legible and the weathering still shows. The left edges of the plaques look rough rather than cast."
+          }
+        }
+      }
+    }
+  },
+  "ranking": {
+    "rest": ["ONYX", "AMBER", "TOPAZ", "OBSIDIAN"],
+    "event": ["ONYX", "AMBER", "OBSIDIAN", "TOPAZ"],
+    "gameover": ["AMBER", "ONYX", "OBSIDIAN", "TOPAZ"],
+    "shop": ["AMBER", "ONYX", "TOPAZ", "OBSIDIAN"],
+    "combat-floaters": ["ONYX", "TOPAZ", "AMBER", "OBSIDIAN"]
+  },
+  "winner": "ONYX",
+  "winner_fixes": [
+    "Gameover, right column: replace the loud diagonal violet streaks in the Final Tricks rows with a calm velvet fill that falls from lit left to dark right, so the rows sit as shallow inlays behind the card and title.",
+    "Shop, card top-left corners: age the pale cream cost disks to the same tarnished bronze as the worn card rims, with a dark ring and a small lit edge, while keeping the numerals large.",
+    "Event, side windows: repaint the two soft moonlight wedges so they break across the wainscot and floor with pane shapes and an uneven fall-off, instead of ending as airbrushed cones.",
+    "Rest, area below the fort frame and under the choice rows: add painted incident to the near-empty dark ground, such as floorboards, rug edge and pooled candlelight, so the room reaches past a textured placeholder.",
+    "Gameover, Final Tricks cost badges: turn the flat violet square badges into small cast medallions that match the card cost disks.",
+    "Combat, condition stacks: stop the plaques running rigidly across the left and right sconces by nudging the +2 Weak stack clear of the candle at 1600x900 and the upper stacks clear of the room's brightest props at 1280x800.",
+    "Rest at 1280x800, row medallions: raise the separation of the pillow and candle from their dark medallions with a stronger lit rim and darker well so cloth and wax still read at the smaller size.",
+    "Event, parchment sheet: break the sheet's long straight edges with slight wear and darken the mottling less at the right edge, where the dark paragraph text loses contrast at 1600x900.",
+    "Shop, top ribbon: lift the engraved TRICKS label at the centre ribbon, which sits dark on bronze with low contrast at both sizes.",
+    "Top bar, left: the run label truncates to T. and T.. beside WING 1; give the name room or a deliberate short form so it does not read as clipped."
+  ],
+  "grafts": [
+    {"from": "AMBER", "screen": "gameover", "idea": "Use AMBER's Final Tricks row fill, deep velvet fading from lit left to dark right under firm gold rims, in place of ONYX's diagonal streaks."},
+    {"from": "AMBER", "screen": "shop", "idea": "Use AMBER's tarnished bronze cost disks on the card corners, which match worn rims like ONYX's far better than ONYX's pale cream disks."},
+    {"from": "TOPAZ", "screen": "gameover", "idea": "Use TOPAZ's round gold domed cost coins in the Final Tricks rows, toned down toward AMBER's aged bronze, so row costs echo the card's cost medallion."}
+  ]
+}

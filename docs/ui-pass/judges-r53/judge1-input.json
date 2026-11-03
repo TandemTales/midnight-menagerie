@@ -1,0 +1,70 @@
+{
+  "judge": 1,
+  "rubrics": [
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\RUBRIC.md",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\RUBRIC-r53.md"
+  ],
+  "references": [
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\title.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\mainMenu.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\selectCompanion.png",
+    "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\UI\\selectKid.png"
+  ],
+  "order": [
+    "SARDONYX",
+    "BERYL",
+    "CITRINE",
+    "FLUORITE"
+  ],
+  "candidates": {
+    "SARDONYX": [
+      "D:\\UILOOP\\r53-20261029\\judging\\SARDONYX\\rest.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\SARDONYX\\rest-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\SARDONYX\\event.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\SARDONYX\\event-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\SARDONYX\\gameover.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\SARDONYX\\gameover-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\SARDONYX\\shop.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\SARDONYX\\shop-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\SARDONYX\\combat-floaters.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\SARDONYX\\combat-floaters-1280.png"
+    ],
+    "BERYL": [
+      "D:\\UILOOP\\r53-20261029\\judging\\BERYL\\rest.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\BERYL\\rest-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\BERYL\\event.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\BERYL\\event-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\BERYL\\gameover.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\BERYL\\gameover-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\BERYL\\shop.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\BERYL\\shop-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\BERYL\\combat-floaters.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\BERYL\\combat-floaters-1280.png"
+    ],
+    "CITRINE": [
+      "D:\\UILOOP\\r53-20261029\\judging\\CITRINE\\rest.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\CITRINE\\rest-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\CITRINE\\event.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\CITRINE\\event-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\CITRINE\\gameover.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\CITRINE\\gameover-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\CITRINE\\shop.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\CITRINE\\shop-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\CITRINE\\combat-floaters.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\CITRINE\\combat-floaters-1280.png"
+    ],
+    "FLUORITE": [
+      "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\rest.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\rest-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\event.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\event-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\gameover.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\gameover-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\shop.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\shop-1280.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\combat-floaters.png",
+      "D:\\UILOOP\\r53-20261029\\judging\\FLUORITE\\combat-floaters-1280.png"
+    ]
+  },
+  "output": "C:\\Users\\Josh\\OneDrive\\Desktop\\Tandem Tales\\Midnight Menagerie\\docs\\ui-pass\\judges-r53\\judge1-final.json"
+}

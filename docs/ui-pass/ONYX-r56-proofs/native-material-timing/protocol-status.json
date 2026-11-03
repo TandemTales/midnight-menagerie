@@ -1,0 +1,6 @@
+{
+  "status": "retained initial completed ABBA; superseded only by stricter source-byte and inline/computed visibility verification",
+  "source": "84d60fbbee06f0d2bcd80a528200407073f979fd",
+  "measuredFileSHA256": "98c05c2a747d6c23f86f8693ea10bc129aa5885f7aa9d18bfee42a325976f98e",
+  "note": "Measured CHECK contains no getComputedStyle and no capture pauses; exact file export may have CRLF rather than recorded UTF8 string bytes. Final proof stores exact bytes and pre/post visibility equivalence."
+}

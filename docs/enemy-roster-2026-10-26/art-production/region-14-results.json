@@ -1,0 +1,1078 @@
+{
+  "level": 14,
+  "entries": [
+    {
+      "level": 14,
+      "region": "Bathhouse and Rain Wing",
+      "slot": "R1",
+      "tier": "regular",
+      "name": "Towel Poltergeist",
+      "existing_animation": false,
+      "description": "Three thick square towels hover in a stepped stack; one embroidered corner makes their orientation unmistakable. A fussy folder forever correcting untidy corners; could temporarily tuck away one available option.",
+      "animation": "2D animation Idle: bob. Tell: top corner lifts. Action: two hinged folds close. Resolve: stack squares itself.",
+      "signature": "Signature Compact folding geometry, not a sheet-bodied ghost or flowing blanket.",
+      "production_id": "towel-poltergeist",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\towel-poltergeist.webp",
+      "source_path": "animations\\sprites\\enemies\\towelPoltergeist.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            157,
+            180
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            157,
+            180
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            1,
+            156,
+            180
+          ],
+          "transparent_pixels": 7168,
+          "partial_alpha_pixels": 20732,
+          "sha256": "e72a318672ac16671c2e08447fd5f8140c96a7c0f8892bd030398c4c9a7d84b6"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            256,
+            256
+          ],
+          "alpha_bbox": [
+            11,
+            4,
+            236,
+            253
+          ],
+          "visible_bbox_alpha64": [
+            55,
+            43,
+            210,
+            222
+          ],
+          "transparent_pixels": 43405,
+          "partial_alpha_pixels": 21771,
+          "sha256": "fac75765f7f1f7b243116a81ca09fe1867c94dd903d5ae8ba2c54673583cd96f"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            0,
+            17,
+            1234,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            269,
+            210,
+            1029,
+            1087
+          ],
+          "transparent_pixels": 1041230,
+          "partial_alpha_pixels": 531182,
+          "sha256": "7c698904ad9eddeece808eff52a6f6f372b850d5412a3e9f138aaa0e1f4c50e9"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\towel-poltergeist-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\towel-poltergeist-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "towel-poltergeist.webp",
+          "w": 157,
+          "h": 180,
+          "source": "towelPoltergeist.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 14,
+      "region": "Bathhouse and Rain Wing",
+      "slot": "R2",
+      "tier": "regular",
+      "name": "Drain Shade",
+      "existing_animation": false,
+      "description": "A flat black silhouette peeks from an oversized oval drain plate, stopping at a rounded shoulder. Bashfully borrows things left near its hiding place; suggests briefly removing an active support effect.",
+      "animation": "2D animation Idle: peek. Tell: grate tilts. Action: silhouette contracts through a fixed mask. Resolve: grate settles.",
+      "signature": "Signature A floor-bound disappearing cutout, never a reaching arm or full smoke person.",
+      "production_id": "drain-shade",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\drain-shade.webp",
+      "source_path": "animations\\sprites\\enemies\\drainShade.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            232,
+            123
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            232,
+            123
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            232,
+            123
+          ],
+          "transparent_pixels": 11298,
+          "partial_alpha_pixels": 16804,
+          "sha256": "388a9dad8502d429b9b64a2dca37661526b1032b6b64cab7cba3f306a738f87c"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            256,
+            256
+          ],
+          "alpha_bbox": [
+            10,
+            67,
+            247,
+            195
+          ],
+          "visible_bbox_alpha64": [
+            13,
+            70,
+            244,
+            193
+          ],
+          "transparent_pixels": 47706,
+          "partial_alpha_pixels": 17396,
+          "sha256": "b3b892174beb2816b0387927305fa2428429e645fc1a5ad84bfc23125d56ecce"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            0,
+            37,
+            1208,
+            1204
+          ],
+          "visible_bbox_alpha64": [
+            62,
+            343,
+            1195,
+            945
+          ],
+          "transparent_pixels": 1155362,
+          "partial_alpha_pixels": 416848,
+          "sha256": "520be0b3d5a6009c5e5bfb33fa577afec449a5285dcc395862c537211b13a2ca"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\drain-shade-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\drain-shade-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "drain-shade.webp",
+          "w": 232,
+          "h": 123,
+          "source": "drainShade.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 14,
+      "region": "Bathhouse and Rain Wing",
+      "slot": "R3",
+      "tier": "regular",
+      "name": "Scrub Brush",
+      "existing_animation": false,
+      "description": "An oversized long-handled bath brush balances diagonally on its broad oval bristles, without face or limbs. Polishes away even perfectly useful marks; could erase a recently placed modifier.",
+      "animation": "2D animation Idle: bristles flex. Tell: handle leans back. Action: short polishing arc. Resolve: single sparkle pops.",
+      "signature": "Signature Rigid diagonal lever and scrub rhythm, unlike floating utensil clusters.",
+      "production_id": "scrub-brush",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\scrub-brush.webp",
+      "source_path": "animations\\sprites\\enemies\\scrubBrush.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            225,
+            221
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            225,
+            221
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            224,
+            221
+          ],
+          "transparent_pixels": 36372,
+          "partial_alpha_pixels": 12817,
+          "sha256": "56966de0eeb09ee7c2bdb13afc269635cc0c8b209bd63bcd1b766a060e724b9b"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            256,
+            256
+          ],
+          "alpha_bbox": [
+            16,
+            15,
+            245,
+            240
+          ],
+          "visible_bbox_alpha64": [
+            18,
+            17,
+            242,
+            238
+          ],
+          "transparent_pixels": 51201,
+          "partial_alpha_pixels": 13799,
+          "sha256": "c069a107a17583dff2eff60f8c93a1560329abb6486f12a30e1a698ab5523f6d"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            25,
+            25,
+            1202,
+            1204
+          ],
+          "visible_bbox_alpha64": [
+            88,
+            84,
+            1187,
+            1165
+          ],
+          "transparent_pixels": 1242911,
+          "partial_alpha_pixels": 329125,
+          "sha256": "86ecb796c49971ed379a79a64795e9ccb7a26d0eb66ec2286207aa1738eb377a"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\scrub-brush-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\scrub-brush-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "scrub-brush.webp",
+          "w": 225,
+          "h": 221,
+          "source": "scrubBrush.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 14,
+      "region": "Bathhouse and Rain Wing",
+      "slot": "R4",
+      "tier": "regular",
+      "name": "Soap-Dish Skater",
+      "existing_animation": false,
+      "description": "A broad scalloped dish carries one rectangular soap bar, which slides independently along its short rim. Keeps offering the soap just out of convenient reach; could shift which option becomes available first.",
+      "animation": "2D animation Idle: bar rocks. Tell: dish tips. Action: bar slides end-to-end. Resolve: dish levels.",
+      "signature": "Signature Low crescent silhouette with one sliding block; neither blob nor soap creature.",
+      "production_id": "soap-dish-skater",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\soap-dish-skater.webp",
+      "source_path": "animations\\sprites\\enemies\\soapDishSkater.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            214,
+            106
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            214,
+            106
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            1,
+            214,
+            106
+          ],
+          "transparent_pixels": 9026,
+          "partial_alpha_pixels": 13270,
+          "sha256": "c14beb72cd883063a3f3684a55238b4c82e386c9319b788f5943b804d5edd7b5"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            256,
+            256
+          ],
+          "alpha_bbox": [
+            19,
+            47,
+            237,
+            208
+          ],
+          "visible_bbox_alpha64": [
+            21,
+            81,
+            235,
+            186
+          ],
+          "transparent_pixels": 51266,
+          "partial_alpha_pixels": 13882,
+          "sha256": "bab01c2dfb95e4aa6973a15ed828b551a4d3d57302c9e87c4526aea682b46cf1"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            0,
+            83,
+            1232,
+            1196
+          ],
+          "visible_bbox_alpha64": [
+            104,
+            397,
+            1150,
+            909
+          ],
+          "transparent_pixels": 1237035,
+          "partial_alpha_pixels": 335373,
+          "sha256": "e44d4ddac6539b9bb6e3e0242d9fdfa34cffe15fed5cae4d2b0cbd0de79ad1e4"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\soap-dish-skater-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\soap-dish-skater-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "soap-dish-skater.webp",
+          "w": 214,
+          "h": 106,
+          "source": "soapDishSkater.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 14,
+      "region": "Bathhouse and Rain Wing",
+      "slot": "R5",
+      "tier": "regular",
+      "name": "Tile Quartet",
+      "existing_animation": false,
+      "description": "Four large ceramic diamonds hover as one staggered cluster; raised ridges keep their pattern readable without color. An obsessive pattern-maker rerouting every sensible arrangement; suggests swapping two upcoming cues.",
+      "animation": "2D animation Idle: tiny staggered bob. Tell: tiles separate. Action: two exchange on fixed paths. Resolve: cluster clicks together.",
+      "signature": "Signature Four solid geometric pieces, not a wall section or portal.",
+      "production_id": "tile-quartet",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\tile-quartet.webp",
+      "source_path": "animations\\sprites\\enemies\\tileQuartet.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            194,
+            189
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            194,
+            189
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            193,
+            189
+          ],
+          "transparent_pixels": 12764,
+          "partial_alpha_pixels": 23376,
+          "sha256": "04f32d854a13e18288d23ab84f806cfc58bdb9d1066ab6b7ffe63ccd6ad660f8"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            256,
+            256
+          ],
+          "alpha_bbox": [
+            18,
+            18,
+            239,
+            234
+          ],
+          "visible_bbox_alpha64": [
+            36,
+            30,
+            228,
+            219
+          ],
+          "transparent_pixels": 38137,
+          "partial_alpha_pixels": 26873,
+          "sha256": "ccbea1ca50f4a5ff28ccd1df14464b1d015e906b75c298d2b66d57f8be39f2c0"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            19,
+            23,
+            1234,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            177,
+            149,
+            1115,
+            1072
+          ],
+          "transparent_pixels": 914025,
+          "partial_alpha_pixels": 658347,
+          "sha256": "e9df5dc74c0994978bbc02f9178dd3a42042a88190e04062a1a73235fd3ad439"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\tile-quartet-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\tile-quartet-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "tile-quartet.webp",
+          "w": 194,
+          "h": 189,
+          "source": "tileQuartet.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 14,
+      "region": "Bathhouse and Rain Wing",
+      "slot": "R6",
+      "tier": "regular",
+      "name": "Rain Chain",
+      "existing_animation": false,
+      "description": "Three oversized copper rain cups hang from a short hooked chain, their open profiles stacked vertically. Politely returns the rain upstairs; could pass a small helpful effect backward through the opposing lineup.",
+      "animation": "2D animation Idle: slight sway. Tell: bottom cup tips. Action: one bead hops upward. Resolve: cups straighten.",
+      "signature": "Signature Vertical cup-to-cup relay; no ringing, orbiting swarm, or free-flowing water.",
+      "production_id": "rain-chain",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\rain-chain.webp",
+      "source_path": "animations\\sprites\\enemies\\rainChain.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            74,
+            233
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            74,
+            233
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            74,
+            233
+          ],
+          "transparent_pixels": 10661,
+          "partial_alpha_pixels": 6082,
+          "sha256": "2339daccac462cf9263009ad59b359856c58f938eaff00a504c2216341962eca"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            256,
+            256
+          ],
+          "alpha_bbox": [
+            89,
+            8,
+            167,
+            245
+          ],
+          "visible_bbox_alpha64": [
+            92,
+            10,
+            165,
+            243
+          ],
+          "transparent_pixels": 58085,
+          "partial_alpha_pixels": 6952,
+          "sha256": "da2f06681bd36d39cffc6a50bacff335288c5f45c7f6301a0e40d492ad4c0cda"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            150,
+            45,
+            1152,
+            1195
+          ],
+          "visible_bbox_alpha64": [
+            450,
+            50,
+            805,
+            1189
+          ],
+          "transparent_pixels": 1404590,
+          "partial_alpha_pixels": 167660,
+          "sha256": "7b772b8a32a5d189357d5ac87ef94c51d62c43ae31ff0df22f1feaf7de69dc4a"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\rain-chain-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\rain-chain-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "rain-chain.webp",
+          "w": 74,
+          "h": 233,
+          "source": "rainChain.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 14,
+      "region": "Bathhouse and Rain Wing",
+      "slot": "R7",
+      "tier": "regular",
+      "name": "Bath Thermometer",
+      "existing_animation": false,
+      "description": "A paddle-shaped wooden bath thermometer floats upright; its broad inset column visibly expands and contracts. Never finds the room quite comfortable enough; could alternate between two clearly announced preparation states.",
+      "animation": "2D animation Idle: gentle tilt. Tell: column grows. Action: paddle nods decisively. Resolve: column shrinks.",
+      "signature": "Signature One tall solid paddle and rising bar, not a spinning gauge or clock.",
+      "production_id": "bath-thermometer",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\bath-thermometer.webp",
+      "source_path": "animations\\sprites\\enemies\\bathThermometer.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            74,
+            232
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            74,
+            232
+          ],
+          "visible_bbox_alpha64": [
+            1,
+            0,
+            74,
+            232
+          ],
+          "transparent_pixels": 6533,
+          "partial_alpha_pixels": 10257,
+          "sha256": "a0539885c6d661ae17c469f66a7fefb39bcaab26ef2f056d0773774d27c4b08e"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            256,
+            256
+          ],
+          "alpha_bbox": [
+            18,
+            5,
+            241,
+            241
+          ],
+          "visible_bbox_alpha64": [
+            96,
+            7,
+            169,
+            239
+          ],
+          "transparent_pixels": 54291,
+          "partial_alpha_pixels": 10867,
+          "sha256": "8db97de301a0933f0007b18fdd74e831812ec4fa4d4ddbbee0479384e4bccf08"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            0,
+            21,
+            1224,
+            1222
+          ],
+          "visible_bbox_alpha64": [
+            470,
+            37,
+            827,
+            1168
+          ],
+          "transparent_pixels": 1311069,
+          "partial_alpha_pixels": 261129,
+          "sha256": "4c70b6de35e134143884173e7bbd17e0569c450909a3b94201f46946843612f5"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\bath-thermometer-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\bath-thermometer-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "bath-thermometer.webp",
+          "w": 74,
+          "h": 232,
+          "source": "bathThermometer.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 14,
+      "region": "Bathhouse and Rain Wing",
+      "slot": "E1",
+      "tier": "elite",
+      "name": "The Grand Bath",
+      "existing_animation": false,
+      "description": "A deep claw-foot tub with a high curled back and three oversized bath bubbles held above its rim. The interior is a flat opaque ellipse, never a rendered pool. Insists every visitor deserves a leisurely soak; could postpone an opposing cue while building a generous protective buffer.",
+      "animation": "2D animation Idle: tub rocks. Tell: bubbles rise together. Action: three bubbles expand into a soft screen. Resolve: they pop in sequence; tub settles.",
+      "signature": "Signature Broad curled basin silhouette; no second walking-tub regular.",
+      "production_id": "grand-bath",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\grand-bath.webp",
+      "source_path": "animations\\sprites\\enemies\\grandBath.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            450,
+            359
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            450,
+            359
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            450,
+            359
+          ],
+          "transparent_pixels": 83456,
+          "partial_alpha_pixels": 76880,
+          "sha256": "f8ee5e22b97379de74e6a62a7d30b6c798e7452321be0abbece6911eba26157e"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            0,
+            37,
+            487,
+            495
+          ],
+          "visible_bbox_alpha64": [
+            35,
+            81,
+            485,
+            440
+          ],
+          "transparent_pixels": 174573,
+          "partial_alpha_pixels": 86357,
+          "sha256": "01342db0b981daf49198e58e5c65abb5e3b0d187e094ba1231c97b0df6aaafe1"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            0,
+            19,
+            1236,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            86,
+            199,
+            1188,
+            1077
+          ],
+          "transparent_pixels": 1042866,
+          "partial_alpha_pixels": 529193,
+          "sha256": "bb083c64c570309cbcdc14cce659c188b62591abad14bd279e1787e557e1e625"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\grand-bath-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\grand-bath-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "grand-bath.webp",
+          "w": 450,
+          "h": 359,
+          "source": "grandBath.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 14,
+      "region": "Bathhouse and Rain Wing",
+      "slot": "E2",
+      "tier": "elite",
+      "name": "The Breathing Radiator",
+      "existing_animation": false,
+      "description": "A squat cast-iron radiator with four broad scalloped fins and two huge loop feet. The fins move as one accordion strip; only two warm-air curls appear. A contented old warmer that sighs whenever anyone rushes; suggests a predictable comfort pulse that resets a minor nuisance on its side.",
+      "animation": "2D animation Idle: slow fin compression. Tell: feet lift together. Action: two curls rise during a long sigh. Resolve: feet settle and fins relax.",
+      "signature": "Signature Horizontal ribbed silhouette, not the Lampworks' branching gas manifold.",
+      "production_id": "breathing-radiator",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\breathing-radiator.webp",
+      "source_path": "animations\\sprites\\enemies\\breathingRadiator.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            417,
+            369
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            417,
+            369
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            3,
+            416,
+            368
+          ],
+          "transparent_pixels": 72007,
+          "partial_alpha_pixels": 80919,
+          "sha256": "a3dfe7bfe25a68d6b5ab9b7dda49f74351ec46e62837e186f1eaba6db4983ed5"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            0,
+            15,
+            478,
+            497
+          ],
+          "visible_bbox_alpha64": [
+            46,
+            60,
+            462,
+            425
+          ],
+          "transparent_pixels": 173436,
+          "partial_alpha_pixels": 87761,
+          "sha256": "afefdd9e2d09a49a4c87645bf1c2ecf2f8e4a97f708e4db614cb4614cbea4734"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            0,
+            15,
+            1216,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            113,
+            147,
+            1132,
+            1042
+          ],
+          "transparent_pixels": 1038342,
+          "partial_alpha_pixels": 533780,
+          "sha256": "c7b0a3613dfc19de473fc9958aead5eb47027bd4640de6d695c525817ab7bced"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\breathing-radiator-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\breathing-radiator-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "breathing-radiator.webp",
+          "w": 417,
+          "h": 369,
+          "source": "breathingRadiator.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 14,
+      "region": "Bathhouse and Rain Wing",
+      "slot": "E3",
+      "tier": "elite",
+      "name": "The Rain Collector",
+      "existing_animation": false,
+      "description": "An enormous flared rain funnel balances above one squat measuring jar on a narrow pedestal. Three embossed water-level bands are readable shapes, not tiny numerals. Proudly saves every imaginary shower, then returns it at the least convenient moment; could store a limited number of incoming nuisances before repeating them.",
+      "animation": "2D animation Idle: funnel wobbles. Tell: jar's flat fill mask reaches its top band. Action: three beads rise through the funnel. Resolve: fill mask lowers.",
+      "signature": "Signature Top-heavy funnel silhouette and counted storage, not a fountain or storm creature.",
+      "production_id": "rain-collector",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\rain-collector.webp",
+      "source_path": "animations\\sprites\\enemies\\rainCollector.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            377,
+            477
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            377,
+            477
+          ],
+          "visible_bbox_alpha64": [
+            0,
+            0,
+            376,
+            477
+          ],
+          "transparent_pixels": 118030,
+          "partial_alpha_pixels": 60345,
+          "sha256": "663a96d9f95702e8aba7dced4c04f66a21a5decfdd12dc461b8f6f66f4f830ed"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            17,
+            8,
+            512,
+            500
+          ],
+          "visible_bbox_alpha64": [
+            67,
+            20,
+            443,
+            497
+          ],
+          "transparent_pixels": 195475,
+          "partial_alpha_pixels": 65215,
+          "sha256": "a3931d96ee0b099c17f38cf21359ef8832115c20f6896fb33ee3a358a6299667"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            0,
+            15,
+            1253,
+            1224
+          ],
+          "visible_bbox_alpha64": [
+            165,
+            50,
+            1086,
+            1216
+          ],
+          "transparent_pixels": 1170408,
+          "partial_alpha_pixels": 401700,
+          "sha256": "b2ef590f93a506b76592717cfb06a5b8690438bfaa703d6539e048688802a69d"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\rain-collector-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\rain-collector-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "rain-collector.webp",
+          "w": 377,
+          "h": 477,
+          "source": "rainCollector.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    },
+    {
+      "level": 14,
+      "region": "Bathhouse and Rain Wing",
+      "slot": "B1",
+      "tier": "boss",
+      "name": "The Bathhouse Matron",
+      "existing_animation": false,
+      "description": "A welcoming spectral matron with a broad bell-shaped apron, puffed sleeves, high folded bath cap, and two floating towel squares. Her smiling profile stays simple; one fixed mask softens her hem. She remembers everybody's preferred comfort except when they wanted to leave. Her fussing could alternate between tidying away options and restoring helpers; a conspicuous satisfied pause suggests an interruption opportunity. She never confines or scalds anyone.",
+      "animation": "2D animation Idle: approving nod. Tell: both towels lift. Action: open-palmed conducting gesture and one cropped steam puff. Resolve: towels rest; she waits expectantly.",
+      "signature": "Signature Rounded welcoming silhouette and deliberate pauses, not another severe key-bearing governess.",
+      "production_id": "bathhouse-matron",
+      "status": "new",
+      "output_path": "game\\assets\\sprites\\enemies\\bathhouse-matron.webp",
+      "source_path": "animations\\sprites\\enemies\\bathhouseMatron.png",
+      "validation": {
+        "technical": {
+          "format": "WEBP",
+          "mode": "RGBA",
+          "size": [
+            665,
+            923
+          ],
+          "alpha_bbox": [
+            0,
+            0,
+            665,
+            923
+          ],
+          "visible_bbox_alpha64": [
+            8,
+            1,
+            665,
+            923
+          ],
+          "transparent_pixels": 220054,
+          "partial_alpha_pixels": 392992,
+          "sha256": "27337dbd21fda26eee2cb05838a815be86d95fe321e88c76e6cef841370f505c"
+        },
+        "source": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1024,
+            1024
+          ],
+          "alpha_bbox": [
+            20,
+            30,
+            1011,
+            1024
+          ],
+          "visible_bbox_alpha64": [
+            223,
+            49,
+            880,
+            971
+          ],
+          "transparent_pixels": 619381,
+          "partial_alpha_pixels": 428446,
+          "sha256": "88317dc07d76ca080eca3312aa8a067bda91e8366991311242d64af32dad380a"
+        },
+        "original": {
+          "format": "PNG",
+          "mode": "RGBA",
+          "size": [
+            1254,
+            1254
+          ],
+          "alpha_bbox": [
+            25,
+            37,
+            1238,
+            1254
+          ],
+          "visible_bbox_alpha64": [
+            273,
+            60,
+            1077,
+            1189
+          ],
+          "transparent_pixels": 928395,
+          "partial_alpha_pixels": 643631,
+          "sha256": "88199135d660b3b98f92472b71ad5f5550fb4680a705a80ef8fde3fb80d4abc2"
+        },
+        "original_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\bathhouse-matron-original.png",
+        "prompt_path": "docs\\enemy-roster-2026-10-26\\art-production\\region-14\\bathhouse-matron-prompt.txt",
+        "visual": "Full generated image visually inspected: matches approved identity and signature; complete silhouette, separated readable parts, tactile house-art style, no clipping, no unintended anatomy or threatening additions. Contact sheet also generated for small-size review.",
+        "runtime_metadata": {
+          "file": "bathhouse-matron.webp",
+          "w": 665,
+          "h": 923,
+          "source": "bathhouseMatron.png"
+        },
+        "method": "Built-in imagegen; tier-size PNG and isolated existing build_enemy_still conversion; no registry change."
+      },
+      "blocker": null
+    }
+  ],
+  "counts": {
+    "new": 11,
+    "pending": 0,
+    "blocked": 0
+  },
+  "complete": true
+}

@@ -1,0 +1,42 @@
+create a composite image of sprites of the following enemies in a turn based ccg. make sure the final image has a truly transparent background. Make sure the images are good quality and will 2D animate well (nothing in mid-action pose, extra floating parts around it, etc.). Make sure the enemies match the visual style of the included menu screen with companion characters from another part of the game:
+
+1. Hanging Pots (Level/Region 4)
+Cluster of copper pots and pans swinging down from a ceiling rack under invisible control.
+
+2. Boiling Pot (Level/Region 4)
+Huge stockpot sliding across the stove or floor while steam forms temporary faces and hands above it.
+
+3. The Hungry Dumbwaiter (Level/Region 4)
+A large antique service lift that seems to connect to impossible locations.
+Each time its doors open, something different appears inside:
+A completed dinner.
+A pile of dishes.
+A spectral waiter.
+A dark empty shaft.
+An entirely different kitchen.
+A moonlit hallway.
+The threat comes from what arrives rather than from giving the dumbwaiter monster anatomy.
+
+4. The Cellar Steward (Level/Region 4)
+A tall translucent household servant in rolled sleeves, waistcoat, and apron carrying a lantern and inventory ledger.
+Wine bottles and barrels move around them without being touched.
+They should appear meticulous rather than threatening.
+
+5. The Confectioner (Level/Region 4)
+Keep the existing role, but redesign the character away from a conventional evil chef.
+The Confectioner is a spectral pastry chef whose body is partly formed from flour, steam, sugar dust, and translucent kitchen light.
+Possible visual traits:
+Tall old fashioned chef's coat.
+Large toque fading into steam at the top.
+Hands sometimes disappear entirely while utensils continue moving.
+Pastries and ingredients orbit nearby preparation tables.
+Sugar sculptures animate briefly when commanded.
+Flour outlines portions of the body that otherwise disappear.
+Reflections in polished cookware show a different expression than the actual ghost.
+The Confectioner should conduct the kitchen like an orchestra.
+This is the strongest choice if you want to preserve the current boss identity.
+
+6. Walking Planter (Level/Region 5)
+Large ceramic planter gliding across the floor while its roots drag behind it and rearrange nearby plants.
+Production requirements: Create one static composite, one complete enemy design per numbered entry, with clear empty margins separating every enemy. Use the attached UI/selectCompanion.png as the primary visual reference and the accepted source sheets as rendering/style references only. Do not generate animation frames or sequences. All enemies face LEFT toward the players in neutral stable resting poses, no mid-action gesture or attack. Preserve each described identity; action wording above is character context, not a request to depict the action. Keep props held, supported, attached, contained, or touching the core design; omit loose particle effects and orbiting fragments. For inherently grouped enemies, keep the group compact and contained within its own distinct cell. No cropped silhouettes, merged enemies, stray anatomy, halos/matte fringes, text, labels, borders, floors, shadows detached from the sprite, or background scene. Cute, readable and spooky but not threatening; match the accepted art's rich material texture, soft dimensional shading and warm whimsical detail. Output PNG with genuine transparent alpha outside the sprites, never a painted checkerboard or solid-color background. Keep the character itself legible and sufficiently opaque; translucent ghost bodies may have partial alpha. The roster descriptions are quoted from the current original MM Enemies document, not the separate revised roster.
+Exactly 6 enemy designs in this batch.

@@ -1,0 +1,8 @@
+{
+  "regions": 17,
+  "outcomes": 51,
+  "uniqueIds": 68,
+  "maxOutcomeLineWords": 21,
+  "noChoiceEffectsOrCosts": true,
+  "exactManuscriptOutcomes": true
+}

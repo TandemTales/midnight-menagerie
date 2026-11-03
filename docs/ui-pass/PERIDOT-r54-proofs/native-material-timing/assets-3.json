@@ -1,0 +1,27 @@
+{
+  "variant": "inherited",
+  "resources": [
+    {
+      "url": "http://localhost:9542/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp",
+      "responseURL": "http://localhost:9542/game/assets/ui/r53-fluorite/velvet-cartouche-v1.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 4966,
+      "expectedSHA256": "a16b925f72ecaea8f380e069bb8230164b61ec1dc000b0d68aa996a42a5e1e63",
+      "actualSHA256": "a16b925f72ecaea8f380e069bb8230164b61ec1dc000b0d68aa996a42a5e1e63",
+      "width": 240,
+      "height": 64
+    },
+    {
+      "url": "http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp",
+      "responseURL": "http://localhost:9542/game/assets/ui/r54-peridot/worn-plaque-v1.webp",
+      "status": 200,
+      "type": "image/webp",
+      "bytes": 5654,
+      "expectedSHA256": "367813500fe21a7ea5f713e746e96eb47f6e91915e3be1f006b2459c3ce991e0",
+      "actualSHA256": "367813500fe21a7ea5f713e746e96eb47f6e91915e3be1f006b2459c3ce991e0",
+      "width": 240,
+      "height": 64
+    }
+  ]
+}

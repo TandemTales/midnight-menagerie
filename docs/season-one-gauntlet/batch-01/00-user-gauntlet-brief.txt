@@ -1,0 +1,131 @@
+Copy and paste this when you’re ready to begin. Attach the Midnight Menagerie synopsis and, if possible, give the writing team access to the project’s story documents.
+
+PROMPT
+
+You are the showrunner and creative team for an original animated series based on Midnight Menagerie. Develop and write a complete first season of finished episode screenplays, not just an outline or series bible.
+
+My goal is a show that could stand alongside and, in its own distinctive way, exceed the storytelling quality of Trollhunters, Hilda, and The Ghost and Molly McGee. Study the qualities that make those shows effective: a compelling hidden-world mystery, emotional warmth, appealing supernatural characters, memorable humor, and strong episode-to-episode momentum. Do not copy their plots, characters, jokes, dialogue, visual designs, or the distinctive style of any creator. “Better” is an ambitious creative target, not something a numerical score can objectively prove.
+
+The intended audience is approximately ages 7–10, with enough emotional depth and layered humor for older children and adults to enjoy it too. The tone should be cute, spooky, mysterious, funny, and occasionally poignant, but not frightening in a predatory or graphic-horror sense.
+
+IMPORTANT: Humor should be substantially more prominent than it has been in the story material so far. I want the show to be genuinely funny and rewatchable, not merely charming with an occasional joke. At the same time, let emotional moments breathe.
+
+SOURCE AUDIT AND CANON
+
+Before writing, read the latest Midnight Menagerie story synopsis I provide, the accessible project documents, character biographies, and relevant conversation history. Check later explicit user decisions against earlier versions. Do not assume a search snippet or filename establishes canon.
+
+Create a source and continuity ledger with four categories:
+1. Established: facts and decisions explicitly supported by the sources.
+2. Developed design: substantial ideas developed and carried forward, but not necessarily finalized or implemented.
+3. Superseded or conflicting: older versions and genuine disagreements between sources.
+4. New proposals: original inventions you create for the show.
+When sources conflict, follow the latest explicit direction where possible. Otherwise make the strongest working choice, record the alternatives and your reasoning, and flag it for me. Do not halt the whole project over a nonessential ambiguity.
+
+Use these points as working orientation, subject to later source corrections:
+- This is not the old Halloween trick-or-treating premise.
+- Eight neighborhood kids investigate their missing pets and discover an enormous living mansion that has collected animals for years.
+- The House offers genuine care, but has confused protection with possession. It is not simply a monster trying to eat children.
+- The 16 supernatural Menagerie Companions are distinct from the kids’ recently missing pets. Rescue gives animals agency; it does not automatically mean reversing their transformations.
+- The kids can rescue their pets. Do not introduce an actual real-time or run-count deadline that permanently costs a player their pet.
+- The Keeper is the House’s protective instinct taking a form the kids can understand, not an unrelated secret villain.
+- A developed possible resolution is a sanctuary where animals may choose to stay, leave, and return. Do not claim the exact ending or season placement is irrevocably settled if the sources leave it open.
+- The later named kids and pets are Maya/Orbit, Mateo/Pepper, Amina/Mochi, Eli/Sprocket, Priya/Pixel, Jordan/Scout, Lena/Mooncake, and Samir/Bean. Verify their current details and pronouns against the sources. Maya uses forearm crutches; do not make her disability a joke, punishment, or cure plot.
+- Do not invent a definitive founder, dead family, tragedy, or ghost biography and present it as already established. You may propose new backstory, clearly labeled, if it strengthens the series.
+Adapt the game into a show, not a mechanical checklist. A viewer should understand and enjoy the story without knowing the game or its card rules.
+
+FORMAT
+
+Unless I specify otherwise, use these working defaults:
+- Eight episodes in season one.
+- Approximately 22 minutes each.
+- A serialized mystery, but each episode has its own satisfying comic story and character turn.
+- An ensemble cast. Give every major child a meaningful role, but don’t force all eight to dominate every scene.
+- Full animation-screenplay format: scene headings, visual action, character names, dialogue, and concise sound cues. Treat page counts and run times as estimates.
+If a different structure is clearly stronger, briefly explain and use your best judgment without stopping for an optional question. Keep the chosen format consistent.
+
+MAKE THE COMEDY WORK
+
+Build humor from distinct character personalities, clashing goals, misunderstandings, physical and visual comedy, escalating situations, animal behavior, the House’s absurdly overzealous hospitality, and ghosts who have their own quirks and points of view.
+
+Give each major character a different comic identity. One might be deadpan, another theatrical, another earnest, another visual or unexpectedly observant. Make sure the kids do not all sound like the same sarcastic adult writer.
+
+Create recurring motifs and callbacks that evolve rather than simply repeating catchphrases. Make room for funny visual situations a child would remember, not just punchlines. Let characters’ well-intentioned solutions sometimes make a situation worse before making it better.
+
+Avoid humor based on humiliation, disability, identity, cultural stereotypes, or animal suffering. Avoid random absurdity without character logic, constant quips, generic sarcasm, or jokes dependent on knowing the game.
+
+Each episode needs a distinctive comic premise, a story goal and escalation, meaningful character relationships, a discovery or complication in the mystery, emotional consequences, and a satisfying resolution. Preserve the House’s genuine care while showing why its behavior is wrong. Give ghosts and guardians differing motivations, not sixteen versions of the same caretaker.
+
+Do not require every Companion and every pet rescue to be completed in season one. Choose the strongest coherent season, give the ensemble meaningful participation, and seed future stories without making the first season feel like a collection of advertisements for later episodes.
+
+THE GAUNTLET
+
+Use multiple agents if available. If they are unavailable, conduct separate editorial passes honestly; do not pretend simulated reviewers are independent people.
+
+Assign distinct roles:
+1. Showrunner: series identity, season architecture, integration.
+2. Head writer: scenes, dialogue, pacing, emotional payoff.
+3. Comedy room: character-based jokes, physical comedy, escalation, callbacks, freshness.
+4. Children’s television specialist: clarity, age suitability, warmth, and appropriate handling of fear.
+5. Character and relationship editor: distinct voices, agency, ensemble balance.
+6. Mystery architect: clues, fair reveals, suspense, and setup/payoff.
+7. Animation reviewer: visual storytelling, staging, readability, and production feasibility.
+8. Canon and continuity auditor: sources, character identities and pronouns, pets, locations, timeline, and contradictions.
+9. Two fresh-eyes reviewers: one child-oriented perspective and one family co-viewing perspective. These are editorial simulations, not real child testing.
+10. Adversarial critic: why viewers might stop watching, weak jokes, predictable turns, derivative elements, emotional manipulation, and superficial fixes.
+Where feasible, keep reviewers blind to the writer’s defense and other reviewers’ scores. Use redundancy: two separate continuity/tone checks and separate reviewers for visual and dialogue comedy. Each critique must identify the specific scene or moment, explain the issue, suggest a direction, and state its severity. Disagreements must be recorded, not averaged away.
+
+Score the actual work on this 100-point rubric:
+- Characters and relationships: 15
+- Comedy and comic originality: 20
+- Episode stories and pacing: 15
+- Season arc and mystery: 15
+- Emotional warmth and resonance: 10
+- Visual imagination and animation storytelling: 10
+- Age appropriateness and tone: 5
+- Dialogue and distinct voices: 5
+- Continuity, source fidelity, and originality: 5
+Aim for at least 90/100 from independent evaluators, with no category below 80% of its available points. Scores are diagnostic judgments, not proof of superiority to existing shows.
+
+Require revision regardless of score for major continuity errors, unsupported claims of canon, stereotypes, cruelty or excessive fright, repetitive humor, a weak episode ending, an unfair mystery reveal, a pet denied agency, a House reduced to a generic evil villain, or copied material.
+
+For each gate:
+1. Obtain independent critiques.
+2. Consolidate issues without suppressing disagreements.
+3. Fix structural problems before polishing lines.
+4. Revise the actual material, not just the plan to revise it.
+5. Re-review the changes and check for regressions.
+6. Record scores, changes, and remaining concerns.
+Conduct at least two substantive critique-and-revision rounds for the season architecture and for every episode, followed by a fresh final pass. Continue if meaningful weaknesses remain, but cap any single gate at five rounds unless I ask for more. If the target is still missed, be candid: deliver the strongest version and identify the remaining problems. Never inflate scores or claim the work is objectively perfected.
+
+WORKFLOW
+
+Phase 1: Source audit and creative foundation
+Create the canon/conflict ledger, source map, series promise, audience and tone, comedy engine, emotional thesis, and character/relationship profiles. Clearly mark proposed additions.
+
+Phase 2: Season architecture
+Build the season spine and an eight-episode guide. For each episode identify the focus characters, main comic premise, mystery development, emotional turn, and ending. Track character distribution and build a clue/setup/payoff ledger. Run the architecture gauntlet and revise it before scripting.
+
+Phase 3: Episode breaks
+Create a scene-by-scene beat sheet for each episode, including the purpose, comic engine, emotional beat, and estimated timing of each scene. Review and revise.
+
+Phase 4: Complete screenplays
+Write all eight episodes as full, readable animation scripts with actual scenes and dialogue. Do not substitute placeholders, abbreviated scripts, “continue similarly,” or a summary for later episodes. Make action visually specific and dialogue performable.
+
+Phase 5: Episode gauntlets
+Apply the review and revision process to every complete script, including dedicated comedy, visual storytelling, character voice, and age/tone passes. Revise the scripts themselves.
+
+Phase 6: Whole-season integration
+Read the revised episodes in order. Audit chronology, pronouns, pet status, mansion geography, character arcs, recurring jokes, clues, revelations, setup/payoff, and contradictions. Run an independent final review and a regression check after changes.
+
+Deliver:
+- Source and canon ledger.
+- Series premise, tone, and comedic identity.
+- Character and relationship bible.
+- Season arc and episode guide.
+- Clue, continuity, and setup/payoff ledger.
+- Eight complete revised episode screenplays.
+- Candid review and revision history, including unresolved issues.
+- A separate list of proposed additions or decisions for me.
+If the complete package exceeds the output limit, work in numbered batches and keep a production ledger showing what is drafted, reviewed, revised, and still pending. Continue sequentially when I say “continue,” without restarting or silently skipping work. Never say the season is complete until all eight full scripts and final reviews exist.
+
+Begin with the source audit and season architecture, then proceed through the workflow without unnecessary questions. Do not publish, contact third parties, change game files, or overwrite original source documents.

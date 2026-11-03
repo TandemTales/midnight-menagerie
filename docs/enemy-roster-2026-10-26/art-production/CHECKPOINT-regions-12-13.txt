@@ -1,0 +1,14 @@
+REGIONS 12 AND 13 COMPLETE
+
+22 new validated sprite identities; 44 final files (22 PNG sources and 22 runtime WebPs).
+Each region: 7 regular, 3 elite, 1 boss. No pending or blocked items in this assignment.
+
+Merge manifests: region-12-results.json and region-13-results.json.
+Review previews: region-12-contact.jpg and region-13-contact.jpg.
+Exact final paths: regions-12-13-files.csv.
+Technical evidence: regions-12-13-validation.json and per-entry validation records in the regional manifests.
+All source and runtime hashes were rechecked after finalization. Transparent alpha confirmed in every final. All full generated images and both contact sheets visually reviewed.
+
+Built-in imagegen only, separate calls per identity. Raw originals and prompt text remain here with matching production-id filenames. Sources match project tier conventions (256 regular, 512 elite, 1024 boss), runtime WebPs use the existing isolated build_enemy_still conversion. No game integration, registry, animation or preexisting-art edits. No purchases or external service configuration. Global coverage manifest was not edited by this agent.
+
+Vent Grille first render had four louvers and was not finalized. The supported recent-image edit generated vent-grille-v2-original.png with five; it is the accepted final. V1 retained for provenance. No denied or canceled actions occurred in this assigned work.
