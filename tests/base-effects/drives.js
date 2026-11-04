@@ -216,6 +216,14 @@ export const DRIVES = [
     } }],
 
   // ── Drizzle ───────────────────────────────────────────────────────────────
+  ['drizzle/storm-chaser', 'Weather carried into Thunderstorm', {
+    drive: async (e, t, step) => {
+      await playId(e, 'drizzle/build-a-cloud', t);
+      await step('downpour');
+      await playId(e, 'drizzle/build-a-cloud', t);
+      await step('thunderstorm');
+    },
+  }],
   ['drizzle/quiet-after', 'a Stormbreak, then a Trick that costs Nerve', {
     drive: async (e, t, step) => {
       e.setCounter('weather', 3, 'drive');

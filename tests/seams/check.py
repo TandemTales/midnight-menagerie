@@ -254,7 +254,7 @@ class Surfaces:
         piles = strip_comments(read(os.path.join(SRC, "combat", "piles.js")))
         audio = strip_comments(read(os.path.join(SRC, "audio", "audio.js")))
 
-        self.card_ctx = object_literal_keys_of_method(eng, r"\n  ctxFor\s*\(")
+        self.card_ctx = object_literal_keys_of_method(eng, r"\n  _buildCtx\s*\(")
         # engine._playCard bolts one more helper onto the ctx it just built
         self.card_ctx |= set(re.findall(r"\bctx\.(" + IDENT + r")\s*=", eng))
         self.enemy_ctx = object_literal_keys_of_method(eng, r"\n  enemyCtx\s*\(")
@@ -438,7 +438,7 @@ class Surfaces:
         damage_keys = set(re.findall(r"\bo\.(" + IDENT + r")", dmg))
         # ctx.damage / enemyCtx.damage read a couple themselves before spreading
         damage_keys |= set(re.findall(r"\bopts\.(" + IDENT + r")", eng[
-            eng.find("ctxFor(card, target"):eng.find("ctxFor(card, target") + 3000] or ""))
+            eng.find("_buildCtx(card, target"):eng.find("_buildCtx(card, target") + 3000] or ""))
         damage_keys |= {"target"}          # enemyCtx.damageMulti reads opts.target
         return {
             "damage": damage_keys,

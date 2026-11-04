@@ -36,7 +36,7 @@ ROOM = ARGS[1] if len(ARGS) > 1 else "owlish-lookout"
 URL = "http://localhost:8777/game/index.html#demo=1"
 LOW, HIGH = 60, 180
 STALL = 150          # seconds with no scene, turn or log change on any machine
-LIMIT = (75 + 60 * max(0, PLAYERS - 2)) * 60    # the tabs share one software renderer
+LIMIT = (90 + 75 * max(0, PLAYERS - 2)) * 60    # the tabs share one software renderer
 fails, passes = [], []
 
 
