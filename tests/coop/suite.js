@@ -2492,6 +2492,17 @@ export async function run() {
     await play(e, 1, 'brambleboo/window-seat');
     eq(look(e.players[0]), host, 'a friend\'s "put a Trick back on top" leaves the host\'s deck alone');
     eq(e.players[1].piles.draw.length, deck, 'and goes back on their own');
+
+    /* A Power's hook fires when nobody is acting, and it draws for the Kid who played it. */
+    const hands = async (withIt) => {
+      const t = await party('bones');
+      if (withIt) await play(t, 1, 'bones/every-bone-knows-the-way-home');
+      for (const pl of t.players) await t.endTurn(pl);
+      return t.players.map(p => p.piles.hand.length);
+    };
+    const [without, withPower] = [await hands(false), await hands(true)];
+    eq(withPower[0], without[0], 'a friend\'s "draw at the start of your turn" Power gives the host nothing');
+    ok(withPower[1] > without[1], `and draws for the friend who played it: ${without[1]} -> ${withPower[1]}`);
   });
 
   const passed = results.reduce((n, t) => n + t.asserts.filter(a => a.pass).length, 0);

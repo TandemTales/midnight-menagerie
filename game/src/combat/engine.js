@@ -2517,7 +2517,27 @@ export class CombatEngine {
 
   // ── ctx handed to card effects (schema.js §Ctx — exact) ───────────────────
 
+  /**
+   * At a table, everything a ctx does, it does as its own Kid.
+   *
+   * `c.draw` draws for whoever is acting, and a Power's hook fires when nobody is, so
+   * "draw 1 at the start of your turn" went to the host. A hook keeps the ctx its Power
+   * was played with, and the ctx already knows whose it is.
+   */
   ctxFor(card, target, x = 0) {
+    const ctx = this._buildCtx(card, target, x);
+    if (this.players.length < 2) return ctx;
+    const e = this;
+    const self = ctx.self;
+    return new Proxy(ctx, {
+      get(t, k) {
+        const v = t[k];
+        return typeof v === 'function' ? (...a) => e._asSeat(self, () => v.apply(t, a)) : v;
+      },
+    });
+  }
+
+  _buildCtx(card, target, x = 0) {
     const e = this;
     // `self` is whoever is HOLDING this card, not seat 0. Every companion card
     // in the game reads `ctx.self` for its own Guard, statuses and Courage, so
