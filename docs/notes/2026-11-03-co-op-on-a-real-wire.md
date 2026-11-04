@@ -34,7 +34,7 @@ over. **The cost is that a player's own Trick lands one round trip after they le
 go.** Room inputs commute and are not held.
 
 **Who is still here** (`session.lost`, `session.gone`, `ui/netplate.js`). A seat is
-`lost` when Steam says it left the lobby or after 8 s of silence. The plate says so
+`lost` when Steam says it left the lobby or after 15 s of silence. The plate says so
 and offers **Play on without them** or **Leave the expedition**. Playing on is an
 input in the log (`seat.gone`), so every machine applies it in order. That seat
 stops being a voter, its open question gets the deterministic rule, and its Kid goes
@@ -57,6 +57,34 @@ requests. `_accept` dedupes on (seat, seq).
 
 **The check runs.** A board digest at each `playerReady` and a party digest at each
 room. The plate tells the player if they split and offers Leave and climb back in.
+
+## What a whole walk found (2026-11-04)
+
+`tests/coop/demo_walk.py` plays the demo from the lobby to the ending with up to four
+real tabs on a 60-180 ms wire, pressing what a player can press. It takes about three
+hours. Every suite above was green when it found these, and none of them could have:
+
+| What a player would have seen | Why |
+|---|---|
+| **The whole table freezes, for good, solo as well.** | House Guest moved Bite Marks "until none are left" onto a Porcelain Twin, and Joined copied each one straight back. It counts first now. Under every other Trick, the engine stops an effect at 2000 events and the turn goes on: counted rather than timed, so every machine stops at the same event. |
+| **The boards split a few fights in.** | Answering a chooser moves nothing on the board, so the queue walks past an answer without waiting for anybody. A friend's Trick with the same clock sorts behind it, was taken for late and went straight through: in arrival order on the machine that answered, the agreed order everywhere else. That is why only the answering seat ever reported it, and only about lower seats. Behind nothing but answers it is not late, so the cursor steps back and it waits its turn. |
+| **You choose a card and your friend draws it.** 58 Tricks. | `_asSeat` ended at a Trick's first `await`, so everything after a chooser ran as seat 0. Every machine agreed, so no out-of-sync check could see it. The seat now holds until the Trick ends. A second question went to the host for the same reason, and Papermaking looked for its card in the wrong hand forever. |
+| **The next input lands either side of a chooser's answer.** | `c.discard(1, { choose: true })` is a promise nobody awaited, so the Trick finished while its question was open. A Trick is not over now until all it asked has been answered. |
+| **A friend's "draw at the start of your turn" Power draws for the host.** 3 Powers. | `c.draw` draws for whoever is acting, and a hook fires when nobody is. A party's ctx runs each call as its own Kid. |
+| A party walks on with somebody still on the reward screen. | The next door was on the ballot during a fight, and a late Leave could take a player back out of one. Neither counts now. |
+| Two Kids of four stand behind the plates, and a friend's plate prints `marmalade/haunted-housecat`. | Staging for four, and a Power that has no status of its own. |
+| A long achievement name is cut off, and the medal covers the tier's first letter, at the Deck's size. | The size floor beat the banner's sums. A long name is lettered narrower now. |
+
+`tests/seat-sweep` keeps the seat faults out: it plays all 1,416 playable Tricks from
+seat 1 at a table of four and every Power for a round, and only a Trick that says it
+reaches a friend may touch the host.
+
+**Method, because three confident causes were wrong first.** A console message prints
+only the first few fields of an object: the late-input report had the answer in a field
+the log never showed. Print JSON. The walker records every send and receipt with its
+clock, and a hung tab now reports its stack instead of waiting forever. Seats follow the
+transport id, not tab order, so tab A is not seat 0. A test wire must keep per-sender
+order, as `tests/coop/latency.py` already says: one timer per message reports false splits.
 
 ## What has NOT been tested
 

@@ -1,18 +1,20 @@
-# Midnight Menagerie handoff · November 3, 2026
+# Midnight Menagerie handoff · November 4, 2026
 
-**The demo is ready for Josh's App ID.** Co-op was rebuilt for a real wire on November 3, rounds 56 and 57 are in, and no blob stands in the demo's wings. All of it is committed and pushed on `dev`. D: must be attached, because it holds the worktrees and evidence.
+**The demo is ready for Josh's App ID.** Co-op was rebuilt for a real wire on November 3, and on November 4 a party of four walked the whole demo to its ending over a simulated 60-180 ms wire, in step, with no errors. That walk found a game freeze and two faults no suite could see (the notes have them). Rounds 56 and 57 are in, and no blob stands in the demo's wings. All of it is committed and pushed on `dev`. D: must be attached, because it holds the worktrees and evidence.
 
 ## Steam demo: where it stands
 
 Read [the co-op notes](docs/notes/2026-11-03-co-op-on-a-real-wire.md) first. It has what was wrong, what the game does now, and what is unproven.
 
-**Green on this tree:** the whole battery bar the items below. Shell (fake Steam) 95, net 190, co-op 645, lobby 29, rejoin 25, latency 7 (a whole fight over a simulated 60-180 ms wire with both players acting at once; it fails within four cards with the agreed order off), demo 19, run gate 50/0.
+**Green on this tree:** the whole battery bar the items below. Shell (fake Steam) 95, net 217, co-op 657, lobby 33, rejoin 25, latency 7 (a whole fight over a simulated 60-180 ms wire with both players acting at once; it fails within four cards with the agreed order off), demo 27, run gate 50/0, and the new `tests/seat-sweep` (all 1,669 playable Tricks and Powers from a non-host seat).
+
+**The walk is not a gate:** `python tests/coop/demo_walk.py 4 <room> --shots <dir>` takes about three hours on software rendering. Run it after any change to rooms, the wire or a chooser. A single fight cannot find what it finds. Last result: 20 of 20, 22 fights, 236 turns compared, 6,132 Tricks, 0 logged errors. It ran before the last commit's toast change and the seat-sweep gate, neither of which touches a fight's rules.
 
 **Known red, all looked at:** `tests/sprites/check.py` (the 7 HALO clips, a standing decision) and `tests/seams/check.py` (4 false positives: the floorplan's own local `Map`'s `run.get`/`run.set`). **Load flakes, green alone:** `tests/enemy-clips` (a clip's hand-back to idle, 984/1 in the battery, 985/0 alone) and `tests/sprites/clips.py` (dig, 26/2 in the battery, 28/0 alone).
 
-**Depots:** `tools/package_release.py --smoke` and `--demo --smoke` both build and boot, with exe icon and version strings. The demo is three painted wings (`DEMO_WINGS`) with its own ending.
+**Depots:** `tools/package_release.py --smoke` and `--demo --smoke` both build and boot on the final tree, with exe icon and version strings. The demo is three painted wings (`DEMO_WINGS`) with its own ending.
 
-**Never run: anything against real Steam.** `shell/steam_appid.txt` (and `steam_appid_demo.txt`) are empty and only Josh can fill them (never 480). Then: `npx electron . --smoke` must say `steam:true`, re-package, and do a real two-machine test with a friend who has a key. Watch the overlay's `in-process-gpu` switch (`--no-steam-overlay` turns it off; it boots clean with those switches and no Steam), the Invite button (needs the overlay), and the one-round-trip lag on your own card over a relay.
+**Never run: anything against real Steam.** `shell/steam_appid.txt` (and `steam_appid_demo.txt`) are empty and only Josh can fill them (never 480). Then: `npx electron . --smoke` must say `steam:true`, re-package, and do a real two-machine test with a friend who has a key. Performance with four Kids on the Deck or any real GPU has not been measured either. Watch the overlay's `in-process-gpu` switch (`--no-steam-overlay` turns it off; it boots clean with those switches and no Steam), the Invite button (needs the overlay), and the one-round-trip lag on your own card over a relay.
 
 **Josh's to do:** App ID(s) and depot ids in `shell/steampipe/*.vdf`, the copyright holder, credits, registering the 32 achievements, the store page (`docs/RELEASE.md`). 20 parts and summons in the demo's wings wear a relative's painting (`tools/prep_borrowed_stills.py`, recorded in `docs/art/borrowed-stills.json`); they stay on the checklist as wanted, and a real painting under the same filename wins. `kitchenImp.png` and `pantryPoltergeist.png` in `animations/sprites/enemies/` were restored from the build, because their deliveries had gone missing.
 
