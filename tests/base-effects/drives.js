@@ -217,6 +217,7 @@ export const DRIVES = [
 
   // ── Drizzle ───────────────────────────────────────────────────────────────
   ['drizzle/storm-chaser', 'Weather carried into Thunderstorm', {
+    setup: (e) => { e.setCounter('weather', 0, 'test'); },   // the seeded board starts in the storm
     drive: async (e, t, step) => {
       await playId(e, 'drizzle/build-a-cloud', t);
       await step('downpour');
