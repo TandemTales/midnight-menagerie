@@ -595,6 +595,9 @@ export class CombatEngine {
    */
   acting = null;
 
+  /** The questions the Trick now resolving has asked. See `_afterAsks`. */
+  _asksInEffect = null;
+
   /** The acting seat, or seat 0 when nothing in particular is acting. */
   get current() { return this.acting || this.players[0]; }
 
@@ -3312,6 +3315,21 @@ export class CombatEngine {
   }
 
   /** @returns {Promise<Event[]>} */
+  /**
+   * A Trick is not over until what it asked has been answered.
+   *
+   * Plenty of them ask without waiting: `c.discard(1, { choose: true })` is a promise
+   * nobody awaits. The Trick finished at once, so over a wire the next input could land
+   * before the answer on one machine and after it on another, and the discard itself ran
+   * with no seat acting and took the host's card. Whoever was waiting on the answer has
+   * to go first, and that can be several awaits deep, hence the ticks.
+   */
+  async _afterAsks(ret, asks) {
+    await ret;
+    for (const asked of asks) { try { await asked; } catch { /* it reported itself */ } }
+    for (let tick = 0; tick < 8; tick++) await null;
+  }
+
   async playCard(cardUid, targetId = null, opts = {}) {
     const r = this._playCard(cardUid, targetId, opts);
     if (r.pending) { await r.pending; }
@@ -3405,9 +3423,15 @@ export class CombatEngine {
       } else {
         const outermost = this._effectEvents == null;
         if (outermost) this._effectEvents = 0;
+        const askedBefore = this._asksInEffect;
+        const asks = this._asksInEffect = [];
         try { ret = card.def.effect(ctx); }
         catch (err) { console.error(`[combat] card ${card.id} effect threw`, err); }
-        finally { if (outermost) this._effectEvents = null; }
+        finally {
+          if (outermost) this._effectEvents = null;
+          this._asksInEffect = askedBefore;
+        }
+        if (asks.length) ret = this._afterAsks(ret, asks);
       }
 
       const finish = () => {
@@ -3470,6 +3494,16 @@ export class CombatEngine {
         finish();
       }
     }));
+    /* A Trick that asks something is still that Kid's Trick when the answer comes.
+       `_asSeat` ended at the first `await`, so everything after a chooser ran as seat 0:
+       a friend chose a card and the host drew it, Papermaking looked for the card in the
+       wrong hand for ever, and a second question went to the host. Every machine agreed,
+       so nothing out-of-sync could see it. Nothing else plays while this waits. */
+    if (pending) {
+      const before = this.acting;
+      this.acting = owner;
+      pending = pending.finally(() => { this.acting = before; });
+    }
     return { events, pending };
   }
 

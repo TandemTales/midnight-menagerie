@@ -156,7 +156,13 @@ export class ChoiceBroker {
    * Raise a request and await its resolution.
    * @returns {Promise<number[]>} indices into `req.pool`
    */
-  async ask(o) {
+  ask(o) {
+    const asked = this._ask(o);
+    this.e._asksInEffect?.push(asked);
+    return asked;
+  }
+
+  async _ask(o) {
     const req = {
       id: ++REQ,
       kind: o.kind || 'card',

@@ -738,6 +738,38 @@ try {
       await s10.settled();
       check(ran.join() === 'take,leave', 'an answer sorting behind the cursor does not apply what the cursor had passed a second time', ran.join());
       s10.close();
+
+      /* Answering a chooser moves nothing on the board, so the queue walks straight past
+         it. Friends' Tricks carrying the same clock sort behind that answer. They are not
+         late: on the machine that answered they went through in the order they happened
+         to arrive, and everyone else's board was different from there on. */
+      const orderOf = async (arrival) => {
+        const hub = new LoopbackHub();
+        const s = new Session({ transport: hub.peer('O3'), seat: 3, seats: 4, seed: 'answer', beatMs: 0 });
+        s.run = { combat: { turn: 1 } };
+        const applied = [], shouted = [];
+        s.on('input', (m) => { if (m.t === INPUT.PLAY) applied.push(m.seat); });
+        s.on('desync', (d) => shouted.push(d.reason));
+        for (const seat of [0, 1, 2]) s._note(seat, 1, 1, 53);
+        s._accept({ t: INPUT.CHOICE, seat: 3, turn: 1, seq: 2, seq2: 1, clk: 54, picked: [] });
+        s._pump();          // the next beat walks the queue past it
+        await s.settled();
+        for (const seat of arrival) {
+          s._accept({ t: INPUT.PLAY, seat, turn: 1, seq: 5, clk: 54, pile: 'hand', index: 0 }, 'O' + seat);
+          await s.settled();
+        }
+        const heldBack = applied.length;
+        s._note(0, 1, 6, 54); s._note(1, 1, 6, 54); s._note(2, 1, 6, 54);
+        s._pump();
+        await s.settled();
+        s.close();
+        return { order: applied.join(), heldBack, shouted: shouted.join() };
+      };
+      const one = await orderOf([2, 1, 0]);
+      const two = await orderOf([0, 2, 1]);
+      check(one.order === '0,1,2' && two.order === '0,1,2',
+        'friends\' Tricks behind an answer go in the agreed order, whichever arrived first', `${one.order} / ${two.order}`);
+      check(!one.shouted && !two.shouted, 'and nobody calls that a desync', `${one.shouted} / ${two.shouted}`);
     }
 
     /* A chest is rolled the same on both machines, whoever is at each screen. */

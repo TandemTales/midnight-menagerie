@@ -58,7 +58,22 @@ SLOW_WIRE = """async ([low, high]) => {
       return was.apply(this, a);
     };
   }
+  /* Every send and receipt with its clock, so an input that arrives late can be traced. */
+  const ring = window.__ring = [];
+  const note = (dir, m) => {
+    const i = m.k === 'i' || m.i ? m.i : m;
+    ring.push([Date.now(), dir, m.k, i.seat, i.t || i.act || '', i.turn, i.seq, i.clk]);
+    if (ring.length > 6000) ring.splice(0, 1000);
+  };
+  const onWire = Session.prototype._onWire;
+  Session.prototype._onWire = function (m, from) { if (m && (m.i || m.clk !== undefined)) note('in', m); return onWire.call(this, m, from); };
+  const accept = Session.prototype._accept;
+  Session.prototype._accept = function (msg, from) {
+    if (msg) ring.push([Date.now(), from ? 'acc' : 'own', 'x', msg.seat, msg.t || msg.act || '', msg.turn, msg.seq, msg.clk, this._applied, this.log.length]);
+    return accept.call(this, msg, from);
+  };
   ChannelTransport.prototype.send = function (msg) {
+    if (msg && (msg.i || msg.clk !== undefined)) note('out', msg);
     const q = this._slowQ || (this._slowQ = []);
     q.push({ at: performance.now() + low + Math.random() * (high - low), msg });
     const drain = () => {
@@ -209,7 +224,7 @@ ROOM_STEP = """(done) => {
                  'begin', 'next', 'walk on', 'carry on', 'on we go', 'go through', 'open the door'];
   // A card can be called Leave a Life Behind.
   const all = [...document.querySelectorAll('button, .btn, .rm-go, [role=button], .kit-btn')].filter(seen)
-    .filter(b => !b.closest('.rw-fan, .sh-shelf, [role=option]'))
+    .filter(b => !b.closest('.rw-fan, .sh-counter, .sh-card, [role=option]'))
     .filter(b => !(b.textContent || '').trim().toLowerCase().startsWith('take none'));
   const out = all.find(b => words.some(w => (b.textContent || '').trim().toLowerCase().startsWith(w)));
   if (out) { out.click(); return ['out', (out.textContent || '').trim().slice(0, 44)]; }
@@ -245,6 +260,16 @@ async def main():
     errors = []
     tolerated = ("[net] the turn barrier",)
     rng = random.Random(ROOM)
+    traces = []
+    all_pages = {}
+
+    async def trace(tag, text):
+        # Each machine's own record, around the clock of the input that came late.
+        clk = json.loads(text[text.index("{", text.index("moved")):])["clk"]
+        for t, pg in all_pages.items():
+            rows = await pg.evaluate("""(clk) => (window.__ring || []).filter(r =>
+              typeof r[7] === 'number' && r[7] >= clk - 2 && r[7] <= clk + 2)""", clk)
+            print(f"  TRACE {tag} late at clk {clk}, seen from {t} seat {await pg.evaluate('window.MM.ctx.run.localSeat')}: {json.dumps(rows)}", flush=True)
 
     def watch(page, tag):
         def said(m):
@@ -253,6 +278,8 @@ async def main():
             elif m.type == "error" and not any(x in m.text for x in tolerated):
                 errors.append(f"{tag} {m.text}")
                 print(f"  ERROR  {tag} {m.text}", flush=True)
+                if "late-input" in m.text and len(traces) < 3:
+                    traces.append(asyncio.ensure_future(trace(tag, m.text)))
         page.on("pageerror", lambda e: errors.append(f"{tag} {e}"))
         page.on("console", said)
 
@@ -263,6 +290,7 @@ async def main():
         for i in range(PLAYERS):
             page = await ctx.new_page()
             watch(page, "ABCD"[i])
+            all_pages["ABCD"[i]] = page
             await page.goto(URL, wait_until="load", timeout=90000)
             await page.wait_for_function("window.MM && window.MM.ctx && window.MM.ctx.scenes.currentName && !window.MM.ctx.scenes.busy", timeout=90000)
             cdp = await ctx.new_cdp_session(page)

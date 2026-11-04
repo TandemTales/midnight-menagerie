@@ -103,7 +103,7 @@ U.onTracker(SLUG, (e, s, seat) => {
 /** Tricks discarded or Vanished so far this turn. */
 function gone(c) {
   const s = U.mm(c);
-  const ex = (c.e?.piles?.exhaust || c.e?.exhaust || []).length;
+  const ex = (c.self?.piles?.exhaust || []).length;
   return (U.got(c, 'gone') || 0) + Math.max(0, ex - (s.exhaustAtTurnStart || 0));
 }
 

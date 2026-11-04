@@ -837,6 +837,18 @@ export class Session {
      */
     if (at < this._applied) {
       this._applied++;
+      /* Behind nothing but answers it is not late at all. An answer moves nothing on the
+         board, so the queue walks past one without waiting for anybody, and a friend's
+         Trick stamped with the same clock then sorts behind it. Put through here, those
+         went in the order they arrived on the machine that answered and in the agreed
+         order everywhere else, and the boards split. So the cursor steps back and it waits
+         its turn like any other; walking over the answers again does nothing. */
+      const behind = this.log.slice(at + 1, this._applied);
+      if ((COMBAT_INPUT.has(msg.t) || agreedRoomInput(msg)) && behind.every(m => m.t === INPUT.CHOICE)) {
+        this._applied = at;
+        this._pump();
+        return;
+      }
       /* PLAY and SNACK only. An END commutes as well: `endTurn(seat)` closes
          one seat and the enemy phase falls out of the LAST one to close,
          whichever that is, so two ENDs in either order leave the same board
@@ -846,15 +858,15 @@ export class Session {
          went past it: a friend's answer to a chooser sorts by its clock too and
          moves nothing on this board, and that alone reached this line in a walk
          that stayed in step to the end. */
-      const passed = this.log.slice(at + 1, this._applied).some(m => COMBAT_INPUT.has(m.t));
+      const passed = behind.some(m => COMBAT_INPUT.has(m.t));
       if (passed && (msg.t === INPUT.PLAY || msg.t === INPUT.SNACK)) {
         console.error('[net] DESYNC {reason: late-input} a COMBAT input arrived '
-          + 'after one that sorts after it; the board has already moved',
-          { turn: msg.turn, seat: msg.seat, seq: msg.seq, t: msg.t, clk: msg.clk, mine: this.seat,
+          + 'after one that sorts after it; the board has already moved '
+          + JSON.stringify({ turn: msg.turn, seat: msg.seat, seq: msg.seq, t: msg.t, clk: msg.clk, mine: this.seat,
             absorbing: !!this.absorbing,
-            past: this.log.slice(at + 1, this._applied).filter(m => COMBAT_INPUT.has(m.t))
+            past: behind.filter(m => COMBAT_INPUT.has(m.t))
               .slice(0, 4).map(m => `${m.t} seat ${m.seat} turn ${m.turn} clk ${m.clk}`),
-            horizon: [...this._horizon].map(([s, h]) => `${s}@${h.clk}`).join(' ') });
+            horizon: [...this._horizon].map(([s, h]) => `${s}@${h.clk}`).join(' ') }));
         this._emit('desync', { reason: 'late-input', msg });
       }
       this._late.push(msg);

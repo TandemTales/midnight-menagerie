@@ -2443,6 +2443,57 @@ export async function run() {
       'and NONE of them is a multiplayer-only Trick');
   });
 
+  await atest('a Trick that asks something is still that Kid\'s Trick when the answer comes', async () => {
+    const party = async (slug) => {
+      const e = makeDummyParty(new RNG(1899), 4, { companion: slug, decks: [0, 1, 2, 3].map(() => startingDeckFor(slug)), maxHp: 74 });
+      await e.startCombat();
+      return e;
+    };
+    const look = (p) => [p.piles.hand.length, p.piles.draw.length, p.piles.discard.length, p.piles.exhaust.length].join();
+    const play = async (e, seat, id) => {
+      const p = e.players[seat];
+      e.addCard(cardById(id), 'hand', { to: p });
+      p.energy = 9;
+      await e.playCard(p.piles.hand[p.piles.hand.length - 1].uid);
+    };
+
+    let e = await party('bones');
+    let host = look(e.players[0]);
+    let hand = e.players[1].piles.hand.length;
+    await play(e, 1, 'bones/secret-stash');
+    eq(look(e.players[0]), host, 'a friend\'s draw after a chooser leaves the host\'s piles alone');
+    ok(e.players[1].piles.hand.length > hand, 'and the cards reach the friend who played it');
+    eq(e.acting, null, 'and nobody is left acting afterwards');
+
+    /* Picks until there is nothing left to pick. It looked in the wrong hand and never stopped. */
+    e = await party('crinkle');
+    host = look(e.players[0]);
+    await play(e, 2, 'crinkle/papermaking');
+    eq(look(e.players[0]), host, 'Papermaking pulps its own player\'s hand, not the host\'s');
+    ok(e.players[2].piles.exhaust.length >= 5, 'and it ends, with that hand pulped');
+
+    /* Unaddressed questions belong to whoever is acting, so the second one has to go to the same seat. */
+    e = await party('crinkle');
+    const asked = [];
+    const ask = e.choices.ask.bind(e.choices);
+    e.choices.ask = (o) => { asked.push(e.current.seat); return ask(o); };
+    await play(e, 3, 'crinkle/papermaking');
+    ok(asked.length > 1 && asked.every(s => s === 3), `every question goes to the player of the Trick: ${asked.join()}`);
+
+    /* These ask without waiting for the answer. */
+    e = await party('marmalade');
+    host = look(e.players[0]);
+    await play(e, 1, 'marmalade/watchful-eyes');
+    eq(look(e.players[0]), host, 'a friend\'s "then discard a Trick" leaves the host\'s hand alone');
+    ok(e.players[1].piles.discard.length >= 2, 'it takes one from their own hand, and is over only once it has');
+    e = await party('brambleboo');
+    host = look(e.players[0]);
+    const deck = e.players[1].piles.draw.length;
+    await play(e, 1, 'brambleboo/window-seat');
+    eq(look(e.players[0]), host, 'a friend\'s "put a Trick back on top" leaves the host\'s deck alone');
+    eq(e.players[1].piles.draw.length, deck, 'and goes back on their own');
+  });
+
   const passed = results.reduce((n, t) => n + t.asserts.filter(a => a.pass).length, 0);
   const failed = results.reduce((n, t) => n + t.failed, 0);
   return { results, passed, failed };
