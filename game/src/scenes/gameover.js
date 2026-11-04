@@ -319,13 +319,19 @@ export class GameOverScene extends Scene {
     // name. This line used to hardcode "She" and printed it for every Kid.
     const pr = k.pronouns || { s: 'they', o: 'them', p: 'their', r: 'themselves', plural: true };
     const region = REGION_NAMES[s.regionId] ?? s.meta.name;
-    return { c, k, first, pr, region };
+    /* Over a wire the way out is the party's. */
+    const run = this.ctx.run;
+    const friends = run?.session?.remote ? run.kids.filter(x => !x.gone).map(x => run.kidNameOf(x).split(' ')[0]) : [];
+    const together = friends.length > 1
+      ? `${friends.slice(0, -1).join(', ')} and ${friends[friends.length - 1]} and their Companions`
+      : `${first} and ${c.name}`;
+    return { c, k, first, pr, region, together };
   }
 
   /* ═══ top: the headline, in the cartouche ════════════════════════════════ */
   _buildHead() {
     const s = this.summary;
-    const { c, first, region } = this._cast();
+    const { c, first, region, together } = this._cast();
 
     /**
      * THE HEART IS THE ENDING, and this screen used to print the same headline
@@ -347,12 +353,12 @@ export class GameOverScene extends Scene {
       : this.won && isDemoBuild()
       ? [`Wing ${s.wing} &middot; ${esc(region)}`,
          'That is the end of the demo.',
-         `${esc(first)} and ${esc(c.name)} reach the open way together. The house has twelve more
+         `${esc(together)} reach the open way together. The house has twelve more
             wings. Wishlist Midnight Menagerie on Steam to walk them.`]
       : this.won
       ? [`Wing ${s.wing} &middot; ${esc(region)}`,
          'You made it out.',
-         `${esc(first)} and ${esc(c.name)} reach the open way together.`]
+         `${esc(together)} reach the open way together.`]
       : [`Wing ${s.wing} &middot; ${esc(region)}`,
          'The candle goes out.',
          `${esc(first)} and ${esc(c.name)} get out. ${esc(s.killedBy.replace(/^the /, 'The '))} keeps the room.

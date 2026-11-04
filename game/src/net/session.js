@@ -26,8 +26,8 @@
  * ── The three things that go wrong, and what catches each ───────────────────
  *
  * 1. ORDER. Two players act at the same moment and the two clients apply their
- *    inputs in different orders. Every input is stamped `(turn, seq)` by its
- *    author and applied in a total order sorted by `(turn, seat, seq)` — seat
+ *    inputs in different orders. Every input is stamped with a logical clock by
+ *    its author and applied in a total order sorted by `(clk, seat, seq)` — seat
  *    index breaks the tie, never arrival time, because arrival time is exactly
  *    the thing that differs between machines.
  *
@@ -138,6 +138,10 @@ const ms = () => ((typeof performance === 'object' && performance.now) ? perform
  * a peer who is reading a Curiosity.
  */
 const COMBAT_INPUT = new Set(['play', 'snack', 'end']);
+
+/** The one room input that does not commute: two friends opening a Curiosity's fight at
+ *  once must get the same fight on every machine, so it waits for the agreed order too. */
+const agreedRoomInput = (m) => m?.act === 'event.fight';
 
 export class Session {
   /**
@@ -445,15 +449,12 @@ export class Session {
    * case if it ever happens, rather than leaving the digest to notice a turn
    * later, a long way from the cause.
    */
-  /** One message, out of band, because the cursor has already passed it. */
-  _runOne(msg) {
-    this._chain = (this._chain || Promise.resolve()).then(async () => {
-      for (const fn of this._listeners.input) {
-        try { await fn(msg); } catch (err) { console.error('[net] applying input', msg, err); }
-      }
-      this._landed(msg);
-    });
-    return this._chain;
+  /** One message the cursor has already passed. */
+  async _runOne(msg) {
+    for (const fn of this._listeners.input) {
+      try { await fn(msg); } catch (err) { console.error('[net] applying input', msg, err); }
+    }
+    this._landed(msg);
   }
 
   /** Resolves when this input has really been applied, whatever it had to wait for. */
@@ -472,7 +473,14 @@ export class Session {
   _pump() {
     if (this._frozen) return this.settled();
     this._chain = (this._chain || Promise.resolve()).then(async () => {
-      while (this._applied < this.log.length) {
+      for (;;) {
+        /* Before anything newer. Room inputs commute with other seats and never with
+           their own author's: this was a link of its own further down the chain, so
+           while one input was being applied (leaving a room waits for the next screen)
+           a friend's Take could arrive late and their Leave not, Leave went first, and
+           this machine alone lost the Trick. */
+        if (this._late.length) { await this._runOne(this._late.shift()); continue; }
+        if (this._applied >= this.log.length) break;
         const msg = this.log[this._applied];
         if (this._heldByBarrier(msg)) { this._noteHold(msg); break; }
         this._applied++;
@@ -519,17 +527,23 @@ export class Session {
    * beat that set out before an input but arrived after it would otherwise
    * un-promise something already promised, which reopens the barrier under an
    * input that has already been cleared to apply.
+   *
+   * "Backwards" is judged on the clock, because a turn is allowed to fall: the
+   * fight ends and the next one starts again at 1. A horizon compared on turns
+   * stays at the first fight's last turn for the rest of the expedition.
    */
   _note(seat, turn, seq, clk = 0) {
     const s = seat | 0;
     if (s === this.seat) return;
     const t = turn | 0, q = seq | 0, c = clk | 0;
     const h = this._horizon.get(s);
-    if (h && (h.turn > t || (h.turn === t && h.seq >= q))) {
-      if (c > (h.clk | 0)) h.clk = c;
-      return;
+    if (h) {
+      const older = (c || h.clk)
+        ? (c < h.clk || (c === h.clk && q < h.seq))
+        : (h.turn > t || (h.turn === t && h.seq >= q));
+      if (older) return;
     }
-    this._horizon.set(s, { turn: t, seq: q, clk: Math.max(c, h ? h.clk | 0 : 0) });
+    this._horizon.set(s, { turn: t, seq: q, clk: c });
   }
 
   /**
@@ -594,11 +608,14 @@ export class Session {
     if (!msg) return false;
     if (this.absorbing) return false;              // settled history, replaying
     if (this.seats <= 1) return false;             // nobody to wait for
-    if (!COMBAT_INPUT.has(msg.t)) return false;    // room inputs commute
+    const agreed = agreedRoomInput(msg);
+    if (!COMBAT_INPUT.has(msg.t) && !agreed) return false;    // room inputs commute
     const t = msg.turn | 0;
-    if (t < 1) return false;
-    if (t > this._barrierTurn()) return true;
-    if (msg.node && this.run?.readyForCombatInput && !this.run.readyForCombatInput(msg)) return true;
+    if (!agreed) {
+      if (t < 1) return false;
+      if (t > this._barrierTurn()) return true;
+      if (msg.node && this.run?.readyForCombatInput && !this.run.readyForCombatInput(msg)) return true;
+    }
     const c = msg.clk | 0;
     if (!c) return false;                          // a hand-made input in a harness
     for (const [s, h] of this._horizon) {
@@ -682,7 +699,7 @@ export class Session {
         if (this._frozen) { this._buffered.push(m.i); this.beat(); break; }
         this._accept(m.i, from);
         /* The ack that makes the agreed order cost a round trip rather than a beat. */
-        if (m.i && COMBAT_INPUT.has(m.i.t)) this.beat();
+        if (m.i && (COMBAT_INPUT.has(m.i.t) || agreedRoomInput(m.i))) this.beat();
         break;
       case WIRE.BEAT:
         this._note(m.seat, m.turn, m.seq, m.clk);
@@ -727,7 +744,7 @@ export class Session {
   /**
    * Put an input into the total order and hand it to the game.
    *
-   * The order is `(turn, seat, seq)`. Seat index is the tiebreaker and arrival
+   * The order is `(clk, seat, seq)`. Seat index is the tiebreaker and arrival
    * time is never consulted — arrival time is the one thing guaranteed to
    * differ between two machines, so ordering by it is ordering by nothing.
    *
@@ -818,15 +835,18 @@ export class Session {
          whichever that is, so two ENDs in either order leave the same board
          — and two Kids ending their turns at once is the most ordinary
          thing that happens in a co-op fight, which is what a first version
-         of this shouted about twice per round. */
-      if (msg.t === INPUT.PLAY || msg.t === INPUT.SNACK) {
+         of this shouted about twice per round. And it is only news if a Trick
+         went past it: a friend's answer to a chooser sorts by its clock too and
+         moves nothing on this board, and that alone reached this line in a walk
+         that stayed in step to the end. */
+      const passed = this.log.slice(at + 1, this._applied).some(m => COMBAT_INPUT.has(m.t));
+      if (passed && (msg.t === INPUT.PLAY || msg.t === INPUT.SNACK)) {
         console.error('[net] DESYNC {reason: late-input} a COMBAT input arrived '
           + 'after one that sorts after it; the board has already moved',
           { turn: msg.turn, seat: msg.seat, seq: msg.seq, t: msg.t });
         this._emit('desync', { reason: 'late-input', msg });
       }
-      this._runOne(msg);
-      return;
+      this._late.push(msg);
     }
     this._pump();
   }
@@ -834,8 +854,18 @@ export class Session {
   /** How far through `this.log` the board has been advanced. */
   _applied = 0;
 
+  /** Inputs that sorted behind the cursor, in the order they arrived. */
+  _late = [];
+
+  /**
+   * The clock comes first, and never the turn. A fight's turn count starts again
+   * at 1, so sorting on it puts a second fight's Tricks back among the first's,
+   * behind inputs already applied, and every party split in its second fight. The
+   * clock only ever grows, and it already says who had seen what. `turn` orders
+   * only the hand-made inputs of a harness, which carry no clock.
+   */
   _insertAt(msg) {
-    const key = (m) => [m.turn | 0, m.clk | 0, m.seat | 0, m.seq | 0];
+    const key = (m) => [m.clk | 0, m.turn | 0, m.seat | 0, m.seq | 0];
     const k = key(msg);
     const notAfter = (o) => {
       for (let n = 0; n < k.length; n++) if (o[n] !== k[n]) return o[n] < k[n];

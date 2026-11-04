@@ -1150,7 +1150,18 @@ export class RewardScene extends RoomScene {
     this.ctx.audio?.stinger?.('sting:reward');
     if (this.run.claimReward) await act(run, { t: INPUT.ROOM, act: ACT.REWARD_CLAIM, close: true });
     else this._leave();
+    // Still here: a boss's room waits for the whole party (`run._bossRoomDone`).
+    if (!this._dead && run.session?.remote && this.reward?.kind === 'boss') this._waitForParty();
     if (this.mock) this.ctx.scenes?.go?.('map', { region: this.run.region, seed: this.run.seed });
+  }
+
+  _waitForParty() {
+    this.resolved = true;
+    this.$skip?.remove();
+    this.$go?.remove();
+    const b = this._primary('Waiting for the others', () => {}, { hint: 'everybody takes their spoils first' });
+    b.disabled = true;
+    b.querySelector('kbd')?.remove();
   }
 
   _bindKeys() {

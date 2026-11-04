@@ -261,6 +261,46 @@ async def main():
               "and both tabs agree the ballot has that vote on it",
               f"{voted[0]} / {voted[1]}")
 
+        # ── and then they play again ─────────────────────────────────────────
+        # The likeliest thing a party does with a demo, and the first version of the
+        # wire had no test past the end of one expedition. The old session must be shut
+        # or it would go on applying a new party's inputs to a run nobody is looking at.
+        for pg in (host, other):
+            await pg.evaluate("() => { window.__oldSession = window.MM.ctx.run.session; window.MM.ctx.run.end(true); }")
+        for pg in (host, other):
+            await pg.wait_for_function("() => window.MM.ctx.scenes.currentName === 'gameover' && !window.MM.ctx.scenes.busy", timeout=60000)
+            await pg.evaluate("() => window.MM.ctx.scenes.current._activate('title')")
+        for pg in (host, other):
+            await pg.wait_for_function("() => window.MM.ctx.scenes.currentName === 'title' && !window.MM.ctx.scenes.busy", timeout=60000)
+        shut = [await pg.evaluate("() => !window.__oldSession._beatTimer && !window.__oldSession._listeners.input?.size") for pg in (host, other)]
+        check(all(shut), "leaving the ending shuts the old session on every machine", str(shut))
+
+        for pg in (host, other):
+            await pg.evaluate("(room) => window.MM.ctx.scenes.go('lobby', { room })", ROOM + "-again")
+        for pg in (host, other):
+            await pg.wait_for_function("() => window.MM.ctx.scenes.currentName === 'lobby' && !window.MM.ctx.scenes.busy && !!document.querySelector('.lo__ready')", timeout=60000)
+        await host.wait_for_timeout(2500)
+        for pg in (host, other):
+            await pg.click(".lo__ready")
+            await pg.wait_for_timeout(700)
+        leader = host if await host.evaluate("() => !!document.querySelector('.lo__go')") else other
+        await leader.click(".lo__go")
+        await host.wait_for_timeout(4000)
+        again = [await pg.evaluate(RUNSNAP) for pg in (host, other)]
+        check(all(a and a["remote"] and a["kids"] == 2 for a in again), "the same friends can start another expedition", str(again)[:200])
+        if all(again):
+            check(again[0]["seed"] == again[1]["seed"], "and agree on its seed", f'{again[0]["seed"]} / {again[1]["seed"]}')
+            voter = await leader.evaluate("""async () => {
+              const { act, ACT } = await import('/game/src/net/actions.js');
+              const { INPUT } = await import('/game/src/net/session.js');
+              const r = window.MM.ctx.run;
+              await act(r, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id: r.legalNextIds()[0] });
+              return r.session.log.length;
+            }""")
+            await host.wait_for_timeout(1200)
+            logs = [await pg.evaluate("() => window.MM.ctx.run.session.log.length") for pg in (host, other)]
+            check(logs[0] == logs[1] == voter and voter >= 1, "and an input crosses the new wire", f"{voter}: {logs}")
+
         await browser.close()
 
     if errors:

@@ -1362,6 +1362,12 @@ export class Run {
       return ended;
     }
     this.save();
+    /* A boss's room was only waiting for this seat to claim. They keep the reward. */
+    if (this.defeatedBoss && !this.pendingWing && this.kids.some(o => !o.gone)
+      && this.defeatedBoss.nodeId === this.currentNodeId && this.defeatedBoss.region === this.region) {
+      const moved = this._bossRoomDone();
+      if (moved) return moved;
+    }
     if (this.pendingWing) {
       if (Object.keys(this.pendingWing.votes).length && !this.wingVotesPending().length) {
         return this.resolveWingVote();
@@ -1607,6 +1613,8 @@ export class Run {
     const leaving = this.nodeById(this.currentNodeId);
 
     this._roomDone = false;
+    /* Over a wire the last room stayed open until now: see `leaveNode`. */
+    if (this.session?.remote) { this.pendingEvent = null; this.pendingShop = null; }
     this._markEntered(nodeId);
     if (this.currentNodeId && !this.pathIds.includes(this.currentNodeId)) this.pathIds.push(this.currentNodeId);
     this.pathIds.push(nodeId);
@@ -1664,7 +1672,7 @@ export class Run {
     }
     // Clues are SHARED (`cluesFound` is not a PER_KID field), so this one is
     // a single grant however many Kids walked in.
-    if (node.payload?.hazard === 'paw-prints') this.addClues(1);
+    if (node.payload?.hazard === 'paw-prints') this._asLead(() => this.addClues(1));
 
     for (const k of this.keepsakes) {
       try { k.hooks?.onEnterRoom?.({ run: this, node, owner: k, e: null }); } catch { /* cosmetic */ }
@@ -1678,9 +1686,18 @@ export class Run {
     if (scene === 'combat') return this._startCombat(node, type);
     if (scene === 'event') this._prepareEvent(node, type);
     if (scene === 'shop') this._prepareShop(node);
-    if (scene === 'reward' && type === NodeType.TREASURE) this._prepareTreasure(node);
+    if (scene === 'reward' && type === NodeType.TREASURE) this._asLead(() => this._prepareTreasure(node));
     return this._goto(scene, { node: nodeId, region: this.region });
   }
+
+  /**
+   * What the whole party walks into is rolled the same way on every machine.
+   *
+   * A door is not any one Kid's input, so nothing has borrowed a seat for it and
+   * `local` is whoever sits at THIS screen: a chest handed each machine a different
+   * Keepsake and purse for the same Kid, and the party split at the next door.
+   */
+  _asLead(fn) { return this.session?.remote ? this.asSeat(0, fn) : fn(); }
 
   /**
    * ENTERED, not cleared.
@@ -1710,14 +1727,22 @@ export class Run {
   /** Leave a non-combat room and go back to the blueprint. */
   leaveNode() {
     this.resetSeat();
-    this.clearOffers();
-    this.pendingEvent = null;
-    this.pendingShop = null;
+    /* Over a wire this is one player walking back to the blueprint in their own
+       time, on their own machine. A friend may still be in the room, and their
+       next input needs it: a Curiosity answered after this is a Curiosity lost on
+       this machine alone. The party's next door is what closes it (`enterNode`). */
+    if (!this.session?.remote) {
+      this.clearOffers();
+      this.pendingEvent = null;
+      this.pendingShop = null;
+    }
     this._roomDone = true;
     this._markCleared();
     this.save();
     const node = this.currentNode;
-    if (node && this.effectiveType(node) === NodeType.BOSS) return this.completeRegion();
+    if (node && this.effectiveType(node) === NodeType.BOSS) {
+      return this.session?.remote ? this._bossRoomDone() : this.completeRegion();
+    }
     return this._goto('map', { region: this.region, seed: this.seed });
   }
 
@@ -1827,7 +1852,11 @@ export class Run {
     const wing = node?.payload?.hazard || null;
     if (wing === 'pipes') members = addPipesEnemy(members);
 
-    const hpMul = this.flags.enemyHpMul || 1;
+    /* A Keepsake that swells the enemies swells them for the table, or each machine
+       builds its own fight. Whichever Kid carries it is the one whose number counts. */
+    const hpMul = this.session?.remote
+      ? Math.max(...this.kids.map(k => this.flagsOf(k).enemyHpMul || 1))
+      : (this.flags.enemyHpMul || 1);
     const enemies = members.map((m, i) => {
       const def = getEnemy(m.enemyId);
       return def ? { def, hp: Math.max(1, Math.round(m.hp * hpMul)), id: `e${i}` } : null;
@@ -2418,7 +2447,7 @@ export class Run {
     // has not been answered yet. Quitting on the reward screen resumes there.
     this._markCleared(node ? node.id : this.currentNodeId);
     if (type === NodeType.BOSS) this.defeatedBoss = { region: this.region, nodeId: node?.id };
-    this._prepareReward(node, type, { navigate: false });
+    this._asLead(() => this._prepareReward(node, type, { navigate: false }));
     this.save();
   }
 
@@ -2619,7 +2648,8 @@ export class Run {
    */
   claimReward({ close = true } = {}) {
     const r = this.pendingReward;
-    if (!r) return close ? this.leaveNode() : false;
+    const wire = !!this.session?.remote;
+    if (!r) return !close ? false : (wire ? this._closeRewardOnWire(null) : this.leaveNode());
     if (r.lostThings) this.addLostThings(r.lostThings, { raw: true });
     if (r.keepsake) this.addKeepsake(r.keepsake);
     if (r.clues) this.addClues(r.clues);
@@ -2634,6 +2664,7 @@ export class Run {
     // Just mine. `clearOffers()` below is the job of the Kid who closes it.
     this.local.pendingReward = null;
     if (!close) { this.save(); return true; }
+    if (wire) return this._closeRewardOnWire(r);
     const wasBoss = r.kind === 'boss';
     this.resetSeat();
     this.clearOffers();
@@ -2641,6 +2672,39 @@ export class Run {
     this.save();
     if (wasBoss) return this.completeRegion();
     return this._goto('map', { region: this.region, seed: this.seed });
+  }
+
+  /**
+   * One Kid has claimed, on every machine, in log order. It shuts nothing.
+   *
+   * This was the same close as a shared screen's, so the first player to press
+   * Leave cleared everybody's offers, on every machine, and took everybody back to
+   * the blueprint: a friend still reading lost their Trick and their Buttons, and
+   * if they had pressed it too within one network delay, each machine paid its own
+   * Kid and not the other. Only the player who claimed walks out, and on their own
+   * machine.
+   */
+  _closeRewardOnWire(r) {
+    this._markCleared(r?.nodeId || this.currentNodeId);
+    this.save();
+    const node = this.currentNode;
+    if (r?.kind === 'boss' || (node && this.effectiveType(node) === NodeType.BOSS)) return this._bossRoomDone();
+    if (this.localSeat !== this.session.seat) return null;
+    return this._goto('map', { region: this.region, seed: this.seed });
+  }
+
+  /**
+   * What follows a boss belongs to the whole party, so it waits for the last Kid
+   * to claim and then happens on every machine at the same place in the log.
+   *
+   * The last claim arrives as that Kid, and the next screen is built here. Each
+   * player's ending has to be their own Kid's, and it was the last claimer's on every
+   * machine, with that Kid's deck on the record and their Keepsakes counted.
+   */
+  _bossRoomDone() {
+    if (this.pendingWing || this.result) return null;
+    if (this.kids.some(k => k.pendingReward && !k.gone)) return null;
+    return this.session?.remote ? this.asSeat(this.session.seat, () => this.completeRegion()) : this.completeRegion();
   }
 
   // ══ Safe Room ════════════════════════════════════════════════════════════
@@ -2837,7 +2901,16 @@ export class Run {
     // themselves. `resolved` stays as the solo spelling and as seat 0's answer.
     this.pendingEvent = { id: def.id, nodeId: node.id, resolved: null, resolvedBy: {}, pendingBy: {} };
     this.stats.curiosities++;
-    if (this.flags.curiosityHeal && !this._curiosityHealUsed) {
+    if (this.session?.remote) {
+      // Everybody's own backpack, on every machine, and not just the one at this screen.
+      for (const k of this.kids) {
+        const n = this.flagsOf(k).curiosityHeal;
+        if (n && !k.curiosityHealUsed) {
+          k.curiosityHealUsed = true;
+          this.asSeat(this.kids.indexOf(k), () => this.heal(n));
+        }
+      }
+    } else if (this.flags.curiosityHeal && !this._curiosityHealUsed) {
       this._curiosityHealUsed = true;
       this.heal(this.flags.curiosityHeal);
     }
@@ -2969,6 +3042,8 @@ export class Run {
   async eventCombat(kind = 'standard') {
     const node = this.currentNode;
     if (!node) return null;
+    // Two friends can open the same fight at once, and there is only the one.
+    if (this.combat || this.pendingCombat) return null;
     const fake = { ...node, row: node.row, id: node.id };
     const type = kind === 'elite' ? NodeType.BIG_SCARE : NodeType.SCUFFLE;
     const engine = await this.buildCombat(fake, type);
@@ -3039,14 +3114,22 @@ export class Run {
     /* The party's view moves whether or not YOUR save does, so the next
        decision in this run cannot pick the same Companion again on one machine
        and not on another. */
-    if (slug && !this.freedRoster.includes(slug)) this.freedRoster.push(slug);
-    if (!slug || this.rescued.includes(slug)) return false;
-    this.rescued.push(slug);
+    const firstTonight = !!slug && !this.freedRoster.includes(slug);
+    if (firstTonight) this.freedRoster.push(slug);
+    /* Over a wire every machine has its own save and one of them may have freed this
+       Companion on another night. What the rescue pays, and `companionsFreed`, which the
+       next wing is generated from, have to follow the party's list and not that save. */
+    const wire = !!this.session?.remote;
+    if (wire ? !firstTonight : (!slug || this.rescued.includes(slug))) return false;
+    if (!this.rescued.includes(slug)) this.rescued.push(slug);
     // `rescued` is seeded from the save and is therefore the lifetime set. The expedition-end
     // screen wants what YOU freed today, so track that separately.
     this.companionsFreed.push(slug);
-    this.addClues(2);
-    if (this.flags.maxHpOnMilestone) this.addMaxCourage(this.flags.maxHpOnMilestone);
+    this._asLead(() => this.addClues(2));
+    for (const k of wire ? this.kids : [this.local]) {
+      const n = this.flagsOf(k).maxHpOnMilestone;
+      if (n) this.asSeat(this.kids.indexOf(k), () => this.addMaxCourage(n));
+    }
     // The whole emotional beat of the game, and it was silent: `sting:rescue`
     // is a rising five-note phrase nothing has ever played. `world:rescue-chime`
     // is separate and already plays from scenes/combat.js.
@@ -3353,6 +3436,7 @@ export class Run {
     this.markWingMapped(this.region);
     this.encounterHistory = [];
     this._curiosityHealUsed = false;
+    for (const k of this.kids) k.curiosityHealUsed = false;
     this._buildMap();
     this.save();
     bus.emit('run:region', { region: this.region, index: this.regionIndex });

@@ -1739,3 +1739,33 @@
    duplicate scan ink. Keep these readable between the section footprints. */
 .at-root[data-hair="1"] .at-pencil { opacity:.78; }
 .at-root[data-hair="1"][data-zoom="1"] .at-pencil { opacity:.16; }
+
+/* ── the fork on a short screen ───────────────────────────────────────────────
+   The button that takes a way on was 75 px under the bottom of the Deck's 800,
+   and half off at 1600x900: every screen under about 960 tall could not press it.
+   The track is bounded now, so the panel stops at the floor, and what is left of
+   it is what the choice is made on: who is held there, who keeps it, why this door,
+   how deep and what it is like. The wing's description and its room count go first;
+   the conditions scroll before the button can ever leave. */
+.at-body { grid-template-rows: minmax(0, 1fr); }
+.at-side { grid-template-rows: minmax(0, auto) minmax(0, 1fr); }
+.at-dossier { min-height: 0; }
+.at-dos__inside { flex: 0 1 auto; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+.at-dossier > :not(.at-dos__inside) { flex-shrink: 0; }
+.at-go__short { display: none; }
+@media (max-width: 1100px) {
+  .at-body { grid-template-rows: minmax(0, 1fr) auto; }
+}
+@media (max-height: 959px) {
+  .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__form { display: none; }
+  .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__plate { row-gap: 0; }
+  .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__facts { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); padding-block: 6px; }
+  .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__facts > div:nth-child(2) { display: none; }
+  .at-dos__inside > .at-dos__lbl { display: none; }
+  .at-dossier:has(.at-dos__inside:not([hidden])) .at-go__words { display: none; }
+  .at-dossier:has(.at-dos__inside:not([hidden])) .at-go__short { display: inline; }
+}
+@media (max-height: 759px) {
+  .at-dossier:has(.at-dos__inside:not([hidden])) .at-dos__no { display: none; }
+  .at-dossier:has(.at-dos__inside:not([hidden])) { padding-bottom: 10px; gap: 5px; }
+}

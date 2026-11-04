@@ -116,6 +116,35 @@ async def main():
         check("end of the demo" in head, "and the ending says what happened", " ".join(head.split())[:120])
         await page.screenshot(path="shots/demo-ending.png")
 
+        # The way on is the one irreversible choice, and on a short screen the button that makes
+        # it used to be under the bottom of the window. 1280x800 is the Steam Deck.
+        fork = await ctx.new_page()
+        fork.on("pageerror", lambda e: errors.append(str(e)))
+        for w, h in ((1280, 800), (1280, 720), (1600, 900), (1920, 1080)):
+            await fork.set_viewport_size({"width": w, "height": h})
+            await fork.goto("about:blank")
+            await fork.goto("http://localhost:8777/game/index.html#demo=1", wait_until="load", timeout=60000)
+            await fork.wait_for_function("window.MM && window.MM.ctx && window.MM.ctx.scenes.currentName && !window.MM.ctx.scenes.busy", timeout=60000)
+            got = await fork.evaluate("""async () => {
+              const { Run } = await import('/game/src/state/run.js');
+              const run = new Run({ companion: 'marmalade', kid: 'maya', seed: 7 });
+              run.ephemeral = true;
+              run.ctx = window.MM.ctx; window.MM.ctx.run = run;
+              await run.openWingFork();
+              const offered = window.MM.ctx.scenes.current.offered;
+              [...document.querySelectorAll('.at-hot[data-wing]')].find(b => offered.has(b.dataset.wing)).click();
+              await new Promise(r => setTimeout(r, 600));
+              const go = document.querySelector('.at-go'), b = go.getBoundingClientRect();
+              const tally = document.querySelector('.at-tally').getBoundingClientRect();
+              const tools = document.querySelector('.story-tools')?.getBoundingClientRect();
+              const hit = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
+              return { bottom: Math.round(b.bottom), h: innerHeight, pressable: !!hit && (hit === go || go.contains(hit)),
+                       clear: !tools || tools.left >= tally.right || tools.top >= tally.bottom };
+            }""")
+            check(got["bottom"] <= got["h"] and got["pressable"], f"the fork's button can be pressed at {w}x{h}", str(got))
+            check(got["clear"], f"and the help buttons leave the wings-crossed strip alone at {w}x{h}", str(got))
+        await fork.close()
+
         # Every creature in the demo's wings has a painting on the board, its own or a
         # relative's. The Wardrobe's two doors are drawn as doors, and read as doors.
         unpainted = await page.evaluate("""async () => {

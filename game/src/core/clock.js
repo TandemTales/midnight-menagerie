@@ -5,6 +5,7 @@ export class Clock {
     this.t = 0; this.dt = 0; this.raf = 0; this.running = false;
     this.paused = false;         // the Steam overlay, or the window losing focus
     this.scale = 1;              // global time scale (slow-mo on big hits)
+    this.hurry = 1;              // a co-op screen catching up with the table
     this._subs = new Set();
     this._tweens = [];
     this._timers = [];
@@ -17,7 +18,7 @@ export class Clock {
       if (!this.running) return;
       const raw = Math.min((now - this._last) / 1000, 0.1);
       this._last = now;
-      this.dt = raw * this.scale * BASE_ANIMATION_RATE;
+      this.dt = raw * this.scale * this.hurry * BASE_ANIMATION_RATE;
       this.t += this.dt;
       this._runTweens(this.dt);
       this._runTimers(this.dt);

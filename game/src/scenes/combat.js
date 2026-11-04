@@ -521,7 +521,13 @@ export class CombatScene extends Scene {
     return e.players[this.seatIndex] || e.players[0];
   }
   get mePiles() { const m = this.me; return m ? m.piles : null; }
-  get seatIndex() { return this.ctx?.run?.localSeat || 0; }
+  /* Over a wire this screen belongs to the session's seat, always. `run.localSeat`
+     is borrowed while a friend's input is applied, and a friend choosing a Trick holds
+     that borrow for as long as they think: for all of it this screen read their hand. */
+  get seatIndex() {
+    const run = this.ctx?.run;
+    return (run?.session?.remote ? run.session.seat : run?.localSeat) || 0;
+  }
   /** The other Kid's seat, or null in solo. */
   get mate() {
     return this.mates[0] || null;
@@ -1252,6 +1258,7 @@ export class CombatScene extends Scene {
       const bloom = this._bloomGain();
       for (const v of this.views.values()) { v.reduceMotion = this.reduceMotion; v.flashes = bloom; }
       if (this.hero) { this.hero.reduceMotion = this.reduceMotion; this.hero.flashes = bloom; }
+      for (const v of this._friends?.values() || []) { v.reduceMotion = this.reduceMotion; v.flashes = bloom; }
       if (this.fx) this.fx.setFlashes(bloom, this.reduceMotion);
       // Auto end turn may have just been switched on with a dead hand already
       // sitting on the table. `_syncEndTurn` is what arms it.
@@ -2049,9 +2056,24 @@ export class CombatScene extends Scene {
       // the scene can be torn down mid-drain (defeat navigates to gameover)
       if (!this.engine) { this._q.length = 0; return; }
       const ev = this._q.shift();
+      this._keepUp();
       try { await this._animate(ev); } catch (e) { console.error('[combat] animate ' + ev.type, e); }
     }
+    this._keepUp();
     this._syncAll();
+  }
+
+  /**
+   * A screen shows every Kid's Tricks one after another, and at a table of four they
+   * are played side by side, so a screen can fall a fight behind the table: the walk
+   * measured 89 beats queued, and a player watching a Bunny that had been dead for
+   * fifty seconds. Past a dozen beats the screen plays faster until it is level.
+   */
+  _keepUp() {
+    const clock = this.ctx?.clock;
+    if (!clock) return;
+    const behind = this.ctx.run?.session?.remote ? this._q.length : 0;
+    clock.hurry = Math.min(4, 1 + Math.max(0, behind - 12) / 12);
   }
 
   /** Wait until every queued event has finished animating. */
@@ -2352,6 +2374,7 @@ export class CombatScene extends Scene {
       case 'player:fall': {
         const solo = E.players.length <= 1;
         this._syncMate();
+        this._friends?.get(ev.actorId)?.playClip('defeat');
         if (!solo) {
           this._banner(`${ev.name} is down`, 'enemy', 1.2);
           const c = this._pointOf(ev.actorId);
@@ -2364,6 +2387,7 @@ export class CombatScene extends Scene {
 
       case 'player:revive': {
         this._syncMate();
+        this._friends?.get(ev.actorId)?.playClip('idle');
         this._banner(`${ev.name} gets back up`, 'good', 1.2);
         const c = this._pointOf(ev.actorId);
         this.fx.shimmer(c.x, c.y, this.fx.col.flame);
@@ -2646,6 +2670,7 @@ export class CombatScene extends Scene {
     const isPlayer = ev.targetId === this.me.id;
     const src = this.views.get(ev.sourceId);
     const tgt = isPlayer ? null : this.views.get(ev.targetId);
+    this._friends?.get(ev.sourceId)?.playClip('trick');
 
     /* GET THE CARD OFF THE CREATURE — armed BEFORE the attacker commits, so it
        is already down by the contact frame rather than starting to fade on it.
@@ -2717,6 +2742,8 @@ export class CombatScene extends Scene {
 
     if (isPlayer) {
       this._playerHit(hpLoss, blockedAll);
+    } else if (this._friends?.has(ev.targetId)) {
+      this._friends.get(ev.targetId).flinch(hpLoss, blockedAll);
     } else if (tgt) {
       if (blockedAll) tgt.clank(ev.amount);
       else tgt.flinch(hpLoss, ev.sourceId === this.me.id ? 1 : -1);
@@ -2902,6 +2929,7 @@ export class CombatScene extends Scene {
        does not hand back to idle -- it holds its final pose (ui/sprite.js), so
        the body on the board stays down while the banner runs. */
     this.hero?.playClip(ev.victory ? 'celebrate' : 'defeat');
+    for (const v of this._friends?.values() || []) v.playClip(ev.victory ? 'celebrate' : 'defeat');
     this._banner(ev.victory ? 'Room Cleared' : 'Out of Courage', ev.victory ? 'win' : 'lose', 2.2);
     this.ctx.atmosphere?.dread?.(ev.victory ? 0 : 0.9, 0.8);
     this.ctx.audio?.stinger?.(ev.victory ? 'sting:victory' : 'sting:defeat');
@@ -3092,8 +3120,30 @@ export class CombatScene extends Scene {
    * rather than adding a second subscription, because two listeners on one
    * event stream drift the moment somebody adds a third.
    */
+  /**
+   * Friends stand on the floor too. A party of four was one Kid on the board and three
+   * nameplates, so nobody ever saw who they had come with. Over a wire only:
+   * pass-and-play hands this screen and its one body to each Kid in turn. All of it is
+   * drawn on the clock and none of it is the game, so no machine has to agree about it.
+   */
+  _standFriends() {
+    if (this._friends || !this.hero || !this.engine || !this.ctx.run?.session?.remote) return;
+    this._friends = new Map();
+    this.mates.forEach((p, i) => {
+      const view = new PlayerView({
+        clock: this.ctx.clock, reduceMotion: this.reduceMotion,
+        flashes: this._bloomGain(), companion: String(p.companion || 'marmalade'), kid: p.kid,
+      });
+      view.el.classList.add('cb-hero--friend');
+      view.el.dataset.place = String(i);
+      this.hero.el.before(view.el);
+      this._friends.set(p.id, view);
+    });
+  }
+
   _syncMate() {
     if (!this.$mates || !this.$mate) return;
+    this._standFriends();
     const list = this.mates;
     if (!list.length) { this.$mates.hidden = true; return; }
     this.$mates.hidden = false;
@@ -3984,7 +4034,7 @@ export class CombatScene extends Scene {
       const r = this.$pl.querySelector('.cb-player__figure').getBoundingClientRect();
       return this.fx.toLocal(r.left + r.width / 2, r.top + r.height * 0.5);
     }
-    const v = this.views.get(id);
+    const v = this.views.get(id) || this._friends?.get(id);
     if (!v) return this.fx.toLocal(this.fx.w / 2 + this.fx.left, this.fx.h / 2 + this.fx.top);
     const c = v.centre();
     return this.fx.toLocal(c.x, c.y);
@@ -4144,6 +4194,7 @@ export class CombatScene extends Scene {
     if (!this.engine) return;
     for (const v of this.views.values()) v.update(dt, t);
     this.hero?.update(dt, t);
+    for (const v of this._friends?.values() || []) v.update(dt, t);
     this.fx?.update(dt);
     this._drainCourage(dt);
 
@@ -4172,6 +4223,7 @@ export class CombatScene extends Scene {
 
   /* ══ teardown ═══════════════════════════════════════════════════════════ */
   async exit() {
+    if (this.ctx?.clock) this.ctx.clock.hurry = 1;
     clearTimeout(this._veilT);
     clearTimeout(this._fitT); clearTimeout(this._fitT2); clearTimeout(this._fitT3);
     if (this._incRaf) { cancelAnimationFrame(this._incRaf); this._incRaf = 0; }
@@ -4182,6 +4234,8 @@ export class CombatScene extends Scene {
     try { this.ctx.stage?.setDeferLinks?.(false); } catch { /* no stage */ }
     this.hero?.destroy();
     this.hero = null;
+    for (const v of this._friends?.values() || []) v.destroy();
+    this._friends = null;
     if (window.__MM_CLIPS?._scene === this) delete window.__MM_CLIPS;
     this._ro?.disconnect();
     cancelAnimationFrame(this._resizeFit);

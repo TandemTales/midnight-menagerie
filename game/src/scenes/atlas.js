@@ -750,7 +750,7 @@ export class AtlasScene extends Scene {
       </div>
       <p class="at-dos__hint"></p>
       <div class="at-dos__act" hidden>
-        <button class="at-go kit-btn" type="button"><span class="at-go__words">Go this way</span><i class="kit-medallion kit-medallion--ornate kit-btn__medal at-go__medal" aria-hidden="true">${GLYPH.onward}</i></button>
+        <button class="at-go kit-btn" type="button"><span class="at-go__words">Go this way</span><span class="at-go__short" aria-hidden="true">Go this way</span><i class="kit-medallion kit-medallion--ornate kit-btn__medal at-go__medal" aria-hidden="true">${GLYPH.onward}</i></button>
         <p class="at-ballot" aria-live="polite" hidden></p>
       </div>`;
     return d;
@@ -1546,6 +1546,7 @@ export class AtlasScene extends Scene {
       const go = act$.querySelector('.at-go');
       /* The words only: the medallion seated on the button's end stays. */
       go.querySelector('.at-go__words').textContent = this.entering ? `Begin in ${w.meta.name}` : `Go to ${w.meta.name}`;
+      go.querySelector('.at-go__short').textContent = this.entering ? 'Begin here' : 'Go this way';
       go.disabled = this._voting;
     }
 

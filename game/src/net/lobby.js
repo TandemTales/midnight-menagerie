@@ -25,7 +25,7 @@
  *    Assigning by arrival — "first to connect is seat 0" — is the obvious
  *    alternative and it is the one thing lockstep cannot use: arrival order is
  *    exactly what differs between machines. It is the same reason
- *    `session._insertAt` orders inputs by `(turn, seat, seq)` and never by when
+ *    `session._insertAt` orders inputs by `(clk, seat, seq)` and never by when
  *    they landed.
  *
  *    Compared by CODE UNIT (`a < b`), never `localeCompare`, which is

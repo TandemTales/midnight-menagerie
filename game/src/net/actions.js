@@ -80,6 +80,7 @@ export const ACT = Object.freeze({
   EVENT_FORGET: 'event.forget',     // { index }
   EVENT_RESCUE: 'event.rescue',     // { slug }    a Companion comes home
   EVENT_LOOT: 'event.loot',         // { lostThings, clues }  the tidy pile
+  EVENT_FIGHT: 'event.fight',       // { kind }    the room turns into a fight, for everybody
 
   /* the blueprint */
   MAP_VOTE: 'map.vote',             // { id }      this seat's vote for the next room
@@ -105,7 +106,7 @@ export const ACT = Object.freeze({
  * `run:seat` — so the HUD would keep showing the Kid `resetSeat` chose while
  * `run.local` answered as whoever happened to click the map.
  */
-const PARTY_ACTS = new Set([ACT.MAP_VOTE, ACT.SEAT_GONE, ACT.SEAT_BACK]);
+const PARTY_ACTS = new Set([ACT.MAP_VOTE, ACT.SEAT_GONE, ACT.SEAT_BACK, ACT.EVENT_FIGHT]);
 
 /**
  * The card at `index` in a Kid's deck, on THIS client.
@@ -245,6 +246,11 @@ function _room(run, msg, seat) {
       const c = cardAt(run, seat, msg.index);
       return c ? run.removeCard(c.uid) : null;
     }
+    case ACT.EVENT_FIGHT:
+      /* A Curiosity that turns into a fight is everybody's fight. Nothing else can
+         start one over a wire: the rest of the table has no board for a Trick to
+         land on, and the player who opened it would wait for them for ever. */
+      return run.eventCombat(msg.kind);
     case ACT.EVENT_RESCUE:
       // Retired action retained for old clients; side rooms cannot free pets.
       return false; // Rescue is exclusively awarded by the zone boss.

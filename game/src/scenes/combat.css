@@ -3782,3 +3782,20 @@
  -webkit-text-stroke: 1px #2a1408; text-shadow: 0 1px 0 #7a5a2c, 1px 1px 0 #170b05;
 }
 .cb-fx-owner { border-image-source: url("../../assets/ui/r57-citrine/cond-plaque.webp"); }
+
+/* FRIENDS ON THE FLOOR (scenes/combat.js _standFriends). A step behind you and a little
+   smaller, so the body that answers your hand is still the one in front. No filter: the
+   Deck's frame had no room for one on the hero, let alone three more. */
+.cb-root .cb-hero.cb-hero--friend,
+.cb-root[data-arena] .cb-hero.cb-hero--friend,
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) ~ .cb-herohost .cb-hero.cb-hero--friend {
+  z-index: 2;
+  filter: none;
+  scale: .8;
+  transform-origin: 50% 96%;
+  left: max(4px, calc(var(--hero-x) + var(--friend-dx) - var(--hero-w) * .46));
+  bottom: calc(var(--stage-band) - 1.97vh + var(--friend-dy));
+}
+.cb-hero--friend[data-place="0"] { --friend-dx: -8vw; --friend-dy: 5vh; }
+.cb-hero--friend[data-place="1"] { --friend-dx: 7vw; --friend-dy: 6vh; }
+.cb-hero--friend[data-place="2"] { --friend-dx: -15vw; --friend-dy: 3vh; }

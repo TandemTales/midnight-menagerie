@@ -460,7 +460,7 @@ export class EventScene extends RoomScene {
       const kind = p.combat;
       p.combat = null;
       if (this.mock) { this.ctx.scenes?.go?.('map', { region: this.run.region, seed: this.run.seed }); return; }
-      await this.run.eventCombat?.(kind);
+      await act(this.run, { t: INPUT.ROOM, act: ACT.EVENT_FIGHT, kind });
       return;
     }
 

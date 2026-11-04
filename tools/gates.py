@@ -74,6 +74,7 @@ EXTRAS = [
 # Long simulations and probes: they print RESULT but are instruments, not gates.
 # Each one names why it is not in the battery.
 NOT_GATES = {
+    "tests/coop/demo_walk.py": "a party walks the whole demo; an hour on two tabs, three on four. Run it after any change to a room or the wire",
     "tests/critic-design/sim.py": "the balance simulator - a reading, not a pass/fail",
     "tests/critic-design/ladder.py": "ladder sweep, minutes per run",
     "tests/critic-design/sweep.py": "parameter sweep, minutes per run",

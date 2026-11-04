@@ -146,9 +146,6 @@ export function installStory(ctx) {
     toolbar=el('nav','','story-tools');toolbar.setAttribute('aria-label','Story and help');
     if(name!=='combat'){const b=el('button','Discoveries');b.onclick=openJournal;toolbar.append(b);}
     const help=el('button','How to play');help.onclick=()=>openScuffleHelp(ctx);toolbar.append(help);
-    if(ctx.run && ctx.run.session && ctx.run.session.remote) {
-      toolbar.append(el('span',ctx.run.storyMemory?'An earlier night. Today’s reunions stay safe.':'Find the missing pets. Your Companion helps you search.','story-context'));
-    }
     if(name==='combat' && ctx.run && ctx.scenes.current.arena==='boss') {
       const r=NARRATIVE_REGIONS[ctx.run.region], u=r && r.barks[0], engine=ctx.scenes.current.engine;
       if(u) {
