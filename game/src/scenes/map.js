@@ -2874,6 +2874,8 @@ export class MapScene extends Scene {
     const run = this.model.run;
     const wasAt = this.model.currentId;
     if (this._voting) return;                  // one ballot, one click
+    // The party has gone through a door and this sheet is about to be covered.
+    if ((run.currentNodeId ?? null) !== (wasAt ?? null)) return;
     // A Kid at zero Courage has no say in the route (`run.voters()`), so
     // their click has to be refused HERE as well or the sheet accepts it
     // and silently does nothing. Cannot happen at one keyboard, where

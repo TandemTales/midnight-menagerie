@@ -628,6 +628,37 @@ try {
       A3.session.close(); B3.session.close();
     }
 
+    /* The party cannot walk on with somebody still reading: the next door is not on the
+       ballot during a fight, and a Leave pressed as a fight begins stays in the fight. */
+    {
+      const hub5 = new LoopbackHub();
+      const A5 = roomClient(hub5, 0, 'A5');
+      const B5 = roomClient(hub5, 1, 'B5');
+      const here = A5.run.map.nodes.find(n => { A5.run.currentNodeId = n.id; return A5.run.legalNextIds().length; });
+      const next = A5.run.legalNextIds()[0];
+      const went = [];
+      for (const c of [A5, B5]) {
+        c.run.currentNodeId = here.id;
+        c.run.pendingCombat = { nodeId: here.id };
+        Object.defineProperty(c.run, 'ctx', { configurable: true, value: { scenes: { busy: false, go: (s) => { went.push(s); return s; } } } });
+      }
+      await act(A5.run, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id: next });
+      await new Promise(r => setTimeout(r, 30));
+      await A5.session.settled(); await B5.session.settled();
+      check(!Object.keys(A5.run.pendingVote?.votes || {}).length && !Object.keys(B5.run.pendingVote?.votes || {}).length,
+        'a vote for the next door does not count while the fight is running', JSON.stringify(A5.run.pendingVote));
+      check(A5.run._goto('map') === null && !went.length,
+        'and a Leave pressed as a fight begins does not walk that player out of it', went.join());
+      for (const c of [A5, B5]) c.run.pendingCombat = null;
+      await act(A5.run, { t: INPUT.ROOM, act: ACT.MAP_VOTE, id: next });
+      await new Promise(r => setTimeout(r, 30));
+      await A5.session.settled(); await B5.session.settled();
+      check(A5.run.pendingVote?.votes?.[0] === next && B5.run.pendingVote?.votes?.[0] === next,
+        'and once the fight is over the same vote counts on both machines', JSON.stringify(B5.run.pendingVote));
+      for (const c of [A5, B5]) delete c.run.ctx;
+      A5.session.close(); B5.session.close();
+    }
+
     /* The same for a seat that has gone: nobody waits on them to claim. */
     {
       const hub4 = new LoopbackHub();
@@ -695,6 +726,18 @@ try {
       await s9.settled();
       check(real.join() === 'late-input', 'and one sorting before another Trick still is', real.join());
       s8.close(); s9.close();
+
+      const hub10 = new LoopbackHub();
+      const s10 = new Session({ transport: hub10.peer('C3'), seat: 0, seed: 'answer' });
+      const ran = [];
+      s10.on('input', (m) => { ran.push(m.act); });
+      s10._accept({ t: INPUT.ROOM, act: 'take', seat: 0, turn: 0, seq: 1, clk: 9 });
+      await new Promise(r => setTimeout(r, 5));
+      s10._accept({ t: INPUT.CHOICE, seat: 1, turn: 0, seq: 1, seq2: 1, clk: 8, picked: [] }, 'C4');
+      s10._accept({ t: INPUT.ROOM, act: 'leave', seat: 0, turn: 0, seq: 2, clk: 10 });
+      await s10.settled();
+      check(ran.join() === 'take,leave', 'an answer sorting behind the cursor does not apply what the cursor had passed a second time', ran.join());
+      s10.close();
     }
 
     /* A chest is rolled the same on both machines, whoever is at each screen. */
@@ -981,6 +1024,8 @@ try {
        the seed and the legal set two rows in may hold none, and a check
        that quietly does nothing on some seeds is not a check. Stamped on
        BOTH maps, because both clients generate the same blueprint. */
+    // The room above can be a fight, and no door is on the ballot until it is over.
+    for (const c of [A, B]) { c.run.combat = null; c.run.pendingCombat = null; }
     const sag = A.run.legalNextIds()[0];
     for (const c of [A, B]) {
       const n = c.run.nodeById(sag);

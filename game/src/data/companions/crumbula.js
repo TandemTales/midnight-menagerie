@@ -891,7 +891,12 @@ const uncommons = [
     nums: { b: 4, n: 4 },
     effect: eff((c) => {
       let moved = 0;
-      for (const e of U.others(c)) { while (marksOn(c, e) > 0) { unbite(c, e, 1); bite(c, c.target, 1); moved++; } }
+      /* Counted first. A Porcelain Twin copies every debuff the other takes, so a mark
+         moved onto one grows back on the other, and "until none are left" never comes. */
+      for (const e of U.others(c)) {
+        const here = marksOn(c, e);
+        for (let i = 0; i < here; i++) { unbite(c, e, 1); bite(c, c.target, 1); moved++; }
+      }
       U.guard(c, N(c).b * Math.min(N(c).n, moved));
     }),
     upgrade: { nums: { b: 6, n: 4 } },

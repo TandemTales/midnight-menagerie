@@ -1444,6 +1444,11 @@ export class Run {
     if (!this.isLegal(id)) return null;
     const n = seat | 0;
     if (!this.voters().includes(n)) return null;   // a fallen seat has no say
+    /* The next door is not on the ballot while the fight in this room is running.
+       Every machine knows it at the same place in the log. A vote let through here
+       would still be standing when the fight ended, so the party could walk on with
+       that player still on the reward screen. */
+    if (this._fightingHere()) return null;
     const book = this._voteBook();
     book.votes[n] = id;
     bus.emit('map:vote', { seat: n, nodeId: id, run: this,
@@ -1746,6 +1751,11 @@ export class Run {
     return this._goto('map', { region: this.region, seed: this.seed });
   }
 
+  /** Over a wire: is the fight in the room the party is standing in still running? */
+  _fightingHere() {
+    return !!this.session?.remote && !!this.pendingCombat && this.pendingCombat.nodeId === this.currentNodeId;
+  }
+
   _goto(scene, params = {}) {
     const ctx = this.ctx;
     if (!ctx?.scenes) return null;
@@ -1759,10 +1769,15 @@ export class Run {
        cannot matter: a player does not click a door mid-transition. Over a wire
        the door is opened by somebody else's vote, whenever it lands, and a dropped
        one leaves this player on the map with a fight running behind it. */
+    /* Nor does a Leave pressed as the fight begins take this player back out of it:
+       the door's navigation goes first, and this one would run straight after it. */
+    const fighting = () => scene === 'map' && this._fightingHere();
+    if (fighting()) return null;
     if (this.session?.remote && ctx.scenes.busy) {
       return new Promise((resolve) => {
         const retry = () => {
           if (ctx.scenes.busy) { setTimeout(retry, 60); return; }
+          if (fighting()) { resolve(null); return; }
           resolve(ctx.scenes.go(scene, params, opts));
         };
         retry();

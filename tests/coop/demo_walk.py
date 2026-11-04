@@ -48,6 +48,16 @@ def check(cond, label, detail=""):
 SLOW_WIRE = """async ([low, high]) => {
   const { ChannelTransport } = await import('/game/src/net/transport.js');
   const send = ChannelTransport.prototype.send;
+  /* What can walk an input past the agreed order: say so as it happens. */
+  const { Session } = await import('/game/src/net/session.js');
+  for (const name of ['absorb', '_forward', '_markLost', 'dropSeat']) {
+    const was = Session.prototype[name];
+    Session.prototype[name] = function (...a) {
+      if (!(name === '_markLost' && this.lost.has(a[0])))
+        console.info('[walk] seat ' + this.seat + ' ' + name + ' ' + (name === 'absorb' ? a[0].length + ' inputs' : a[0]));
+      return was.apply(this, a);
+    };
+  }
   ChannelTransport.prototype.send = function (msg) {
     const q = this._slowQ || (this._slowQ = []);
     q.push({ at: performance.now() + low + Math.random() * (high - low), msg });
@@ -146,7 +156,9 @@ VOTE = """(pick) => {
   if (!ids.length) return null;
   const id = ids[pick % ids.length];
   const types = id => r.effectiveType(r.map.nodes.find(n => n.id === id));
-  r.session.input({ t: 'room', act: 'map.vote', id });
+  const sheet = window.MM.ctx.scenes.current;
+  if (window.MM.ctx.scenes.currentName !== 'map' || !sheet._vote) return null;
+  sheet._vote(id);
   return id + ':' + types(id) + ' of ' + ids.length;
 }"""
 
@@ -235,19 +247,27 @@ async def main():
     rng = random.Random(ROOM)
 
     def watch(page, tag):
+        def said(m):
+            if m.text.startswith("[walk]"):
+                print(f"          {tag} {m.text}", flush=True)
+            elif m.type == "error" and not any(x in m.text for x in tolerated):
+                errors.append(f"{tag} {m.text}")
+                print(f"  ERROR  {tag} {m.text}", flush=True)
         page.on("pageerror", lambda e: errors.append(f"{tag} {e}"))
-        page.on("console", lambda m: errors.append(f"{tag} {m.text}")
-                if m.type == "error" and not any(x in m.text for x in tolerated) else None)
+        page.on("console", said)
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(args=["--enable-unsafe-swiftshader", "--autoplay-policy=no-user-gesture-required"])
         ctx = await browser.new_context(viewport={"width": 1280, "height": 800})
-        pages = []
+        pages, cdps = [], []
         for i in range(PLAYERS):
             page = await ctx.new_page()
             watch(page, "ABCD"[i])
             await page.goto(URL, wait_until="load", timeout=90000)
             await page.wait_for_function("window.MM && window.MM.ctx && window.MM.ctx.scenes.currentName && !window.MM.ctx.scenes.busy", timeout=90000)
+            cdp = await ctx.new_cdp_session(page)
+            await cdp.send("Debugger.enable")
+            cdps.append(cdp)
             await page.evaluate(SLOW_WIRE, [LOW, HIGH])
             await page.evaluate(WATCH_ANIM)
             await page.evaluate("(room) => window.MM.ctx.scenes.go('lobby', { room }, { instant: true })", ROOM)
@@ -289,6 +309,33 @@ async def main():
         stranded_for = {}
         figures_checked = False
         finished = False
+        # A tab stuck in a loop never answers, and everything above waits on it without a word.
+        async def stack_of(cdp):
+            frames = []
+            got = asyncio.Event()
+            def paused(ev):
+                frames.extend(f"{f['functionName']} {f['url'].split('/')[-1]}:{f['location']['lineNumber'] + 1}" for f in ev["callFrames"][:16])
+                got.set()
+            cdp.on("Debugger.paused", paused)
+            await cdp.send("Debugger.pause")
+            try:
+                await asyncio.wait_for(got.wait(), 20)
+            except asyncio.TimeoutError:
+                frames.append("(not in JavaScript)")
+            return " < ".join(frames)
+
+        async def watchdog():
+            while True:
+                await asyncio.sleep(60)
+                for i, pg in enumerate(pages):
+                    try:
+                        await asyncio.wait_for(pg.evaluate("1"), 180)
+                    except asyncio.TimeoutError:
+                        check(False, "every tab keeps answering", f"{'ABCD'[i]} stuck in {await stack_of(cdps[i])}")
+                        print(f"RESULT: {len(passes)} passed, {len(fails)} failed", flush=True)
+                        os._exit(1)
+        asyncio.ensure_future(watchdog())
+
         while loop.time() - begin < LIMIT:
             st = await asyncio.gather(*[pg.evaluate(STATE) for pg in pages])
             key = json.dumps([[x["scene"], x["node"], x["turn"], x["log"], x["region"], x["phase"]] for x in st])
@@ -350,10 +397,13 @@ async def main():
                     continue
                 scene = x["scene"]
                 # A HUD slides in from outside the window, so it has to stay out to count.
-                for words in ([] if scene == "map" else x["stranded"]):
-                    stranded_for[(scene, words)] = stranded_for.get((scene, words), 0) + 1
-                    if stranded_for[(scene, words)] == 40:
-                        check(False, "every button can be reached", f"{scene}: {words}")
+                out_now = {(i, scene, words) for words in ([] if scene == "map" else x["stranded"])}
+                for key in [k for k in stranded_for if k[0] == i and k not in out_now]:
+                    del stranded_for[key]
+                for key in out_now:
+                    stranded_for[key] = stranded_for.get(key, 0) + 1
+                    if stranded_for[key] == 40:
+                        check(False, "every button can be reached", f"{scene}: {key[2]}")
                 if scene not in scenes_seen:
                     scenes_seen.add(scene)
                     print(f"  [{int(now - begin):4d}s] first {scene}", flush=True)

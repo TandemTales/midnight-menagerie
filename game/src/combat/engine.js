@@ -75,6 +75,14 @@ import { Pile, CardType, Target } from '../data/schema.js';
 import { detectStrict, guardFactory } from './strict.js';
 
 const MAX_LOG = 400;
+/**
+ * How many events one Trick's effect may raise before it is stopped. Nothing written
+ * comes near it. House Guest did, once: it moved marks "until there are none left" onto
+ * a Porcelain Twin, the other Twin copied each one back, and the whole table froze. A
+ * Trick cut short is a bug somebody can report; a frozen game is the end of the evening.
+ * Counted, not timed, so every machine at the table stops it at the same event.
+ */
+const RUNAWAY_EVENTS = 2000;
 
 /**
  * The most Kids that can go in together.
@@ -467,6 +475,9 @@ export class CombatEngine {
   _invalidate() { this._dirty = true; this._rev++; }
 
   _emit(type, payload) {
+    if (this._effectEvents != null && ++this._effectEvents > RUNAWAY_EVENTS) {
+      throw new Error(`a Trick raised more than ${RUNAWAY_EVENTS} events and was stopped`);
+    }
     const ev = { type, seq: ++this._seq, turn: this.turn, ...payload };
     this._invalidate();
     if (this._collect) this._collect.push(ev);
@@ -3392,8 +3403,11 @@ export class CombatEngine {
         // loud — CONTRACTS.md rule 8.
         console.error(`[combat] card ${card.id} has no effect() — it will do nothing`);
       } else {
+        const outermost = this._effectEvents == null;
+        if (outermost) this._effectEvents = 0;
         try { ret = card.def.effect(ctx); }
         catch (err) { console.error(`[combat] card ${card.id} effect threw`, err); }
+        finally { if (outermost) this._effectEvents = null; }
       }
 
       const finish = () => {

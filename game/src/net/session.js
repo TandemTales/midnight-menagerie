@@ -797,8 +797,15 @@ export class Session {
      * not a new action in the sequence, it is the continuation of the one every
      * client is already blocked on, at the same point in the same input. It
      * still goes in the log, in its place, because a rejoin replays the log.
+     *
+     * That place can be behind the cursor, and the cursor has to move with it or
+     * whatever it had just passed comes round and is applied a second time.
      */
-    if (msg.t === INPUT.CHOICE) { this._emit('answer', msg); return; }
+    if (msg.t === INPUT.CHOICE) {
+      if (at < this._applied) this._applied++;
+      this._emit('answer', msg);
+      return;
+    }
     /**
      * An input that sorts BEFORE one already applied, arriving in a later task
      * than the one it should have been sorted with.
@@ -843,7 +850,11 @@ export class Session {
       if (passed && (msg.t === INPUT.PLAY || msg.t === INPUT.SNACK)) {
         console.error('[net] DESYNC {reason: late-input} a COMBAT input arrived '
           + 'after one that sorts after it; the board has already moved',
-          { turn: msg.turn, seat: msg.seat, seq: msg.seq, t: msg.t });
+          { turn: msg.turn, seat: msg.seat, seq: msg.seq, t: msg.t, clk: msg.clk, mine: this.seat,
+            absorbing: !!this.absorbing,
+            past: this.log.slice(at + 1, this._applied).filter(m => COMBAT_INPUT.has(m.t))
+              .slice(0, 4).map(m => `${m.t} seat ${m.seat} turn ${m.turn} clk ${m.clk}`),
+            horizon: [...this._horizon].map(([s, h]) => `${s}@${h.clk}`).join(' ') });
         this._emit('desync', { reason: 'late-input', msg });
       }
       this._late.push(msg);

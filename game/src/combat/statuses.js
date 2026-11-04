@@ -209,9 +209,14 @@ export function registerStatuses(defs) {
 
 /** Look up a status. Unknown ids return a generic placeholder rather than throwing —
  *  a typo in card content must not take the whole fight down. */
+/** `marmalade/haunted-housecat` is a Power that only has a Trick's id. Players read words. */
+function wordsOf(id) {
+  return String(id).split('/').pop().split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
 export function getStatus(id) {
   return REGISTRY.get(id) || {
-    id, name: id, kind: 'neutral', icon: 'unknown',
+    id, name: wordsOf(id), kind: 'neutral', icon: 'unknown',
     desc: '', decay: 'never', stacks: true, hooks: {}, _missing: true,
   };
 }

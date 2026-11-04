@@ -3791,11 +3791,12 @@
 .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) ~ .cb-herohost .cb-hero.cb-hero--friend {
   z-index: 2;
   filter: none;
-  scale: .8;
+  scale: .74;
   transform-origin: 50% 96%;
   left: max(4px, calc(var(--hero-x) + var(--friend-dx) - var(--hero-w) * .46));
   bottom: calc(var(--stage-band) - 1.97vh + var(--friend-dy));
 }
-.cb-hero--friend[data-place="0"] { --friend-dx: -8vw; --friend-dy: 5vh; }
-.cb-hero--friend[data-place="1"] { --friend-dx: 7vw; --friend-dy: 6vh; }
-.cb-hero--friend[data-place="2"] { --friend-dx: -15vw; --friend-dy: 3vh; }
+/* All to the right of the plates, which reach 18vw: a step back and up from the player's own Kid. */
+.cb-hero--friend[data-place="0"] { --friend-dx: 7vw; --friend-dy: 6vh; }
+.cb-hero--friend[data-place="1"] { --friend-dx: 1vw; --friend-dy: 12vh; }
+.cb-hero--friend[data-place="2"] { --friend-dx: 10.5vw; --friend-dy: 12vh; }

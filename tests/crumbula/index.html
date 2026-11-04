@@ -13,6 +13,8 @@ import { CombatEngine } from '../../game/src/combat/engine.js';
 import { makeDummySetup } from '../../game/src/combat/dummy.js';
 import { installTrackers } from '../../game/src/data/companions/_util.js';
 import * as CARDS from '../../game/src/data/cards.js';
+import { buildEncounter } from '../../game/src/data/encounters.js';
+import { getEnemy } from '../../game/src/data/enemies/index.js';
 
 const passes = [], fails = [];
 const out = document.getElementById('out');
@@ -337,6 +339,49 @@ try {
         'after Open Bar a Feed that empties its enemy moves on to the next marked one',
         `marks ${before} -> ${marks(e, t) + marks(e, o)}`);
     }
+  }
+
+  say('<h2>House Guest and the Porcelain Twins</h2>');
+  {
+    /* A Twin copies every debuff the other takes, so a mark moved onto one grows back on
+       the other. "Move them until there are none left" never ended: the game froze. */
+    const rng = new RNG(1899);
+    const e = new CombatEngine(makeDummySetup(rng, {
+      companion: 'crumbula', deck: CARDS.startingDeckFor('crumbula'), maxHp: 74,
+      enemies: buildEncounter('nursery-scare-twins', rng).map(m => ({ ...m, def: getEnemy(m.enemyId) })),
+    }));
+    await e.startCombat();
+    installTrackers(e, 'crumbula');
+    const [prim, proper] = e.livingEnemies();
+    check(!!proper && proper.defId === 'porcelain-twin-proper', 'the Twins are at the table (setup)', proper && proper.defId);
+    e.applyStatus(proper, 'bite-mark', 3, { noJoin: true });
+    const said = [], real = console.error;
+    console.error = (...a) => said.push(String(a[0]));
+    e.player.block = 0;
+    await play(e, 'crumbula/house-guest', prim);
+    console.error = real;
+    check(!said.length, 'House Guest finishes on the Twins', said.join(' | ').slice(0, 160));
+    check(marks(e, prim) === 3, 'it moved the 3 marks that were there', `marks=${marks(e, prim)}`);
+    check(marks(e, proper) === 3, 'and Joined copied each one back, as it does', `marks=${marks(e, proper)}`);
+    check(e.player.block === 12, 'and it paid its Guard for those 3', `guard=${e.player.block}`);
+  }
+  {
+    /* The net under every other Trick. It costs a card, not the evening. */
+    const e = await count();
+    const t = e.livingEnemies()[0];
+    const said = [], real = console.error;
+    console.error = (...a) => said.push(String(a[0]));
+    const def = { ...CARDS.cardById('crumbula/tiny-nibble'), effect: (c) => { for (;;) c.applyStatus(t, 'bite-mark', 1); } };
+    e.addCard(def, 'hand', {});
+    const k = e.piles.hand[e.piles.hand.length - 1];
+    e.player.energy = 9;
+    await e.playCard(k.uid, t.id);
+    console.error = real;
+    check(said.some(x => x.includes('effect threw')), 'a Trick that would never finish is stopped and says so', said[0]);
+    check(e.phase === 'player' && !e.piles.hand.includes(k), 'and the turn goes on', `phase=${e.phase}`);
+    const before = marks(e, t);
+    await play(e, 'crumbula/tiny-nibble', t);
+    check(marks(e, t) === before + 1, 'the next Trick works as usual', `${before} -> ${marks(e, t)}`);
   }
 } catch (err) {
   fails.push('THREW: ' + (err && err.stack || err));
