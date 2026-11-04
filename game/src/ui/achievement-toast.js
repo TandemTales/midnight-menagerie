@@ -181,6 +181,15 @@ export class AchievementToast {
     desc.textContent = def.desc || '';
     desc.hidden = !def.desc;
     host.appendChild(card);
+    /* The floor on the size can still leave a long name wider than its banner.
+       It is lettered narrower rather than cut off: "OUT BEFORE M..." told nobody anything. */
+    const name = card.querySelector('.mm-ach__name');
+    const over = name.scrollWidth / Math.max(1, name.clientWidth);
+    if (over > 1) {
+      name.style.overflow = 'visible';
+      name.style.transformOrigin = '0 50%';
+      name.style.transform = `scaleX(${(1 / over).toFixed(3)})`;
+    }
     // measured with the plaque on screen: its own size decides where it fits
     this._seat(host, card);
 

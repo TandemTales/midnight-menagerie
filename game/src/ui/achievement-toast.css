@@ -151,8 +151,8 @@
   margin-bottom: 3px;
   font-family: var(--font-display); font-weight: 700;
   font-size: max(11px, var(--fs-xs)); line-height: 1.2;
-  letter-spacing: .26em; text-transform: uppercase; white-space: nowrap;
-  padding-left: .26em;                    /* the tracking hangs off the last letter */
+  letter-spacing: .18em; text-transform: uppercase; white-space: nowrap;
+  padding-left: .18em;                    /* the tracking hangs off the last letter */
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 rgba(0, 0, 0, .6);
 }
 .mm-ach__kind::before, .mm-ach__kind::after {
@@ -225,7 +225,9 @@
   .mm-ach__award { left: 10px; }
   .mm-ach__banner { --rib-h: 27px; --ach-room: 236px; letter-spacing: .03em; }
   .mm-ach__desc { --reading-size: 11.5px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); margin-top: 4px; }
-  .mm-ach__kind { --reading-size: 10px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .2em; margin-bottom: 2px; }
+  .mm-ach__kind { --reading-size: 10px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); letter-spacing: .1em; padding-left: .1em; margin-bottom: 2px; }
+  /* No stars here: with them "SILVER ACHIEVEMENT" is wider than the plaque leaves it, and runs under the medal. */
+  .mm-ach__kind::before, .mm-ach__kind::after { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
