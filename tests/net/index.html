@@ -772,6 +772,35 @@ try {
       check(!one.shouted && !two.shouted, 'and nobody calls that a desync', `${one.shouted} / ${two.shouted}`);
     }
 
+    /* A friend who goes quiet costs the wire what they sent as they dropped, once. Every
+       client used to re-send that seat's whole log each time it went quiet, and four
+       loaded tabs late in an expedition flooded each other until one stopped answering. */
+    {
+      const sent = [];
+      const wire = { id: 'Q0', send: (m) => { sent.push(m); return true; }, onMessage: () => () => {}, onPeer: () => () => {}, close() {} };
+      const s = new Session({ transport: wire, seat: 0, seats: 4, seed: 'quiet', beatMs: 0 });
+      for (let q = 1; q <= 300; q++) s.log.push({ t: INPUT.ROOM, seat: 2, turn: 1, seq: q, clk: q });
+      const logs = () => sent.filter(m => m.k === 'l').reduce((n, m) => n + m.log.length, 0);
+      sent.length = 0;
+      s._markLost(2);
+      check(logs() === 64, 'a quiet friend: the table passes on their last inputs, not all of them', `${logs()} of 300`);
+      s._heard(2); sent.length = 0; s._markLost(2);
+      check(logs() === 0, 'and going quiet again with nothing new sends nothing', String(logs()));
+      s.log.push({ t: INPUT.ROOM, seat: 2, turn: 1, seq: 301, clk: 301 });
+      s._heard(2); sent.length = 0; s._markLost(2);
+      check(logs() === 1, 'only what is new since', String(logs()));
+
+      s.log.splice(s.log.findIndex(m => m.seq === 7), 1);
+      check(s._missing(2, 10).join() === '7', 'a gap names exactly what is missing', s._missing(2, 10).join());
+      sent.length = 0;
+      s._onWire({ k: 'g', seat: 2, miss: [5, 6] }, 'Q1');
+      check(logs() === 2, 'and a resend answers with that and no more', String(logs()));
+      sent.length = 0;
+      s._onWire({ k: 'g', seat: 2 }, 'Q1');
+      check(logs() === 300, 'an older client that names nothing still gets everything', String(logs()));
+      s.close();
+    }
+
     /* A chest is rolled the same on both machines, whoever is at each screen. */
     {
       const hub7 = new LoopbackHub();

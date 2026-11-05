@@ -125,6 +125,8 @@ const GAP_MS = 1500;
 /** Steam's Reliable channel carries 1 MB a message. Stay well clear of it. */
 const CHUNK_CHARS = 180 * 1024;
 const LOG_PAGE = 256;
+/** What a table passes on for a seat that has gone quiet: what they sent as they dropped. */
+const FORWARD_TAIL = 64;
 
 const ms = () => ((typeof performance === 'object' && performance.now) ? performance.now() : Date.now());
 
@@ -170,6 +172,8 @@ export class Session {
     /** Inputs per seat, against the seq that seat has announced. A short count is a lost message. */
     this._count = new Map();
     this._gapSince = new Map();
+    /** The highest seq of each seat this client has already passed on. See `_forward`. */
+    this._forwarded = new Map();
     /** When each seat last said anything, and who has gone quiet or left. */
     this._heardAt = new Map();
     this._startedAt = ms();
@@ -275,9 +279,31 @@ export class Session {
     if (this.seats > 2) this._forward(s);
   }
 
+  /**
+   * ONLY THE TAIL, AND ONLY ONCE. This used to send the seat's whole log, from
+   * every other client, every time the seat went quiet. On a loaded machine the
+   * seats flap between lost and heard, so four tabs late in an expedition were
+   * re-broadcasting thousands of inputs to each other until one stopped
+   * answering at all (the whole-game walk, 2026-11-05). Over Steam it is the same
+   * flood on a real connection. What can be missing is what they sent as they
+   * dropped; anything older that a third player lacks shows as a gap against the
+   * seat's beat and is asked for by `RESEND`.
+   */
   _forward(seat) {
-    const mine = this.log.filter(m => (m.seat | 0) === seat);
+    const done = this._forwarded.get(seat) ?? 0;
+    const mine = this.log.filter(m => (m.seat | 0) === seat && (m.seq | 0) > done).slice(-FORWARD_TAIL);
+    if (!mine.length) return;
+    this._forwarded.set(seat, Math.max(...mine.map(m => m.seq | 0)));
     this._sendLog(mine, null);
+  }
+
+  /** The seqs of a seat's inputs, up to `upto`, that this client never received. */
+  _missing(seat, upto) {
+    const have = new Set();
+    for (const m of this.log) if ((m.seat | 0) === seat) have.add(m.seq | 0);
+    const miss = [];
+    for (let q = 1; q <= upto && miss.length < LOG_PAGE; q++) if (!have.has(q)) miss.push(q);
+    return miss;
   }
 
   /** Beat-driven housekeeping: a silent seat, and a gap in what a seat has sent. */
@@ -295,7 +321,7 @@ export class Session {
       if (since == null) { this._gapSince.set(s, now); continue; }
       if (now - since < GAP_MS) continue;
       this._gapSince.set(s, now);
-      this.transport?.send({ k: WIRE.RESEND, seat: s });
+      this.transport?.send({ k: WIRE.RESEND, seat: s, miss: this._missing(s, h.seq | 0) });
     }
   }
 
@@ -711,9 +737,13 @@ export class Session {
       case WIRE.REJOIN:
         this._sendLog(this.log.slice(m.from | 0), from);
         break;
-      case WIRE.RESEND:
-        this._sendLog(this.log.filter(x => (x.seat | 0) === (m.seat | 0)), from);
+      case WIRE.RESEND: {
+        /* What they say they lack, not everything the seat ever sent. An older
+           client names nothing and gets the lot, as it always did. */
+        const want = Array.isArray(m.miss) && m.miss.length ? new Set(m.miss.map(q => q | 0)) : null;
+        this._sendLog(this.log.filter(x => (x.seat | 0) === (m.seat | 0) && (!want || want.has(x.seq | 0))), from);
         break;
+      }
       case WIRE.LOG:
         if (!m.to || m.to === this.transport?.id) {
           if (this._frozen) this._buffered.push(...(m.log || []));
