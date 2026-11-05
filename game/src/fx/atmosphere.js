@@ -1445,7 +1445,7 @@ export const REGIONS = {
                        was bare turf, whole in the frame -- at the seat's end it
                        was cut by the frame's foot; in a fight it is struck only
                        if somebody stands across it) */
-                    { shape: 81, ahead: 4.6, across: -2.6, tone: 0.95, keep: true, still: true, seed: 1.6, scale: 0.40 }] },
+                    { shape: 81, ahead: 4.6, across: -1.6, tone: 0.95, keep: true, still: true, seed: 1.6, scale: 0.40 }] },
     /* ...and the moon laid on the walk and the turf in front of you, the
        foreground falling to nine-tenths and not two-fifths */
     /* (round 31 graft, judges 1 and 3: "lift the near path out of black with
