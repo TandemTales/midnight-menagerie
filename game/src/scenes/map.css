@@ -2135,3 +2135,217 @@
 .map-screen .map-legend { --plate-h: 64px; }
 .map-screen .map-tools { bottom: calc(var(--map-foot) + 18px); }
 .map-screen .tip-type, .map-screen .tip-reward i { letter-spacing: .1em; }
+/* == ROUND 58 == */
+/* THE NOTES TOOLBAR IS A PENCIL TRAY. A boxwood rule lies along the top of a walnut tray with a
+   brass rail: real pencils in their colours with their names stamped on the barrels, chalk in a
+   brass holder, a rubber in its paper sleeve, brass card-frames for the actions, enamel thumb
+   medallions for the zoom. The hint is inked on the rule. It sits lower and shorter than the
+   box it replaces, so it hides less of the sheet. Nothing is ever faint: an action with nothing
+   to do has a duller card and the same legible ink. */
+.map-screen .map-tools {
+  --tray-k: 1;
+  bottom: calc(var(--map-foot) + 3px);
+  left: 50%; right: auto; translate: -50% 0;
+  width: min(calc(100% - 2 * var(--map-side) - 24px), 1336px);
+  box-sizing: border-box;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 0 3px;
+  padding: 0 clamp(14px, 1.5vw, 26px) 19px;
+  border: 0; border-radius: 0;
+  background: url("../../assets/ui/r58-variscite/tray.webp") center bottom / 100% calc(100% - 24px) no-repeat;
+  box-shadow: none;
+  filter: drop-shadow(0 7px 9px rgba(3, 3, 8, .72));
+  color: #2a1a0c;
+}
+/* the rule: the hint is inked on it */
+.map-screen .map-tools .map-tools__status {
+  order: -1;
+  flex: 0 0 auto;
+  width: calc(100% + 2 * clamp(14px, 1.5vw, 26px) - 6px);
+  margin: 0 -22px 3px;
+  height: 27px;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 0 0 1px;
+  box-sizing: border-box;
+  background: url("../../assets/ui/r58-variscite/ruler.webp") center / 100% 100% no-repeat;
+  color: #24140a;
+  font-family: var(--font-body); font-weight: 600; font-style: italic;
+  letter-spacing: .012em;
+  line-height: 1;
+  text-shadow: 0 1px 0 rgba(255, 238, 196, .42);
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .7));
+}
+/* gilt on the tray's end, not a control */
+.map-screen .map-tools .map-tools__title {
+  margin: 0 8px 2px 0;
+  color: var(--kit-gold-hi);
+  font-family: var(--font-body); font-weight: 600; font-style: italic;
+  text-shadow: 0 1px 0 #000, 0 0 5px rgba(0, 0, 0, .9);
+  white-space: nowrap;
+}
+.map-screen .map-tools button {
+  --lab: url("../../assets/ui/r58-variscite/label-a.webp");
+  position: relative;
+  gap: 4px;
+  min-height: 34px; height: 34px;
+  margin: 0;
+  padding: 0 14px 2px;
+  border: 0 solid transparent; border-radius: 0;
+  border-image: var(--lab) 18 36 21 36 fill / 6px 11px 7px 11px stretch;
+  background: none;
+  color: #24140a;
+  font: inherit;
+  font-family: var(--font-body); font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(255, 240, 200, .38);
+  transition: transform calc(.14s * var(--anim-scale, 1)) var(--ease-out, ease-out), filter calc(.14s * var(--anim-scale, 1)) ease-out;
+}
+.map-screen .map-tools [data-action="clear"],
+.map-screen .map-tools [data-action="remove"],
+.map-screen .map-tools [data-action="overview"] { --lab: url("../../assets/ui/r58-variscite/label-b.webp"); }
+.map-screen .map-tools [data-action="stamp"],
+.map-screen .map-tools [data-action="here"] { --lab: url("../../assets/ui/r58-variscite/label-c.webp"); }
+.map-screen .map-tools button svg { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.map-screen .map-tools button:hover { background: none; transform: translateY(-2px); filter: brightness(1.12) drop-shadow(0 0 5px rgba(255, 179, 92, .6)); border-color: transparent; }
+.map-screen .map-tools button[aria-pressed="true"] {
+  --lab: url("../../assets/ui/r58-variscite/label-lit.webp");
+  background: none; border-color: transparent;
+  transform: translateY(-3px);
+  filter: drop-shadow(0 0 7px rgba(255, 179, 92, .85)) drop-shadow(0 4px 2px rgba(0, 0, 0, .6));
+}
+.map-screen .map-tools button:focus-visible { outline: 2px solid #fff3d0; outline-offset: 2px; }
+/* an action with nothing to act on: a duller card, the ink still reads */
+.map-screen .map-tools button:disabled {
+  --lab: url("../../assets/ui/r58-variscite/label-off.webp");
+  opacity: 1; color: #2b1c10; font-weight: 600;
+  text-shadow: 0 1px 0 rgba(255, 240, 200, .18);
+  filter: none; transform: none;
+}
+/* the pencils: three-slice, so a longer word gets a longer barrel */
+.map-screen .map-tools .map-pencil {
+  --pen: url("../../assets/ui/r58-variscite/pencil-yellow.webp");
+  --pl: 72; --pr: 96;
+  --plw: calc(var(--pl) / 3 * 1px); --prw: calc(var(--pr) / 3 * 1px);
+  height: 34px; min-height: 34px; min-width: 0;
+  padding: 0 var(--prw) 5px var(--plw);
+  border: 0 solid transparent;
+  border-image: var(--pen) 0 var(--pr) 0 var(--pl) fill / 0 var(--prw) 0 var(--plw) stretch;
+  letter-spacing: .01em;
+}
+.map-screen .map-tools .map-pencil i { display: none; }
+.map-screen .map-tools .map-pencil--yellow { --pl: 72; color: #2c1a05; text-shadow: 0 1px 0 rgba(255, 244, 190, .55); }
+.map-screen .map-tools .map-pencil--red { --pen: url("../../assets/ui/r58-variscite/pencil-red.webp"); --pl: 54; color: #ffe9c8; text-shadow: 0 1px 0 rgba(40, 6, 4, .85); }
+.map-screen .map-tools .map-pencil--green { --pen: url("../../assets/ui/r58-variscite/pencil-green.webp"); --pl: 46; color: #f1f4d8; text-shadow: 0 1px 0 rgba(4, 28, 12, .85); }
+.map-screen .map-tools .map-pencil--white { --pen: url("../../assets/ui/r58-variscite/chalk.webp"); --pl: 78; --pr: 52; color: #24180f; text-shadow: 0 1px 0 rgba(255, 255, 255, .5); }
+.map-screen .map-tools .map-pencil[aria-pressed="true"] {
+  --lab: none;
+  rotate: -2.5deg;
+  transform: translateY(-6px);
+  filter: drop-shadow(0 0 6px rgba(255, 201, 120, .9)) drop-shadow(0 7px 4px rgba(0, 0, 0, .6));
+}
+/* a pencil lying a little loose in the trough */
+.map-screen .map-tools .map-pencil--red { rotate: .9deg; }
+.map-screen .map-tools .map-pencil--green { rotate: -.7deg; }
+.map-screen .map-tools .map-pencil--white { rotate: .5deg; }
+/* the rubber, with its word on the paper sleeve */
+.map-screen .map-tools [data-tool="erase"] {
+  height: 34px; min-height: 34px;
+  padding: 0 17px 5px;
+  border-image: url("../../assets/ui/r58-variscite/rubber.webp") 0 48 0 48 fill / 0 16px 0 16px stretch;
+  rotate: -.8deg;
+}
+.map-screen .map-tools [data-tool="erase"][aria-pressed="true"] { --lab: none; }
+/* a brass upright between the drawing things and the sheet's things */
+.map-screen .map-tools .map-tools__divider {
+  height: 30px; width: 5px; margin: 0 4px 2px; border: 0; border-radius: 2px;
+  background: linear-gradient(90deg, #2a1a0c, #e6c98a 34%, #b08a4a 58%, #3a2610);
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, .7);
+}
+/* zoom: the samples' round enamel buttons with gold rims */
+.map-screen .map-tools [data-action="out"],
+.map-screen .map-tools [data-action="in"] {
+  width: 34px; height: 34px; min-height: 34px; padding: 0;
+  justify-content: center;
+  border: 0; border-image: none;
+  background: url("../../assets/ui/kit/button.webp") center / 100% 100% no-repeat;
+  color: var(--kit-gold-hi);
+  font-family: var(--font-display); font-weight: 700;
+  text-shadow: 0 1px 1px #000;
+}
+.map-screen .map-tools [data-action="out"] { margin-left: 3px; }
+@media (max-width: 1420px) {
+  .map-screen .map-tools { gap: 0 2px; padding-left: 15px; padding-right: 15px; }
+  .map-screen .map-tools .map-tools__status { width: calc(100% + 24px); margin-left: -12px; margin-right: -12px; }
+  .map-screen .map-tools button:not(.map-pencil):not([data-tool="erase"]):not([data-action="out"]):not([data-action="in"]) { border-image-width: 6px 8px 7px 8px; border-image-slice: 18 24 21 24 fill; padding-inline: 10px; }
+  .map-screen .map-tools button svg { display: none; }
+  .map-screen .map-tools .map-tools__title { margin-right: 2px; letter-spacing: .03em; }
+}
+/* below the Deck the pencils lose their words as they always did; the barrels still say which */
+@media (max-width: 1100px) {
+  .map-screen .map-tools .map-pencil { min-width: 74px; padding: 0; }
+  .map-screen .map-tools .map-tools__title { display: none; }
+}
+
+/* DISCOVERIES AND HOW TO PLAY: the same brass card-frames, screwed to the wall of the sheet. */
+.scene--map .story-tools { gap: 6px; }
+.scene--map .story-tools > button {
+  min-height: 40px; height: 40px;
+  padding: 0 20px 2px;
+  border: 0 solid transparent; border-radius: 0;
+  border-image: url("../../assets/ui/r58-variscite/label-b.webp") 18 36 21 36 fill / 7px 13px 8px 13px stretch;
+  background: none;
+  color: #24140a; font-weight: 600;
+  text-shadow: 0 1px 0 rgba(255, 240, 200, .38);
+  box-shadow: none;
+  filter: drop-shadow(0 4px 5px rgba(2, 2, 6, .7));
+}
+.scene--map .story-tools > button:last-child { border-image-source: url("../../assets/ui/r58-variscite/label-c.webp"); rotate: .4deg; }
+.scene--map .story-tools > button:hover { background: none; border-color: transparent; filter: brightness(1.14) drop-shadow(0 0 6px rgba(255, 179, 92, .7)); }
+
+/* THE BALLOT. The strip is a torn slip of the same paper, pinned at both ends, as heavy as the
+   plates around it. The pins on the doors are each friend's own tag, pinned where they'd go:
+   their initial in their own pencil, big enough to read from across the table. */
+.map-screen .map-ballot {
+  --plate-h: 44px;
+  height: var(--plate-h);
+  padding: 0 34px 1px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/r58-variscite/slip.webp") 0 72 0 72 fill / 0 24px 0 24px stretch;
+  color: #1f1208;
+  font-family: var(--font-body); font-weight: 600;
+  --reading-size: 15px;
+  text-shadow: 0 1px 0 rgba(255, 240, 200, .4);
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .72));
+  rotate: -.5deg;
+}
+.map-screen--plan .map-node .mn-votes {
+  top: 8px;
+  gap: 0;
+  padding: 0;
+  background: none; box-shadow: none; border-radius: 0;
+  color: #1f1208;
+  white-space: nowrap;
+  z-index: 6;
+}
+.mn-vote {
+  --tag-w: 50px;
+  position: relative;
+  display: inline-flex; align-items: flex-end; justify-content: center;
+  width: var(--tag-w); height: calc(var(--tag-w) * 50 / 38);
+  padding-bottom: 5px;
+  box-sizing: border-box;
+  background: url("../../assets/ui/r58-variscite/vote-a.webp") center / 100% 100% no-repeat;
+  font-family: var(--font-body); font-style: normal; font-weight: 700;
+  font-size: 36px; line-height: 1; letter-spacing: 0;
+  color: var(--mark, #241a12);
+  rotate: -5deg;
+}
+.mn-vote + .mn-vote { margin-left: -5px; rotate: 6deg; background-image: url("../../assets/ui/r58-variscite/vote-b.webp"); }
+.mn-vote + .mn-vote + .mn-vote { rotate: -3deg; background-image: url("../../assets/ui/r58-variscite/vote-c.webp"); }
+.mn-vote + .mn-vote + .mn-vote + .mn-vote { rotate: 4deg; background-image: url("../../assets/ui/r58-variscite/vote-d.webp"); }
+.mn-vote[data-seat="0"] { --mark: #241a12; }
+.mn-vote[data-seat="1"] { --mark: #8a1f16; }
+.mn-vote[data-seat="2"] { --mark: #1a4f2c; }
+.mn-vote[data-seat="3"] { --mark: #1b3b78; }
+/* == end round 58 == */

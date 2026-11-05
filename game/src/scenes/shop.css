@@ -1532,3 +1532,22 @@
 @media (max-width: 1400px) { .scene--shop .sh-counter--cards .sh-keeper { top: 88px; } }
 .scene--shop .sh-keeper::after { content: none; }
 .scene--shop .sh-keeper .sh-moth__name.sh-moth__name { top: calc(100% + 2px); padding-block: 5px 6px; filter: drop-shadow(0 4px 2px var(--kit-void)); }
+/* == ROUND 58 == */
+/* THE RULES PANELS: tooled leather let into the card, dyed to the card's type, its corners and
+   near edge rubbed through the dye and a sweep of lamplight across the upper left, gone by the
+   foot. It is dark enough to sit with the frames and it has a surface to read on. Shop only:
+   the hand's cards keep their own panel. */
+.scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid] .mm-card__rules {
+  background: url("../../assets/ui/r58-variscite/leather-skill.webp") center / 100% 100% no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(8, 4, 2, .9), inset 0 0 calc(18 * var(--u)) rgba(0, 0, 0, .55), 0 0 0 1px rgba(176, 138, 74, .55);
+  text-shadow: 0 1px 0 #000, 0 0 calc(5 * var(--u)) rgba(0, 0, 0, .9), 0 0 calc(2 * var(--u)) rgba(0, 0, 0, .9);
+}
+.scene--shop .sh-card .mm-card[data-rarity][data-type="attack"][data-uid] .mm-card__rules { background-image: url("../../assets/ui/r58-variscite/leather-attack.webp"); }
+.scene--shop .sh-card .mm-card[data-rarity][data-type="power"][data-uid] .mm-card__rules { background-image: url("../../assets/ui/r58-variscite/leather-power.webp"); }
+/* the words take the room the panel gives them */
+.scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid] .mm-card__rules { font-size: calc(19 * var(--u) * var(--rules-k, 1)); line-height: 1.16; }
+.scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid].is-largetext .mm-card__rules { font-size: calc(20 * var(--u) * var(--rules-k, 1)); }
+.scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid].is-text-long .mm-card__rules { font-size: calc(16.5 * var(--u) * var(--rules-k, 1)); }
+.scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid].is-text-xlong .mm-card__rules { font-size: calc(14.5 * var(--u) * var(--rules-k, 1)); }
+.scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid].is-fitted.is-board-fit:not(.is-text-long):not(.is-text-xlong) .mm-card__rules { font-size: calc(max(var(--rules-fit, 19), 19) * var(--u)); }
+/* == end round 58 == */
