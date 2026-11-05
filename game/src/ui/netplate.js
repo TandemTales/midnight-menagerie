@@ -19,8 +19,8 @@ const NOTE_MS = 5000;
 /* What a hung plate must never cover in a fight: each creature's sign, intent, plate and Guard. */
 const KEEP_CLEAR = '.cb-enemy__above, .cb-enemy__above *, .cb-enemy__plate, .cb-enemy__guard';
 const FACE = '<i class="net-plate__face"></i><i class="net-plate__chain net-plate__chain--l"></i><i class="net-plate__chain net-plate__chain--r"></i>';
-/* A rope's two ends, parted and frayed: somebody's line to the house has gone. */
-const MEDAL = '<i class="net-plate__medal" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M2.5 25.5 12 16M5.5 28.5 15 19"/><path d="M12 16l1-5M13.5 17.5l4-3.5M15 19l5 .5"/><path d="M29.5 6.5 21 15M26.5 3.5 18 12"/><path d="M21 15l-.5 5M19.5 13.5l-3.5 4M18 12l-5-1"/></svg></i>';
+/* A guttering candle on the seal: somebody at the table has gone dark. */
+const MEDAL = '<i class="net-plate__medal" aria-hidden="true"></i>';
 
 /**
  * Hang the plate over the board where it hides nothing a player reads. It keeps its height and

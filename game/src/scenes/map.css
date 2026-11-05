@@ -2211,8 +2211,8 @@
 .map-screen .map-tools button[aria-pressed="true"] {
   --lab: url("../../assets/ui/r58-variscite/label-lit.webp");
   background: none; border-color: transparent;
-  transform: translateY(-3px);
-  filter: drop-shadow(0 0 7px rgba(255, 179, 92, .85)) drop-shadow(0 4px 2px rgba(0, 0, 0, .6));
+  transform: translateY(-4px);
+  filter: brightness(1.2) drop-shadow(0 0 7px rgba(255, 190, 100, 1)) drop-shadow(0 5px 2px rgba(0, 0, 0, .65));
 }
 .map-screen .map-tools button:focus-visible { outline: 2px solid #fff3d0; outline-offset: 2px; }
 /* an action with nothing to act on: a duller card, the ink still reads */
@@ -2268,11 +2268,13 @@
   width: 34px; height: 34px; min-height: 34px; padding: 0;
   justify-content: center;
   border: 0; border-image: none;
-  background: url("../../assets/ui/kit/button.webp") center / 100% 100% no-repeat;
-  color: var(--kit-gold-hi);
+  background: url("../../assets/ui/r58-rhyolite/knob.webp") center / 100% 100% no-repeat;
+  color: #f4e2b8;
   font-family: var(--font-display); font-weight: 700;
   text-shadow: 0 1px 1px #000;
 }
+.map-screen .map-tools [data-action="out"]:hover,
+.map-screen .map-tools [data-action="in"]:hover { background: url("../../assets/ui/r58-rhyolite/knob.webp") center / 100% 100% no-repeat; }
 .map-screen .map-tools [data-action="out"] { margin-left: 3px; }
 @media (max-width: 1420px) {
   .map-screen .map-tools { gap: 0 2px; padding-left: 15px; padding-right: 15px; }
@@ -2319,33 +2321,72 @@
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .72));
   rotate: -.5deg;
 }
-.map-screen--plan .map-node .mn-votes {
-  top: 8px;
-  gap: 0;
-  padding: 0;
+/* A vote is a pin: a brass head with the friend's face in it, a needle down into the paper, and
+   a slip under it with their initial in their own pencil. One each, up and to the right of the
+   door they chose, where the plan's lettering does not run. */
+.map-screen--plan .mn-votes,
+.map-screen .map-node .mn-votes {
+  left: calc(50% + 36px); top: -54px; transform: none;
+  display: inline-flex; gap: 0; padding: 0; white-space: nowrap;
   background: none; box-shadow: none; border-radius: 0;
-  color: #1f1208;
-  white-space: nowrap;
-  z-index: 6;
+  font-family: var(--font-display); letter-spacing: 0; z-index: 6;
 }
 .mn-vote {
-  --tag-w: 50px;
-  position: relative;
-  display: inline-flex; align-items: flex-end; justify-content: center;
-  width: var(--tag-w); height: calc(var(--tag-w) * 50 / 38);
-  padding-bottom: 5px;
-  box-sizing: border-box;
-  background: url("../../assets/ui/r58-variscite/vote-a.webp") center / 100% 100% no-repeat;
-  font-family: var(--font-body); font-style: normal; font-weight: 700;
-  font-size: 36px; line-height: 1; letter-spacing: 0;
-  color: var(--mark, #241a12);
-  rotate: -5deg;
+  --pin: 72px;
+  position: relative; display: block; flex: none;
+  width: var(--pin); height: calc(var(--pin) + 18px);
+  filter: drop-shadow(3px 5px 3px rgba(4, 12, 20, .72));
 }
-.mn-vote + .mn-vote { margin-left: -5px; rotate: 6deg; background-image: url("../../assets/ui/r58-variscite/vote-b.webp"); }
-.mn-vote + .mn-vote + .mn-vote { rotate: -3deg; background-image: url("../../assets/ui/r58-variscite/vote-c.webp"); }
-.mn-vote + .mn-vote + .mn-vote + .mn-vote { rotate: 4deg; background-image: url("../../assets/ui/r58-variscite/vote-d.webp"); }
+.mn-vote > img, .mn-vote > i {
+  position: absolute; left: 15%; top: calc(var(--pin) * .15); width: 70%; height: calc(var(--pin) * .7);
+  border-radius: 50%; object-fit: cover; object-view-box: inset(6% 8% 0 8%); background: #0d0911;
+  filter: brightness(1.14) saturate(1.06);
+}
+.mn-vote::before {
+  content: ''; position: absolute; z-index: 1; left: 0; top: 0; width: var(--pin); height: var(--pin);
+  background: url("../../assets/ui/r58-rhyolite/medal-ring.webp") center / 100% 100% no-repeat;
+}
+/* the needle, going down into the paper at the door's side */
+.mn-vote::after {
+  content: ''; position: absolute; z-index: 0;
+  left: 16%; top: 60%; width: 3px; height: 38px;
+  background: linear-gradient(180deg, #e6c98a, #8a6a36 60%, #33240f);
+  transform: rotate(38deg); transform-origin: 50% 0;
+  border-radius: 0 0 2px 2px;
+}
+.mn-vote > b {
+  position: absolute; z-index: 2; left: 50%; bottom: -8px; translate: -50% 0; rotate: -4deg;
+  width: 30px; height: 40px; box-sizing: border-box; padding-bottom: 3px;
+  display: flex; align-items: flex-end; justify-content: center;
+  background: url("../../assets/ui/r58-variscite/vote-a.webp") center / 100% 100% no-repeat;
+  font-family: var(--font-body); font-weight: 700; font-size: 22px; line-height: 1;
+  color: var(--mark, #241a12);
+}
+.mn-vote + .mn-vote > b { rotate: 5deg; background-image: url("../../assets/ui/r58-variscite/vote-b.webp"); }
+.mn-vote + .mn-vote + .mn-vote > b { rotate: -2deg; background-image: url("../../assets/ui/r58-variscite/vote-c.webp"); }
+.mn-vote + .mn-vote + .mn-vote + .mn-vote > b { rotate: 3deg; background-image: url("../../assets/ui/r58-variscite/vote-d.webp"); }
 .mn-vote[data-seat="0"] { --mark: #241a12; }
 .mn-vote[data-seat="1"] { --mark: #8a1f16; }
 .mn-vote[data-seat="2"] { --mark: #1a4f2c; }
 .mn-vote[data-seat="3"] { --mark: #1b3b78; }
+
+/* The slip carries the roll of who has chosen: their faces set into the paper. */
+.map-screen .map-ballot { gap: 10px; }
+.map-ballot__roll { display: inline-flex; flex: none; margin-right: 2px; }
+.map-ballot__seat {
+  position: relative; display: block; width: 38px; height: 38px; flex: none; margin-left: -6px;
+}
+.map-ballot__seat:first-child { margin-left: 0; }
+.map-ballot__seat > img, .map-ballot__seat > i {
+  position: absolute; left: 15%; top: 15%; width: 70%; height: 70%;
+  border-radius: 50%; object-fit: cover; object-view-box: inset(6% 8% 0 8%); background: #0d0911;
+  filter: brightness(1.14) saturate(1.06);
+}
+.map-ballot__seat::before {
+  content: ''; position: absolute; z-index: 1; inset: 0;
+  background: url("../../assets/ui/r58-rhyolite/medal-ring.webp") center / 100% 100% no-repeat;
+}
+/* still deciding: the same seat with the lamp turned down on them */
+.map-ballot__seat:not(.is-in) > img { filter: grayscale(.8) brightness(.5); }
+.map-ballot__seat:not(.is-in)::before { filter: brightness(.55) saturate(.6); }
 /* == end round 58 == */

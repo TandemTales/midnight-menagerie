@@ -3801,111 +3801,96 @@
 .cb-hero--friend[data-place="1"] { --friend-dx: 1vw; --friend-dy: 12vh; }
 .cb-hero--friend[data-place="2"] { --friend-dx: 10.5vw; --friend-dy: 12vh; }
 /* == ROUND 58 == */
-/* A PARTY OF FOUR, IN DEPTH. They came in together: the player's Kid at the front of the
-   stage, one friend a step back on her far side, two more further up the floor. Heads are
-   what must stay clear, so they stagger on a diagonal rather than shrink: the depth does the
-   work, not the scale. Nobody crosses a line to the right of the first creature's sign.
-   Each friend's Companion is stepped to where its own Kid's body does not hide it. */
+/* A PARTY OF FOUR, staged like a group portrait rather than a heap: two friends a step back on
+   the boards with their faces in the gaps, the player's Kid and one friend at the front, and the
+   Companions out ahead of them on the floor where nobody's legs can hide them. The numbers are
+   the Kids' feet, measured against the plates (left), the first enemy's sign (above right) and
+   the first enemy's nameplate (below right). No filter on any of them: three more bodies are
+   drawn in this frame. */
 .cb-root .cb-hero.cb-hero--friend,
 .cb-root[data-arena] .cb-hero.cb-hero--friend,
 .cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) ~ .cb-herohost .cb-hero.cb-hero--friend {
-  scale: var(--friend-k, .76);
-  z-index: var(--friend-z, 1);
+  transform-origin: 46% 94.7%;
+  scale: var(--friend-s);
+  z-index: var(--friend-z);
 }
-.cb-hero--friend[data-place="0"] { --friend-dx: 9.7vw; --friend-dy: 5.5vh; --friend-k: .82; }
-.cb-hero--friend[data-place="1"] { --friend-dx: -5.3vw; --friend-dy: 11.4vh; --friend-k: .76; }
-.cb-hero--friend[data-place="2"] { --friend-dx: 5.1vw; --friend-dy: 12.4vh; --friend-k: .74; --friend-z: 2; }
-.cb-hero--friend[data-place="1"] .pr-pal,
-.cb-hero--friend[data-place="1"] .pr-palshadow { translate: 24px 18px; }
-.cb-hero--friend[data-place="2"] .pr-pal,
-.cb-hero--friend[data-place="2"] .pr-palshadow { translate: 106px 2px; }
-/* its contact shadow would land on the dog at its feet, one layer down */
-.cb-hero--friend[data-place="2"] .pr-palshadow { opacity: 0; }
-.cb-hero--friend[data-place="0"] .pr-pal,
-.cb-hero--friend[data-place="0"] .pr-palshadow { translate: -4px 9px; }
-/* The Deck's 16:10 has less floor between the plates and the first creature, and more height. */
+.cb-hero--friend .pr-pal, .cb-hero--friend .pr-palshadow {
+  transform-box: view-box;
+  transform-origin: -72px 0;
+  translate: var(--pal-dx, 0) var(--pal-dy, 0);
+  scale: var(--pal-s, 1);
+}
+/* back and to the left, clear of the plates; their Companion out on the open floor beyond */
+.cb-hero--friend[data-place="0"] { --friend-dx: -5.6vw; --friend-dy: 7.2vh; --friend-s: .84; --friend-z: 1; --pal-dx: -33px; --pal-dy: 60px; --pal-s: 1.28; }
+/* back and to the right, their face between the player's and the front friend's; their
+   Companion crosses to the open floor, where the crutches and the front friend cannot hide it */
+.cb-hero--friend[data-place="1"] { --friend-dx: 5.9vw; --friend-dy: 7.8vh; --friend-s: .84; --friend-z: 1; --pal-dx: -209px; --pal-dy: -25px; --pal-s: 1.14; }
+/* at the front on the right, the head under the sign and the lens short of the first creature */
+.cb-hero--friend[data-place="2"] { --friend-dx: 9.4vw; --friend-dy: .4vh; --friend-s: .94; --friend-z: 2; --pal-dx: 52px; --pal-dy: 6px; --pal-s: 1.08; }
 @media (max-aspect-ratio: 17/10) {
-  .cb-herohost:has(.cb-hero--friend) .cb-hero:not(.cb-hero--friend) { --hero-x: 23.5vw; }
-  .cb-hero--friend[data-place="0"] { --friend-dx: 8vw; --friend-dy: 4.2vh; --friend-k: .8; }
-  .cb-hero--friend[data-place="1"] { --friend-dx: -4.6vw; --friend-dy: 11.2vh; --friend-k: .74; }
-  .cb-hero--friend[data-place="2"] { --friend-dx: 4vw; --friend-dy: 12.2vh; --friend-k: .72; }
+  .cb-hero--friend[data-place="0"] { --friend-dx: -5.3vw; --friend-dy: 8.1vh; --friend-s: .82; --pal-dx: -55px; --pal-dy: 75px; --pal-s: 1.24; }
+  .cb-hero--friend[data-place="1"] { --friend-dx: 4.7vw; --friend-dy: 8.9vh; --friend-s: .82; --pal-dx: -139px; --pal-dy: -4px; --pal-s: 1.1; }
+  .cb-hero--friend[data-place="2"] { --friend-dx: 6.2vw; --friend-dy: -.2vh; --friend-s: .9; --pal-dx: 62px; --pal-dy: 4px; }
 }
+/* A board of four or more needs this floor for its enemies: the friends keep the tighter
+   step-behind they had. */
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) ~ .cb-herohost .cb-hero--friend { --friend-s: .74; --friend-z: 2; --pal-dx: 0px; --pal-dy: 0px; --pal-s: 1; }
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) ~ .cb-herohost .cb-hero--friend[data-place="0"] { --friend-dx: 7vw; --friend-dy: 6vh; }
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) ~ .cb-herohost .cb-hero--friend[data-place="1"] { --friend-dx: 1vw; --friend-dy: 12vh; }
+.cb-enemies:is([data-n="4"], [data-n="5"], [data-n="6"]) ~ .cb-herohost .cb-hero--friend[data-place="2"] { --friend-dx: 10.5vw; --friend-dy: 12vh; }
 
-/* THE FRIENDS' PLATES. A worn walnut plaque with the samples' scooped nameplate corners, the
-   Companion's medallion seated in a brass ring that overhangs its left end, the name lettered
-   on the board and the HUD's own amber tube let in beneath it. Conditions are little brass
-   tags struck with their word, hung off the plaque's foot. */
-.cb-mates { gap: 8px; padding-top: 6px; left: 10px; }
+/* THE FRIENDS' PLATES (`.cb-mates`). A worn plaque in the same brass as the Companion plate at
+   lower left and the samples' tile nameplates, with the friend's Companion seated in a beaded
+   socket that overhangs its left end, the Guard shield hung on the socket, the HUD's own tube
+   beside it, and conditions struck into small brass tokens inside the frame. Never past 18vw:
+   the Kids stand right of them. */
+.cb-mates { gap: 7px; padding-top: 2px; }
 .cb-mates.is-crowded { gap: 7px; }
 .cb-mates .cb-mate,
 .cb-mates.is-crowded .cb-mate {
-  --pl: 26px;
+  --mate-medal: 56px;
+  width: clamp(196px, calc(18vw - var(--s-4) - 34px), 236px);
+  min-height: 60px;
+  padding: 7px 13px 8px calc(var(--mate-medal) + 3px);
   box-sizing: border-box;
-  width: clamp(212px, 14.8vw, 244px);
-  min-height: 66px;
-  padding: 6px 11px 8px 52px;
-  border: var(--pl) solid transparent;
-  border-width: 0;
-  border-image: none;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/r58-rhyolite/mate-plaque.webp") 42 42 42 42 fill / 14px 14px 14px 14px stretch;
   background: none;
   box-shadow: none;
-  isolation: isolate;
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, .72));
 }
-/* the plaque itself: its own layer, so a filter on hover or a child's size can't stretch it */
-.cb-mate::before {
-  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  border: 0 solid transparent;
-  border-image: url("../../assets/ui/r58-variscite/plaque-a.webp") 58 58 58 58 fill / 26px 26px 26px 26px stretch;
+/* the socket: over the portrait, under nothing, and never in the way of a click */
+.cb-mates .cb-mate::before {
+  content: ''; position: absolute; z-index: 2; pointer-events: none;
+  left: -2px; top: -1px; width: var(--mate-medal); height: var(--mate-medal);
+  background: url("../../assets/ui/r58-rhyolite/medal-ring.webp") center / 100% 100% no-repeat;
 }
-.cb-mate:nth-child(2)::before { border-image-source: url("../../assets/ui/r58-variscite/plaque-b.webp"); }
-.cb-mate:nth-child(3)::before { border-image-source: url("../../assets/ui/r58-variscite/plaque-c.webp"); }
-.cb-mates .cb-mate__top { display: block; min-height: 22px; }
-/* the medallion and the ring it is seated in */
 .cb-mates .cb-mate__art,
 .cb-mates.is-crowded .cb-mate__art {
-  position: absolute; left: 4px; top: 9px; z-index: 0;
-  width: 44px; height: 44px; flex: none;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 1px #000;
+  position: absolute; z-index: 1;
+  left: calc(var(--mate-medal) * .15 - 2px); top: calc(var(--mate-medal) * .15 - 1px);
+  width: calc(var(--mate-medal) * .7); height: calc(var(--mate-medal) * .7); flex: none;
+  box-shadow: none; background: #0d0911;
+  object-position: 50% 30%;
 }
-.cb-mate__top::after {
-  content: ''; position: absolute; left: -3px; top: 2px; z-index: 1; pointer-events: none;
-  width: 58px; height: 58px;
-  background: url("../../assets/ui/r58-variscite/ring.webp") center / 100% 100% no-repeat;
-}
-.cb-mates .cb-mate__id { display: block; position: relative; z-index: 2; }
-.cb-mates .cb-mate__name {
-  display: block;
-  color: #f1dcb0;
-  text-shadow: 0 1px 0 #000, 0 -1px 0 rgba(255, 226, 170, .12), 0 0 6px rgba(0, 0, 0, .7);
-}
+.cb-mates .cb-mate__top { gap: 0; min-height: 21px; }
+.cb-mates .cb-mate__name { text-shadow: 0 1px 0 #000, 0 0 6px rgba(0, 0, 0, .8); }
 /* READY hangs off the plaque's top edge, clear of the name */
 .cb-mates .cb-mate__ready { position: absolute; right: 12px; top: -10px; z-index: 4; }
-.cb-mates .cb-mate__vitals {
-  --tube-h: 22px;
-  z-index: 2;
-  margin-top: 2px;
-  margin-left: -5px;
-  padding-left: 0;
-}
-/* the Guard shield hangs on the ring's lower right, where the tube begins */
-.cb-mates .cb-mate__guard { left: -9px; transform: translate(-30%, -46%); z-index: 3; }
-/* the tags hang from under the medallion, so a friend with three conditions stays two rows */
-.cb-mates .cb-mate__statuses { position: relative; z-index: 2; margin: 6px -5px -2px -40px; gap: 3px; }
+.cb-mates .cb-mate__vitals { --tube-h: 21px; margin-top: 2px; padding-left: 0; }
+/* Guard hangs on the socket's foot */
+.cb-mates .cb-mate__guard { --gs: 29px; left: -9px; transform: translate(-50%, -38%); z-index: 3; }
+.cb-mates .cb-mate__statuses { margin: 3px 0 0; gap: 3px; }
 .cb-mates .cb-mate__st {
-  --h: 24px;
-  min-height: var(--h);
-  padding: 0 8px 1px;
+  --h: 22px;
+  padding: 0 9px 0; min-height: var(--h); box-sizing: border-box;
+  font-family: var(--font-body); font-weight: 700; line-height: 1;
+  color: #1d0f05;
+  text-shadow: 0 1px 0 rgba(255, 234, 186, .42);
   border: 0 solid transparent;
-  border-image: url("../../assets/ui/r58-variscite/token.webp") 8 26 12 26 fill / 3px 9px 4px 9px stretch;
-  font-family: var(--font-num);
-  font-weight: 700;
-  letter-spacing: .01em;
-  color: #1c0e06;
-  text-shadow: 0 1px 0 rgba(255, 234, 178, .55);
-  rotate: -1.5deg;
+  border-image: url("../../assets/ui/r58-rhyolite/token.webp") 20 22 20 22 fill / 7px 7.5px 7px 7.5px stretch;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .7));
 }
-.cb-mates .cb-mate__st:nth-child(even) { rotate: 1.2deg; }
-.cb-mates .cb-mate__st:hover, .cb-mates .cb-mate__st:focus-visible { color: #000; }
-.cb-mates .cb-mate__aim { position: relative; z-index: 2; margin: 3px 0 0 -4px; }
+.cb-mates .cb-mate__st:hover, .cb-mates .cb-mate__st:focus-visible { color: #120801; }
+.cb-mates .cb-mate__aim { margin: 3px 0 0; }
 /* == end round 58 == */

@@ -871,12 +871,11 @@
   border: 2px solid currentColor;
   border-radius: 3px;
   outline: 1px solid currentColor; outline-offset: 1px;
-  color: #7f1d14;
+  color: #6a0f08;
   font-family: var(--font-display); font-style: normal; font-weight: 700;
-  font-size: 13px; letter-spacing: .05em;
+  font-size: 14px; letter-spacing: .05em;
   line-height: 1.1; white-space: nowrap;
-  text-shadow: none;
-  opacity: .88;
+  text-shadow: 0 0 1px currentColor;
   rotate: -3deg;
 }
 .lo__room .lo__code-out { white-space: nowrap; }
@@ -902,8 +901,14 @@
   left: 5vw; top: 63.6vh;
   width: clamp(124px, 10.4vw, 166px); aspect-ratio: 170 / 112;
   background-image: url("../../assets/ui/r58-variscite/plan.webp");
-  filter: brightness(.8) saturate(.86);
+  filter: sepia(.14) brightness(1) contrast(1.28) drop-shadow(3px 6px 5px rgba(0, 0, 0, .78));
   rotate: -1.6deg;
+}
+/* its near corner has come away from the wall and curled */
+.lo-wall--plan::after {
+  content: ''; position: absolute; right: 2.5%; bottom: 4%; width: 15%; aspect-ratio: 1;
+  background: linear-gradient(315deg, transparent 0 46%, #16110d 47% 50%, #a9c3c7 52%, #5c8ba0 72%, transparent 73%);
+  filter: drop-shadow(-1px -1px 1px rgba(0, 0, 0, .55));
 }
 .lo-wall--square {
   right: calc(7.6vw + clamp(62px, 5.4vw, 86px) + 3vw); top: 65vh;

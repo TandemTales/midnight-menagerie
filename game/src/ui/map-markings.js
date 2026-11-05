@@ -1,4 +1,6 @@
 /** Personal wax-pencil marks in sheet coordinates. Never part of run RNG/state. */
+import { kidPortrait } from './portrait.js';
+
 export class MapMarkings {
   constructor(scene) {
     this.scene = scene;
@@ -40,11 +42,6 @@ export class MapMarkings {
       <button data-action="in" aria-label="Zoom in">+</button>
       <output class="map-tools__status" aria-live="polite">Drag / scroll · Shift scroll sideways · Ctrl scroll zoom</output>`;
     scene.el.screen.append(this.bar);
-    /* A ballot pin arrives from the map as one string of initials. Each friend's is its own tag
-       on the door, in their own pencil, so the words stay the map's and the drawing stays here. */
-    this.pins = new MutationObserver(() => this.dressPins());
-    this.pins.observe(scene.el.sheet, { subtree: true, childList: true });
-    this.dressPins();
     this.status = this.bar.querySelector('output');
     this.on(this.bar, 'click', e => {
       const b = e.target.closest('button'); if (!b) return;
@@ -111,22 +108,56 @@ export class MapMarkings {
       e.preventDefault(); e.stopImmediatePropagation();
     }, true);
     this.render();
+    /* The scene paints the ballot as words and initials; this dresses what it painted, so the
+       rooms and the strip show faces and neither one's text changes. See dressBallot. */
+    const paintBallot = scene._paintBallot;
+    scene._paintBallot = (...args) => { paintBallot.apply(scene, args); this.dressBallot(); };
+    this.off.push(() => { delete scene._paintBallot; });
+    this.dressBallot();
   }
-  dressPins() {
-    const run = this.scene.model?.run, votes = run?.pendingVote?.votes || {};
-    for (const pin of this.scene.el.sheet.querySelectorAll('.mn-votes')) {
-      if (pin.firstElementChild) continue;
-      const id = pin.closest('.map-node')?.dataset.id;
-      const seats = Object.keys(votes).map(Number).sort((a, b) => a - b).filter(s => String(votes[s]) === String(id));
-      const marks = pin.textContent.trim().split(/\s+/).filter(Boolean);
-      pin.replaceChildren(...marks.flatMap((m, i) => {
-        const tag = document.createElement('i');
-        tag.className = 'mn-vote';
-        tag.dataset.seat = String(seats[i] ?? i);
-        tag.textContent = m;
-        return i ? [' ', tag] : [tag];
+  /**
+   * A friend's vote as a pin stuck in the blueprint: their face in a brass head, their initial
+   * in their own pencil on a slip of paper under it, one pin each. The strip gets the same faces
+   * as a roll of who has chosen. Only ever adds elements around the scene's text: `.mn-votes`
+   * still reads "M A" and `.map-ballot` still reads its sentence.
+   */
+  dressBallot() {
+    const s = this.scene, run = s.model?.run, bar = s.el?.ballot;
+    const book = (run && typeof run.votesPending === 'function') ? run.pendingVote : null;
+    const votes = book && book.nodeId === (run.currentNodeId || null) ? book.votes : {};
+    const face = (seat) => {
+      const slug = run.kids?.[seat]?.kid;
+      const img = slug ? kidPortrait({ slug }, { w: 96, h: 96, variant: 'thumb' }) : document.createElement('i');
+      img.alt = '';
+      img.setAttribute?.('aria-hidden', 'true');
+      return img;
+    };
+    for (const [id, el] of s._nodeEls || []) {
+      const pin = el.querySelector('.mn-votes');
+      if (!pin) continue;
+      const who = Object.keys(votes).map(Number).sort((a, b) => a - b).filter(seat => votes[seat] === id);
+      pin.replaceChildren(...who.flatMap((seat, i) => {
+        const mark = document.createElement('span');
+        mark.className = 'mn-vote';
+        mark.dataset.seat = String(seat);
+        const tag = document.createElement('b');
+        tag.textContent = s._kidTag(seat);
+        mark.append(face(seat), tag);
+        return i ? [' ', mark] : [mark];
       }));
     }
+    if (!bar || bar.hidden || !run || typeof run.voters !== 'function') return;
+    const roll = document.createElement('span');
+    roll.className = 'map-ballot__roll';
+    roll.setAttribute('aria-hidden', 'true');
+    for (const seat of run.voters()) {
+      const mark = document.createElement('span');
+      mark.className = 'map-ballot__seat' + (votes[seat] !== undefined ? ' is-in' : '');
+      mark.append(face(seat));
+      roll.append(mark);
+    }
+    bar.querySelector('.map-ballot__roll')?.remove();
+    bar.prepend(roll);
   }
   on(el, event, fn, options) {
     el.addEventListener(event, fn, options);
@@ -220,7 +251,6 @@ export class MapMarkings {
   }
   destroy() {
     if (this.active != null) this.save();
-    this.pins.disconnect();
     for (const off of this.off) off();
     this.svg.remove(); this.bar.remove();
   }

@@ -1539,7 +1539,9 @@
    the hand's cards keep their own panel. */
 .scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid] .mm-card__rules {
   background: url("../../assets/ui/r58-variscite/leather-skill.webp") center / 100% 100% no-repeat;
-  box-shadow: inset 0 0 0 1px rgba(8, 4, 2, .9), inset 0 0 calc(18 * var(--u)) rgba(0, 0, 0, .55), 0 0 0 1px rgba(176, 138, 74, .55);
+  /* it goes under the frame rather than stopping at it: the rule's shadow on top, the falloff
+     all round, and the middle where the words are keeps its colour */
+  box-shadow: inset 0 0 0 1px rgba(8, 4, 2, .9), inset 0 calc(9 * var(--u)) calc(11 * var(--u)) calc(-5 * var(--u)) rgba(0, 0, 0, .8), inset 0 0 calc(14 * var(--u)) calc(3 * var(--u)) rgba(0, 0, 0, .62), 0 0 0 1px rgba(176, 138, 74, .55);
   text-shadow: 0 1px 0 #000, 0 0 calc(5 * var(--u)) rgba(0, 0, 0, .9), 0 0 calc(2 * var(--u)) rgba(0, 0, 0, .9);
 }
 .scene--shop .sh-card .mm-card[data-rarity][data-type="attack"][data-uid] .mm-card__rules { background-image: url("../../assets/ui/r58-variscite/leather-attack.webp"); }
