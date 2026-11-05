@@ -1,6 +1,7 @@
 """The whole demo, played by a party over a wire as slow as a real one.
 
     python tests/coop/demo_walk.py [players] [seed-word] [--honest] [--shots DIR]
+                                   [--full] [--fast] [--mixed] [--walked FILE] [--party a:b,c:d]
 
 Needs the dev server on :8777. Every other co-op walk stops somewhere: latency.py after one
 fight, rooms.py and rejoin.py at the rooms they came to test. This one starts in the lobby
@@ -14,6 +15,17 @@ and they vote for different doors when there is a choice.
 The Kids are given a lot of Courage unless --honest, because this walks the road and
 balance is tests/run's job. It fails if a machine ever disagrees with another, if nobody
 can do anything for STALL seconds, or if any page logs an error.
+
+--full   the whole game, six wings ending at the Heart, not the demo's three.
+--fast   no pixels and the game's own fast setting. Every screen, click and wire message is
+         real, only the drawing is skipped, so it costs a fraction of the three hours. It cannot
+         say anything about how a thing looks, or how a machine copes with drawing it.
+--mixed  each friend brings their own save, as on four real computers: different rescues,
+         unlocks, Haunt ladder, story, settings. Tabs share one localStorage, so without this
+         every machine in the test is secretly the same machine.
+--walked FILE  a JSON list of wings already walked. The party votes for a wing not in it, and
+         it is written back, so a few expeditions cover all seventeen.
+--party  companion:kid for each seat, comma separated.
 """
 import asyncio
 import json
@@ -29,14 +41,18 @@ except Exception:
 ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
 HONEST = "--honest" in sys.argv
 SHOTS = sys.argv[sys.argv.index("--shots") + 1] if "--shots" in sys.argv else None
-if SHOTS:
-    ARGS = [a for a in ARGS if a != SHOTS]
+FULL = "--full" in sys.argv
+FAST = "--fast" in sys.argv
+MIXED = "--mixed" in sys.argv
+WALKED = sys.argv[sys.argv.index("--walked") + 1] if "--walked" in sys.argv else None
+PARTY = sys.argv[sys.argv.index("--party") + 1] if "--party" in sys.argv else None
+ARGS = [a for a in ARGS if a not in (SHOTS, WALKED, PARTY)]
 PLAYERS = int(ARGS[0]) if ARGS else 2
 ROOM = ARGS[1] if len(ARGS) > 1 else "owlish-lookout"
-URL = "http://localhost:8777/game/index.html#demo=1"
+URL = "http://localhost:8777/game/index.html" + ("" if FULL else "#demo=1")
 LOW, HIGH = 60, 180
 STALL = 150          # seconds with no scene, turn or log change on any machine
-LIMIT = (90 + 75 * max(0, PLAYERS - 2)) * 60    # the tabs share one software renderer
+LIMIT = (90 + 75 * max(0, PLAYERS - 2)) * 60 * (3 if FULL else 1)    # the tabs share one software renderer
 fails, passes = [], []
 
 
@@ -190,17 +206,20 @@ ATLAS = """(pick) => {
     return { pressed: scene.hover, onScreen, reachable: !!hit && (hit === go || go.contains(hit)) };
   }
   const ids = r.pendingWing.options.map(o => o.to).sort();
-  const hot = document.querySelector(`.at-hot[data-wing="${ids[pick % ids.length]}"]`);
+  const fresh = ids.filter(id => !(window.__walkedWings || []).includes(id));
+  const from = fresh.length ? fresh : ids;
+  const want = from[pick % from.length];
+  const hot = document.querySelector(`.at-hot[data-wing="${want}"]`);
   if (hot) hot.click();
-  return { looked: ids[pick % ids.length], of: ids };
+  return { looked: want, of: ids };
 }"""
 
 # Click the first enabled visible thing in the order a player would reach for it. `done` is
 # what this tab has already done in this room, so it goes on to the door out.
-ROOM_STEP = """(done) => {
+ROOM_STEP = """([done, pick]) => {
   const seen = el => { const b = el.getBoundingClientRect(), st = getComputedStyle(el);
     return !el.disabled && b.width > 0 && b.height > 0 && st.visibility !== 'hidden' && st.display !== 'none'; };
-  const first = sel => [...document.querySelectorAll(sel)].find(seen);
+  const first = sel => { const all = [...document.querySelectorAll(sel)].filter(seen); return all[pick % Math.max(1, all.length)]; };
   const picker = document.querySelector('.rm-picker');
   if (picker) {
     const ok = picker.querySelector('[data-ok]');
@@ -252,6 +271,48 @@ WATCH_ANIM = """async () => {
   };
 }"""
 
+# Everything but the drawing. The composer is the one call that turns a frame into pixels.
+FAST_MODE = """async () => {
+  const c = window.MM.ctx;
+  c.stage.composer.render = () => {};
+  c.stage.renderer.render = () => {};
+  c.stage.renderer.compile = () => {};
+  c.stage.tierForced = true;
+  const { setSetting } = await import('/game/src/ui/settings.js');
+  setSetting(c, 'fastMode', true);
+  setSetting(c, 'speed', 3);
+  return true;
+}"""
+
+# Four saves, none of them this machine's. Seat order follows the transport id, so which of
+# these ends up as seat 0 changes from run to run, which is the point.
+PROFILES = [
+    {"rescued": [], "kids": ["maya"], "haunt": 0, "cleared": [], "sanctuary": False,
+     "settings": {}},
+    {"rescued": ["bones", "wisp", "crumbula", "mopsy", "boggle"], "kids": ["maya", "mateo"], "haunt": 2,
+     "cleared": ["foyer"], "sanctuary": False, "settings": {"reduceMotion": True}},
+    {"rescued": ["bones", "wisp", "crumbula", "mopsy", "boggle", "hush", "truffle", "wink", "drizzle"],
+     "kids": ["maya", "mateo", "amina", "eli"], "haunt": 4, "cleared": ["foyer", "nursery", "greenhouse"],
+     "sanctuary": True, "settings": {"largeText": True}},
+    {"rescued": ["bones"], "kids": ["maya", "eli"], "haunt": 1, "cleared": ["foyer", "kennels"],
+     "sanctuary": True, "settings": {"reduceMotion": True, "largeText": True}},
+]
+PROFILE = """(p) => {
+  const S = window.MM.Save, d = S.data;
+  d.companionsRescued = p.rescued.slice();
+  d.kidsUnlocked = p.kids.slice();
+  d.blueprint = { revealed: p.cleared.slice(), cleared: p.cleared.slice() };
+  if (d.narrative) d.narrative.sanctuary = p.sanctuary;
+  d.hauntByParty = {};
+  const was = S.hauntLevelFor;
+  S.hauntLevelFor = () => p.haunt;
+  Object.assign(d.settings, p.settings);
+  S.save = () => {};
+  S.saveRun = () => {};
+  window.__walkProfile = p;
+  return !!was;
+}"""
+
 TOUGH = """() => { for (const k of window.MM.ctx.run.kids) { k.maxCourage = 900; k.courage = 900; } return true; }"""
 
 
@@ -284,7 +345,9 @@ async def main():
         page.on("console", said)
 
     async with async_playwright() as p:
-        browser = await p.chromium.launch(args=["--enable-unsafe-swiftshader", "--autoplay-policy=no-user-gesture-required"])
+        browser = await p.chromium.launch(args=["--enable-unsafe-swiftshader", "--autoplay-policy=no-user-gesture-required",
+                                                "--disable-background-timer-throttling", "--disable-renderer-backgrounding",
+                                                "--disable-backgrounding-occluded-windows"])
         ctx = await browser.new_context(viewport={"width": 1280, "height": 800})
         pages, cdps = [], []
         for i in range(PLAYERS):
@@ -298,16 +361,23 @@ async def main():
             cdps.append(cdp)
             await page.evaluate(SLOW_WIRE, [LOW, HIGH])
             await page.evaluate(WATCH_ANIM)
+            if FAST:
+                await page.evaluate(FAST_MODE)
+            if MIXED:
+                await page.evaluate(PROFILE, PROFILES[i])
+            if WALKED and os.path.exists(WALKED):
+                await page.evaluate("(w) => { window.__walkedWings = w; }", json.load(open(WALKED)))
             await page.evaluate("(room) => window.MM.ctx.scenes.go('lobby', { room }, { instant: true })", ROOM)
             pages.append(page)
         await pages[0].wait_for_timeout(3000)
         # Friends do not all bring the same Companion, and nothing else in here would notice
         # a line of the game that reads the Kid at this screen instead of the party.
+        chosen = [x.split(":") for x in PARTY.split(",")] if PARTY else list(zip(["marmalade", "bones", "wisp", "crumbula"], ["maya", "mateo", "amina", "eli"]))
         for i, page in enumerate(pages):
             await page.evaluate("""([companion, kid]) => {
               const l = window.MM.ctx.scenes.current._lobby;
               l.setChoice({ ...l.me, companion, kid });
-            }""", [["marmalade", "bones", "wisp", "crumbula"][i], ["maya", "mateo", "amina", "eli"][i]])
+            }""", list(chosen[i]))
         await pages[0].wait_for_timeout(1000)
         for page in pages:
             await page.evaluate("() => window.MM.ctx.scenes.current._lobby.setReady(true)")
@@ -473,7 +543,7 @@ async def main():
                 elif scene in ("gameover", "lobby", "title", "select"):
                     pass
                 else:
-                    got = await pg.evaluate(ROOM_STEP, done_in_room[i])
+                    got = await pg.evaluate(ROOM_STEP, [done_in_room[i], rng.randrange(12)])
                     if got:
                         if got[0] != "picker":
                             done_in_room[i].append(got[0])
@@ -489,14 +559,19 @@ async def main():
 
         st = await asyncio.gather(*[pg.evaluate(STATE) for pg in pages])
         check(finished, "the party reached the end of the demo", f"{[x['scene'] for x in st]} in {int(loop.time() - begin)}s")
-        check(all(x["demo"] for x in st), "it was the demo on every machine")
+        if FULL:
+            check(not any(x["demo"] for x in st), "it was the whole game on every machine")
+        else:
+            check(all(x["demo"] for x in st), "it was the demo on every machine")
         if finished:
             check(all(x["result"] == st[0]["result"] for x in st), "and every machine agrees how it ended", str([x["result"] for x in st]))
             if not HONEST:
-                check(st[0]["result"] == "victory", "the ending is the demo's win", str(st[0]["result"]))
+                check(st[0]["result"] == "victory", "the ending is the win", str(st[0]["result"]))
             check(len({x["route"] for x in st}) == 1, "and they walked one route", st[0]["route"])
             if st[0]["result"] == "victory":
-                check(all(x["route"].count(">") == x["wings"] - 1 for x in st), "of all the demo's wings", st[0]["route"])
+                check(all(x["route"].count(">") == x["wings"] - 1 for x in st), "of every wing the expedition has", st[0]["route"])
+                if FULL:
+                    check(st[0]["route"].endswith("heart"), "and the whole game ends at the Heart", st[0]["route"])
             check(len({json.dumps(x["partyCourage"]) for x in st}) == 1, "and came out with the same Courage", str(st[0]["partyCourage"]))
             check(len({json.dumps(x["decks"]) for x in st}) == 1, "and the same decks", str(st[0]["decks"]))
         check(all(x["inSync"] is not False for x in st), "nobody fell out of sync", st[0]["drift"])
@@ -507,6 +582,9 @@ async def main():
         }""") for pg in pages])
         if finished:
             check(all(t["kid"] == t["mine"] for t in told), "each player's ending is their own Kid's", str(told))
+        if WALKED:
+            had = json.load(open(WALKED)) if os.path.exists(WALKED) else []
+            json.dump(sorted(set(had) | set((st[0]["route"] or "").split(">")) - {""}), open(WALKED, "w"))
         print(json.dumps({"rooms": rooms, "fights": rooms.count("combat"), "turns compared": turns_compared, "Tricks": plays, "scenes": sorted(scenes_seen)}))
         if SHOTS:
             for i, pg in enumerate(pages):

@@ -56,6 +56,7 @@ class SteamHost {
   constructor(o) {
     this.appId = o.appId | 0;
     this.demo = !!o.demo;
+    this.build = String(o.build || '');
     this._send = o.send;
     this._sw = o.sw || null;
     this._every = o.every || setInterval;
@@ -110,7 +111,7 @@ class SteamHost {
   info() {
     let deck = false;
     try { deck = !!this.client?.utils.isSteamRunningOnSteamDeck(); } catch { /* old client */ }
-    return { available: this.available, appId: this.appId, me: this.me, name: this.name, deck, reason: this.reason, demo: this.demo };
+    return { available: this.available, appId: this.appId, me: this.me, name: this.name, deck, reason: this.reason, demo: this.demo, build: this.build };
   }
 
   shutdown() {

@@ -52,6 +52,8 @@ const host = {
   version: process.versions.electron || '',
   /** A demo depot: see `DEMO_WINGS` in game/src/state/run.js. */
   demo: !!info.demo,
+  /** Which commit this depot was built from; a party has to match. See `net/lobby.js`. */
+  build: info.build || '',
   steam: info.available ? {
     appId: info.appId,
     available: () => true,

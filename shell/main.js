@@ -113,7 +113,7 @@ const RELEASE = (() => {
   try { return JSON.parse(fs.readFileSync(path.join(__dirname, 'release.json'), 'utf8')); }
   catch { return {}; }
 })();
-const steam = new SteamHost({ appId: APP_ID, demo: !!RELEASE.demo, send: (ch, payload) => win?.webContents.send(ch, payload) });
+const steam = new SteamHost({ appId: APP_ID, demo: !!RELEASE.demo, build: RELEASE.commit ? `${RELEASE.commit}${RELEASE.dirty ? '+' : ''}` : '', send: (ch, payload) => win?.webContents.send(ch, payload) });
 
 /* A package launched by double-click, not through Steam, has no way to reach
    anybody: Steam restarts it properly. Never in the repo or a smoke run, where a

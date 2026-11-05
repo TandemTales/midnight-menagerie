@@ -62,6 +62,14 @@
  * friend. Two machines then build two parties from one seed. So GO carries the
  * rows the host could see, and everybody freezes THOSE. It is the one fact in
  * this protocol that is sent rather than derived, and the lobby is not lockstep.
+ *
+ * ── Nobody goes in on a different build ─────────────────────────────────────
+ *
+ * Lockstep is every machine running the same rules, and a patch changes the rules.
+ * One Trick worth a point more is two boards by the second turn, and the check that
+ * reports it cannot say why. Steam updates in its own time, so "one of us has not
+ * updated yet" is an ordinary evening. Each row names its build and a table that
+ * does not match cannot be ready, which says so before anybody has played a card.
  */
 
 // The engine's own constant, never a literal — `scenes/select.js` generates its
@@ -129,6 +137,7 @@ export class Lobby {
          you brought, so every seat's travels rather than only seat 0's. */
       pack: Array.isArray(o.pack) ? o.pack.slice() : null,
       entry: !!o.entry,
+      build: String(o.build || ''),
       /* Set on a player coming back to an expedition from a save, so two who come
          back to a house nobody is in can work out who opens it. */
       back: o.back || null,
@@ -174,7 +183,12 @@ export class Lobby {
   /** Everyone has chosen a Companion and a Kid, and said they are ready. */
   get allReady() {
     const p = this.players.slice(0, this.cap);
-    return p.length > 0 && p.every(x => x.ready && x.companion && x.kid);
+    return p.length > 0 && !this.differentBuild && p.every(x => x.ready && x.companion && x.kid);
+  }
+
+  /** Somebody up here is on another version of the game. See the header. */
+  get differentBuild() {
+    return this.players.some(p => (p.build || '') !== this.me.build);
   }
 
   /** Is the room full? */
@@ -250,6 +264,7 @@ export class Lobby {
       haunt: (players[0] || {}).haunt | 0,
       freed: ((players[0] || {}).freed || []).slice(),
       entryUnlocked: !!(players[0] || {}).entry,
+      build: (players[0] || {}).build || '',
     };
     this.started = true;
     this._emit('start', this.roster);
@@ -291,7 +306,7 @@ export class Lobby {
       name: this.me.name, ready: this.me.ready,
       haunt: this.me.haunt | 0, freed: this.me.freed || [],
       pack: this.me.pack || null, entry: !!this.me.entry,
-      back: this.me.back || null,
+      back: this.me.back || null, build: this.me.build,
     });
   }
 
@@ -305,7 +320,7 @@ export class Lobby {
           name: m.name || '', ready: !!m.ready,
           haunt: m.haunt | 0, freed: Array.isArray(m.freed) ? m.freed : [],
           pack: Array.isArray(m.pack) ? m.pack : null, entry: !!m.entry,
-          back: m.back || null,
+          back: m.back || null, build: String(m.build || ''),
         });
         this._emit('change');
         break;

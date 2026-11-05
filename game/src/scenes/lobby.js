@@ -51,7 +51,7 @@ import { Save } from '../core/save.js';
 import { KIDS, COMPANIONS } from '../data/schema.js';
 import { MAX_PARTY } from '../combat/engine.js';
 import { loadoutFor } from './select.js';
-import { Run, canChooseEntry } from '../state/run.js';
+import { Run, canChooseEntry, isDemoBuild } from '../state/run.js';
 import { Lobby, seedFromRoom } from '../net/lobby.js';
 import { Session } from '../net/session.js';
 import { ACT, attachSession } from '../net/actions.js';
@@ -195,6 +195,9 @@ function pickableCompanions() {
 }
 const kidName = (slug) =>
   (KIDS.find(k => k.slug === slug) || {}).name || slug || '—';
+
+/** Which game this is, for the lobby to compare. The depot names its commit. */
+const thisBuild = () => `${window.__MM_HOST__?.build || 'dev'}${isDemoBuild() ? ':demo' : ''}`;
 
 export class LobbyScene extends Scene {
   constructor(ctx) {
@@ -481,6 +484,7 @@ export class LobbyScene extends Scene {
     this._lobby = new Lobby({
       transport: this._transport, room, seats: MAX_PARTY,
       back: this._saved ? { seat: net?.seat | 0, run: this._saved.startedAt } : null,
+      build: thisBuild(),
     });
 
     /* Seed the choice so the common case is "press ready". Nothing here is a
@@ -589,6 +593,13 @@ export class LobbyScene extends Scene {
   /** The party has gone in. Either there is a seat with this player's name on it, or there is not. */
   _onLate(roster) {
     if (this._launching) return;
+    if (roster?.build && roster.build !== thisBuild()) {
+      this._paintNotice(
+        'Your friends are on a different version of the game, so you cannot climb in with them yet. '
+        + 'Let Steam finish updating, on whichever of you it is, and come back up.',
+        this._backDownButton());
+      return;
+    }
     const seat = (roster?.ids || []).indexOf(this._transport?.id);
     if (seat >= 0 && roster.seed != null) this._climbBack(roster, seat);
     else this._paintTooLate();
@@ -706,7 +717,8 @@ export class LobbyScene extends Scene {
       plate.appendChild(el('span', 'lo__who kit-plate__name',
         `${companionName(p.companion)} <i>&amp;</i> ${kidName(p.kid)}`
         + (mine ? ' <b>(you)</b>' : '')));
-      plate.appendChild(el('span', 'lo__state kit-plate__epithet', p.ready ? 'ready' : 'choosing…'));
+      plate.appendChild(el('span', 'lo__state kit-plate__epithet',
+        (p.build || '') !== l.me.build ? 'on a different version' : p.ready ? 'ready' : 'choosing…'));
       row.appendChild(plate);
       list.appendChild(row);
     }
@@ -804,12 +816,14 @@ export class LobbyScene extends Scene {
       const enough = players.length >= 2;
       const start = el('button', 'lo__go kit-btn');
       start.innerHTML = `<span>Go in together</span><em>${!enough ? 'waiting for somebody else'
+        : l.differentBuild ? 'everyone needs the same update'
         : !l.allReady ? 'waiting for everyone to be ready' : 'down the ladder and in'}</em>`
         + `<i class="kit-medallion kit-medallion--ornate kit-btn__medal" aria-hidden="true">${GLYPH.onward}</i>`;
       start.type = 'button';
       start.disabled = !(enough && l.allReady);
       start.classList.toggle('is-ready', !start.disabled);
       start.title = !enough ? 'Waiting for somebody else to climb up'
+        : l.differentBuild ? 'Somebody is on a different version of the game. Everyone needs the same update from Steam.'
         : !l.allReady ? 'Waiting for everyone to be ready'
         : 'Down the ladder and into the house';
       start.addEventListener('click', () => {
@@ -819,7 +833,9 @@ export class LobbyScene extends Scene {
       foot.appendChild(start);
     } else {
       foot.appendChild(el('p', 'lo__wait kit-enamel kit-enamel--dark',
-        '<i class="kit-enamel__label">Whoever is first on the list says when to go.</i>'));
+        `<i class="kit-enamel__label">${l.differentBuild
+          ? 'Somebody is on a different version. Everyone needs the same update.'
+          : 'Whoever is first on the list says when to go.'}</i>`));
     }
 
     this._put(wrap, foot);

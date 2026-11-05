@@ -1349,6 +1349,16 @@ try {
     ls[2].setChoice({ kid: 'lena' });
     check(!ls[0].allReady, 'and changing your Kid un-readies you, on everybody\'s screen');
     ls[2].setReady(true);
+    check(ls.every(l => l.allReady), 'and readying again puts it back');
+    const same = ls[1].me.build;
+    ls[1].me.build = 'an older build';
+    ls[1]._announce();
+    check(ls.every(l => l.differentBuild), 'a friend on another build shows on every machine');
+    check(ls.every(l => !l.allReady), 'and a table that does not match cannot be ready, however ready they say they are');
+    ls[1].me.build = same;
+    ls[1]._announce();
+    check(ls.every(l => !l.differentBuild && l.allReady), 'and it clears the moment they update');
+    ls[2].setReady(true);
 
     /* Every client calls `start()` and every client computes the same roster —
        nothing is sent to agree it. `GO` only tells the others to call it too. */

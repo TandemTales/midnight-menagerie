@@ -130,6 +130,40 @@ async def main():
               "sorted peer list, not arrival order",
               f"{a_seats!r} vs {b_seats!r}")
 
+        # A FRIEND WHO HAS NOT UPDATED. Lockstep on two builds splits by the second
+        # turn and no check can say why, so the room says it first and will not go.
+        for page in (A, B):
+            await page.evaluate("() => window.MM.ctx.scenes.current._lobby.setReady(true)")
+        await A.wait_for_timeout(500)
+        who = A if await A.evaluate("() => window.MM.ctx.scenes.current._lobby.isHost") else B
+        other = B if who is A else A
+        was = await other.evaluate("""() => {
+          const l = window.MM.ctx.scenes.current._lobby, was = l.me.build;
+          l.me.build = 'an older build';
+          l._announce();
+          return was;
+        }""")
+        await A.wait_for_timeout(700)
+        told = await who.evaluate("""() => {
+          const go = document.querySelector('.lo__go');
+          return { off: !!go && go.disabled, says: go ? go.textContent : '',
+                   row: [...document.querySelectorAll('.lo__state')].map(n => n.textContent).join('|') };
+        }""")
+        check(told["off"], "the host cannot go in with a friend on another build", told["says"])
+        check("same update" in told["says"], "and the button says why", told["says"])
+        check("different version" in told["row"], "and the friend's row says who", told["row"])
+        await other.evaluate("""(was) => {
+          const l = window.MM.ctx.scenes.current._lobby;
+          l.me.build = was;
+          l._announce();
+        }""", was)
+        await A.wait_for_timeout(500)
+        back = await who.evaluate("() => !document.querySelector('.lo__go').disabled")
+        check(back, "and the moment they update, the button comes back")
+        for page in (A, B):
+            await page.evaluate("() => window.MM.ctx.scenes.current._lobby.setReady(false)")
+        await A.wait_for_timeout(500)
+
         # KEYBOARD FOCUS SURVIVES A WIRE REPAINT. The room is rebuilt from
         # scratch on every lobby message, and a player who had tabbed to
         # "I'm ready" used to be thrown back to the top of the page whenever
