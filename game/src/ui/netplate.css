@@ -36,3 +36,47 @@
   font-size: 14px;
   letter-spacing: .08em;
 }
+/* == ROUND 58 == */
+/* THE PLATE IS A HUNG SIGN. A friend has dropped, and the table should see that somebody meant
+   this: the house's own walnut plaque with its brass lip and rivets, hung on two lengths of
+   chain from the rail above the board, a frayed end of rope in its enamel medallion. In a fight
+   it hangs where it hides no sign, plate or intent (netplate.js finds the spot). Its words and
+   both buttons are the size they always were. */
+.net-plate {
+  top: calc(var(--hud-h, 56px) + clamp(20px, 3.4vh, 34px));
+  width: min(590px, calc(100% - 32px));
+  padding: 13px 22px 15px 72px;
+  gap: 7px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: #f4e6c6;
+  filter: drop-shadow(0 10px 12px rgba(3, 2, 6, .72));
+  isolation: isolate;
+}
+/* the plaque, in its own layer so its slices don't take the plate's padding */
+.net-plate__face {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/r58-variscite/plaque-wide.webp") 62 fill / 30px stretch;
+}
+/* the chains, up to the rail */
+.net-plate__chain {
+  position: absolute; bottom: 100%; width: 9px; height: 44px; margin-bottom: -7px; z-index: -2; pointer-events: none;
+  background: url("../../assets/ui/r58-variscite/chain.webp") center bottom / 9px 30px repeat-y;
+  filter: drop-shadow(1px 2px 1px rgba(0, 0, 0, .8));
+}
+.net-plate__chain--l { left: 16%; }
+.net-plate__chain--r { right: 16%; }
+.net-plate__medal {
+  position: absolute; left: 6px; top: 50%; translate: 0 -50%;
+  width: 60px; height: 60px;
+  display: grid; place-items: center;
+  background: url("../../assets/ui/kit/button.webp") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+}
+.net-plate__medal svg { width: 34px; height: 34px; fill: none; stroke: var(--kit-gold-hi, #e6c98a); stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
+.net-plate__words { text-shadow: 0 1px 0 #000, 0 0 6px rgba(0, 0, 0, .8); }
+.net-plate__acts { justify-content: flex-start; }
+/* == end round 58 == */

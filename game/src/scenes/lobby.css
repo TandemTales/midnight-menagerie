@@ -841,3 +841,96 @@
   text-align: center;
   color: #f1e4c6;
 }
+/* == ROUND 58 == */
+/* THE TREEHOUSE WITH A PARTY. The room's words and things no longer run through each other. The
+   line of explanation is a note on ruled paper pinned under the ribbon, the moon and stars hang
+   either side of it, and the sheet number that was printed beside the password is a rubber
+   stamp on the note. The lookout and the coil that peered out from behind the outer seats come
+   down into the band of wall under the shelf, with the Kids' own pencilled plan of the house and
+   a T-square on a nail. */
+.lo__room { --lo-note-w: clamp(430px, 29vw, 468px); }
+.lo__room .lo-head > .kit-titleblock__note {
+  box-sizing: border-box;
+  top: calc(100% - 3px);
+  width: var(--lo-note-w);
+  margin: 0;
+  padding: 11px 26px 9px 24px;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.16;
+  background: url("../../assets/ui/r58-variscite/note.webp") center / 100% 100% no-repeat;
+  color: #24150a;
+  font-weight: 600;
+  text-shadow: 0 1px 0 rgba(255, 240, 200, .35);
+  rotate: -.35deg;
+  transform-origin: 50% 0;
+}
+.lo__stamp {
+  position: absolute; right: 22px; bottom: 7px;
+  padding: 1px 7px 2px;
+  border: 2px solid currentColor;
+  border-radius: 3px;
+  outline: 1px solid currentColor; outline-offset: 1px;
+  color: #7f1d14;
+  font-family: var(--font-display); font-style: normal; font-weight: 700;
+  font-size: 13px; letter-spacing: .05em;
+  line-height: 1.1; white-space: nowrap;
+  text-shadow: none;
+  opacity: .88;
+  rotate: -3deg;
+}
+.lo__room .lo__code-out { white-space: nowrap; }
+
+/* the charms hang clear of the note: moon and star against its two ends, two stars beyond the casements */
+.lo__room .lo-charm--2 { left: calc(50vw - var(--lo-note-w) / 2 - var(--charm-w) / 2 - 4px); --charm-len: 11vh; }
+.lo__room .lo-charm--3 { left: calc(50vw + var(--lo-note-w) / 2 + var(--charm-w) / 2 + 4px); --charm-len: 12.4vh; }
+.lo__room .lo-charm--1 { left: calc(var(--lo-case-l) - var(--lo-case-w) / 2 - 4.4vw); --charm-len: 13vh; }
+.lo__room .lo-charm--4 { left: calc(var(--lo-case-r) + var(--lo-case-w) / 2 + 4.4vw); --charm-len: 11.4vh; }
+
+/* the things that were cut off by the outer seats, in the wall under the shelf */
+.lo__room .lo-look { display: none; }
+.lo__room .lo-rope {
+  width: clamp(62px, 5.4vw, 86px);
+  top: 63.4vh;
+  right: 7.6vw;
+}
+.lo-wall {
+  position: absolute; z-index: 2; pointer-events: none;
+  background: center / 100% 100% no-repeat;
+}
+.lo-wall--plan {
+  left: 5vw; top: 63.6vh;
+  width: clamp(124px, 10.4vw, 166px); aspect-ratio: 170 / 112;
+  background-image: url("../../assets/ui/r58-variscite/plan.webp");
+  rotate: -1.6deg;
+}
+.lo-wall--square {
+  right: calc(7.6vw + clamp(62px, 5.4vw, 86px) + 3vw); top: 65vh;
+  width: clamp(46px, 3.9vw, 62px); aspect-ratio: 74 / 190;
+  transform-origin: 50% 14%;
+  background-image: url("../../assets/ui/r58-variscite/tsquare.webp");
+  rotate: 86deg;
+  translate: -3.4vw -1.6vh;
+}
+/* a stub of red pencil on a loop of string, off a nail beside the plan */
+.lo-wall--pencil {
+  left: calc(5vw + clamp(124px, 10.4vw, 166px) + 2.6vw); top: 64.4vh;
+  width: clamp(84px, 7vw, 112px); aspect-ratio: 132 / 34;
+  transform-origin: 3% 50%;
+  background-image: url("../../assets/ui/r58-variscite/pencil-red.webp");
+  rotate: 68deg;
+  translate: 0 8px;
+}
+.lo-wall--pencil::before {
+  content: ''; position: absolute; left: -11px; top: 50%; width: 15px; height: 2px;
+  background: #b9a57f; box-shadow: 0 1px 1px rgba(0, 0, 0, .7);
+}
+.lo-wall--pencil::after {
+  content: ''; position: absolute; left: -16px; top: calc(50% - 2px); width: 7px; height: 7px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #e6c98a, #6b4c24 70%);
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, .8);
+}
+/* the way in, while it waits: the plate's letters still read */
+.lo__room .lo__go:disabled { opacity: 1; color: #b9a98d; }
+.lo__room .lo__go:disabled .kit-btn__medal { opacity: .8; }
+/* == end round 58 == */

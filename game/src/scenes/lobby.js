@@ -660,11 +660,20 @@ export class LobbyScene extends Scene {
 
     const head = this._head('lo__head kit-titleblock--compact');
     head.appendChild(el('p', 'lo__code-out kit-cartouche__sub',
-      `<span>${this._room}</span> · seed ${seedFromRoom(this._room)}`));
+      `<span>${this._room}</span>`));
+    /* A note pinned under the ribbon. The number that says which house this password draws
+       is the sheet's own, stamped on the note: the seed, read as something a Kid would keep. */
     head.appendChild(el('p', 'lo__sub kit-titleblock__note',
       `You are ${l.seat + 1} of ${players.length} up here. `
-      + 'Everybody sees the same order, and it is not the order you arrived in.'));
+      + 'Everybody sees the same order, and it is not the order you arrived in.'
+      + `<span class="lo__stamp" title="The seed this password draws">house no. ${seedFromRoom(this._room)}</span>`));
     this._put(wrap, head);
+    /* The Kids' own drawing things, pinned and hung in the wall under the shelf. */
+    for (const thing of ['lo-wall lo-wall--plan', 'lo-wall lo-wall--pencil', 'lo-wall lo-wall--square']) {
+      const it = el('i', thing);
+      it.setAttribute('aria-hidden', 'true');
+      this._put(wrap, it);
+    }
 
     const body = el('main', 'lo-body lo-body--room');
 
