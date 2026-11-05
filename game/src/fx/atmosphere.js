@@ -1441,10 +1441,11 @@ export const REGIONS = {
                        (FLOOR_FRAG's drifts) -- under the hand in a fight, so
                        the maze's frame, the closest to the line, pays nothing;
                        and the prop program does not grow: an urn it draws */
-                    /* (round 59: a stride further in and out to the side, so it stands
-                       whole at the seat's end and not cut by the frame's foot
-                       across it) */
-                    { shape: 81, ahead: 3.4, across: 2.05, tone: 0.95, keep: true, still: true, hand: true, seed: 1.6, scale: 0.40 }] },
+                    /* (round 59: across the walk on the right-hand lawn, which
+                       was bare turf, whole in the frame -- at the seat's end it
+                       was cut by the frame's foot; in a fight it is struck only
+                       if somebody stands across it) */
+                    { shape: 81, ahead: 4.6, across: -2.6, tone: 0.95, keep: true, still: true, seed: 1.6, scale: 0.40 }] },
     /* ...and the moon laid on the walk and the turf in front of you, the
        foreground falling to nine-tenths and not two-fifths */
     /* (round 31 graft, judges 1 and 3: "lift the near path out of black with
@@ -2393,8 +2394,8 @@ const GRAVE_NEAR_YARD = [
      stands; in a fight it is under the hand, so it is not drawn there) */
   /* (`still`: dealt from their own hash, so the yard's yews and its moon
      stay where the deal put them) */
-  { shape: 70, edge: 0.49, z: 2.2, tone: 0.86, scale: 0.95, seed: 2.5, hand: 1, still: true },
-  { shape: 69, edge: 0.385, z: 2.9, tone: 0.90, scale: 0.78, seed: 4.0, hand: 1, still: true },
+  { shape: 70, edge: 0.50, z: 0.8, tone: 0.86, scale: 0.90, seed: 2.5, hand: 1, still: true },
+  { shape: 69, edge: 0.45, z: 3.4, tone: 0.90, scale: 0.78, seed: 4.0, hand: 1, still: true },
   { shape: 70, edge: 0.03, z: -5.0, tone: 0.88 },
   { shape: 73, x:  2.80, z: -4.40, tone: 0.86, free: true },
   /* (round 44: a family's small stones leaning together in the empty lawn
