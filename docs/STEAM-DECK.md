@@ -15,13 +15,16 @@ this repo, not estimated.
 | System | Game side | Steam side |
 |---|---|---|
 | Achievements | **done** — 32 defined, 30 shippable, unlock/persist/toast/reconcile | needs the App ID + the API Names entered on the partner site |
-| Cloud saves | **done** — file-backed storage, versioning, migration, `.bak` recovery, export/import | needs the App ID + an Auto-Cloud path, and a wrapper to supply `storage` |
-| Overlay | **done** — pause, audio suspend, save flush, input freeze | needs a wrapper that forwards Steam's overlay callback |
+| Cloud saves | **done** — file-backed storage, versioning, migration, `.bak` recovery, export/import | the wrapper (`shell/`) supplies `storage` (`shell/saves.js`); needs the App ID + the Auto-Cloud path in `docs/RELEASE.md` |
+| Overlay | **done** — pause, audio suspend, save flush, input freeze | the wrapper forwards it (`shell/main.js`, `overlayWanted`); needs the App ID to test |
 | Deck input | **done** — full controller play, correct glyphs, OSK for text | needs a default controller layout published against the App ID |
 | Deck verification | **display audited and fixed**; input met | needs a build before the other two categories can be tested |
 
 **Nothing here is blocked on design.** Everything outstanding is blocked on the
-App ID, or on the wrapper that does not exist yet (see `HANDOFF.md`).
+App ID. The wrapper exists now: `shell/` is an Electron shell that supplies
+`steam` and `storage`, and `tools/package_release.py` builds its depots (see
+`docs/RELEASE.md`). The status above was written 2026-08-30; this paragraph and
+the two rows it changes, 2026-11-05.
 
 ---
 
