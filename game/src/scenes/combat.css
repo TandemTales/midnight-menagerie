@@ -3875,7 +3875,8 @@
   color: #f1dcb0;
   text-shadow: 0 1px 0 #000, 0 -1px 0 rgba(255, 226, 170, .12), 0 0 6px rgba(0, 0, 0, .7);
 }
-.cb-mates .cb-mate__ready { position: absolute; right: 8px; top: 7px; z-index: 3; }
+/* READY hangs off the plaque's top edge, clear of the name */
+.cb-mates .cb-mate__ready { position: absolute; right: 12px; top: -10px; z-index: 4; }
 .cb-mates .cb-mate__vitals {
   --tube-h: 22px;
   z-index: 2;
@@ -3885,7 +3886,8 @@
 }
 /* the Guard shield hangs on the ring's lower right, where the tube begins */
 .cb-mates .cb-mate__guard { left: -9px; transform: translate(-30%, -46%); z-index: 3; }
-.cb-mates .cb-mate__statuses { position: relative; z-index: 2; margin: 3px -4px -2px -3px; gap: 3px; }
+/* the tags hang from under the medallion, so a friend with three conditions stays two rows */
+.cb-mates .cb-mate__statuses { position: relative; z-index: 2; margin: 6px -5px -2px -40px; gap: 3px; }
 .cb-mates .cb-mate__st {
   --h: 24px;
   min-height: var(--h);

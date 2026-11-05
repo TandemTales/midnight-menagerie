@@ -934,4 +934,8 @@
 /* the way in, while it waits: the plate's letters still read */
 .lo__room .lo__go:disabled { opacity: 1; color: #b9a98d; }
 .lo__room .lo__go:disabled .kit-btn__medal { opacity: .8; }
+/* a board too small to have that band of wall has nowhere to pin them */
+@media (max-width: 1180px), (max-height: 700px) {
+  .lo-wall, .lo__room .lo-rope { display: none; }
+}
 /* == end round 58 == */

@@ -2146,7 +2146,7 @@
   --tray-k: 1;
   bottom: calc(var(--map-foot) + 3px);
   left: 50%; right: auto; translate: -50% 0;
-  width: min(calc(100% - 2 * var(--map-side) - 8px), 1336px);
+  width: min(calc(100% - 2 * var(--map-side) - 24px), 1336px);
   box-sizing: border-box;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
   gap: 0 3px;
@@ -2290,8 +2290,8 @@
 /* DISCOVERIES AND HOW TO PLAY: the same brass card-frames, screwed to the wall of the sheet. */
 .scene--map .story-tools { gap: 6px; }
 .scene--map .story-tools > button {
-  min-height: 38px; height: 38px;
-  padding: 0 17px 2px;
+  min-height: 40px; height: 40px;
+  padding: 0 20px 2px;
   border: 0 solid transparent; border-radius: 0;
   border-image: url("../../assets/ui/r58-variscite/label-b.webp") 18 36 21 36 fill / 7px 13px 8px 13px stretch;
   background: none;
@@ -2319,7 +2319,7 @@
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .72));
   rotate: -.5deg;
 }
-.map-node .mn-votes {
+.map-screen--plan .map-node .mn-votes {
   top: 8px;
   gap: 0;
   padding: 0;
