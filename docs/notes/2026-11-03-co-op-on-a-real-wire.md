@@ -86,6 +86,30 @@ clock, and a hung tab now reports its stack instead of waiting forever. Seats fo
 transport id, not tab order, so tab A is not seat 0. A test wire must keep per-sender
 order, as `tests/coop/latency.py` already says: one timer per message reports false splits.
 
+## What whole-game walks found (2026-11-05)
+
+`tests/coop/demo_walk.py --full --fast --mixed --walked FILE --party ...` walks the full
+game, not the demo, with every seat's Companion and Kid named, and votes at each fork for
+a wing not yet walked. With rendering and animation waits stubbed out it runs a whole
+expedition in under an hour. Two real faults, both in the network, neither seen by any
+suite:
+
+- **A friend going quiet flooded the wire.** When a seat fell silent for `LOST_MS`, every
+  other client forwarded that seat's WHOLE input log, and a loaded machine flaps between
+  lost and heard. Late in an expedition four tabs were sending each other thousands of
+  inputs until one stopped answering. Now each client passes on only the last 64 inputs
+  it has not passed on before (`_forward`), and a gap asks for the seqs it lacks
+  (`RESEND` with `miss`). An old client that names nothing still gets the lot.
+- **Two friends coming back to a save never found each other on two machines.** Each save
+  named the expedition by its own `startedAt`, stamped by its own clock. The host's `GO`
+  now carries one time `at`, and both saves keep it (`roster.at`). `rejoin.py` step 7 is
+  two machines with different clocks.
+
+One harness fault looked like a game fault: the walker clicked the atlas's wing button
+during a scene curtain and reported the screen "not on screen". It waits for the curtain
+now. A four-player walk through ballroom, crypt, graveyard, hedge maze and kennels passed
+37/0 in sync, every ending each player's own Kid's.
+
 ## What has NOT been tested
 
 **Nothing here has run against real Steam, because there is no App ID yet.**
