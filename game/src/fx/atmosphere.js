@@ -383,7 +383,10 @@ export const REGIONS = {
                     /* (graft: the horse a stride in from the frame's edge,
                        so the Deck's 1280 sees it whole -- judge 2) */
                     { shape: 46, ahead: 4.5, across: -1.95, tone: 0.97, keep: true, still: true, seed: 2.2 },
-                    { shape: 47, ahead: 4.2, across: 2.35, tone: 0.97, keep: true, still: true, seed: 4.6 },
+                    /* (round 59: the chest a stride further in, its foot behind
+                       where the Kid's soles fall at any window, so it stands
+                       in the fight too, at her back, rather than being struck) */
+                    { shape: 47, ahead: 7.0, across: 3.1, tone: 0.97, keep: true, still: true, seed: 4.6 },
                     /* ...and the blocks tipped out of the chest onto the
                        rug, a ball rolled clear (87) */
                     { shape: 87, ahead: 3.2, across: 0.75, tone: 0.98, keep: true, still: true, seed: 1.4, hM: 0.50 },
@@ -398,7 +401,10 @@ export const REGIONS = {
                  pool: { ahead: 4.0, across: 0.0, rAlong: 2.6, rAcross: 3.4, k: 2.5, color: '#ff9a50' },
                  /* (graft, judge 1: the fire's glow carried on below the
                     rug, to the frame's foot) */
-                 pool2: { ahead: 2.4, across: 0.0, rAlong: 2.2, rAcross: 3.4, k: 2.0, color: '#f0a060' } },
+                 /* (round 59: the fire's glow laid on the middle of the floor,
+                    between the rug and the hearth, where the boards fell to
+                    black and the chest and the horses stood on nothing) */
+                 pool2: { ahead: 8.4, across: 0.0, rAlong: 3.2, rAcross: 5.0, k: 4.0, color: '#f0a060' } },
     /* (round 37: the cold fill from behind the eye laid a lavender haze on
        the near boards' left -- a third of it reaches the floor) */
     cineFloor: 0.35,
@@ -893,7 +899,10 @@ export const REGIONS = {
                     { shape: 54, edge: 0.33, z: -4.4, tone: 0.95 },
                     { shape: 56, edge: 0.85, z: -4.6, tone: 0.94 },
                     { shape: 56, ahead: 5.2, across: -2.15, tone: 0.97, scale: 0.86, keep: true, still: true, seed: 4.4 },
-                    { shape: 88, ahead: 3.9, across: -1.35, tone: 0.98, keep: true, still: true, seed: 2.6, hM: 0.36 }] },
+                    { shape: 88, ahead: 3.9, across: -1.35, tone: 0.98, keep: true, still: true, seed: 2.6, hM: 0.36 },
+                    /* (round 59: and a pile set down out on the middle floor by
+                       the desk, a footstool's height) */
+                    { shape: 88, ahead: 7.2, across: 1.5, tone: 0.97, keep: true, still: true, seed: 5.3, hM: 0.48 }] },
     crispFloor: true, grain: 0.012,
     /* (graft: CARNELIAN's even warm floor -- the near floor at 0.95, the
        carpet centred and the lamps' light lying over the whole of it and
@@ -903,7 +912,9 @@ export const REGIONS = {
                  /* (and the green lamp's warmth on the boards round the desk
                     and between the cases and the carpet -- the stripe the
                     judges named, and the cold wash behind the desk) */
-                 pool2: { ahead: 7.4, across: 2.0, rAlong: 2.6, rAcross: 3.4, k: 2.6, color: '#eab26a' } },
+                 /* (round 59: across the whole middle of the floor, between the
+                    cases and the carpet -- it was a dark band) */
+                 pool2: { ahead: 7.6, across: 0.6, rAlong: 3.0, rAcross: 4.6, k: 3.0, color: '#eab26a' } },
     /* (graft: the cinematic pair's whole light on the boards again -- at
        half, the boards between the cases and the carpet were the black
        stripe all three judges named) */
@@ -1430,7 +1441,10 @@ export const REGIONS = {
                        (FLOOR_FRAG's drifts) -- under the hand in a fight, so
                        the maze's frame, the closest to the line, pays nothing;
                        and the prop program does not grow: an urn it draws */
-                    { shape: 81, ahead: 2.4, across: 1.30, tone: 0.95, keep: true, still: true, hand: true, seed: 1.6, scale: 0.40 }] },
+                    /* (round 59: a stride further in and out to the side, so it stands
+                       whole at the seat's end and not cut by the frame's foot
+                       across it) */
+                    { shape: 81, ahead: 3.4, across: 2.05, tone: 0.95, keep: true, still: true, hand: true, seed: 1.6, scale: 0.40 }] },
     /* ...and the moon laid on the walk and the turf in front of you, the
        foreground falling to nine-tenths and not two-fifths */
     /* (round 31 graft, judges 1 and 3: "lift the near path out of black with
@@ -1547,7 +1561,12 @@ export const REGIONS = {
                        ledgers, a candle stub and the keys; not the Foyer's
                        marble pier table and its vase: wfServTable) */
                     { shape: 66, edge: 0.15, z: 3.4, tone: 0.94, fore: 1, keep: true, seed: 41.4 },
-                    { shape: 66, edge: 0.85, z: 2.8, tone: 0.94, fore: 1, keep: true, seed: 43.9 }] },
+                    { shape: 66, edge: 0.85, z: 2.8, tone: 0.94, fore: 1, keep: true, seed: 43.9 },
+                    /* (round 59: and the cases pushed in along both sides of the
+                       near boards, beside the runner -- the passage's lower half
+                       was bare plank either side of it) */
+                    { shape: 8, ahead: 4.4, across: -2.35, tone: 0.95, scale: 0.85, keep: true, still: true },
+                    { shape: 8, ahead: 6.2, across: 2.4, tone: 0.94, scale: 0.80, keep: true, still: true }] },
     particles: { mix: [[PTYPE.DUST, 0.78], [PTYPE.PLASTER, 0.16], [PTYPE.WISP, 0.06]],
                  /* (round 28: 0.45, from 1.0 -- a thousand lit motes against
                     the dark end of the passage were "a starfield indoors") */
@@ -2369,6 +2388,13 @@ const GRAVE_NEAR_YARD = [
      centuries in the weather is dark, not the palest thing in the yard:
      tone 0.93 -> 0.55) */
   { shape: 70, edge: 0.30, z: 3.2, tone: 0.55, scale: 1.10, seed: 4.5 },
+  /* (round 59: the footlights -- a kerbed grave and a low stone in the near
+     lawn between the walk and the big stones, all of it below where anybody
+     stands; in a fight it is under the hand, so it is not drawn there) */
+  /* (`still`: dealt from their own hash, so the yard's yews and its moon
+     stay where the deal put them) */
+  { shape: 70, edge: 0.49, z: 2.2, tone: 0.86, scale: 0.95, seed: 2.5, hand: 1, still: true },
+  { shape: 69, edge: 0.385, z: 2.9, tone: 0.90, scale: 0.78, seed: 4.0, hand: 1, still: true },
   { shape: 70, edge: 0.03, z: -5.0, tone: 0.88 },
   { shape: 73, x:  2.80, z: -4.40, tone: 0.86, free: true },
   /* (round 44: a family's small stones leaning together in the empty lawn
@@ -2406,7 +2432,12 @@ export const ROOM_KINDS = {
         /* (round 25: the moon's cold lamp hangs further from a back wall
            this hall has brought nearer, so the paper beside the fire is
            not washed a milky lavender) */
-        lamps: [{ i: 3, z: 0.42, k: 0.70 }],
+        lamps: [{ i: 3, z: 0.42, k: 0.70 },
+                /* (round 59: the lantern standard off the Kid's shoulder --
+                   at her side its foot was on her sole line -- to the right
+                   wing of the fight, where the boards beyond the creatures
+                   were dark) */
+                { i: 2, x: 6.4, z: 0.30 }],
         /* (round 34 GRAFT, GLAUCONITE's -- J1 and J2: "the warmer pool along
            the runner": the torchere's candles laid long and warm down the
            runner between the chairs, where the parlour's lower half was a

@@ -57,7 +57,7 @@ with sync_playwright() as p:
  page.wait_for_function('window.MM && MM.ctx.scenes.current.engine && MM.ctx.scenes.current._opening===false',timeout=60000)
  page.evaluate("async()=>{const {setSetting}=await import('/game/src/ui/settings.js');setSetting(MM.ctx,'reduceMotion',true)}")
  cases=[('bathhouse','Pool Gallery','standard',0),('pumpkin-grounds','Reflecting Pool','standard',0),('study-library','Library','boss',0),('passages','Narrow Corridor','standard',4),
-        ('nursery','Nursery','standard',3),('mansion-graveyard','Yard','standard',4),('foyer','Parlor','boss',0),('crypt','Catacomb','standard',4)]
+        ('nursery','Nursery','standard',3),('graveyard','Yard','standard',4),('foyer','Parlor','boss',0),('crypt','Catacomb','standard',4)]
  if '--boss-only' in sys.argv: cases=[c for c in cases if c[2]=='boss']
  for region,room,tier,count in cases:
   page.evaluate('async p=>{await MM.goto("combat",p)}',dict(seed=42,region=region,room=room,tier=tier,enemies=count,companion='bones'))
