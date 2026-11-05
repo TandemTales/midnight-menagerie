@@ -196,6 +196,16 @@ function pickableCompanions() {
 const kidName = (slug) =>
   (KIDS.find(k => k.slug === slug) || {}).name || slug || '—';
 
+/**
+ * HOW LONG ALONE BEFORE THE ROOM SAYS SOMETHING, in seconds.
+ *
+ * A password is found through Steam's lobby list, which answers with the nearest
+ * few dozen rooms and no way to ask for one by name. So on a busy night, or with a
+ * friend in another region, two people can type the same words and each wait in an
+ * empty treehouse for ever, with nothing to tell them why. An invite always arrives.
+ */
+const ALONE_HINT_S = 15;
+
 /** Which game this is, for the lobby to compare. The depot names its commit. */
 const thisBuild = () => `${window.__MM_HOST__?.build || 'dev'}${isDemoBuild() ? ':demo' : ''}`;
 
@@ -472,6 +482,7 @@ export class LobbyScene extends Scene {
 
   _open(room) {
     this._room = room;
+    this._openedAt = performance.now();
     /* Steam when the desktop shell has it (shell/steam.js turns the password
        into a Steam lobby), the two-tab wire otherwise. Nothing past this line
        knows which. */
@@ -674,9 +685,18 @@ export class LobbyScene extends Scene {
       `<span>${this._room}</span>`));
     /* A note pinned under the ribbon. The number that says which house this password draws
        is the sheet's own, stamped on the note: the seed, read as something a Kid would keep. */
+    const waited = (performance.now() - (this._openedAt || 0)) / 1000;
+    const alone = !!steamNet() && players.length === 1;
+    clearTimeout(this._aloneTimer);
+    if (alone && waited < ALONE_HINT_S) {
+      this._aloneTimer = setTimeout(() => this._paintRoom(), (ALONE_HINT_S - waited) * 1000 + 50);
+    }
     head.appendChild(el('p', 'lo__sub kit-titleblock__note',
-      `You are ${l.seat + 1} of ${players.length} up here. `
-      + 'Everybody sees the same order, and it is not the order you arrived in.'
+      (alone && waited >= ALONE_HINT_S
+        ? 'Nobody yet? The password only reaches players near you on Steam. '
+          + 'Invite a friend always works, or they can join from your name in their friends list.'
+        : `You are ${l.seat + 1} of ${players.length} up here. `
+          + 'Everybody sees the same order, and it is not the order you arrived in.')
       + `<span class="lo__stamp" title="The seed this password draws">house no. ${seedFromRoom(this._room)}</span>`));
     this._put(wrap, head);
     /* The Kids' own drawing things, pinned and hung in the wall under the shelf. */
@@ -911,6 +931,7 @@ export class LobbyScene extends Scene {
   async exit() {
     this._dead = true;
     clearTimeout(this._failTimer);
+    clearTimeout(this._aloneTimer);
     this._dropPortraits();
     this._unpauseStage?.();
     this._unpauseStage = null;
