@@ -15,7 +15,8 @@ would actually go through:
     4. they die again; this time the table plays on, and the turn really advances
     5. they come back to a table that went on without them, and are dealt back in
     6. a stranger with the same password is told, not left waiting
-    7. everybody leaves, and one player opens the house back up from their save
+    7. everybody leaves, and both come back: the lower seat opens the house by itself
+    8. everybody leaves again, and one player opens the house back up from their save
 
 Tabs in ONE browser context share localStorage, so a tab's own save is overwritten
 by the other's. Where a save matters the test hands the scene the snapshot that
@@ -230,16 +231,40 @@ async def main():
         check("already gone into the house" in words, "a stranger is told the party has gone in", words[:90])
         await C.close()
 
-        # ── 7 ── everybody leaves; one player opens the house back up ──────────
-        snap = await host.evaluate("() => { const r = window.MM.ctx.run; r._combatSave(); return r.snapshot(); }")
+        # ── 7 ── everybody leaves; both come back, and nobody has to press anything ──
+        SAVE = "() => { const r = window.MM.ctx.run; r._combatSave(); return r.snapshot(); }"
+        snap = await host.evaluate(SAVE)
         check(bool(snap.get("net", {}).get("roster")), "a co-op save remembers its table")
+        guest_snap = await G3.evaluate(SAVE)
+        check(snap["net"]["roster"]["at"] and snap["net"]["roster"]["at"] == guest_snap["net"]["roster"]["at"],
+              "and both saves name it by the same moment", str(snap["net"]["roster"]["at"]))
+        # Two machines, two clocks: `startedAt` is whatever each one read when the run began.
+        guest_snap["startedAt"] = (snap.get("startedAt") or 0) + 4321
         await host.close()
         await G3.close()
         H2 = await tab("H2", BASE)
-        await H2.evaluate("(p) => window.MM.ctx.scenes.go('lobby', p)", {"room": ROOM, "rejoin": snap})
-        await H2.wait_for_timeout(2500)
-        await H2.evaluate("() => document.querySelector('.lo__open').click()")
-        st = await until(H2, lambda s: s["net"] and s["scene"] == "combat" and s["turn"] >= 1, 90000)
+        G4 = await tab("G4", BASE)
+        await asyncio.gather(*[
+            page.evaluate("(p) => window.MM.ctx.scenes.go('lobby', p)", {"room": ROOM, "rejoin": save})
+            for page, save in ((G4, guest_snap), (H2, snap))
+        ])
+        in_fight = lambda s: s["net"] and s["scene"] == "combat" and s["turn"] >= 1
+        st_h = await until(H2, in_fight, 90000)
+        st_g = await until(G4, in_fight, 90000)
+        check(in_fight(st_h), "the lower seat opens the house without being asked", st_h["scene"])
+        check(in_fight(st_g), "and the other climbs in behind them", st_g["scene"])
+        st_h = await until(H2, lambda s: s["pending"] == 0)
+        st_g = await until(G4, lambda s: s["pending"] == 0)
+        check(st_h["digest"] == st_g["digest"], "onto the same board", f"{st_h['digest']} vs {st_g['digest']}")
+
+        # ── 8 ── everybody leaves; one player opens the house back up ──────────
+        await H2.close()
+        await G4.close()
+        H3 = await tab("H3", BASE)
+        await H3.evaluate("(p) => window.MM.ctx.scenes.go('lobby', p)", {"room": ROOM, "rejoin": snap})
+        await H3.wait_for_timeout(2500)
+        await H3.evaluate("() => document.querySelector('.lo__open').click()")
+        st = await until(H3, in_fight, 90000)
         check(st["net"], "with nobody home, a player can open the house back up from their save", st["scene"])
         check(st["turn"] == now["turn"], "on the turn they left", f"{st['turn']} vs {now['turn']}")
 

@@ -230,8 +230,9 @@ export class Lobby {
    * Called with the host's rows when `LOBBY.GO` lands; see the header for why.
    *
    * @param {object[]} [table] the rows to freeze, in place of this client's own
+   * @param {number} [at] when the host pressed go, the one moment every machine shares
    */
-  start(table = null) {
+  start(table = null, at = null) {
     if (this.roster) return this.roster;
     if (Array.isArray(table) && table.length) {
       this._peers = new Map(table.map(p => [p.id, p]));
@@ -265,6 +266,9 @@ export class Lobby {
       freed: ((players[0] || {}).freed || []).slice(),
       entryUnlocked: !!(players[0] || {}).entry,
       build: (players[0] || {}).build || '',
+      /* What a save calls this expedition. Each machine's own clock says something
+         different, and two friends coming back have to recognise each other's. */
+      at,
     };
     this.started = true;
     this._emit('start', this.roster);
@@ -275,8 +279,9 @@ export class Lobby {
   /** Tell the room to start, and start. Only meaningful from the host. */
   go() {
     const table = this.players.slice(0, this.cap);
-    this._say(LOBBY.GO, { at: Date.now(), players: table });
-    return this.start(table);
+    const at = Date.now();
+    this._say(LOBBY.GO, { at, players: table });
+    return this.start(table, at);
   }
 
   /* ── wire ─────────────────────────────────────────────────────────────── */
@@ -331,7 +336,7 @@ export class Lobby {
         this._announce();
         break;
       case LOBBY.GO:
-        this.start(m.players);
+        this.start(m.players, m.at);
         break;
       case LOBBY.STARTED:
         if (m.to === this.me.id && m.roster) {

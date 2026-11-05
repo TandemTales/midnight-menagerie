@@ -494,7 +494,7 @@ export class LobbyScene extends Scene {
       : new ChannelTransport(room, net?.id || `mm-${Math.random().toString(36).slice(2, 9)}`);
     this._lobby = new Lobby({
       transport: this._transport, room, seats: MAX_PARTY,
-      back: this._saved ? { seat: net?.seat | 0, run: this._saved.startedAt } : null,
+      back: this._saved ? { seat: net?.seat | 0, run: net?.roster?.at ?? this._saved.startedAt } : null,
       build: thisBuild(),
     });
 
