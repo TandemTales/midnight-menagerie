@@ -240,7 +240,7 @@ ROOM_STEP = """([done, pick]) => {
     if (el) { el.click(); return [key, (el.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 44)]; }
   }
   const words = ['continue', 'back to the blueprint', 'pack up', 'leave', 'go on', 'move on', 'onward', 'take ', 'choose a trick',
-                 'begin', 'next', 'walk on', 'carry on', 'on we go', 'go through', 'open the door'];
+                 'begin', 'next', 'walk on', 'carry on', 'on we go', 'go through', 'open the door', 'face it'];
   // A card can be called Leave a Life Behind.
   const all = [...document.querySelectorAll('button, .btn, .rm-go, [role=button], .kit-btn')].filter(seen)
     .filter(b => !b.closest('.rw-fan, .sh-counter, .sh-card, [role=option]'))
@@ -271,9 +271,13 @@ WATCH_ANIM = """async () => {
   };
 }"""
 
-# Everything but the drawing. The composer is the one call that turns a frame into pixels.
+# Everything but the drawing and the waiting. The composer is the one call that turns a frame
+# into pixels. Every beat still runs its code, it just does not hold the screen: a beat waits on
+# whole frames, and four tabs at one frame a second took an hour to replay one long fight.
 FAST_MODE = """async () => {
   const c = window.MM.ctx;
+  const { CombatScene } = await import('/game/src/scenes/combat.js');
+  CombatScene.prototype._wait = () => new Promise(done => setTimeout(done, 0));
   c.stage.composer.render = () => {};
   c.stage.renderer.render = () => {};
   c.stage.renderer.compile = () => {};
@@ -341,7 +345,10 @@ async def main():
                 print(f"  ERROR  {tag} {m.text}", flush=True)
                 if "late-input" in m.text and len(traces) < 3:
                     traces.append(asyncio.ensure_future(trace(tag, m.text)))
-        page.on("pageerror", lambda e: errors.append(f"{tag} {e}"))
+        def threw(e):
+            errors.append(f"{tag} {e}")
+            print(f"  THREW  {tag} {e}\n{getattr(e, 'stack', '')[:600]}", flush=True)
+        page.on("pageerror", threw)
         page.on("console", said)
 
     async with async_playwright() as p:

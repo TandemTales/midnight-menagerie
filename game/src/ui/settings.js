@@ -237,7 +237,7 @@ export async function openSettings(ctx = {}) {
   const entry = document.createElement('div');
   entry.className = 'mm-set__row';
   entry.innerHTML =
-    `<div class="mm-set__label"><span>Seed for the next expedition</span>` +
+    `<div class="mm-set__label"><span>Next expedition</span>` +
     `<span class="mm-set__hint">Leave blank for a random one.</span></div>` +
     `<i class="kit-leader mm-set__lead" aria-hidden="true"></i>`;
   const seedIn = document.createElement('input');

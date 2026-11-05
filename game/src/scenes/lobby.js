@@ -551,6 +551,14 @@ export class LobbyScene extends Scene {
     return back;
   }
 
+  /** The password only finds a room in nearby regions. An invite always arrives. */
+  _inviteButton() {
+    const invite = el('button', 'lo__invite kit-btn kit-btn--quiet', '<span>Invite a friend</span>');
+    invite.type = 'button';
+    invite.addEventListener('click', () => steamNet()?.invite());
+    return invite;
+  }
+
   /** Coming back from a save: nobody has answered yet. */
   _paintBack() {
     /* Nobody home is not a dead end. Whoever opens the house back up plays on,
@@ -562,7 +570,7 @@ export class LobbyScene extends Scene {
     open.addEventListener('click', () => this._openHouseBack());
     this._paintNotice(
       `Looking for your friends with the password “${this._room}”. If they are still in the house, you will climb straight back in.`,
-      this._backDownButton(), open);
+      ...[this._backDownButton(), steamNet()?.invite && this._inviteButton(), open].filter(Boolean));
   }
 
   /**
@@ -817,13 +825,7 @@ export class LobbyScene extends Scene {
     leave.addEventListener('click', () => this.ctx.scenes?.go?.('title', {}));
     foot.appendChild(leave);
 
-    /* The password only finds a room in nearby regions. An invite always arrives. */
-    if (steamNet()?.invite) {
-      const invite = el('button', 'lo__invite kit-btn kit-btn--quiet', '<span>Invite a friend</span>');
-      invite.type = 'button';
-      invite.addEventListener('click', () => steamNet()?.invite());
-      foot.appendChild(invite);
-    }
+    if (steamNet()?.invite) foot.appendChild(this._inviteButton());
 
     /**
      * ONLY THE HOST HAS THIS BUTTON, and that is not the same as the host
