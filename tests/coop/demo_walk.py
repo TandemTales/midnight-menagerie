@@ -280,7 +280,7 @@ FAST_MODE = """async () => {
   CombatScene.prototype._wait = () => new Promise(done => setTimeout(done, 0));
   c.stage.composer.render = () => {};
   c.stage.renderer.render = () => {};
-  c.stage.renderer.compile = () => {};
+  c.stage.renderer.compile = () => new Set();
   c.stage.tierForced = true;
   const { setSetting } = await import('/game/src/ui/settings.js');
   setSetting(c, 'fastMode', true);

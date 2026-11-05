@@ -1,0 +1,68 @@
+{
+  "round": "r59",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r59.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r59.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "rooms",
+      "name": "ROOMS",
+      "rule": "refine",
+      "screens": [
+        "room-graveyard",
+        "room-nursery",
+        "room-hedge",
+        "room-pumpkin",
+        "room-foyer",
+        "room-study",
+        "room-crypt",
+        "room-passages",
+        "room-greenhouse",
+        "room-sleeping",
+        "fight-foyer",
+        "fight-nursery",
+        "fight-graveyard",
+        "fight-party"
+      ],
+      "smallScreens": [
+        "fight-foyer",
+        "fight-nursery",
+        "fight-graveyard",
+        "fight-party"
+      ],
+      "baseline": "BASALT",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "OBSIDIAN",
+          "port": 9591,
+          "angle": "THE WORK LIST IN ORDER: items 1 to 5 exactly as written. Measure where fighters really stand, write the narrowest clearance rule that keeps the grounding test green, then the camera, then light."
+        },
+        {
+          "slot": "b",
+          "code": "CARNELIAN",
+          "port": 9592,
+          "angle": "THE ROOM AS A STAGE SET: a fight stands on a clear apron, with the set dressed around and in front of it like a theatre. Decide each wing's foreground and wings by hand, room by room, as a designer would, rather than one global rule, and make the fight screens win first."
+        },
+        {
+          "slot": "c",
+          "code": "AGATE",
+          "port": 9593,
+          "angle": "THE CAMERA FIRST: start from item 2. Get ceilings and far walls back into every frame and give the floor between wall and hand its own light, then put back the furniture that the better framing makes room for."
+        }
+      ]
+    }
+  ]
+}
