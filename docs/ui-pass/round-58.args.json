@@ -1,0 +1,55 @@
+{
+  "round": "r58",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r55.md",
+    "docs/ui-pass/BRIEF-r56.md",
+    "docs/ui-pass/BRIEF-r58.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r58.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "boards",
+      "name": "BOARDS",
+      "rule": "refine",
+      "screens": [
+        "combat-party",
+        "map-vote",
+        "net-plate",
+        "lobby-party",
+        "shop"
+      ],
+      "baseline": "LARIMAR",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "AMAZONITE",
+          "port": 9581,
+          "angle": "THE PARTY FIRST: start from the fight of four (items 1 and 2) and treat the Kids as the subject of the screen, then carry its plaque language to the toolbar, the plate and the Treehouse."
+        },
+        {
+          "slot": "b",
+          "code": "RHYOLITE",
+          "port": 9582,
+          "angle": "WORK THE LIST IN ORDER: items 1 to 7 exactly as written, finishing each before starting the next."
+        },
+        {
+          "slot": "c",
+          "code": "VARISCITE",
+          "port": 9583,
+          "angle": "THE DRAUGHTSMAN'S TABLE: start from the blueprint (items 3 and 4). Real pencils, a ruler, brass and paper you could pick up, and friends' marks in graphite and chalk, then let the same hand-made objects carry the plates and the Treehouse."
+        }
+      ]
+    }
+  ]
+}
