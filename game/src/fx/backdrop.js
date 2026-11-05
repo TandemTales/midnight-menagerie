@@ -2356,24 +2356,10 @@ export class Backdrop {
       if (it.slab && out.length > n0) out[out.length - 1].slab = 1;
       if (!it.keep && yields(it, out[out.length - 1])) out.pop();
     }
-    // Run after near-piece width/height overrides. Moving in room space
-    // keeps the furniture and its contact/cast shadows together; build()
-    // sorts the finished positions before uploading the instance buffers.
-    if (!pal.noStage) for (const p of out) {
-      if (p.hang || p.arch || p.hand || p.grave || p.slab) continue;
-      const originalZ = p.z;
-      for (let step = 0; step < 100 && onStage(p.x, p.z, p.w, p.y); step++) {
-        const z = Math.max(-room.d + 0.25, p.z - 0.35);
-        if (z === p.z) break;
-        p.z = z;
-        // Moving a near bath/bench back must not put it into a basin.
-        const pool = pal.pool;
-        if (pool && p.z < pool.z0 + 0.5 && p.z > pool.z1 - 0.5 && Math.abs(p.x) < pool.hw + p.w * 0.5) {
-          p.x = (Math.sign(p.x) || 1) * (pool.hw + p.w * 0.5 + 0.5);
-        }
-      }
-      p.stageShift = originalZ - p.z;
-    }
+    /* (round 59: nothing is walked back here any more. A piece is only in the
+       way if somebody stands there, and who does is known in the fight:
+       stageAside. The rule that was here, foot above 42.5% of the screen across
+       the whole width, emptied every near floor in the house.) */
     return out.slice(0, MAX_PROPS);
   }
 
@@ -2544,6 +2530,7 @@ export class Backdrop {
 
     let shadowN = 0;
     let extraHand = null;   // (round 45: SHADOW_EXTRA pools under a piece the hand covers)
+    let extraAside = null;  // (round 59: and under one a fighter may have struck)
     const castOf = this._castOf = [];
     for (let k = 0; k < placed.length; k++) {
       const p = placed[k];
@@ -2667,6 +2654,7 @@ export class Backdrop {
             ss2[j * 2 + 0] = e.w / 0.8; ss2[j * 2 + 1] = e.d / 0.8;
             st2[j] = 10 + e.k;
             if (p.hand) (extraHand || (extraHand = [])).push({ p, j });
+            else (extraAside || (extraAside = [])).push({ p, j });
           }
         }
       }
@@ -2697,6 +2685,17 @@ export class Backdrop {
     for (const e of extraHand || []) {
       const k = placed.indexOf(e.p);
       this._hand.push({ k, w: sc[k * 2], h: sc[k * 2 + 1], si: e.j, sw: ss2[e.j * 2], sh: ss2[e.j * 2 + 1] });
+    }
+    /* (round 59: the floor pieces a fighter may have struck -- stageAside) */
+    this._aside = [];
+    for (let k = 0; k < placed.length; k++) {
+      const p = placed[k];
+      p.aside = 0;
+      if (p.hang || p.arch || p.fixture || p.hand || p.y > 1.0) continue;
+      const si = castOf.indexOf(p);
+      const e = { p, k, w: sc[k * 2], h: sc[k * 2 + 1], si, sw: si >= 0 ? ss2[si * 2] : 0, sh: si >= 0 ? ss2[si * 2 + 1] : 0, extra: [] };
+      for (const x of extraAside || []) if (x.p === p) e.extra.push({ j: x.j, sw: ss2[x.j * 2], sh: ss2[x.j * 2 + 1] });
+      this._aside.push(e);
     }
     this._handCulled = false;
     if (this._actors?.length) this.setActorShadows(this._actors);
@@ -3790,6 +3789,49 @@ export class Backdrop {
     }
     this._propScale.needsUpdate = this._shdScale.needsUpdate = true;
     this._handCulled = on;
+  }
+
+  /** ROUND 59: THE APRON. `boxes` are the fighters on the floor, in fractions of
+   *  the frame: {l, r, t, b} what is drawn of them and their plate, `sole` the
+   *  line their feet stand on. A piece is struck while its picture crosses one
+   *  of them with its foot not clearly behind that sole line, and is put back
+   *  when that stops. Atmosphere#_stageAside says when to ask. */
+  stageAside(boxes, camera) {
+    const A = this._aside || [];
+    if (!A.length) return;
+    const sc = this._propScale.array, ss2 = this._shdScale.array;
+    const v = this._asideV || (this._asideV = new THREE.Vector3());
+    const CLEAR = 0.012;    // a foot this far up the frame from a sole is behind it
+    const EDGE = 0.006;
+    let dirty = false;
+    for (const e of A) {
+      const p = e.p;
+      let off = false;
+      if (boxes.length) {
+        let l = Infinity, r = -Infinity, t = Infinity, b = -Infinity;
+        for (const [ox, oy] of [[-0.5, 0], [0.5, 0], [-0.5, 1], [0.5, 1]]) {
+          v.set(p.x + ox * e.w, p.y + oy * e.h, p.z).project(camera);
+          const sx = (v.x + 1) / 2, sy = (1 - v.y) / 2;
+          if (sx < l) l = sx; if (sx > r) r = sx; if (sy < t) t = sy; if (sy > b) b = sy;
+        }
+        /* (the drawing does not fill its quad: most shapes leave an eighth of
+           the width clear on each side) */
+        const inset = (r - l) * 0.10;
+        for (const B of boxes) {
+          if (r - inset < B.l + EDGE || l + inset > B.r - EDGE) continue;
+          if (b < B.t || t > B.b) continue;
+          if (b <= B.sole - CLEAR) continue;
+          off = true; break;
+        }
+      }
+      if (off === !!p.aside) continue;
+      p.aside = off ? 1 : 0;
+      dirty = true;
+      sc[e.k * 2] = off ? 0 : e.w; sc[e.k * 2 + 1] = off ? 0 : e.h;
+      if (e.si >= 0) { ss2[e.si * 2] = off ? 0 : e.sw; ss2[e.si * 2 + 1] = off ? 0 : e.sh; }
+      for (const x of e.extra) { ss2[x.j * 2] = off ? 0 : x.sw; ss2[x.j * 2 + 1] = off ? 0 : x.sh; }
+    }
+    if (dirty) this._propScale.needsUpdate = this._shdScale.needsUpdate = true;
   }
 
   setActors(list = []) {

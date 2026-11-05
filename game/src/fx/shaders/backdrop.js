@@ -15259,7 +15259,10 @@ void main(){
         float rx = w.x - uRunX;
         float p1 = abs(cY - (0.6 + 0.30*(aY - 6.0) + 0.55*sin(aY*0.42 + 1.1)) + 0.11*sin(w.x*1.9 + w.y*1.3) + 0.06*sin(w.x*4.1 - w.y*2.7)) - 0.34;
         float p2 = abs(cY - (-1.2 - 0.38*(aY - 9.0) + 0.45*sin(aY*0.37 + 4.0)) + 0.11*sin(w.x*1.7 - w.y*1.5 + 2.0) + 0.06*sin(w.x*3.7 + w.y*2.9 + 1.0)) - 0.28;
-        float onP1 = step(4.5, aY)*step(aY, 24.0);
+        /* (round 59: the near path starts among the stones, 12 m out, not at
+           your feet -- its rounded near end was the translucent grey shape on
+           the lawn that both survey-11 judges could not name) */
+        float onP1 = step(12.0, aY)*step(aY, 24.0);
         float onP2 = step(9.0, aY)*step(aY, 26.0);
         float trod = max((1.0 - smoothstep(-aaL, aaL, p1))*onP1, (1.0 - smoothstep(-aaL, aaL, p2))*onP2);
         /* (round 44 graft, the frame budget -- the Graveyard's fight was over
@@ -18845,7 +18848,12 @@ void main(){
     float rkF = mmNoise(w*vec2(0.30, 0.45) + 23.0);
     rkF += 0.014*sin(w.x*13.0 + 2.0*sin(w.y*1.9)) + 0.008*sin(w.x*29.0 - w.y*11.0);
     float rkPx = max(fwidth(rkF), 1e-4);
-    float rank = clamp((rkF - 0.57)/rkPx + 0.5, 0.0, 1.0)*onLawn;
+    /* (round 59: along the lawn's two sides, under the yews, as written --
+       loose in the middle of the near turf a patch of it was a black shape
+       with nothing standing over it to throw it) */
+    vec2 deR = vWorld.xz - uCamera.xz;
+    float cR = abs(deR.x*(-uNearFwd.y) + deR.y*uNearFwd.x);
+    float rank = clamp((rkF - 0.57)/rkPx + 0.5, 0.0, 1.0)*onLawn*smoothstep(4.0, 6.5, cR);
     col = mix(col, albY*litY, clamp(lfK, 0.0, 1.0));
     col *= 1.0 - rank*0.48;
     col = mix(col, col*vec3(0.80, 0.92, 1.12), rank*0.6);

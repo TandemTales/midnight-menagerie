@@ -3634,6 +3634,7 @@ function hashSeed(v) {
    gallery for a reason. */
 const STAGE_BASE = 0.39;
 const STAGE_EYE = 0.72;
+const STANDS = [[0.47, 1.00], [0.513, 1.25], [0.53, 1.50], [0.556, 1.62], [0.62, 2.05]];
 function stageRig(pal) {
   const c = pal.cam, R = pal.room;
   if (!c || !R) return;
@@ -3657,26 +3658,33 @@ function stageRig(pal) {
   const look = ey - hd * Math.tan(pitch);
   const lookA = ey - ((c.y ?? 2.3) - (c.look ?? 2.4));        // the authored pitch, from the new eye
   pal.cam = Object.assign({}, c, { y: ey, look: pal.pool ? look : Math.min(look, lookA) });
-  // The far wall alone cannot guarantee floor under a wide party in a narrow
-  // or angled room. Cast the outer standing positions onto the floor and
-  // gently pitch down until they fit inside the room, including its side walls.
-  // Leave width for resizing to a wide desktop without rebuilding the room.
-  const aspect = Math.max(pal.aspect || 16 / 9, 2);
+  /* WHERE PEOPLE REALLY STAND (round 59). The far wall alone cannot guarantee
+     floor under a wide party in a narrow room, so the rig also casts the outer
+     standing positions onto the floor and pitches down until they land inside
+     the walls. It used to ask that of nx = +-0.96 at an aspect of 2 on a 44vh
+     sole line, a position nobody occupies: a sole line that high exists only
+     for a boss, who leaves the Kid a third of the way in. Narrow rooms answered
+     by tipping down until the vault and the far wall left the frame. STANDS is
+     measured: the sole line of each board at each window, and the widest anyone
+     is from the axis on it, in units of the frame's height -- aspect * |nx|, so
+     it holds at any window. */
   const shifted = pal.trueVert && !['door', 'rail', 'gate'].includes(pal.frame);
   for (let step = 0; step < 100; step++) {
-    const L = lensOf(pal.cam, aspect);
+    const L = lensOf(pal.cam, 1);
     const slope = (ey - pal.cam.look) / hd;
-    const lens = shifted ? lensOf({ ...pal.cam, look: ey }, aspect) : L;
-    const up = 0.12 * tanV - (shifted ? slope : 0); // 44vh: highest supported sole line
+    const lens = shifted ? lensOf({ ...pal.cam, look: ey }, 1) : L;
     let clear = true;
-    for (const nx of [-0.96, 0, 0.96]) {
-      const dx = lens.fx + lens.rx * nx * lens.tanH + lens.ux * up;
-      const dy = lens.fy + lens.uy * up;
-      const dz = lens.fz + lens.rz * nx * lens.tanH + lens.uz * up;
-      const t = -ey / dy, x = ex + dx * t, z = ez + dz * t;
-      if (dy >= 0 || Math.abs(x) > R.w / 2 - 0.20 || z < -R.d + 0.20 || z > 14.8) clear = false;
-      const pool = pal.pool;
-      if (pool && Math.abs(x) < pool.hw + 0.25 && z < pool.z0 + 0.25 && z > pool.z1 - 0.25) clear = false;
+    for (const [sole, across] of STANDS) {
+      const up = (0.5 - sole) * 2 * tanV - (shifted ? slope : 0);
+      for (const nx of [-across, 0, across]) {
+        const dx = lens.fx + lens.rx * nx * lens.tanH + lens.ux * up;
+        const dy = lens.fy + lens.uy * up;
+        const dz = lens.fz + lens.rz * nx * lens.tanH + lens.uz * up;
+        const t = -ey / dy, x = ex + dx * t, z = ez + dz * t;
+        if (dy >= 0 || Math.abs(x) > R.w / 2 - 0.10 || z < -R.d + 0.20 || z > 14.8) clear = false;
+        const pool = pal.pool;
+        if (pool && Math.abs(x) < pool.hw + 0.25 && z < pool.z0 + 0.25 && z > pool.z1 - 0.25) clear = false;
+      }
     }
     if (clear) break;
     const angle = Math.atan(slope) + 0.5 * deg;
@@ -3842,7 +3850,50 @@ export class Atmosphere {
       }
     }
     if (list.length || this._actN) this.backdrop.setActors(list);
+    this._stageAside(dt, list.length > 0);
     this._actN = list.length;
+  }
+
+  /* -- THE APRON (round 59) -------------------------------------------------
+     A room is dressed like a stage set: an upstage row behind the fight, flats
+     in the wings at the frame's edges, low pieces down at the footlights. Which
+     of them is in anybody's way depends on who is on the floor and how wide the
+     window is, so it is measured here and not reserved. A floor piece whose
+     picture crosses a fighter (body or plate) with its foot in FRONT of that
+     fighter's soles is struck for as long as that holds; one whose foot is
+     behind the soles stays, because the fighter then really is in front of it.
+     Boxes are read when the board's shape changes and on a slow clock after it,
+     never on a lunge (.cb-enemy and .cb-hero do not carry the fighting clips'
+     transforms), so a piece does not flicker. */
+  _stageAside(dt, fight) {
+    if (!fight) {
+      if (this._asideSig) { this._asideSig = ''; this.backdrop.stageAside([], null); }
+      return;
+    }
+    const cv = this.ctx.stage?.renderer?.domElement, cam = this.ctx.stage?.camera;
+    if (!cv || !cam) return;
+    const living = '.cb-enemy:not(.is-removed):not(.is-dead)';
+    const sig = `${cv.clientWidth}x${cv.clientHeight}|${document.querySelectorAll(living).length}|${document.querySelectorAll('.cb-hero').length}|${this.backdrop.placed?.length}|${this.roomSeed}`;
+    this._asideT = (this._asideT || 0) - dt;
+    if (sig === this._asideSig && this._asideT > 0) return;
+    this._asideT = sig === this._asideSig ? 1.5 : 0.25;
+    this._asideSig = sig;
+    const cr = cv.getBoundingClientRect();
+    const fx = (v) => (v - cr.left) / cr.width, fy = (v) => (v - cr.top) / cr.height;
+    const boxes = [];
+    for (const el of document.querySelectorAll('.cb-hero')) {
+      const r = el.getBoundingClientRect(), sh = el.querySelector('.pr-shadow')?.getBoundingClientRect();
+      if (r.width < 2 || !sh) continue;
+      boxes.push({ l: fx(r.left), r: fx(r.right), t: fy(r.top), b: fy(sh.bottom), sole: fy(sh.top + sh.height * (0.5 - 5 / 24)) });
+    }
+    for (const el of document.querySelectorAll(living)) {
+      const r = el.getBoundingClientRect(), st = el.querySelector('.cb-enemy__stage')?.getBoundingClientRect();
+      if (r.width < 2) continue;
+      boxes.push({ l: fx(r.left), r: fx(r.right), t: fy(r.top), b: fy(r.bottom), sole: fy(st && st.height > 4 ? st.bottom - st.height * 0.026 : r.bottom) });
+    }
+    const inc = document.querySelector('.cb-incoming:not([hidden])')?.getBoundingClientRect();
+    if (inc && inc.width > 2) boxes.push({ l: fx(inc.left), r: fx(inc.right), t: fy(inc.top), b: fy(inc.bottom), sole: fy(inc.top) });
+    this.backdrop.stageAside(boxes, cam);
   }
 
   init() {
