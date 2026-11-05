@@ -1,3 +1,5 @@
+**Current, 2026-11-05:** Round 58 VARISCITE and its graft are on `dev` (+2.46, 2 of 2; paired 16-0 with 4 same). See [the round](ROUND-r58-2026-11-05.md) and [results](RESULTS-r58.json); round 57 is [here](ROUND-r57-2026-11-03.md). Round 59 is next, by hand-written args. The notes below it are older.
+
 **Paused at the user's request:** Round56 is saved at a safe test boundary. Two builds are complete; the third has completed its initial interactions, queue, text-boundary, resize/removal and normal memorial checks. All owned browsers and servers are stopped. Main remains the validated Round55 build. Resume from [the checkpoint](ROUND-r56-2026-10-29.md), keeping **10% remaining** in reserve. Latest usage check: 18% remaining.
 
 **Timing correction discovered in Round56:** Earlier native ABBA runs retained per-frame caption style queries. See the [protocol erratum](TIMING-ERRATUM-r56.md); raw evidence and functional passes are preserved.

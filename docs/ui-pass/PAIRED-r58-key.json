@@ -1,0 +1,205 @@
+{
+ "graft_vs_variscite": {
+  "key": {
+   "1": {
+    "combat-party": {
+     "graft_is_A": false
+    },
+    "combat-party-1280": {
+     "graft_is_A": true
+    },
+    "map-vote": {
+     "graft_is_A": true
+    },
+    "map-vote-1280": {
+     "graft_is_A": true
+    },
+    "net-plate": {
+     "graft_is_A": true
+    },
+    "net-plate-1280": {
+     "graft_is_A": false
+    },
+    "lobby-party": {
+     "graft_is_A": false
+    },
+    "lobby-party-1280": {
+     "graft_is_A": true
+    },
+    "shop": {
+     "graft_is_A": true
+    },
+    "shop-1280": {
+     "graft_is_A": true
+    }
+   },
+   "2": {
+    "combat-party": {
+     "graft_is_A": false
+    },
+    "combat-party-1280": {
+     "graft_is_A": true
+    },
+    "map-vote": {
+     "graft_is_A": false
+    },
+    "map-vote-1280": {
+     "graft_is_A": true
+    },
+    "net-plate": {
+     "graft_is_A": false
+    },
+    "net-plate-1280": {
+     "graft_is_A": true
+    },
+    "lobby-party": {
+     "graft_is_A": true
+    },
+    "lobby-party-1280": {
+     "graft_is_A": true
+    },
+    "shop": {
+     "graft_is_A": true
+    },
+    "shop-1280": {
+     "graft_is_A": true
+    }
+   }
+  },
+  "picks": {
+   "1": {
+    "combat-party": "B",
+    "combat-party-1280": "A",
+    "map-vote": "A",
+    "map-vote-1280": "A",
+    "net-plate": "A",
+    "net-plate-1280": "B",
+    "lobby-party": "B",
+    "lobby-party-1280": "A",
+    "shop": "same",
+    "shop-1280": "same"
+   },
+   "2": {
+    "shop-1280": "same",
+    "shop": "same",
+    "lobby-party-1280": "A",
+    "lobby-party": "A",
+    "net-plate-1280": "A",
+    "net-plate": "B",
+    "map-vote-1280": "A",
+    "map-vote": "B",
+    "combat-party-1280": "A",
+    "combat-party": "B"
+   }
+  },
+  "decoded": {
+   "combat-party": [
+    "graft",
+    "graft"
+   ],
+   "combat-party-1280": [
+    "graft",
+    "graft"
+   ],
+   "map-vote": [
+    "graft",
+    "graft"
+   ],
+   "map-vote-1280": [
+    "graft",
+    "graft"
+   ],
+   "net-plate": [
+    "graft",
+    "graft"
+   ],
+   "net-plate-1280": [
+    "graft",
+    "graft"
+   ],
+   "lobby-party": [
+    "graft",
+    "graft"
+   ],
+   "lobby-party-1280": [
+    "graft",
+    "graft"
+   ],
+   "shop": [
+    "same",
+    "same"
+   ],
+   "shop-1280": [
+    "same",
+    "same"
+   ]
+  },
+  "total": {
+   "graft": 16,
+   "winner": 0,
+   "same": 4
+  }
+ },
+ "touchup_vs_graft": {
+  "key": {
+   "3": {
+    "combat-party": {
+     "touch_is_A": false
+    },
+    "combat-party-1280": {
+     "touch_is_A": true
+    },
+    "map-vote": {
+     "touch_is_A": false
+    },
+    "map-vote-1280": {
+     "touch_is_A": true
+    },
+    "lobby-party": {
+     "touch_is_A": false
+    },
+    "lobby-party-1280": {
+     "touch_is_A": false
+    }
+   },
+   "4": {
+    "combat-party": {
+     "touch_is_A": true
+    },
+    "combat-party-1280": {
+     "touch_is_A": true
+    },
+    "map-vote": {
+     "touch_is_A": true
+    },
+    "map-vote-1280": {
+     "touch_is_A": true
+    },
+    "lobby-party": {
+     "touch_is_A": true
+    },
+    "lobby-party-1280": {
+     "touch_is_A": false
+    }
+   }
+  },
+  "picks": {
+   "3": {
+    "combat-party": "B",
+    "combat-party-1280": "B",
+    "map-vote": "same",
+    "map-vote-1280": "same",
+    "lobby-party": "B",
+    "lobby-party-1280": "B"
+   },
+   "4": {
+    "lobby-party-1280": "A",
+    "lobby-party": "B",
+    "map-vote-1280": "same",
+    "map-vote": "same",
+    "combat-party-1280": "A",
+    "combat-party": "A"
+   }
+  }
+ }
+}

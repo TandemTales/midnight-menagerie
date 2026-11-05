@@ -1,6 +1,6 @@
-# Midnight Menagerie handoff · November 4, 2026
+# Midnight Menagerie handoff · November 5, 2026
 
-**The demo is ready for Josh's App ID.** Co-op was rebuilt for a real wire on November 3, and on November 4 a party of four walked the whole demo to its ending over a simulated 60-180 ms wire, in step, with no errors. That walk found a game freeze and two faults no suite could see (the notes have them). Rounds 56 and 57 are in, and no blob stands in the demo's wings. All of it is committed and pushed on `dev`. D: must be attached, because it holds the worktrees and evidence.
+**The demo is ready for Josh's App ID.** Co-op was rebuilt for a real wire on November 3, and on November 4 a party of four walked the whole demo to its ending over a simulated 60-180 ms wire, in step, with no errors. That walk found a game freeze and two faults no suite could see (the notes have them). Rounds 56 to 58 are in, and no blob stands in the demo's wings. All of it is committed and pushed on `dev`. D: must be attached, because it holds the worktrees and evidence.
 
 ## Steam demo: where it stands
 
@@ -8,9 +8,9 @@ Read [the co-op notes](docs/notes/2026-11-03-co-op-on-a-real-wire.md) first. It 
 
 **Green on this tree:** the whole battery bar the items below. Shell (fake Steam) 95, net 217, co-op 657, lobby 33, rejoin 25, latency 7 (a whole fight over a simulated 60-180 ms wire with both players acting at once; it fails within four cards with the agreed order off), demo 27, run gate 50/0, and the new `tests/seat-sweep` (all 1,669 playable Tricks and Powers from a non-host seat).
 
-**The walk is not a gate:** `python tests/coop/demo_walk.py 4 <room> --shots <dir>` takes about three hours on software rendering. Run it after any change to rooms, the wire or a chooser. A single fight cannot find what it finds. Last result: 20 of 20, 22 fights, 236 turns compared, 6,132 Tricks, 0 logged errors. It ran before the last commit's toast change and the seat-sweep gate, neither of which touches a fight's rules.
+**The walk is not a gate:** `python tests/coop/demo_walk.py 4 <room> --shots <dir>` takes about three hours on software rendering. Run it after any change to rooms, the wire or a chooser. A single fight cannot find what it finds. Last result, on round 58's tree: 20 of 20, 22 fights, 184 turns compared, 4,718 Tricks, 0 logged errors.
 
-**Known red, all looked at:** `tests/sprites/check.py` (the 7 HALO clips, a standing decision) and `tests/seams/check.py` (4 false positives: the floorplan's own local `Map`'s `run.get`/`run.set`). **Load flakes, green alone:** `tests/enemy-clips` (a clip's hand-back to idle, 984/1 in the battery, 985/0 alone) and `tests/sprites/clips.py` (dig, 26/2 in the battery, 28/0 alone).
+**Known red, all looked at:** `tests/sprites/check.py` (the 7 HALO clips, a standing decision) and `tests/seams/check.py` (4 false positives: the floorplan's own local `Map`'s `run.get`/`run.set`). **Timing flakes:** `tests/enemy-clips` (a clip's hand-back to idle, then a cascade; it fails alone too, not only in the battery, and it did so on the build before round 58: that build failed 2 then passed, round 58 passed then failed 5) and `tests/sprites/clips.py` (dig, 26/2 in the battery, 28/0 alone).
 
 **Depots:** `tools/package_release.py --smoke` and `--demo --smoke` both build and boot on the final tree, with exe icon and version strings. The demo is three painted wings (`DEMO_WINGS`) with its own ending.
 
@@ -20,9 +20,9 @@ Read [the co-op notes](docs/notes/2026-11-03-co-op-on-a-real-wire.md) first. It 
 
 ## The UI loop
 
-**Round 57 JASPER and its graft are in** (2 of 2 judges; 6.52 vs baseline 5.53, no screen reference-fit; the graft won 16 of 20 paired votes, and lost all 4 on rest, where I had darkened the rug as the judges asked, so rest stayed JASPER's). See [the round](docs/ui-pass/ROUND-r57-2026-11-03.md).
+**Round 58 VARISCITE and its graft are in** (2 of 2 judges; 7.11 vs baseline 4.65, no screen reference-fit; the graft won 16 paired votes to 0 with 4 "same", all on the shop, whose change neither judge could see). This was the party's screens: staging, plates, the ballot, the net plate, the lobby. A touch-up on what the paired judges named won nothing and came out. See [the round](docs/ui-pass/ROUND-r58-2026-11-05.md); [round 57](docs/ui-pass/ROUND-r57-2026-11-03.md) is the one before.
 
-**The loop is not needed to ship.** If it resumes, round 58 is next: `docs/ui-pass/round-workflow.js`, a hand-written `round-58.args.json` and brief, worktrees on `D:/UILOOP/`. Codex's `tmp/ui_round_setup.py` cannot cut a round any more: it assumes main equals the last winner, and main now carries co-op work on top. Keep 10% usage in reserve (`get_usage`). One browser/GPU capture at a time. Open from the judges: shop's large dark rules panels, floaters that hang with nothing holding them.
+**The loop is not needed to ship.** If it resumes, round 59 is next: `docs/ui-pass/round-workflow.js`, a hand-written `round-59.args.json` and brief, worktrees on `D:/UILOOP/`. Codex's `tmp/ui_round_setup.py` cannot cut a round any more: it assumes main equals the last winner, and main now carries co-op work on top. Keep 10% usage in reserve (`get_usage`). One browser/GPU capture at a time. Open from the judges: the rear Kid is head and shoulder at 1280, the map toolbar's words dark on brown, pins crowd when three friends choose one door, Lobby cards 1 and 2 touch, and the shop's BUY and price strip merge. The round's page lists the rest.
 
 The entries below are historical.
 
