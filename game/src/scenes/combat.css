@@ -3818,7 +3818,11 @@
 .cb-hero--friend[data-place="1"] .pr-pal,
 .cb-hero--friend[data-place="1"] .pr-palshadow { translate: 24px 18px; }
 .cb-hero--friend[data-place="2"] .pr-pal,
-.cb-hero--friend[data-place="2"] .pr-palshadow { translate: 106px 10px; }
+.cb-hero--friend[data-place="2"] .pr-palshadow { translate: 106px 2px; }
+/* its contact shadow would land on the dog at its feet, one layer down */
+.cb-hero--friend[data-place="2"] .pr-palshadow { opacity: 0; }
+.cb-hero--friend[data-place="0"] .pr-pal,
+.cb-hero--friend[data-place="0"] .pr-palshadow { translate: -4px 9px; }
 /* The Deck's 16:10 has less floor between the plates and the first creature, and more height. */
 @media (max-aspect-ratio: 17/10) {
   .cb-herohost:has(.cb-hero--friend) .cb-hero:not(.cb-hero--friend) { --hero-x: 23.5vw; }
