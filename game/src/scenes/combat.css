@@ -3812,13 +3812,13 @@
   scale: var(--friend-k, .76);
   z-index: var(--friend-z, 1);
 }
-.cb-hero--friend[data-place="0"] { --friend-dx: 9.7vw; --friend-dy: 5.5vh; --friend-k: .82; --friend-z: 2; }
+.cb-hero--friend[data-place="0"] { --friend-dx: 9.7vw; --friend-dy: 5.5vh; --friend-k: .82; }
 .cb-hero--friend[data-place="1"] { --friend-dx: -5.3vw; --friend-dy: 11.4vh; --friend-k: .76; }
-.cb-hero--friend[data-place="2"] { --friend-dx: 5.1vw; --friend-dy: 12.4vh; --friend-k: .74; }
+.cb-hero--friend[data-place="2"] { --friend-dx: 5.1vw; --friend-dy: 12.4vh; --friend-k: .74; --friend-z: 2; }
 .cb-hero--friend[data-place="1"] .pr-pal,
 .cb-hero--friend[data-place="1"] .pr-palshadow { translate: 24px 18px; }
 .cb-hero--friend[data-place="2"] .pr-pal,
-.cb-hero--friend[data-place="2"] .pr-palshadow { translate: 92px 10px; }
+.cb-hero--friend[data-place="2"] .pr-palshadow { translate: 106px 10px; }
 /* The Deck's 16:10 has less floor between the plates and the first creature, and more height. */
 @media (max-aspect-ratio: 17/10) {
   .cb-herohost:has(.cb-hero--friend) .cb-hero:not(.cb-hero--friend) { --hero-x: 23.5vw; }

@@ -1549,4 +1549,5 @@
 .scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid].is-largetext .mm-card__rules { font-size: calc(20 * var(--u) * var(--rules-k, 1)); }
 .scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid].is-text-long .mm-card__rules { font-size: calc(16.5 * var(--u) * var(--rules-k, 1)); }
 .scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid].is-text-xlong .mm-card__rules { font-size: calc(14.5 * var(--u) * var(--rules-k, 1)); }
+.scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid].is-fitted.is-board-fit:not(.is-text-long):not(.is-text-xlong) .mm-card__rules { font-size: calc(max(var(--rules-fit, 19), 19) * var(--u)); }
 /* == end round 58 == */

@@ -902,6 +902,7 @@
   left: 5vw; top: 63.6vh;
   width: clamp(124px, 10.4vw, 166px); aspect-ratio: 170 / 112;
   background-image: url("../../assets/ui/r58-variscite/plan.webp");
+  filter: brightness(.8) saturate(.86);
   rotate: -1.6deg;
 }
 .lo-wall--square {
@@ -918,8 +919,8 @@
   width: clamp(84px, 7vw, 112px); aspect-ratio: 132 / 34;
   transform-origin: 3% 50%;
   background-image: url("../../assets/ui/r58-variscite/pencil-red.webp");
-  rotate: 68deg;
-  translate: 0 8px;
+  rotate: 26deg;
+  translate: 0 6px;
 }
 .lo-wall--pencil::before {
   content: ''; position: absolute; left: -11px; top: 50%; width: 15px; height: 2px;

@@ -2152,7 +2152,7 @@
   gap: 0 3px;
   padding: 0 clamp(14px, 1.5vw, 26px) 19px;
   border: 0; border-radius: 0;
-  background: url("../../assets/ui/r58-variscite/tray.webp") center bottom / 100% 62px no-repeat;
+  background: url("../../assets/ui/r58-variscite/tray.webp") center bottom / 100% calc(100% - 24px) no-repeat;
   box-shadow: none;
   filter: drop-shadow(0 7px 9px rgba(3, 3, 8, .72));
   color: #2a1a0c;

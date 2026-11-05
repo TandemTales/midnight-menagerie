@@ -788,10 +788,10 @@ def leather(name, seed, stops, wear_col):
     edge = smooth(26, 2, prof + fbm(H, W, seed + 5, base=11, octaves=4) * 16)
     wear = np.clip(rub * .8 + edge * .55, 0, 1) * smooth(-.25, .35, mid + big * .5)
     wc = C(wear_col) * (.6 + d[..., None] * .7)
-    rgb = mix(rgb, wc, wear * .5)
+    rgb = mix(rgb, wc, wear * .6)
     # a sweep of lamplight over the upper left, gone by the foot
     pool = np.exp(-(((xx - W * .34) / (W * .6)) ** 2 + ((yy - H * .2) / (H * .62)) ** 2))
-    rgb = rgb * (.74 + pool[..., None] * .5)
+    rgb = rgb * (.9 + pool[..., None] * .62)
     rgb = scratches(rgb, seed + 6, n=46, length=(14, 110), bright=(.9, 1.55), angle=.9)
     # vignette into the frame
     rgb = rgb * (1 - np.exp(-prof / 16)[..., None] * .42)
