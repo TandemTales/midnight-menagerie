@@ -197,18 +197,20 @@ VOTE = """(pick) => {
 ATLAS = """(pick) => {
   const r = window.MM.ctx.run, scene = window.MM.ctx.scenes.current;
   if (!r.pendingWing || r.pendingWing.votes[r.session.seat] !== undefined) return null;
+  // Mid-curtain the button is there and nothing can press it.
+  if (window.MM.ctx.scenes.busy || window.MM.ctx.scenes.currentName !== 'atlas') return null;
+  const ids = r.pendingWing.options.map(o => o.to).sort();
+  const fresh = ids.filter(id => !(window.__walkedWings || []).includes(id));
+  const from = fresh.length ? fresh : ids;
+  const want = from[pick % from.length];
   const go = document.querySelector('.at-go');
   const b = go && go.getBoundingClientRect();
-  if (go && !go.disabled && b.height > 0 && scene.hover && scene.offered.has(scene.hover)) {
+  if (go && !go.disabled && b.height > 0 && scene.hover && scene.offered.has(scene.hover) && from.includes(scene.hover)) {
     const onScreen = b.bottom <= innerHeight && b.top >= 0;
     const hit = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
     go.click();
     return { pressed: scene.hover, onScreen, reachable: !!hit && (hit === go || go.contains(hit)) };
   }
-  const ids = r.pendingWing.options.map(o => o.to).sort();
-  const fresh = ids.filter(id => !(window.__walkedWings || []).includes(id));
-  const from = fresh.length ? fresh : ids;
-  const want = from[pick % from.length];
   const hot = document.querySelector(`.at-hot[data-wing="${want}"]`);
   if (hot) hot.click();
   return { looked: want, of: ids };
