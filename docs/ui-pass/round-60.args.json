@@ -1,0 +1,60 @@
+{
+  "round": "r60",
+  "maxBuilders": 3,
+  "briefs": [
+    "docs/ui-pass/BRIEF-r0.md",
+    "docs/ui-pass/BRIEF-r55.md",
+    "docs/ui-pass/BRIEF-r60.md"
+  ],
+  "rubrics": [
+    "docs/ui-pass/RUBRIC.md",
+    "docs/ui-pass/RUBRIC-r60.md"
+  ],
+  "samples": [
+    "UI/title.png",
+    "UI/mainMenu.png",
+    "UI/selectCompanion.png",
+    "UI/selectKid.png"
+  ],
+  "tracks": [
+    {
+      "key": "boards",
+      "name": "BOARDS",
+      "rule": "refine",
+      "screens": [
+        "atlas",
+        "atlas-house",
+        "shop",
+        "gameover",
+        "reward",
+        "event",
+        "rest",
+        "settings",
+        "hud-late",
+        "map",
+        "clubhouse"
+      ],
+      "baseline": "GALENA",
+      "builders": [
+        {
+          "slot": "a",
+          "code": "CHRYSOPRASE",
+          "port": 9601,
+          "angle": "THE WORK LIST IN ORDER: items 1 to 6 exactly as written. For each board, measure what sits below the fold at 1280x800 and 1600x900 at the current type size, then give that height back from chrome and art, never from reading text."
+        },
+        {
+          "slot": "b",
+          "code": "SCAPOLITE",
+          "port": 9602,
+          "angle": "ONE LAYOUT SYSTEM FOR EVERY BOARD: decide one grid for a board at the larger type (title band, decision area, action bar, how cards size to the space left) and fit every board to it, so shop, reward, gameover, event and rest are one family that shows the whole decision. Then the atlas."
+        },
+        {
+          "slot": "c",
+          "code": "DIOPSIDE",
+          "port": 9603,
+          "angle": "THE ATLAS AS A DRAWN HOUSE: start from item 1 and make the estate plan the strongest screen in the game, the wings' footprints large and inked on a real plate, labels and legend set into the drawing like a surveyor's. Then carry the same hand to the shop and the other boards."
+        }
+      ]
+    }
+  ]
+}
