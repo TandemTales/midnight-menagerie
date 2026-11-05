@@ -2254,7 +2254,8 @@ export class CombatScene extends Scene {
         else this.views.get(ev.actorId)?.shimmer();
         this.ctx.audio?.play?.('combat:block-gain');
         await this._wait(this._d(0.13));
-        if (ev.actorId === this.me.id) this.$pl.classList.remove('is-guarding');
+        // The fight can end, and the scene go, while the shimmer plays.
+        if (ev.actorId === this.me?.id) this.$pl.classList.remove('is-guarding');
         this._renderIncoming(0);
         return;
       }

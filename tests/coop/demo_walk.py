@@ -266,7 +266,7 @@ WATCH_ANIM = """async () => {
       const took = performance.now() - began;
       const t = window.__walkTook = window.__walkTook || {};
       (t[ev.type] = t[ev.type] || [0, 0])[0] += took; t[ev.type][1]++;
-    });
+    }, () => {});
     return out;
   };
 }"""
@@ -311,8 +311,8 @@ PROFILE = """(p) => {
   const was = S.hauntLevelFor;
   S.hauntLevelFor = () => p.haunt;
   Object.assign(d.settings, p.settings);
-  S.save = () => {};
-  S.saveRun = () => {};
+  S.save = () => true;
+  S.saveRun = () => true;
   window.__walkProfile = p;
   return !!was;
 }"""
