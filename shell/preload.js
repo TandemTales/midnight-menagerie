@@ -47,6 +47,12 @@ ipcRenderer.on('mm:notice', (_e, ev) => {
 
 let seq = 0;
 
+/** One call to `shell/saves.js`, as the promise the contract asks for. */
+const save = (op, name, text) => {
+  const r = ipcRenderer.sendSync('mm:save', op, name, text) || { error: 'no answer' };
+  return r.error ? Promise.reject(new Error(r.error)) : Promise.resolve(r.value);
+};
+
 const host = {
   name: 'electron',
   version: process.versions.electron || '',
@@ -91,6 +97,14 @@ const host = {
       return () => invites.delete(cb);
     },
   } : undefined,
+  /** Files, so Steam Cloud can see them. See `saves.js`. */
+  storage: {
+    read: (name) => save('read', String(name)),
+    write: (name, text) => save('write', String(name), String(text)),
+    remove: (name) => save('remove', String(name)),
+    list: () => save('list'),
+    dir: () => ipcRenderer.sendSync('mm:save-dir'),
+  },
   /** Why Steam is not here, for the settings footer and bug reports. */
   steamReason: info.reason || '',
 };

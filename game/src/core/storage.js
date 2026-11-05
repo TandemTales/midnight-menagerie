@@ -44,6 +44,7 @@
 import { Platform } from '../platform/index.js';
 
 const BAK = '.bak';
+const MOVED = 'mm.saves.moved';
 
 /** Slots this game owns. `list()` on a host may return other files; we ignore them. */
 export const SLOTS = ['mm.save.v1', 'mm.run.v1'];
@@ -101,9 +102,33 @@ export class Storage {
       const v = await this._readSlot(name);
       if (v !== null) this.cache.set(name, v);
     }
+    this._moveIn(slots);
     this.opened = true;
     this._wireFlushOnExit();
+    if (this.dirty.size) this._schedule();
     return this;
+  }
+
+  /**
+   * The first launch with files: what this machine played before comes along.
+   *
+   * ONCE, and the old copy is left where it is. Doing this on every launch would bring
+   * a finished run back from the dead: clearing `mm.run.v1` removes the file, and the
+   * next boot would find the file missing and the old copy still there.
+   */
+  _moveIn(slots) {
+    if (this.backend !== 'host' || typeof localStorage === 'undefined') return;
+    try {
+      if (localStorage.getItem(MOVED)) return;
+      for (const name of slots) {
+        const old = localStorage.getItem(name);
+        if (!this.cache.has(name) && old !== null && looksLikeJson(old)) {
+          this.cache.set(name, old);
+          this.dirty.add(name);
+        }
+      }
+      localStorage.setItem(MOVED, '1');
+    } catch { /* a browser store that will not answer has nothing to bring */ }
   }
 
   /** Read one slot, preferring the primary and falling back to the backup. */

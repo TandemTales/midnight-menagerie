@@ -28,6 +28,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { SteamHost } = require('./steam');
+const { SaveFiles } = require('./saves');
 
 const PACKAGED = fs.existsSync(path.join(__dirname, 'game', 'index.html'));
 const ROOT = PACKAGED ? __dirname : path.resolve(__dirname, '..');
@@ -151,6 +152,7 @@ if (!app.requestSingleInstanceLock()) {
   app.whenReady().then(async () => {
     steam.start();
     steam.wire(ipcMain);
+    new SaveFiles(path.join(app.getPath('userData'), 'saves')).wire(ipcMain);
 
     const { port } = await listen(PORT, PORTS_TO_TRY);
     if (port !== PORT) console.warn(`[shell] port ${PORT} busy, using ${port}: this origin has its own save`);

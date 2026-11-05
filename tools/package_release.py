@@ -341,8 +341,11 @@ def main():
     for rel in shell_js:
         copy(REPO / rel, app / pathlib.PurePosixPath(rel).name)
     src_pkg = json.loads((REPO / "shell" / "package.json").read_text(encoding="utf-8"))
-    pkg = {"name": "midnight-menagerie", "productName": PRODUCT, "version": src_pkg.get("version", "0.0.0"),
-           "description": PRODUCT, "private": True, "main": "main.js"}
+    # Electron names %APPDATA%'s folder after this, so it is what keeps a demo's saves out of
+    # the full game's: two apps, two Clouds, one folder would overwrite each other.
+    name = f"{PRODUCT} Demo" if a.demo else PRODUCT
+    pkg = {"name": "midnight-menagerie-demo" if a.demo else "midnight-menagerie", "productName": name,
+           "version": src_pkg.get("version", "0.0.0"), "description": name, "private": True, "main": "main.js"}
     (app / "package.json").write_text(json.dumps(pkg, indent=2) + "\n", encoding="utf-8")
     head = git("rev-parse", "HEAD").decode().strip()
     dirty = bool(git("status", "--porcelain", "--untracked-files=no", "--", "game", "shell").strip())

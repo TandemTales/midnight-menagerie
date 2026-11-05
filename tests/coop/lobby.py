@@ -124,20 +124,19 @@ async def main():
         # ALONE OVER STEAM. A password search only reaches the nearest rooms, so two
         # friends can each wait up here for ever. A fake host, because this is about
         # what the screen says, not the wire.
-        other_ctx = await browser.new_context(viewport={"width": 1400, "height": 900})
-        C = await other_ctx.new_page()
+        alone_browser = await p.chromium.launch(args=["--enable-unsafe-swiftshader"])
+        C = await alone_browser.new_page(viewport={"width": 1400, "height": 900})
         await C.add_init_script("""window.__MM_HOST__ = { name: 'electron', demo: false, build: 'x', net: {
           me: '7656', name: 'Alone', open: () => 't', send: () => true, close() {}, on: () => () => {},
           onNotice: () => () => {}, onInvite: () => () => {}, invite() {} } };""")
         await C.goto(URL.replace("room=", "room=z"), wait_until="load", timeout=45000)
-        await C.wait_for_timeout(3000)
+        await C.wait_for_selector(".kit-titleblock__note", timeout=120000)
         note = lambda: C.evaluate("() => document.querySelector('.kit-titleblock__note')?.textContent || ''")
         check("up here" in await note(), "alone over Steam, the room first says who is here", await note())
         await C.wait_for_timeout(15000)
         said = await note()
         check("Invite a friend" in said, "and after a while it says what always works", said)
-        await other_ctx.close()
-        await A.bring_to_front()
+        await alone_browser.close()
 
         a_seats = await A.evaluate(SEATS)
         b_seats = await B.evaluate(SEATS)

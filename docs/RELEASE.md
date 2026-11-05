@@ -149,13 +149,19 @@ OS Windows, 64-bit; set the build live by hand (`SetLive` is empty).
    blobs). `docs/art/enemy-stills-checklist.md` (regenerate with
    `python tools/enemy_art_checklist.py`) lists every missing one with the
    exact filename and size it wants.
+8. **Steam Cloud**: on the partner site, for each app, Application > Steam Cloud,
+   turn on Auto-Cloud with a byte quota of 10 MB and 10 files, and one root path:
+   Root `WinAppDataRoaming`, Subdirectory `Midnight Menagerie/saves` (the demo's app:
+   `Midnight Menagerie Demo/saves`), Pattern `*`, OS Windows. The Deck runs this Windows
+   build under Proton, so it needs nothing further. Test it with two machines: finish a
+   wing on one, launch on the other.
 
 ## Not done (known gaps, none blocks a first upload)
 
-* The shell supplies no `storage` to the game, so saves are `localStorage` in
-  `%APPDATA%\Midnight Menagerie\` and there is no Steam Cloud yet
-  (`docs/STEAM-DECK.md`). The repo shell's saves live under
-  `midnight-menagerie-shell\`, a different folder.
+* Saves are files in `%APPDATA%\Midnight Menagerie\saves\` (`shell/saves.js`), and a
+  demo's are in `Midnight Menagerie Demo\saves\`. A save from before there were files
+  moves in on the first launch. The repo shell's live under `midnight-menagerie-shell\`.
+  Steam Cloud has never run: it needs the App ID and item 8 above.
 * The Steam overlay is on in a package with an App ID, and it has never run under
   real Steam: it needs one to test. It moves the GPU into the main process
   (`in-process-gpu`), so `--no-steam-overlay`, or `"overlay": false` in
