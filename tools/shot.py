@@ -138,6 +138,11 @@ async def run(a):
             except Exception:
                 print("warn: the frame loop never delivered 20 steady frames", flush=True)
         await page.wait_for_timeout(int(a.wait * 1000))
+        # A board opened with no expedition says so on a ribbon that no player ever sees,
+        # and it sat on the action bar: survey 12's judges marked reward, rest, event and
+        # the shop down for "LEAVE THE ROOM" running under it. Hidden, not removed, so
+        # nothing moves.
+        await page.add_style_tag(content=".rm-mockflag{visibility:hidden!important}")
 
         async def snap(name, full=False):
             path = os.path.join(SHOTS, f"{name}.png")
