@@ -52,7 +52,7 @@
       "floor": 417,
       "arena": "normal",
       "actors": 4,
-      "pieces": 54,
+      "pieces": 60,
       "struck": 0,
       "failures": []
     },
@@ -66,7 +66,7 @@
       "floor": 669,
       "arena": "normal",
       "actors": 4,
-      "pieces": 54,
+      "pieces": 60,
       "struck": 0,
       "failures": []
     },
@@ -80,7 +80,7 @@
       "floor": 394,
       "arena": "normal",
       "actors": 4,
-      "pieces": 54,
+      "pieces": 60,
       "struck": 0,
       "failures": []
     },
@@ -178,8 +178,8 @@
       "floor": 417,
       "arena": "normal",
       "actors": 5,
-      "pieces": 10,
-      "struck": 3,
+      "pieces": 12,
+      "struck": 5,
       "failures": []
     },
     {
@@ -192,8 +192,8 @@
       "floor": 669,
       "arena": "normal",
       "actors": 5,
-      "pieces": 10,
-      "struck": 2,
+      "pieces": 12,
+      "struck": 3,
       "failures": []
     },
     {
@@ -206,12 +206,12 @@
       "floor": 394,
       "arena": "normal",
       "actors": 5,
-      "pieces": 10,
-      "struck": 3,
+      "pieces": 12,
+      "struck": 5,
       "failures": []
     },
     {
-      "room": "foyer",
+      "room": "graveyard",
       "view": "along",
       "viewport": [
         1280,
@@ -220,12 +220,12 @@
       "floor": 417,
       "arena": "normal",
       "actors": 6,
-      "pieces": 29,
-      "struck": 3,
+      "pieces": 54,
+      "struck": 22,
       "failures": []
     },
     {
-      "room": "foyer",
+      "room": "graveyard",
       "view": "along",
       "viewport": [
         1920,
@@ -234,12 +234,12 @@
       "floor": 669,
       "arena": "normal",
       "actors": 6,
-      "pieces": 29,
-      "struck": 0,
+      "pieces": 54,
+      "struck": 8,
       "failures": []
     },
     {
-      "room": "foyer",
+      "room": "graveyard",
       "view": "along",
       "viewport": [
         1024,
@@ -248,8 +248,8 @@
       "floor": 394,
       "arena": "normal",
       "actors": 6,
-      "pieces": 29,
-      "struck": 4,
+      "pieces": 54,
+      "struck": 19,
       "failures": []
     },
     {
@@ -291,7 +291,7 @@
       "arena": "boss",
       "actors": 3,
       "pieces": 34,
-      "struck": 4,
+      "struck": 3,
       "failures": []
     },
     {

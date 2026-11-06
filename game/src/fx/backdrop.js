@@ -2335,6 +2335,12 @@ export class Backdrop {
       /* (round 43 graft: and one whose ledger lies slid off beside it, on the
          side away from the room's middle -- `slab`) */
       if (it.slab && out.length > n0) out[out.length - 1].slab = 1;
+      /* (round 59 graft: a piece that would sit right under a fighter's feet
+         -- its top within `clear` of the frame's height below their shadow --
+         says so, and stageAside strikes it then as well: a chair back peeping
+         up under a Companion's paws reads as the Companion standing on it.
+         Read only where written.) */
+      if (it.clear && out.length > n0) out[out.length - 1].clear = it.clear;
       if (!it.keep && yields(it, out[out.length - 1])) out.pop();
     }
     /* (round 59: nothing is walked back here any more. A piece is only in the
@@ -3800,7 +3806,7 @@ export class Backdrop {
         const inset = (r - l) * 0.10;
         for (const B of boxes) {
           if (r - inset < B.l + EDGE || l + inset > B.r - EDGE) continue;
-          if (b < B.t || t > B.b) continue;
+          if (b < B.t || t > B.b + (p.clear || 0)) continue;
           if (b <= B.sole - CLEAR) continue;
           off = true; break;
         }

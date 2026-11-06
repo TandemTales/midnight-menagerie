@@ -395,7 +395,15 @@ export const REGIONS = {
                        blocks and a ball strayed off the rug toward you; small,
                        for the frame budget: near the eye a quad costs its
                        whole area, and in the fight this one is under the hand) */
-                    { shape: 87, ahead: 2.25, across: -0.55, tone: 0.98, keep: true, still: true, seed: 5.9, hM: 0.32 }] },
+                    { shape: 87, ahead: 2.25, across: -0.55, tone: 0.98, keep: true, still: true, seed: 5.9, hM: 0.32 },
+                    /* ROUND 59 GRAFT (AGATE's): both sides of the near floor
+                       dressed -- a second rocking horse on the near left
+                       boards, the toy chest's twin on the near right, each
+                       whole inside the frame and not cut by its edge. In a
+                       fight they are struck while a fighter stands across
+                       them (stageAside). */
+                    { shape: 46, ahead: 4.7, across: 2.0, tone: 0.96, keep: true, still: true, seed: 6.3 },
+                    { shape: 47, ahead: 3.0, across: -1.45, tone: 0.96, keep: true, still: true, seed: 2.8 }] },
     crispFloor: true, grain: 0.012,
     nearFloor: { fall: 0.80, dye: 1, calm: 0.92, clean: 1, rug: { ahead: 3.6, hw: 1.65, hd: 1.05 }, rugGain: 0.70, rugGul: 0.85,
                  pool: { ahead: 4.0, across: 0.0, rAlong: 2.6, rAcross: 3.4, k: 2.5, color: '#ff9a50' },
@@ -452,7 +460,7 @@ export const REGIONS = {
     /* (round 29: the wing's own shell IS the dormitory now, 8 x 8.4 m --
        the fight is played in it, and a room kind's `room` never reaches
        the wing's main room; the bedroom scales up from it to what it was) */
-    room: { w: 8.0, d: 8.36, h: 4.6, side: 0.04, ceilPattern: 3, wallPad: 4.0, floorOver: 0.4 },
+    room: { w: 8.0, d: 8.36, h: 3.9, side: 0.04, ceilPattern: 3, wallPad: 4.0, floorOver: 0.4 },   // (round 59 graft, AGATE's: 3.9 from 4.6, the chandelier and the ceiling over the arched window in the frame)
     cam: { y: 2.10, z: 6.6, look: 1.95, fov: 41 },
     nookSide: -1,
     deep: '#18162c', mid: '#262238', hi: '#3a3352', accent: '#5e76aa',
@@ -869,7 +877,7 @@ export const REGIONS = {
        on the far wall is several pixels wide and its neighbour a different
        book. */
     arch: 0, floorPattern: 0, subject: 'libraryroom', damask: 0,
-    room: { w: 14, d: 9.5, h: 7.2, side: 0.04, ceilPattern: 3, wallPad: 5.0, floorOver: 0.4 },
+    room: { w: 14, d: 9.5, h: 5.2, side: 0.04, ceilPattern: 3, wallPad: 5.0, floorOver: 0.4 },   // (round 59 graft, AGATE's: 5.2 from 7.2, the gallery, its window and the ceiling over it in the frame)
     cam: { y: 2.20, z: 6.4, look: 2.7, fov: 40 },
     deep: '#1c1319', mid: '#3a2824', hi: '#614534', accent: '#5d849d',
     shaft: '#d9bd92', floorDeep: '#151014', floorMid: '#31211c', ambient: '#1a1217',
@@ -1955,6 +1963,25 @@ export const REGIONS = {
                   a prop quad costs its whole area, and these three were a
                   millisecond of a fight's frame under the hand) */
                { shape: 27, ahead: 3.25, across: 1.85, tone: 0.97, hM: 0.58, keep: true, still: true, seed: 4.5 },
+               /* ROUND 59 GRAFT (AGATE's and OBSIDIAN's): THE PUMPKINS FORWARD
+                  ACROSS THE FLAGS, as survey 10 had them -- carved lanterns and
+                  grey ones set down over the middle and near court at several
+                  depths, the lower left and the centre too, where the flags
+                  between the patch and the hand were bare paving. The nearest
+                  are under the hand in a fight (`hand`); the rest are struck
+                  only while a fighter stands across them (stageAside). */
+               { shape: 27, ahead: 3.4, across: -0.9, tone: 0.97, hM: 0.62, keep: true, still: true, seed: 5.2, hand: true },
+               { shape: 27, ahead: 4.5, across: -1.9, tone: 0.97, hM: 0.80, keep: true, still: true, seed: 6.7, hand: true },
+               { shape: 27, ahead: 4.9, across: 0.6, tone: 0.97, hM: 0.66, keep: true, still: true, seed: 2.9, hand: true },
+               { shape: 27, ahead: 2.9, across: 0.3, tone: 0.97, hM: 0.40, keep: true, still: true, seed: 7.7, hand: true },
+               { shape: 27, ahead: 7.4, across: -1.3, tone: 0.96, hM: 0.64, keep: true, still: true, seed: 6.9 },
+               { shape: 27, ahead: 8.6, across: 1.5, tone: 0.96, hM: 0.70, keep: true, still: true, seed: 2.9 },
+               { shape: 27, ahead: 6.6, across: 0.2, tone: 0.96, hM: 0.52, keep: true, still: true, seed: 1.7 },
+               /* ...and a bale stacked with pumpkins anchoring the near left,
+                  as the one at the right does (OBSIDIAN's) */
+               { shape: 86, ahead: 5.6, across: -3.3, tone: 0.95, keep: true, still: true, seed: 1.9 },
+               { shape: 27, ahead: 5.42, across: -3.20, y: 0.43, tone: 0.96, hM: 0.52, keep: true, still: true, seed: 4.1 },
+               { shape: 27, ahead: 6.3, across: -3.9, tone: 0.95, hM: 0.56, keep: true, still: true, seed: 1.1 },
              ] },
     crispFloor: true, flagK: 4,
     nearFloor: { fall: 0.92, calm: 0.85, clean: 1,
@@ -2267,7 +2294,10 @@ const FOYER_NEAR_HEARTH = [
      parlour's near corners", a PAIR of hall chairs either side of the runner
      as a parlour sets them to the fire, in its green velvet (seeds 2.2 and
      6.7); the stick stand they displace goes to the gallery) */
-  { shape: 63, edge: 0.150, z: 4.8, tone: 0.95, fore: 1, keep: true, scale: 1.1, seed: 2.2 },
+  /* (round 59 graft: the left one keeps the near-left floor under a
+     party's Companion row clear -- struck while it would sit under their
+     paws, `clear`; with one Kid nobody stands over it and it stays) */
+  { shape: 63, edge: 0.150, z: 4.8, tone: 0.95, fore: 1, keep: true, scale: 1.1, seed: 2.2, clear: 0.06 },
   { shape: 65, edge: 0.27, z: 2.6, tone: 0.95, fore: 1, keep: true },
   { shape: 63, edge: 0.855, z: 4.6, tone: 0.95, fore: 1, keep: true, scale: 1.1, seed: 6.7 },
 ];
@@ -2443,7 +2473,12 @@ export const ROOM_KINDS = {
            the runner": the torchere's candles laid long and warm down the
            runner between the chairs, where the parlour's lower half was a
            dark plank field) */
-        nearFloor: { pool: { ahead: 4.6, across: 0.0, rAlong: 3.8, rAcross: 3.0, k: 2.1, color: '#f0a65a' } },
+        /* (round 59 graft, OBSIDIAN's: and the chandelier's pool laid on the
+           middle floor from the doorcase, 12-21 m out -- the boards from the
+           hearth forward to the fight's line, where the Kid stands, so the
+           fighters and the chairs stand on lit boards and not a dark band) */
+        nearFloor: { pool: { ahead: 4.6, across: 0.0, rAlong: 3.8, rAcross: 3.0, k: 2.1, color: '#f0a65a' },
+                     pool2: { ahead: 16.5, across: 0.0, rAlong: 4.6, rAcross: 7.0, k: 4.4, color: '#eaa860' } },
         door: 'case', vantage: { at: 'threshold', back: 2.4, lens: 0.88, dip: 0.30, dy: -0.20 } },
       /* a gallery is long and narrow, so its arcade runs away down both
          sides; it is paved in flags and vaulted bay by bay */
@@ -2616,6 +2651,14 @@ export const ROOM_KINDS = {
           { shape: 76, edge: 0.47, z: -2.6, tone: 0.92, centre: 1, still: true },
           { shape: 74, edge: 0.55, z: -1.2, tone: 0.92, centre: 1, still: true, seed: 2.25, hM: 0.62 },
           { shape: 74, edge: 0.80, z: -1.8, tone: 0.92, centre: 1, still: true, seed: 4.15, hM: 1.60 },
+          /* ROUND 59 GRAFT (OBSIDIAN's): the puddled flags either side of
+             the fountain hold drawn things -- a second potting bench with its
+             pots and its watering can out on the open floor at the left, a
+             wirework stand of pots in three tiers at the right. (Two pieces:
+             the terrace spends the whole of MAX_PROPS, and each one here is a
+             dealt bed lost off the end of the deal.) */
+          { shape: 84, edge: 0.43, z: -5.6, tone: 0.94, centre: 1, still: true, seed: 2.1 },
+          { shape: 76, edge: 0.63, z: -5.2, tone: 0.92, centre: 1, still: true, seed: 5.7 },
         ],
         /* (round 34: 1.0 of the wing's 36 -- the 0.82 of 44 it was judged with) */
         /* (round 34 graft, GLAUCONITE's: from the gallery's near end and not
