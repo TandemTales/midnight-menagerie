@@ -25,19 +25,17 @@ export class MapMarkings {
     this.bar.className = 'map-tools';
     this.bar.setAttribute('role', 'group'); this.bar.setAttribute('aria-label', 'Map pencils and navigation');
     /* Drawn as a pencil tray (scenes/map.css): every word below is live and lettered on its
-       own object, and the small drawings are the graphite a Kid would add to a label. */
+       own object, and the small drawings are the graphite a Kid would add to a label. The
+       actions sit in pairs on one enamel nameplate each (.map-tools__case). */
     const ink = d => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
     this.bar.innerHTML = `<span class="map-tools__title">Our notes</span>
       <button data-tool="pan" aria-pressed="true" title="Move the sheet (V)">${ink('M9 12V4.5a1.6 1.6 0 0 1 3.2 0V11m0-1.4a1.5 1.5 0 0 1 3 0V11m0-.6a1.5 1.5 0 0 1 3 0V12m0-.4a1.4 1.4 0 0 1 2.8 0V15c0 4-2.6 6.5-6.5 6.5-3 0-4.6-1.2-6-3.4L4.2 14c-.9-1.4 1-2.8 2.2-1.6L9 15')}<span>Hand</span></button>
       ${['yellow', 'red', 'green', 'white'].map(c => `<button class="map-pencil map-pencil--${c}" data-tool="${c}" aria-label="${c} marker" aria-pressed="false" title="Draw with the ${c} marker"><i aria-hidden="true"></i><span>${c === 'white' ? 'Chalk' : c}</span></button>`).join('')}
       <button data-tool="erase" aria-pressed="false" title="Erase your strokes (E)">Eraser</button>
-      <button data-action="undo" title="Undo the last drawing or erasure (Ctrl Z)">Undo</button>
-      <button data-action="clear" title="Erase all your marks on this wing; Undo restores them">Clear</button>
+      <span class="map-tools__case"><button data-action="undo" title="Undo the last drawing or erasure (Ctrl Z)">Undo</button><button data-action="clear" title="Erase all your marks on this wing; Undo restores them">Clear</button></span>
       <span class="map-tools__divider"></span>
-      <button data-action="stamp" title="Mark the selected room with an X (M)">${ink('M5 5.5 19 19M18.5 5 5.5 19')}<span>X room</span></button>
-      <button data-action="remove" title="Erase your marks at the selected room (Delete)">Unmark</button>
-      <button data-action="here" title="Return to your current room (0)">${ink('M12 21.5s6.8-6.7 6.8-11.6a6.8 6.8 0 0 0-13.6 0C5.2 14.8 12 21.5 12 21.5ZM12 7.6a2.4 2.4 0 1 0 .01 0')}<span>You are here</span></button>
-      <button data-action="overview" title="See the whole sheet">${ink('M3.5 5.5 9 3.5l6 2 5.5-2v15l-5.5 2-6-2-5.5 2ZM9 3.5v15M15 5.5v15')}<span>Overview</span></button>
+      <span class="map-tools__case"><button data-action="stamp" title="Mark the selected room with an X (M)">${ink('M5 5.5 19 19M18.5 5 5.5 19')}<span>X room</span></button><button data-action="remove" title="Erase your marks at the selected room (Delete)">Unmark</button></span>
+      <span class="map-tools__case"><button data-action="here" title="Return to your current room (0)">${ink('M12 21.5s6.8-6.7 6.8-11.6a6.8 6.8 0 0 0-13.6 0C5.2 14.8 12 21.5 12 21.5ZM12 7.6a2.4 2.4 0 1 0 .01 0')}<span>You are here</span></button><button data-action="overview" title="See the whole sheet">${ink('M3.5 5.5 9 3.5l6 2 5.5-2v15l-5.5 2-6-2-5.5 2ZM9 3.5v15M15 5.5v15')}<span>Overview</span></button></span>
       <button data-action="out" aria-label="Zoom out">−</button>
       <button data-action="in" aria-label="Zoom in">+</button>
       <output class="map-tools__status" aria-live="polite">Drag / scroll · Shift scroll sideways · Ctrl scroll zoom</output>`;

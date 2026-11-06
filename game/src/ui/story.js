@@ -11,6 +11,15 @@ import { Modal } from './modal.js';
 import { mountInvestigation } from './investigation.js';
 
 const CSS=new URL('../scenes/narrative.css',import.meta.url).href;
+/* Round 61 repair 4: each of these is the boards' dark enamel nameplate with one of the Kid
+   board's round enamel buttons seated on its left end (narrative.css .story-tool), its glyph
+   struck in gold. The medallion is drawing only: the button's name is still its word. */
+const TOOL_GLYPH={
+  book:'M2.6 5.1c3.2-1 6.4-.7 8.6.9v14c-2.3-1.5-5.4-1.8-8.6-.9zM21.4 5.1c-3.2-1-6.4-.7-8.6.9v14c2.3-1.5 5.4-1.8 8.6-.9z',
+  ask:'M12 .6c4 0 6.9 2.3 6.9 5.9 0 2.7-1.4 4.1-3.6 5.5-1.5 1-2 1.7-2 3v1.3H9.5v-1.8c0-2.2.9-3.4 2.9-4.7 1.6-1 2.2-1.7 2.2-3 0-1.5-1.1-2.5-2.7-2.5-1.8 0-2.9 1.1-3 3.1H4.8C4.9 3.2 7.7.6 12 .6zM11.5 19.2a2.4 2.4 0 1 1 0 4.8 2.4 2.4 0 0 1 0-4.8z',
+  voice:'M15.8 1.2c3.6 0 6.4 2.8 6.4 6.4v9.6l-2.1-1.8-2.1 1.8-2.1-1.8-2.1 1.8-2.1-1.8-2.3 1.8V7.6c0-3.6 2.8-6.4 6.4-6.4zM6.6 17.6a2.1 2.1 0 1 1 0 4.2 2.1 2.1 0 0 1 0-4.2zm-4.8-1.4a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8z',
+};
+const toolMedal=(b,d)=>{b.classList.add('story-tool');b.insertAdjacentHTML('afterbegin',`<i class="story-tool__medal" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="${d}"/></svg></i>`);return b;};
 export function installStory(ctx) {
   ctx.narrativeRoute=(name,params)=>narrativeRoute(ctx,name,params);
   ctx.scenes.register('narrative',c=>new NarrativeScene(c));
@@ -144,12 +153,12 @@ export function installStory(ctx) {
     await ensureCss(CSS);
     if(ctx.scenes.current!==scene)return;
     toolbar=el('nav','','story-tools');toolbar.setAttribute('aria-label','Story and help');
-    if(name!=='combat'){const b=el('button','Discoveries');b.onclick=openJournal;toolbar.append(b);}
-    const help=el('button','How to play');help.onclick=()=>openScuffleHelp(ctx);toolbar.append(help);
+    if(name!=='combat'){const b=toolMedal(el('button','Discoveries'),TOOL_GLYPH.book);b.onclick=openJournal;toolbar.append(b);}
+    const help=toolMedal(el('button','How to play'),TOOL_GLYPH.ask);help.onclick=()=>openScuffleHelp(ctx);toolbar.append(help);
     if(name==='combat' && ctx.run && ctx.scenes.current.arena==='boss') {
       const r=NARRATIVE_REGIONS[ctx.run.region], u=r && r.barks[0], engine=ctx.scenes.current.engine;
       if(u) {
-        const voice=el('button','Guardian voice');voice.disabled=true;toolbar.append(voice);
+        const voice=toolMedal(el('button','Guardian voice'),TOOL_GLYPH.voice);voice.disabled=true;toolbar.append(voice);
         let enemyMoved=false;
         battleOff=engine.on('phase',ev=>{if(ev.phase==='enemy')enemyMoved=true;if(enemyMoved&&ev.phase==='player')voice.disabled=false;});
         voice.onclick=()=>{
