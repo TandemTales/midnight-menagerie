@@ -1053,3 +1053,5 @@
 .cl-log[open] summary::before { rotate: 0deg; }
 .cl-log summary:hover { filter: drop-shadow(0 4px 5px rgb(0 0 0 / .7)) brightness(1.12); }
 .cl-log summary:focus-visible { outline: 2px solid var(--kit-gold-hi); outline-offset: 3px; }
+.cl-log summary { white-space: nowrap; }
+@media (max-width: 1400px) { .cl-log summary { letter-spacing: .07em; padding-inline: 18px 20px; } }
