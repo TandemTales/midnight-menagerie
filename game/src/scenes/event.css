@@ -1333,3 +1333,17 @@
   -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 9%, rgb(0 0 0 / .85) 60%, rgb(0 0 0 / .45) 88%, transparent 100%);
           mask-image: linear-gradient(180deg, transparent 0, #000 9%, rgb(0 0 0 / .85) 60%, rgb(0 0 0 / .45) 88%, transparent 100%);
 }
+
+/* ROUND 60 GRAFT: every choice's stakes one to a line, a clerk's ledger --
+   RISK on one line, GAIN on the next -- so no value wraps under its own
+   label (choice III's two did) and the three entries stand one height. The
+   leaf takes the height from the lectern's foot behind it, so all three stay
+   on the page with no rail at 1600 and on the Deck. */
+.ev-register .ev-opt__meta {
+  display: grid; grid-template-columns: minmax(0, max-content) minmax(20px, 1fr); grid-auto-flow: row;
+  row-gap: 1px; align-items: baseline;
+}
+.ev-register .ev-opt__meta > .ev-tag { grid-column: 1; min-width: 0; }
+.ev-register .ev-opt__meta::after { grid-column: 2; grid-row: 1 / span 2; align-self: end; margin-bottom: 8px; }
+.scene--event .rm--event .ev-reading-r51 { max-height: calc(100vh - 306px); }
+.scene--event .rm--event .ev-page:has(> .r50-scrollrail:not([hidden])) .ev-reading-r51 { max-height: calc(100vh - 352px); }
