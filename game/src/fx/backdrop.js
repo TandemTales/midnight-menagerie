@@ -1633,28 +1633,9 @@ export class Backdrop {
       };
     }
     const halfW = room.w / 2;
-    /* Reserve visible floor above the highest combat baseline (44vh). Test
-       the full footprint, including near furniture after its authored size
-       overrides, instead of exempting free/hand-placed pieces. */
+    /* (round 59: the stage reservation that stood here -- every floor piece's
+       foot above 42.5% of the frame -- is gone; Backdrop#stageAside) */
     const LS = lensOf(cam, aspect);
-    const portal = ['door', 'rail', 'gate'].includes(pal.frame);
-    const stageLens = pal.trueVert && !portal
-      ? lensOf({ ...cam, look: cam.y }, aspect) : LS;
-    const stageShift = stageLens === LS ? 0 : LS.fy / Math.hypot(LS.fx, LS.fz) / (2 * LS.tanV);
-    const onStage = (px, pz, pw, py = 0.02) => {
-      const L = stageLens, dy = py - L.ey, dz = pz - L.ez;
-      let bottom = -Infinity;
-      for (const ox of [px - pw * 0.5, px + pw * 0.5]) {
-        const dx = ox - L.ex;
-        const d = dx * L.fx + dy * L.fy + dz * L.fz;
-        if (d < 0.3) return true;
-        const sy = 0.5 - 0.5 * (dx * L.ux + dy * L.uy + dz * L.uz) / (d * L.tanV) + stageShift;
-        bottom = Math.max(bottom, sy);
-      }
-      // Include offscreen pieces: a wider window can bring them beside a
-      // fighter without rebuilding the room. Keep the whole depth band clear.
-      return bottom > 0.425;
-    };
     /* THE FURNISHED DEPTH. A layout that spreads its props evenly to the back
        wall spends half of them past the props' own fog (12-30 m from the
        lens) in a room as deep as the Greenhouse: its Palm House, laid out as
