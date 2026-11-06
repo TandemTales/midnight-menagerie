@@ -404,7 +404,10 @@ export class ShopScene extends RoomScene {
     for (const list of [this.$keeps, this.$snacks]) {
       const ems = [...list.querySelectorAll(':scope > .sh-row .sh-row__txt em')];
       if (ems.length < 2) continue;
-      const w = ems.map(e => Math.max(60, Math.min(110, e.textContent.trim().length)));
+      // round 61: a ware's name is set on its own plate over its rule, so a
+      // long name takes its share of the column too
+      const w = ems.map(e => Math.max(60, Math.min(130, e.textContent.trim().length
+        + 2 * (e.parentElement.querySelector('b')?.textContent.trim().length || 0))));
       list.style.gridTemplateColumns = w.map(x => `minmax(var(--ware-min, 96px), ${x}fr)`).join(' ');
     }
 
