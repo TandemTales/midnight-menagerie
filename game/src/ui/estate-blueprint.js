@@ -28,7 +28,7 @@ const PLACEMENT={
   graveyard:P(8,553,0.064,0,'grounds'),
   kennels:P(29,729,0.058,0,'ground'),
   'kitchens-cellars':P(354,405,0.07,90,'ground'),
-  'attic-observatory':P(620,4,0.074,0,'roof'),
+  'attic-observatory':P(652,4,0.074,0,'roof'),
   'study-library':P(540,186,0.074,0,'ground'),
   ballroom:P(514,371,0.08,0,'ground'),
   foyer:P(500,580,0.084,0,'ground'),
