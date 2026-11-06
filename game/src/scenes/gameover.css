@@ -1904,3 +1904,26 @@
   .go-wrap--r60 > .go-stats.kit-stats.kit-stats { height: 62px; padding-block: 3px; }
   .go-wrap--r60 > .go-stats .go-stat.go-stat { column-gap: 5px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 61 REPAIR 3: AT THE DECK'S 1280 THE SEED INSIDE ITS FRAME, THE WING
+   CLEAR OF THE MEDALLION. The seed's plate and its COPY side by side were
+   wider than their half of the ledger's head, so the line crossed the panel's
+   right frame. Now the seed's head is set as Courage's is beside it: SEED with
+   COPY at the end of its line, the plate under it where the gauge is, the note
+   under that where Courage's note is. And "WING 2 · THE NURSERY" stands on the
+   ribbon's own middle line, with the three columns a few pixels lower, so the
+   ledger's crescent medallion has air above it. The words keep their size.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 1400px) {
+  .go-board:has(.go-wrap--r60) > .go-head > .go-kicker { translate: 0 calc(-40% - 5px); }
+  .go-wrap.go-wrap--r60 { padding-top: 7px; }
+  .go-wrap--r60 .go-col > .go-ledger .go-seed {
+    grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "lbl copy" "val val" "hint hint";
+    justify-items: start; align-items: center; row-gap: 2px;
+  }
+  .go-wrap--r60 .go-col > .go-ledger .go-seed__row { display: contents; }
+  .go-wrap--r60 .go-col > .go-ledger .go-seed__val { grid-area: val; }
+  .go-wrap--r60 .go-col > .go-ledger .go-seed__copy { grid-area: copy; justify-self: end; }
+  .go-wrap--r60 .go-col > .go-ledger .go-seed__hint { justify-self: stretch; text-align: left; }
+}
