@@ -1,0 +1,11 @@
+{
+ "settings": {
+  "new_is_A": false
+ },
+ "lobby": {
+  "new_is_A": true
+ },
+ "opening": {
+  "new_is_A": true
+ }
+}
