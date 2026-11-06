@@ -877,7 +877,7 @@ export const REGIONS = {
        on the far wall is several pixels wide and its neighbour a different
        book. */
     arch: 0, floorPattern: 0, subject: 'libraryroom', damask: 0,
-    room: { w: 14, d: 9.5, h: 7.2, side: 0.04, ceilPattern: 3, wallPad: 5.0, floorOver: 0.4 },
+    room: { w: 14, d: 9.5, h: 5.2, side: 0.04, ceilPattern: 3, wallPad: 5.0, floorOver: 0.4 },   // (round 59 graft, AGATE's: 5.2 from 7.2, the gallery, its window and the ceiling over it in the frame)
     cam: { y: 2.20, z: 6.4, look: 2.7, fov: 40 },
     deep: '#1c1319', mid: '#3a2824', hi: '#614534', accent: '#5d849d',
     shaft: '#d9bd92', floorDeep: '#151014', floorMid: '#31211c', ambient: '#1a1217',
