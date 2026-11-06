@@ -2,6 +2,8 @@
 
 **The demo is ready for Josh's App ID.** Co-op was rebuilt for a real wire on November 3, and on November 4 a party of four walked the whole demo to its ending over a simulated 60-180 ms wire, in step, with no errors. That walk found a game freeze and two faults no suite could see (the notes have them). Rounds 56 to 58 are in, and no blob stands in the demo's wings. All of it is committed and pushed on `dev`. D: must be attached, because it holds the worktrees and evidence.
 
+**Later on November 5.** Whole-GAME walks now run in under an hour (`demo_walk.py --full --fast --mixed --walked FILE --party c:k,...`), and they found two network faults the demo walk could not: a quiet friend made every other client re-send that friend's whole expedition (now a 64-input tail plus `RESEND` naming what is missing), and two friends coming back to a save never matched on two machines (the host's `GO` now stamps one time, `roster.at`). Survey 11 LOST its paired test against survey 10; rounds 59 (rooms, merged with its graft) and 60 (boards fitted to the larger type) repair it, and a new survey paired against survey 10 follows. Questions for Josh are in `docs/notes/2026-11-05-questions-for-josh.md`, each with the default already taken.
+
 ## Steam demo: where it stands
 
 Read [the co-op notes](docs/notes/2026-11-03-co-op-on-a-real-wire.md) first. It has what was wrong, what the game does now, and what is unproven.
@@ -19,6 +21,8 @@ Read [the co-op notes](docs/notes/2026-11-03-co-op-on-a-real-wire.md) first. It 
 **Josh's to do:** App ID(s) and depot ids in `shell/steampipe/*.vdf`, the copyright holder, credits, registering the 32 achievements, the store page (`docs/RELEASE.md`). 20 parts and summons in the demo's wings wear a relative's painting (`tools/prep_borrowed_stills.py`, recorded in `docs/art/borrowed-stills.json`); they stay on the checklist as wanted, and a real painting under the same filename wins. `kitchenImp.png` and `pantryPoltergeist.png` in `animations/sprites/enemies/` were restored from the build, because their deliveries had gone missing.
 
 ## The UI loop
+
+**Round 59 CARNELIAN and its graft are in** (`927394fc`, `4d8b8ecc`; 2 of 2 judges, 6.35 vs 4.64; graft paired 17-1-10; `tests/grounding/run.py` green). It put the rooms' furniture back on the floor without anyone standing in it, which was most of survey 11's loss (`docs/ui-pass/SURVEY-2026-11-05.md`). **Round 60 is running**: `round-60.args.json`, `BRIEF-r60.md`, `RUBRIC-r60.md`, baseline GALENA, worktrees `D:/UILOOP/r60`, captures `D:/UILOOP/r60/capture.py`. After it, survey again and pair against survey 10, not against the last round.
 
 **Round 58 VARISCITE and its graft are in** (2 of 2 judges; 7.11 vs baseline 4.65, no screen reference-fit; the graft won 16 paired votes to 0 with 4 "same", all on the shop, whose change neither judge could see). This was the party's screens: staging, plates, the ballot, the net plate, the lobby. A touch-up on what the paired judges named won nothing and came out. See [the round](docs/ui-pass/ROUND-r58-2026-11-05.md); [round 57](docs/ui-pass/ROUND-r57-2026-11-03.md) is the one before.
 
