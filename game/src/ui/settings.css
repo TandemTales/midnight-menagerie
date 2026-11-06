@@ -1186,3 +1186,45 @@
 :root[data-large-text="1"] .mm-set { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
 .mm-set__choices:has(> .mm-set__choice--swatch) { flex-wrap: wrap; row-gap: 12px; }
 .mm-set__choice--swatch.kit-hw-swatch { min-width: 96px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 60 SCAPOLITE: every page of the ledger on the board, at the larger
+   type, at 1600x900 and at the Deck's 1280x800 -- three columns at both, as
+   survey 10's whole three columns were. The frame gives up the room round
+   it (the HUD is dimmed behind the plaque, the floor shows a finger's width
+   under the frame); the colour palette's four plates stand two by two, the
+   disc beside its name, so no plate runs off its page.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mm-modal--kit.mm-settings-modal {
+  --dlg-top: calc(var(--hud-h, 46px) + clamp(26px, 3.6vh, 36px));
+  --dlg-bottom: clamp(8px, 1.4vh, 14px);
+  --dlg-side: clamp(22px, 2.6vw, 56px);
+}
+.mm-settings-modal .mm-modal__dialog { width: min(100%, 92rem); max-height: none; }
+.mm-settings-modal .mm-set.mm-set {
+  grid-template-columns: minmax(0, .98fr) minmax(0, 1.1fr) minmax(0, .96fr);
+  gap: 0 clamp(14px, 1.5vw, 26px);
+}
+.mm-settings-modal .mm-set__choices:has(> .mm-set__choice--swatch) {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px; justify-items: start;
+}
+.mm-settings-modal .mm-set__choice--swatch.kit-hw-swatch {
+  min-width: 0; max-width: 100%; display: flex; flex-direction: row; align-items: center; gap: 8px;
+}
+.mm-settings-modal .mm-set__choice--swatch.kit-hw-swatch > .kit-hw-swatch__disc { flex: none; width: 34px; height: 34px; margin: 0; }
+.mm-settings-modal .mm-set__choice--swatch.kit-hw-swatch > .mm-set__choicename { white-space: nowrap; }
+@media (max-width: 1400px) {
+  .mm-settings-modal .mm-set { --pad-x: 18px; --slot-w: 84px; --read-w: 60px; }
+}
+@media (max-width: 1400px) {
+  /* the Play page's switches are the widest rows on the Deck: its column takes
+     the width the Reading page's air gave, and a long name sets on two lines */
+  .mm-settings-modal .mm-set.mm-set { grid-template-columns: minmax(0, .9fr) minmax(0, 1.12fr) minmax(0, .98fr); }
+  .mm-settings-modal .mm-set__group[data-group="play"] .mm-set__label > span:first-child { white-space: normal; max-width: 9em; line-height: 1.1; }
+}
+@media (max-width: 1400px) {
+  .mm-modal--kit.mm-settings-modal { --dlg-side: 14px; }
+  .mm-settings-modal .mm-set.mm-set { grid-template-columns: minmax(0, .96fr) minmax(0, 1.08fr) minmax(0, .98fr); gap: 0 12px; }
+  .mm-settings-modal .mm-set { --pad-x: 15px; }
+  .mm-settings-modal .mm-modal__body { padding-inline: 8px; }
+}
