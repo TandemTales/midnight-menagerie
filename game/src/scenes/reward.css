@@ -870,3 +870,17 @@
   position: static; translate: none; width: auto; max-width: none;
 }
 .kit-board.rm > .rm-head .rm-where:not(:has(> .rm-sub)) > .rm-room > .rm-room__dot { position: static; opacity: 1; width: auto; overflow: visible; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 61 REPAIR 3: THE REWARD'S PLAQUE TALL ENOUGH FOR ITS TWO LINES.
+   Survey 12: the title cartouche was thin -- the title and the room's name
+   under it filled the plate rail to rail, and ROOM CLEARED rode up over its
+   bottom edge. The reward's plaque is a size taller (its painted ends grow
+   with it), so the title and the room's line have the plate's air between
+   its rails, and the ribbon hangs from the plaque's lowest lip, not across
+   it. The decision area had the height to spare under its rarity rail. (A
+   Big Scare's board, with its Keepsake panel over the Tricks, has none, and
+   keeps the plaque it had.)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.kit-board.rm--reward:not(:has(.rw-keepsake)) > .rm-head > .rm-where.kit-titleblock { --cart-h: clamp(96px, 12.2vh, 110px); }
+.kit-board.rm--reward:not(:has(.rw-keepsake)) > .rm-head .kit-titleblock > .kit-ribbon { margin-top: calc(var(--cart-h) * -.035); }
