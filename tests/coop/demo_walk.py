@@ -431,20 +431,39 @@ async def main():
                 frames.append("(not in JavaScript)")
             return " < ".join(frames)
 
+        async def stuck(what):
+            # Every tab's stack, since the one that hangs is not always the one that was asked.
+            check(False, "every tab keeps answering", what)
+            for i in range(len(pages)):
+                try:
+                    print(f"    {'ABCD'[i]} is in {await asyncio.wait_for(stack_of(cdps[i]), 40)}", flush=True)
+                except Exception as e:
+                    print(f"    {'ABCD'[i]} gave no stack: {e!r}", flush=True)
+            print(f"RESULT: {len(passes)} passed, {len(fails)} failed", flush=True)
+            os._exit(1)
+
         async def watchdog():
             while True:
                 await asyncio.sleep(60)
                 for i, pg in enumerate(pages):
+                    # A page that is navigating throws here; that must not end the watch. On
+                    # 11-05 a walk hung for hours at the Lampworks boss with no word from it.
                     try:
                         await asyncio.wait_for(pg.evaluate("1"), 180)
                     except asyncio.TimeoutError:
-                        check(False, "every tab keeps answering", f"{'ABCD'[i]} stuck in {await stack_of(cdps[i])}")
-                        print(f"RESULT: {len(passes)} passed, {len(fails)} failed", flush=True)
-                        os._exit(1)
+                        await stuck(f"{'ABCD'[i]} stopped answering")
+                    except Exception:
+                        pass
         asyncio.ensure_future(watchdog())
 
+        async def bounded(aw, what):
+            try:
+                return await asyncio.wait_for(aw, 240)
+            except asyncio.TimeoutError:
+                await stuck(f"{what} took over 240 s")
+
         while loop.time() - begin < LIMIT:
-            st = await asyncio.gather(*[pg.evaluate(STATE) for pg in pages])
+            st = await bounded(asyncio.gather(*[pg.evaluate(STATE) for pg in pages]), "reading every tab")
             key = json.dumps([[x["scene"], x["node"], x["turn"], x["log"], x["region"], x["phase"]] for x in st])
             now = loop.time()
             backlog = [(x["animating"] or {}).get("queued") or 0 for x in st]
@@ -563,7 +582,7 @@ async def main():
                         print(f"          {'ABCD'[i]} {scene}: nothing to press {x['buttons']} plate={x['plate']!r}", flush=True)
                         not_before[i] = now + 15
             if acts:
-                await asyncio.gather(*acts, return_exceptions=True)
+                await bounded(asyncio.gather(*acts, return_exceptions=True), "a play or an answer")
             await pages[0].wait_for_timeout(200)
 
         st = await asyncio.gather(*[pg.evaluate(STATE) for pg in pages])
