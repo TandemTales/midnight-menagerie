@@ -4,35 +4,37 @@ import { generateRegionMap, MASTER, regionMeta } from '../state/mapgen.js';
 import { REGION_ORDER, COMPANIONS } from '../data/schema.js';
 import { drawFloorplan } from './blueprint.js';
 
-/* ROUND 60 SCAPOLITE: every playable plan is a long strip (about 3.4 to 1),
-   so the house is laid out as three files of them, wide enough that a wing's
-   own rooms read on the plate -- the grounds on the left, the house's spine
-   down the middle (Greenhouse, Kitchens, Nursery, Foyer), its far rooms and
-   the tower on the right -- and the three spaces below the house under the
-   foundation line. The galleries between them run straight. The empty bay
-   under the Foyer holds the compass and the key. [left, top, maxW, maxH]. */
-const COL=[30,519,1008],ROW=[30,192,354,516,678],FW=410,FH=150;
+/* ROUND 60 (DIOPSIDE): THE HOUSE ON ONE PLATE. Every wing's plan is a long
+   range about 3.4 times as wide as it is deep, and the old placement boxed them
+   into squares and towers, so the Hedge Maze was drawn 98 px wide at 1280 and
+   every nameplate was bigger than the plan it named. Now the plate is three
+   ranges of five above a foundation row, each plan as wide as its range: the
+   grounds down the west side, the house's two ranges east of them with the
+   Foyer at the front door (south, the foot of the sheet), and below stairs the
+   Crypt, the Passages and the Heart. Sections abut: the empty paper each plan
+   sheet carries above and below its footprint is the gutter the surveyor's
+   caption is lettered in. The north-east bay is the sheet's key and rose. */
+export const PLATE={col:[24,500,976],w:448,row:[8,180,352,524,696],h:172,below:896,rule:886,key:[976,8]};
+const P=(c,r,level)=>[PLATE.col[c],r<0?PLATE.below:PLATE.row[r],PLATE.w,PLATE.h,level];
 const PLACEMENT={
-  'hedge-maze':[COL[0],ROW[0],FW,FH,'grounds'],
-  greenhouse:[COL[1],ROW[0],FW,FH,'ground'],
-  lampworks:[COL[2],ROW[0],FW,FH,'tower'],
-  'pumpkin-grounds':[COL[0],ROW[1],FW,FH,'grounds'],
-  'kitchens-cellars':[COL[1],ROW[1],FW,FH,'ground'],
-  bathhouse:[COL[2],ROW[1],FW,FH,'ground'],
-  kennels:[COL[0],ROW[2],FW,FH,'ground'],
-  nursery:[COL[1],ROW[2],FW,FH,'upper'],
-  'sleeping-quarters':[COL[2],ROW[2],FW,FH,'upper'],
-  ballroom:[COL[0],ROW[3],FW,FH,'ground'],
-  foyer:[COL[1],ROW[3],FW,FH,'ground'],
-  'study-library':[COL[2],ROW[3],FW,FH,'ground'],
-  graveyard:[COL[0],ROW[4],FW,FH,'grounds'],
-  'attic-observatory':[COL[2],ROW[4],FW,FH,'roof'],
-  crypt:[COL[0],900,FW,FH,'foundation'],
-  'secret-passages':[COL[1],900,FW,FH,'wall spaces'],
-  heart:[COL[2],900,FW,FH,'below'],
+  'hedge-maze':P(0,0,'grounds'),
+  'pumpkin-grounds':P(0,1,'grounds'),
+  greenhouse:P(0,2,'ground'),
+  kennels:P(0,3,'ground'),
+  graveyard:P(0,4,'grounds'),
+  'attic-observatory':P(1,0,'roof'),
+  nursery:P(1,1,'upper'),
+  'kitchens-cellars':P(1,2,'ground'),
+  ballroom:P(1,3,'ground'),
+  foyer:P(1,4,'ground'),
+  lampworks:P(2,1,'tower'),
+  'sleeping-quarters':P(2,2,'upper'),
+  bathhouse:P(2,3,'ground'),
+  'study-library':P(2,4,'ground'),
+  crypt:P(0,-1,'foundation'),
+  'secret-passages':P(1,-1,'wall spaces'),
+  heart:P(2,-1,'below'),
 };
-/** the empty bay under the Foyer: the compass and the sheet's key (atlas.js) */
-export const SHEET_BAY={x:COL[1],y:ROW[4],w:FW,h:FH};
 const maps=new Map();
 export function surveyMap(slug){
   if(!maps.has(slug))maps.set(slug,generateRegionMap(slug,42,{style:'plan'}));
@@ -98,17 +100,73 @@ export function drawSurveySection(g,slug,width,height,color){
   g.restore();g.save();g.globalCompositeOperation='source-in';g.fillStyle=color;g.fillRect(0,0,width,height);g.restore();
 }
 
+/** A wing's footprint box on the master, in estate px. */
+export function footBox(w){
+  let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  for(const r of (w.outline||[]))for(let i=0;i+1<r.length;i+=2){
+    x0=Math.min(x0,r[i]);x1=Math.max(x1,r[i]);y0=Math.min(y0,r[i+1]);y1=Math.max(y1,r[i+1]);
+  }
+  if(!Number.isFinite(x0))return {x0:w.x,y0:w.y,x1:w.x+w.w,y1:w.y+w.h};
+  return {x0,y0,x1,y1};
+}
+
+/** The plate's own drawing under the seventeen plans (round 60): its neat
+ * line, the galleries that join one range to the next across the gutters, the
+ * garden wall round the grounds, the house's outer wall round its two ranges,
+ * and the foundation rule. Everything here lies in the paper BETWEEN plans. */
 export function drawMasterSurvey(g,wings,color){
   g.clearRect(0,0,MASTER.w,MASTER.h);
-  g.strokeStyle=color;g.fillStyle=color;g.lineWidth=1.8;
-  // The old house's connecting galleries, laid behind the section drawings.
-  const links=[['foyer','ballroom'],['foyer','study-library'],['foyer','nursery'],['nursery','sleeping-quarters'],['nursery','kitchens-cellars'],['kitchens-cellars','greenhouse'],['kitchens-cellars','kennels'],['kitchens-cellars','bathhouse'],['kennels','pumpkin-grounds'],['pumpkin-grounds','hedge-maze'],['ballroom','graveyard']];
-  for(const [a,b] of links){
-    const A=wings.find(w=>w.slug===a),B=wings.find(w=>w.slug===b),ax=A.x+A.w/2,ay=A.y+A.h/2,bx=B.x+B.w/2,by=B.y+B.h/2;
-    g.save();g.globalAlpha=.8;
-    for(const o of [-3,3]){g.beginPath();g.moveTo(ax,ay+o);g.lineTo(bx,ay+o);g.lineTo(bx,by);g.stroke();}g.restore();
+  g.strokeStyle=color;g.fillStyle=color;g.lineCap='round';g.lineJoin='round';
+  const W=Object.fromEntries(wings.map(w=>[w.slug,footBox(w)]));
+  let s=0x5eed1;const rnd=()=>((s=(Math.imul(s,1664525)+1013904223)>>>0)/4294967296);
+  /* a pen line, wandering a hair off true and heavier where the nib loaded */
+  const pen=(x0,y0,x1,y1,wd=1.6)=>{
+    const L=Math.hypot(x1-x0,y1-y0),n=Math.max(2,Math.ceil(L/14)),nx=(y1-y0)/L,ny=-(x1-x0)/L;
+    g.lineWidth=wd*(.85+rnd()*.3);g.beginPath();
+    for(let i=0;i<=n;i++){const t=i/n,o=(rnd()-.5)*.9;g[i?'lineTo':'moveTo'](x0+(x1-x0)*t+nx*o,y0+(y1-y0)*t+ny*o);}
+    g.stroke();
+  };
+  /* the neat line round the whole plate: a heavy rule and a hairline inside */
+  g.globalAlpha=.85;
+  const R=(i,wd)=>{pen(i,i,MASTER.w-i,i,wd);pen(MASTER.w-i,i,MASTER.w-i,MASTER.h-i,wd);pen(MASTER.w-i,MASTER.h-i,i,MASTER.h-i,wd);pen(i,MASTER.h-i,i,i,wd);};
+  R(3,3.2);g.globalAlpha=.6;R(9,1.2);
+  /* a gallery: two walls across the gutter, a door tick at each end */
+  const gallery=(ax,ay,bx,by,half=7)=>{
+    const L=Math.hypot(bx-ax,by-ay);if(L<4)return;
+    const nx=-(by-ay)/L*half,ny=(bx-ax)/L*half;
+    g.globalAlpha=.78;
+    pen(ax+nx,ay+ny,bx+nx,by+ny,1.9);pen(ax-nx,ay-ny,bx-nx,by-ny,1.9);
+    g.globalAlpha=.5;pen(ax+nx*1.6,ay+ny*1.6,ax-nx*1.6,ay-ny*1.6,1.3);pen(bx+nx*1.6,by+ny*1.6,bx-nx*1.6,by-ny*1.6,1.3);
+  };
+  /* across the column gutters, joined at mid-depth of the nearer plan */
+  const across=[['hedge-maze','attic-observatory'],['pumpkin-grounds','nursery'],['nursery','lampworks'],['greenhouse','kitchens-cellars'],['kitchens-cellars','sleeping-quarters'],['kennels','ballroom'],['ballroom','bathhouse'],['graveyard','foyer'],['foyer','study-library'],['crypt','secret-passages'],['secret-passages','heart']];
+  for(const [a,b] of across){
+    const A=W[a],B=W[b],y=(Math.max(A.y0,B.y0)+Math.min(A.y1,B.y1))/2;
+    gallery(A.x1,y,B.x0,y);
   }
-  // the foundation line, under the house's five files of wings
-  g.setLineDash([4,6]);g.beginPath();g.moveTo(35,868);g.lineTo(1413,868);g.stroke();g.setLineDash([]);
-  g.font='18px Georgia';g.textAlign='right';g.fillText('FOUNDATIONS & WALL SPACES — separate survey below the main house',1413,858);
+  /* down the row gutters, at the plans' outer ends, clear of the captions */
+  const down=[['attic-observatory','nursery',.06],['nursery','kitchens-cellars',.94],['kitchens-cellars','ballroom',.06],['ballroom','foyer',.94],['lampworks','sleeping-quarters',.94],['sleeping-quarters','bathhouse',.06],['bathhouse','study-library',.94],['hedge-maze','pumpkin-grounds',.94],['greenhouse','kennels',.06]];
+  for(const [a,b,f] of down){
+    const A=W[a],B=W[b],x=A.x0+(A.x1-A.x0)*f;
+    gallery(x,A.y1,x,B.y0,6);
+  }
+  /* the garden wall round the grounds: a dotted hedge line in the gutter */
+  const gw=[PLATE.col[0]-7,PLATE.row[0]+10,PLATE.col[0]+PLATE.w+6,PLATE.rule-6];
+  g.globalAlpha=.55;g.setLineDash([1.5,7]);g.lineWidth=3;
+  g.strokeRect(gw[0],gw[1],gw[2]-gw[0],gw[3]-gw[1]);g.setLineDash([]);
+  /* the house's outer wall round its two ranges, doubled, a step outside them */
+  const L0=PLATE.col[1]-6,T0=PLATE.row[0]+10,CX=PLATE.col[1]+PLATE.w+12,T1=PLATE.row[1]+10,R0=PLATE.col[2]+PLATE.w+6,B0=PLATE.rule-6;
+  const house=[[L0,T0,-1,-1],[CX,T0,1,-1],[CX,T1,1,-1],[R0,T1,1,-1],[R0,B0,1,1],[L0,B0,-1,1]];
+  g.globalAlpha=.42;
+  for(const o of [0,5]){
+    for(let i=0;i<house.length;i++){
+      const a=house[i],b=house[(i+1)%house.length];
+      pen(a[0]+a[2]*o,a[1]+a[3]*o,b[0]+b[2]*o,b[1]+b[3]*o,1.4);
+    }
+  }
+  /* the foundation rule: the ground line, doubled and broken, with the stair
+     down from the Foyer drawn through it */
+  g.globalAlpha=.7;g.setLineDash([14,6,3,6]);g.lineWidth=2;
+  g.beginPath();g.moveTo(18,PLATE.rule);g.lineTo(MASTER.w-18,PLATE.rule);g.stroke();
+  g.lineWidth=1;g.beginPath();g.moveTo(18,PLATE.rule+5);g.lineTo(MASTER.w-18,PLATE.rule+5);g.stroke();g.setLineDash([]);
 }
