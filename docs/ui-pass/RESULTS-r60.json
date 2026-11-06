@@ -1,0 +1,2092 @@
+{
+ "boards": {
+  "track": "BOARDS",
+  "rule": "refine",
+  "winner": "SCAPOLITE",
+  "winnerHow": "2 of 2 judges",
+  "screenWinners": {
+   "atlas": "DIOPSIDE",
+   "atlas-house": "DIOPSIDE",
+   "shop": "SCAPOLITE",
+   "gameover": "SCAPOLITE",
+   "reward": "SCAPOLITE",
+   "event": "SCAPOLITE",
+   "rest": "SCAPOLITE",
+   "settings": "DIOPSIDE",
+   "hud-late": "SCAPOLITE",
+   "map": "SCAPOLITE",
+   "clubhouse": "DIOPSIDE"
+  },
+  "screenHow": {
+   "atlas": "2 of 2 judges",
+   "atlas-house": "2 of 2 judges",
+   "shop": "2 of 2 judges",
+   "gameover": "2 of 2 judges",
+   "reward": "2 of 2 judges",
+   "event": "2 of 2 judges",
+   "rest": "2 of 2 judges",
+   "settings": "2 of 2 judges",
+   "hud-late": "2 of 2 judges",
+   "map": "2 of 2 judges",
+   "clubhouse": "2 of 2 judges"
+  },
+  "summary": [
+   {
+    "code": "SCAPOLITE",
+    "per": [
+     {
+      "screen": "atlas",
+      "mean": 6,
+      "fits": false
+     },
+     {
+      "screen": "atlas-house",
+      "mean": 6.25,
+      "fits": false
+     },
+     {
+      "screen": "shop",
+      "mean": 7,
+      "fits": false
+     },
+     {
+      "screen": "gameover",
+      "mean": 7,
+      "fits": false
+     },
+     {
+      "screen": "reward",
+      "mean": 7.25,
+      "fits": false
+     },
+     {
+      "screen": "event",
+      "mean": 7.25,
+      "fits": false
+     },
+     {
+      "screen": "rest",
+      "mean": 7,
+      "fits": false
+     },
+     {
+      "screen": "settings",
+      "mean": 5.75,
+      "fits": false
+     },
+     {
+      "screen": "hud-late",
+      "mean": 7,
+      "fits": false
+     },
+     {
+      "screen": "map",
+      "mean": 7,
+      "fits": false
+     },
+     {
+      "screen": "clubhouse",
+      "mean": 6.5,
+      "fits": false
+     }
+    ],
+    "mean": 6.7272727272727275
+   },
+   {
+    "code": "DIOPSIDE",
+    "per": [
+     {
+      "screen": "atlas",
+      "mean": 7,
+      "fits": false
+     },
+     {
+      "screen": "atlas-house",
+      "mean": 7.25,
+      "fits": false
+     },
+     {
+      "screen": "shop",
+      "mean": 5.25,
+      "fits": false
+     },
+     {
+      "screen": "gameover",
+      "mean": 6.25,
+      "fits": false
+     },
+     {
+      "screen": "reward",
+      "mean": 7,
+      "fits": false
+     },
+     {
+      "screen": "event",
+      "mean": 6.25,
+      "fits": false
+     },
+     {
+      "screen": "rest",
+      "mean": 6.5,
+      "fits": false
+     },
+     {
+      "screen": "settings",
+      "mean": 7,
+      "fits": false
+     },
+     {
+      "screen": "hud-late",
+      "mean": 6.25,
+      "fits": false
+     },
+     {
+      "screen": "map",
+      "mean": 6,
+      "fits": false
+     },
+     {
+      "screen": "clubhouse",
+      "mean": 7.25,
+      "fits": false
+     }
+    ],
+    "mean": 6.545454545454546
+   },
+   {
+    "code": "CHRYSOPRASE",
+    "per": [
+     {
+      "screen": "atlas",
+      "mean": 5,
+      "fits": false
+     },
+     {
+      "screen": "atlas-house",
+      "mean": 5.5,
+      "fits": false
+     },
+     {
+      "screen": "shop",
+      "mean": 5,
+      "fits": false
+     },
+     {
+      "screen": "gameover",
+      "mean": 6,
+      "fits": false
+     },
+     {
+      "screen": "reward",
+      "mean": 7,
+      "fits": false
+     },
+     {
+      "screen": "event",
+      "mean": 5.25,
+      "fits": false
+     },
+     {
+      "screen": "rest",
+      "mean": 6.25,
+      "fits": false
+     },
+     {
+      "screen": "settings",
+      "mean": 6,
+      "fits": false
+     },
+     {
+      "screen": "hud-late",
+      "mean": 6.25,
+      "fits": false
+     },
+     {
+      "screen": "map",
+      "mean": 6,
+      "fits": false
+     },
+     {
+      "screen": "clubhouse",
+      "mean": 7.25,
+      "fits": false
+     }
+    ],
+    "mean": 5.954545454545454
+   },
+   {
+    "code": "GALENA",
+    "per": [
+     {
+      "screen": "atlas",
+      "mean": 4,
+      "fits": false
+     },
+     {
+      "screen": "atlas-house",
+      "mean": 3.25,
+      "fits": false
+     },
+     {
+      "screen": "shop",
+      "mean": 3.25,
+      "fits": false
+     },
+     {
+      "screen": "gameover",
+      "mean": 3.5,
+      "fits": false
+     },
+     {
+      "screen": "reward",
+      "mean": 5,
+      "fits": false
+     },
+     {
+      "screen": "event",
+      "mean": 4.25,
+      "fits": false
+     },
+     {
+      "screen": "rest",
+      "mean": 4.5,
+      "fits": false
+     },
+     {
+      "screen": "settings",
+      "mean": 4.25,
+      "fits": false
+     },
+     {
+      "screen": "hud-late",
+      "mean": 4.5,
+      "fits": false
+     },
+     {
+      "screen": "map",
+      "mean": 5.25,
+      "fits": false
+     },
+     {
+      "screen": "clubhouse",
+      "mean": 4.5,
+      "fits": false
+     }
+    ],
+    "mean": 4.204545454545454
+   }
+  ],
+  "verdicts": [
+   {
+    "screens": [
+     {
+      "screen": "atlas",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 6,
+        "background": 5,
+        "composition": 6,
+        "readability": 6,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "On the plate, the wing plans are faint ghosts and the name tabs sit on their top edges. The SURVEYED/UNSURVEYED legend floats mid-plate beside Moonlit Attic. Top right, the Discoveries and How to play plaques are cut by the screen edge at both sizes."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 5,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "Top right, the Discoveries and How to play plaques are cut by the screen edge at 1600 and 1280. The 17 plans are near-identical capsule grids, so no wing has a recognisable footprint."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 5,
+        "palette": 6,
+        "typography": 6,
+        "material": 5,
+        "background": 5,
+        "composition": 4,
+        "readability": 4,
+        "coherence": 4,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "Big parchment name plaques cover every wing plan, and the legend sits on top of Heart of the House ('HEART OF / THE'). At 1280 the '1 OF 17' count is hidden under the title cartouche, and Discoveries/How to play are plain dark web buttons."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 6,
+        "palette": 7,
+        "typography": 6,
+        "material": 6,
+        "background": 5,
+        "composition": 6,
+        "readability": 5,
+        "coherence": 6,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The Mansion Graveyard tab runs past the right edge of the plate, the legend covers the compass rose, and at 1280 the top-row Lampworks tab is cut by the top of the plate."
+       }
+      ],
+      "ranking": [
+       "DIOPSIDE",
+       "SCAPOLITE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "atlas-house",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 7,
+        "background": 5,
+        "composition": 6,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "The legend cartouche and compass sit in the plate's middle row, crowding Moonlit Attic. The name tabs are flat cream strips laid across the top of each plan."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 8,
+        "background": 5,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7.5,
+        "fits_between_samples": false,
+        "worst_problem": "At top right, the Discoveries and How to play plaques are clipped by the screen edge. The 17 plans are the same capsule silhouette, so the plate reads as a tiled pattern rather than a house."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 5,
+        "palette": 6,
+        "typography": 6,
+        "material": 5,
+        "background": 5,
+        "composition": 3,
+        "readability": 4,
+        "coherence": 4,
+        "overall": 3.5,
+        "fits_between_samples": false,
+        "worst_problem": "With every wing surveyed, the plate still shows only stacked name plaques and no drawn plans. The legend covers Heart of the House, and at 1280 the surveyed count and the ROOM TYPES/SURVEY stats overlap."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 6,
+        "palette": 7,
+        "typography": 6,
+        "material": 7,
+        "background": 5,
+        "composition": 6,
+        "readability": 6,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The Mansion Graveyard tab runs off the plate's right edge and the Lampworks tab is cut by the plate's top at 1280. The legend sits on the compass in the top-right corner."
+       }
+      ],
+      "ranking": [
+       "DIOPSIDE",
+       "SCAPOLITE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "shop",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "In the KEEPSAKES and SNACKS shelves, each ware is a flat beige parchment rectangle with centred text, which reads as a web list row rather than an object under glass or in a jar."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 7,
+        "background": 6,
+        "composition": 6,
+        "readability": 5,
+        "coherence": 6,
+        "overall": 5.5,
+        "fits_between_samples": false,
+        "worst_problem": "A 'More wares below' rail cuts the Keepsakes and Snacks shelves: each ware's description is clipped under its nameplate and the Forgetting service is hidden. The VANISH tag on Emergency Reassembly is cut off."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 7,
+        "background": 6,
+        "composition": 5,
+        "readability": 3,
+        "coherence": 5,
+        "overall": 3.5,
+        "fits_between_samples": false,
+        "worst_problem": "Only three of the five Tricks are on the counter, and the shelves sit entirely behind a 'More wares below' rail, so most of the shop cannot be seen."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 7,
+        "background": 6,
+        "composition": 6,
+        "readability": 4,
+        "coherence": 6,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "Under the 'More wares below' rail, only one Keepsake (House Slippers) and one Snack (Cold Milk) show. Liquorice Rope is cut in half and the VANISH tag is clipped."
+       }
+      ],
+      "ranking": [
+       "SCAPOLITE",
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "gameover",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 the stat strip (Scuffles, Damage dealt, Turns) is hidden behind a 'More record below' rail. At 1600 the THE CANDLE GOES OUT title cartouche is jammed against the top edge."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 7,
+        "background": 6,
+        "composition": 6,
+        "readability": 6,
+        "coherence": 6,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "In the bottom stat strip, labels like SCUFFLES WON, DAMAGE DEALT and TURNS TAKEN are clipped by their ribbon edges. At 1280 the left WHAT RESETS column is cut by a 'More below' rail."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 5,
+        "readability": 3,
+        "coherence": 5,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "The Final Tricks column shows only 3 of 21 Tricks above a 'More below' rail, and the whole stat strip is hidden behind 'More record below'."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 7,
+        "background": 6,
+        "composition": 6,
+        "readability": 5,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 the Final Tricks list is cut off below Treat Stash, and the Maya Chen/Bones nameplates are squeezed into narrow wrapped columns ('Maya / Chen'). Trick names wrap to two lines."
+       }
+      ],
+      "ranking": [
+       "SCAPOLITE",
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "reward",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 8,
+        "palette": 8,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 8,
+        "coherence": 7,
+        "overall": 7.5,
+        "fits_between_samples": false,
+        "worst_problem": "The plain dark band between the card row and the TAKE NONE bar is unused, and the cards could grow into it. The EAST RECEPTION HALL and THE FORGOTTEN FOYER captions crowd the ROOM CLEARED ribbon."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 5,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "At 1600 the rarity plaques sit almost on top of the bottom action bar. The wall behind the cards is a bare dark gradient with no windows or moonlight."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 5,
+        "composition": 5,
+        "readability": 4,
+        "coherence": 6,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The UNCOMMON/COMMON rarity plaques are pushed under the bottom TAKE NONE bar at both sizes, so the rarity of the choice is hidden."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 5,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "The wall behind the cards is an empty dark field. Compared with the samples' candlelit dressing, the space between the hung paintings and the cards is unused."
+       }
+      ],
+      "ranking": [
+       "SCAPOLITE",
+       "CHRYSOPRASE",
+       "DIOPSIDE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "event",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 8,
+        "typography": 7,
+        "material": 8,
+        "background": 7,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7.5,
+        "fits_between_samples": false,
+        "worst_problem": "On the third parchment choice, the RISK and GAIN values wrap ('Courage', 'Clue' alone on a second line) and hang below the strip's text baseline. At 1600 the title cartouche is cramped against the HUD."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 8,
+        "typography": 7,
+        "material": 8,
+        "background": 7,
+        "composition": 7,
+        "readability": 6,
+        "coherence": 7,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 the third choice (Ring the bell) is hidden under a 'More below' Story Register rail. At 1600 the third choice's parchment runs onto the lectern edge."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 8,
+        "typography": 7,
+        "material": 8,
+        "background": 7,
+        "composition": 5,
+        "readability": 3,
+        "coherence": 6,
+        "overall": 4.5,
+        "fits_between_samples": false,
+        "worst_problem": "Only the first choice is whole at both sizes: the second is cut in half and the third is hidden under the 'More below' Story Register rail."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 8,
+        "typography": 7,
+        "material": 8,
+        "background": 7,
+        "composition": 6,
+        "readability": 5,
+        "coherence": 6,
+        "overall": 5.5,
+        "fits_between_samples": false,
+        "worst_problem": "The third choice (Ring the bell) is sliced by the 'More below' Story Register rail at both 1600 and 1280."
+       }
+      ],
+      "ranking": [
+       "SCAPOLITE",
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "rest",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 8,
+        "typography": 7,
+        "material": 7,
+        "background": 7,
+        "composition": 6,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "At 1600 the YOU BUILD THE FORT cartouche is crammed against the HUD, and the right-hand hung painting collides with the Discoveries plaque. The bottom quarter is bare floor."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 8,
+        "typography": 6,
+        "material": 7,
+        "background": 7,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "The gold value badges on each choice (Courage 46 \u2192 68, 14 Tricks can be sharpened) use noticeably shrunken type compared with the rest of the board."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 8,
+        "typography": 7,
+        "material": 7,
+        "background": 7,
+        "composition": 5,
+        "readability": 4,
+        "coherence": 6,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The fourth choice, Sit With Your Companion, is hidden behind a 'More choices below' rail at both sizes."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 6,
+        "palette": 8,
+        "typography": 6,
+        "material": 7,
+        "background": 7,
+        "composition": 6,
+        "readability": 6,
+        "coherence": 6,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "The first choice's number medallion is cut by the panel top, and the value badges are small, underlined web-link-like text. Discoveries/How to play are flat tan rectangles."
+       }
+      ],
+      "ranking": [
+       "SCAPOLITE",
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "settings",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 4,
+        "composition": 5,
+        "readability": 6,
+        "coherence": 6,
+        "overall": 5.5,
+        "fits_between_samples": false,
+        "worst_problem": "At both sizes the settings frame runs past the bottom of the screen: the bottom rule, the skull-and-books dressing and the candle are cut off by the page edge."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 4,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "The dimmed HUD and plaques show through behind the dialog, and the colour-palette option labels are small plaques whose text is tighter than the rest of the board."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 4,
+        "composition": 5,
+        "readability": 4,
+        "coherence": 6,
+        "overall": 4.5,
+        "fits_between_samples": false,
+        "worst_problem": "Damage numbers and the Danger section are cut by the bottom of the frame at 1600. At 1280 the Play, Seed and Danger sections are gone entirely, with no cue that they exist."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 4,
+        "composition": 6,
+        "readability": 5,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 the Play, Seed and Danger panels are below the fold, reachable only through a row of small tan tab plaques. The Expedition moon medallion overlaps its own body text at 1600."
+       }
+      ],
+      "ranking": [
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "SCAPOLITE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "hud-late",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 8,
+        "typography": 7,
+        "material": 7,
+        "background": 7,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "The toolbar's pencil and command buttons ('Our notes', Hand, Undo, Clear) are small flat tan rectangles with cramped type. At 1280 the map's room labels run under the toolbar."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 6,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "The blueprint sheet is a desaturated teal that reads milky beside the gold frame. The toolbar buttons are flat tan strips."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 6,
+        "typography": 6,
+        "material": 7,
+        "background": 6,
+        "composition": 6,
+        "readability": 5,
+        "coherence": 6,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "In the run strip, the wing's name is cut to 'T...' at both sizes, and the sheet is the milkiest grey-teal of the four."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 6,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "The blueprint sheet reads washed-out teal rather than saturated cyanotype, flattening the drawn plan behind the handwriting."
+       }
+      ],
+      "ranking": [
+       "SCAPOLITE",
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "map",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 8,
+        "typography": 7,
+        "material": 7,
+        "background": 7,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "The left margin outside the sheet (behind THE WAY IN) is a dead dark gradient. The toolbar's control buttons are flat tan rectangles with small labels."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 6,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The cyanotype is a dusty teal with lifted blacks, so the sheet reads milky rather than holding saturated Prussian-blue darks."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 5,
+        "typography": 7,
+        "material": 6,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 5.5,
+        "fits_between_samples": false,
+        "worst_problem": "The sheet is a grey-green wash, the milkiest of the four, which loses the cyanotype's dark ground entirely."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 6,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The sheet's teal is washed out, so the darks do not hold against the gold frame and handwriting."
+       }
+      ],
+      "ranking": [
+       "SCAPOLITE",
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "clubhouse",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 8,
+        "palette": 8,
+        "typography": 7,
+        "material": 8,
+        "background": 7,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "Top right, the Discoveries and How to play plaques are jammed against the screen edge and cut off at both sizes."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 8,
+        "palette": 8,
+        "typography": 7,
+        "material": 8,
+        "background": 7,
+        "composition": 8,
+        "readability": 7,
+        "coherence": 8,
+        "overall": 7.5,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 the HAUNT LEVEL heading collides with the shield crest and wraps to two lines. The Discoveries/How to play plaques are plain tan bars, lighter-weight than the painted Plan button beside them."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 6,
+        "palette": 7,
+        "typography": 6,
+        "material": 6,
+        "background": 7,
+        "composition": 5,
+        "readability": 5,
+        "coherence": 5,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "Discoveries and How to play are plain dark web buttons that cover the '0 OF 8 HOME' counter, and Expedition log is a flat web disclosure box with a plain triangle."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 8,
+        "palette": 8,
+        "typography": 7,
+        "material": 8,
+        "background": 7,
+        "composition": 8,
+        "readability": 7,
+        "coherence": 8,
+        "overall": 7.5,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 the HAUNT LEVEL heading collides with the shield crest. The Discoveries/How to play tan plaques are flat compared with the gold-rimmed Plan the Expedition control."
+       }
+      ],
+      "ranking": [
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "SCAPOLITE",
+       "GALENA"
+      ]
+     }
+    ],
+    "winner": "SCAPOLITE",
+    "screen_winners": [
+     {
+      "screen": "atlas",
+      "code": "DIOPSIDE"
+     },
+     {
+      "screen": "atlas-house",
+      "code": "DIOPSIDE"
+     },
+     {
+      "screen": "shop",
+      "code": "SCAPOLITE"
+     },
+     {
+      "screen": "gameover",
+      "code": "SCAPOLITE"
+     },
+     {
+      "screen": "reward",
+      "code": "SCAPOLITE"
+     },
+     {
+      "screen": "event",
+      "code": "SCAPOLITE"
+     },
+     {
+      "screen": "rest",
+      "code": "SCAPOLITE"
+     },
+     {
+      "screen": "settings",
+      "code": "DIOPSIDE"
+     },
+     {
+      "screen": "hud-late",
+      "code": "SCAPOLITE"
+     },
+     {
+      "screen": "map",
+      "code": "SCAPOLITE"
+     },
+     {
+      "screen": "clubhouse",
+      "code": "DIOPSIDE"
+     }
+    ],
+    "winner_fixes": [
+     "settings: make the whole frame fit inside 1600x900 and 1280x800. Today its bottom rule, the skull-and-books and the candle run off the page bottom at both sizes; tighten the vertical rhythm, not the type size.",
+     "atlas/atlas-house: draw the wing plans at DIOPSIDE's strength, as dense room grids with real walls, and move each name off the plan to a caption beneath it. Today faint ghost plans sit under cream tabs that strike through their tops.",
+     "atlas/atlas-house: move the SURVEYED/UNSURVEYED legend and compass out of the middle row, where they crowd Moonlit Attic, into an empty corner of the plate.",
+     "atlas, clubhouse, rest: bring the Discoveries and How to play plaques fully on screen. Today they are clipped by the right edge or collide with the hung painting; dock them beside a painted control the way DIOPSIDE docks them beside Plan the Expedition.",
+     "gameover at 1280: bring the stat strip (Scuffles, Big Scares, Damage dealt, Turns) into view. It sits behind a 'More record below' rail; reflow the AS FAR AS WE GOT plaque beside the card so the strip fits.",
+     "shop: make the Keepsake and Snack entries objects, such as labelled bell-jar plaques or jar tags with gilt edges. Today they are flat beige parchment rectangles; keep every line of every ware visible.",
+     "event: give each RISK/GAIN pair on the parchment choices its own column so that 'Courage' and 'Clue' do not wrap onto an orphan line on choice III.",
+     "reward/event/rest at 1600: give the title cartouche breathing room under the HUD and use the empty band above the bottom bar, letting the cards or choices grow rather than leaving dead floor.",
+     "hud-late/map: give the toolbar pencils and command buttons more height and engraved type so that they read as painted brass-and-wood controls, not small tan web chips."
+    ],
+    "grafts": [
+     {
+      "from": "DIOPSIDE",
+      "idea": "Atlas plate: dense, legible room-grid plans with the wing name as a small-caps caption under each plan, and the legend plus compass tucked into the top-right corner of the plate."
+     },
+     {
+      "from": "DIOPSIDE",
+      "idea": "Atlas right panel: the GUARDIAN / ROOM TYPES / SURVEY stats as a ruled two-column ledger, label left and value right, instead of three cramped stacked columns."
+     },
+     {
+      "from": "DIOPSIDE",
+      "idea": "Settings: the containment that keeps every panel and the bottom dressing on the page at both sizes, and the colour palette as four large enamel medallions with name plaques under them."
+     },
+     {
+      "from": "DIOPSIDE",
+      "idea": "Clubhouse: Discoveries and How to play docked as a pair just above Plan the Expedition instead of clipped at the top-right edge, and Expedition Log as a gold-ribbon plaque with a + medallion."
+     },
+     {
+      "from": "CHRYSOPRASE",
+      "idea": "Settings: a row of engraved section-tab plaques (Sound, Reading, Motion...) under the title, which keeps every section obviously reachable if the board ever must scroll."
+     }
+    ],
+    "verdict": "SCAPOLITE is the system to keep. It is the only candidate that fits the decision on the boards where fit matters most: all five Tricks and every shelf in the shop, all three event choices at both sizes, all four rest choices, every Final Trick and both rarity plaques. Its cyanotype also holds a saturated Prussian-blue dark where the others go milky teal. Its losses are fixable: the settings frame runs off the bottom of the page, the atlas plans are faint under strike-through tabs, and Discoveries/How to play are clipped at the right edge. DIOPSIDE's atlas plans, settings containment and clubhouse docking cover those gaps and should be grafted. DIOPSIDE is a solid second but hides the shop shelves, the event's third choice at 1280 and stat labels behind rails or edges. CHRYSOPRASE hides wares and event choices behind 'More below' rails. GALENA made its boards fit by cutting what was on them: three Tricks, three Final Tricks, missing rest and event choices, no wing plans, and web-default buttons. It ranks last on every screen. No candidate reaches reference fit: coherence tops out around 7 and every board still carries flat tan web-style chips somewhere."
+   },
+   {
+    "screens": [
+     {
+      "screen": "atlas",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 6,
+        "background": 5,
+        "composition": 6,
+        "readability": 6,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The wing plans on the plate are faint ghost outlines under bright label plaques, so at both 1600 and 1280 you read a list of labels before you see a house plan."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 6,
+        "background": 5,
+        "composition": 5,
+        "readability": 5,
+        "coherence": 6,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The SURVEYED/UNSURVEYED legend sits on top of the compass at the plate's top-right, and at 1280 the MANSION GRAVEYARD label runs off the plate edge ('GRAVEYAR') and the count wraps to two lines."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 6,
+        "palette": 7,
+        "typography": 7,
+        "material": 5,
+        "background": 5,
+        "composition": 4,
+        "readability": 3,
+        "coherence": 5,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "Big parchment name plaques cover the wing plans, the legend covers HEART OF THE HOUSE, at 1280 the count loses its '1' and ROOM/SURVEY collide, and Discoveries/How to play are plain dark web boxes."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 5,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "All 17 wing plans are the same stamped footprint, so no wing has a shape you would recognise, though the plans are well inked and every label is clear at both sizes."
+       }
+      ],
+      "ranking": [
+       "DIOPSIDE",
+       "SCAPOLITE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "atlas-house",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 6,
+        "background": 5,
+        "composition": 6,
+        "readability": 6,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The tinted wing plans are soft and low-contrast under their name plaques, and the legend floats mid-plate beside the Moonlit Attic plan at both sizes."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 6,
+        "background": 5,
+        "composition": 5,
+        "readability": 5,
+        "coherence": 6,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 the top row of labels (LAMPWORKS, MOONLIT ATTIC) is cut by the plate's top frame, the Graveyard label touches the right edge, and the legend still overlaps the compass."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 6,
+        "palette": 7,
+        "typography": 7,
+        "material": 5,
+        "background": 4,
+        "composition": 4,
+        "readability": 3,
+        "coherence": 5,
+        "overall": 3,
+        "fits_between_samples": false,
+        "worst_problem": "There are no drawn plans at all, only dark name plaques on an empty plate, and the legend covers HEART OF THE HOUSE."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 5,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "Every surveyed wing is the same rectangle in a slightly different tint, and the bottom row's labels sit almost on the RECOVERED FLOOR PLAN ribbon."
+       }
+      ],
+      "ranking": [
+       "DIOPSIDE",
+       "SCAPOLITE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "shop",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "All five Tricks, both shelves and the Forgetting service fit at both sizes, but the shelf descriptions are centred in parchment strips that wrap badly ('Remove all / debuffs', 'Gain 12 / Guard')."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 5,
+        "readability": 4,
+        "coherence": 6,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "A 'More wares below' rail hides most of the Keepsakes and Snacks shelves and the Forgetting service, and Emergency Reassembly's VANISH tag is cut at 1600."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 4,
+        "readability": 2,
+        "coherence": 6,
+        "overall": 3,
+        "fits_between_samples": false,
+        "worst_problem": "Only three of the five Tricks are on the stall and both shelves are hidden behind 'More wares below', so the player cannot see the choice."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 5,
+        "readability": 4,
+        "coherence": 6,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The shelf items are reduced to name tags whose descriptions are cut by the 'More wares below' rail, and VANISH is clipped on the fifth Trick."
+       }
+      ],
+      "ranking": [
+       "SCAPOLITE",
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "gameover",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 6,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 the eight stat medallions sit under a 'More record below' rail, and at 1600 the title plaque is cut by the top edge."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 6,
+        "background": 6,
+        "composition": 6,
+        "readability": 5,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The Final Trick ribbons wrap two-line names out of their bands ('WHO BURIED THAT?', 'TOSS AND CHASE'), and at 1280 the lower Tricks and all stats are hidden under 'More record below'."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 4,
+        "readability": 2,
+        "coherence": 6,
+        "overall": 3,
+        "fits_between_samples": false,
+        "worst_problem": "Only three of 21 Final Tricks show, the stats strip is gone, and two 'More below' rails cover the record."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 6,
+        "background": 6,
+        "composition": 6,
+        "readability": 5,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The stat strip's labels run into each other and past their plaques ('SCUFFLES WON', 'DAMAGE DEALT' clipped) at both sizes, and WHAT YOU FOUND wraps its heading."
+       }
+      ],
+      "ranking": [
+       "SCAPOLITE",
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "reward",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 8,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "The location line is split either side of ROOM CLEARED, so the hall and wing names read as two separate captions."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "The rarity rail is pushed down onto the footer controls, with little air between the plaques and TAKE NONE at 1600."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 5,
+        "readability": 4,
+        "coherence": 6,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The UNCOMMON/COMMON rarity plaques are hidden behind the footer at 1600 and cut in half at 1280, because the oversized title plaque pushes the cards down."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "The rarity rail sits right on the footer bar, so the plaques and TAKE NONE crowd each other."
+       }
+      ],
+      "ranking": [
+       "SCAPOLITE",
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "event",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 7,
+        "composition": 7,
+        "readability": 8,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "Choice III's RISK and GAIN values wrap onto a second line ('Courage', 'Clue') in the parchment strip, making it taller than the other two."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 7,
+        "composition": 5,
+        "readability": 5,
+        "coherence": 6,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The third choice is cut under a 'More below' Story Register rail at both sizes."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 7,
+        "composition": 4,
+        "readability": 3,
+        "coherence": 6,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "Only one whole choice is visible; II is cut by the 'More below' rail and III is hidden."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 7,
+        "composition": 6,
+        "readability": 5,
+        "coherence": 7,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "All three choices fit at 1600, but at 1280 the third is hidden under a 'More below' rail."
+       }
+      ],
+      "ranking": [
+       "SCAPOLITE",
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "rest",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 7,
+        "composition": 7,
+        "readability": 8,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "The four choice bars run edge to edge as identical dark slabs, so REST (the primary choice) gets no more weight than the others."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 7,
+        "background": 7,
+        "composition": 6,
+        "readability": 5,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The right-hand cost badges have been shrunk to small underlined text, and choice 1's number medallion is cut by the top of its bar."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 7,
+        "composition": 4,
+        "readability": 3,
+        "coherence": 6,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "The fourth choice, SIT WITH YOUR COMPANION, is hidden under a 'More choices below' rail at both sizes."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 6,
+        "material": 7,
+        "background": 7,
+        "composition": 6,
+        "readability": 6,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "All four choices fit, but the cost badges are visibly shrunk next to the other boards' type."
+       }
+      ],
+      "ranking": [
+       "SCAPOLITE",
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "settings",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 5,
+        "composition": 6,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The dialog frame runs past the bottom of the screen at 1600 and past both sides at 1280, so its corners and the candle fall off the page."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 5,
+        "composition": 6,
+        "readability": 6,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 Play, Seed and Danger fall off the page, reachable only through a row of small parchment tabs, and Damage numbers is cut at the bottom."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 5,
+        "composition": 4,
+        "readability": 3,
+        "coherence": 6,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "Damage numbers, Expedition and Danger are cut by the button bar at 1600, and at 1280 Play, Seed and Danger are gone with nothing to show they exist."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 5,
+        "composition": 7,
+        "readability": 8,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "Every section fits on the page at both sizes; the weakest spot is the colour-palette swatches at 1280, which become plain rectangular dark chips."
+       }
+      ],
+      "ranking": [
+       "DIOPSIDE",
+       "SCAPOLITE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "hud-late",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 the toolbar rail covers the bottom row's 'NOT a coat rack' note, though the wing name in the strip reads in full."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 6,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The cyanotype sheet reads dull teal-grey instead of deep blue, so the chalk notes lose their punch."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 6,
+        "typography": 7,
+        "material": 6,
+        "background": 6,
+        "composition": 6,
+        "readability": 4,
+        "coherence": 6,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "The run strip's wing name is cut to 'T...' at both sizes, and the map sheet is milky grey-green."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 6,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The sheet reads dark teal rather than a saturated cyanotype blue, so the plate looks dimmed next to the gold frame."
+       }
+      ],
+      "ranking": [
+       "SCAPOLITE",
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "map",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "The sheet holds a deep cyanotype blue and every control is there, but at 1280 the pencil toolbar covers the bottom note and half-hidden room labels on the right edge ('UMBRELLA GA', 'VISITOR CLOA') stay cut."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 6,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The sheet reads dark teal-grey rather than saturated blueprint blue."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 7,
+        "palette": 5,
+        "typography": 7,
+        "material": 6,
+        "background": 5,
+        "composition": 7,
+        "readability": 6,
+        "coherence": 5,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The map sheet is the milkiest of the four (grey-green wash), and at 1280 the toolbar hides the bottom note."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 6,
+        "typography": 7,
+        "material": 7,
+        "background": 6,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The sheet is a dimmed teal, not a saturated cyanotype, so the darks look muted."
+       }
+      ],
+      "ranking": [
+       "SCAPOLITE",
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "GALENA"
+      ]
+     },
+     {
+      "screen": "clubhouse",
+      "candidates": [
+       {
+        "code": "SCAPOLITE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 7,
+        "composition": 6,
+        "readability": 6,
+        "coherence": 7,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "Discoveries and How to play are squeezed into the top-right corner as small parchment tabs whose labels touch the plaque edges, and at 1280 'HAUNT LEVEL' wraps into the shield crest."
+       },
+       {
+        "code": "CHRYSOPRASE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 7,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 'HAUNT LEVEL' wraps under the shield crest, and the newspaper clipping is cut ('PETS VANISH')."
+       },
+       {
+        "code": "GALENA",
+        "ornament": 5,
+        "palette": 6,
+        "typography": 5,
+        "material": 4,
+        "background": 7,
+        "composition": 4,
+        "readability": 4,
+        "coherence": 4,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "Discoveries, How to play and Expedition log are plain dark rounded web boxes, and the first two cover the '0 OF 8 HOME' counter."
+       },
+       {
+        "code": "DIOPSIDE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 7,
+        "background": 7,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 'HAUNT LEVEL' wraps into the shield crest and the newspaper clipping is cut by its frame."
+       }
+      ],
+      "ranking": [
+       "DIOPSIDE",
+       "CHRYSOPRASE",
+       "SCAPOLITE",
+       "GALENA"
+      ]
+     }
+    ],
+    "winner": "SCAPOLITE",
+    "screen_winners": [
+     {
+      "screen": "atlas",
+      "code": "DIOPSIDE"
+     },
+     {
+      "screen": "atlas-house",
+      "code": "DIOPSIDE"
+     },
+     {
+      "screen": "shop",
+      "code": "SCAPOLITE"
+     },
+     {
+      "screen": "gameover",
+      "code": "SCAPOLITE"
+     },
+     {
+      "screen": "reward",
+      "code": "SCAPOLITE"
+     },
+     {
+      "screen": "event",
+      "code": "SCAPOLITE"
+     },
+     {
+      "screen": "rest",
+      "code": "SCAPOLITE"
+     },
+     {
+      "screen": "settings",
+      "code": "DIOPSIDE"
+     },
+     {
+      "screen": "hud-late",
+      "code": "SCAPOLITE"
+     },
+     {
+      "screen": "map",
+      "code": "SCAPOLITE"
+     },
+     {
+      "screen": "clubhouse",
+      "code": "DIOPSIDE"
+     }
+    ],
+    "winner_fixes": [
+     "atlas and atlas-house: draw the wing plans with dark ink room cells and solid outlines at DIOPSIDE's contrast, so the plate reads as a drawn house first and the small label plaques come second.",
+     "gameover at 1280: bring the eight stat medallions up out from under the 'More record below' rail by tightening the portrait/altar column, keeping the type at its current size.",
+     "settings: inset the dialog frame so its bottom edge at 1600 and its side edges at 1280 stay on the screen, with corners, skull and candle all inside the page.",
+     "clubhouse and atlas: move Discoveries and How to play out of the cramped top-right corner into the right column above PLAN THE EXPEDITION as full-size painted plaques, so their labels no longer touch the plaque edges.",
+     "map and hud-late at 1280: lift the sheet or pad its bottom so the pencil toolbar rail no longer covers the bottom row's chalk note.",
+     "shop: left-align the Keepsake and Snack descriptions in their parchment strips, or widen the strips, so they stop wrapping one word onto a second line ('Remove all / debuffs', 'Gain 12 / Guard').",
+     "event: widen the RISK/GAIN columns of choice III so 'Up to 6 maximum Courage' and 'A Keepsake; possibly a Clue' each fit on one line and the strip matches I and II in height.",
+     "clubhouse at 1280: keep 'HAUNT LEVEL' on one line so it clears the shield crest.",
+     "gameover at 1600: drop the title plaque so its top border is not cut by the screen edge, and give 'Damage dealt' room inside its plaque.",
+     "rest: give the REST bar a lit or gilded state so the primary choice stands out from the four identical dark slabs."
+    ],
+    "grafts": [
+     {
+      "from": "DIOPSIDE",
+      "idea": "Atlas plate: strongly inked wing plans with the numeral and name set underneath each plan instead of on a plaque above it, and the legend boxed with the compass in the top-right corner clear of every wing."
+     },
+     {
+      "from": "DIOPSIDE",
+      "idea": "Atlas info panel: GUARDIAN / ROOM TYPES / SURVEY as ruled label-value rows instead of three cramped columns where ROOM TYPES wraps."
+     },
+     {
+      "from": "DIOPSIDE",
+      "idea": "Settings layout that keeps all seven sections and their frame on the page at both 1600 and 1280."
+     },
+     {
+      "from": "DIOPSIDE",
+      "idea": "Clubhouse: Discoveries and How to play as a pair of parchment plaques in the right column above the expedition button, plus the '+' expander medallion on EXPEDITION LOG."
+     },
+     {
+      "from": "CHRYSOPRASE",
+      "idea": "Map and hud-late at 1280: the shorter sheet whose toolbar rail sits below the last row of chalk notes, so 'NOT a coat rack' stays visible."
+     }
+    ],
+    "verdict": "SCAPOLITE is the only candidate that fits nearly every board around the large type. All five Tricks and both shelves are in view on the shop, all three event choices and all four rest choices show at both sizes, the reward's rarity plaques are clear, and the gameover shows every Final Trick plus the stat strip at 1600. It also keeps the most saturated cyanotype on the map. Its weak spots are the faint atlas plans, a settings frame that runs off the screen, the cramped Discoveries/How to play corner, and the 1280 gameover stats. DIOPSIDE has the best atlas plates, settings and clubhouse, but it shrinks badges on rest and hides wares, event choices and some gameover sections behind rails. CHRYSOPRASE fits less than DIOPSIDE. GALENA fits least of all: plaques bury the atlas, the shop shows three Tricks, the wing name is cut to 'T...', and the clubhouse buttons are plain web boxes. No screen reaches the samples' painted hand: there are no 9s and nothing fits between the samples."
+   }
+  ],
+  "builds": [
+   {
+    "code": "CHRYSOPRASE",
+    "branch": "ui/r60-boards-a",
+    "commit": "86aad9fec288bc6255c3040ab35c89f0aec69350",
+    "screenshots": [
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/atlas.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/atlas-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/atlas-house.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/atlas-house-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/shop.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/shop-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/gameover.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/gameover-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/reward.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/reward-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/event.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/event-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/rest.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/rest-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/settings.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/settings-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/hud-late.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/hud-late-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/map.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/map-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/clubhouse.png",
+     "D:/UILOOP/r60/judging/r60/boards/CHRYSOPRASE/clubhouse-1280.png"
+    ],
+    "touched_files": [
+     "game/src/ui/estate-blueprint.js",
+     "game/src/scenes/atlas.js",
+     "game/src/scenes/atlas.css",
+     "game/src/scenes/shop.js",
+     "game/src/scenes/shop.css",
+     "game/src/scenes/gameover.css",
+     "game/src/scenes/reward.css",
+     "game/src/scenes/event.css",
+     "game/src/scenes/rest.css",
+     "game/src/scenes/clubhouse.css",
+     "game/src/scenes/map.css",
+     "game/src/scenes/narrative.css",
+     "game/src/ui/settings.js",
+     "game/src/ui/settings.css",
+     "game/src/ui/hud.js",
+     "game/src/ui/hud.css",
+     "tests/blueprint/estate.png",
+     "tests/blueprint/estate-foyer.png"
+    ],
+    "kit_changes": "No change to kit.css or tokens.css (the map's deeper cyanotype is a scoped .map-paper filter and sheet colour in map.css, not a token change). No change to the tooltip.\nHUD (ui/hud.js _fitPouch): when a crowded strip is still over-full after the pouches fold, the readouts give up their words (data-terse=1) before the wing's name is cut, and the pouches then look for their peeks again.\nHUD (ui/hud.css): one appended rule, so Haunt keeps its icon in pouch plus terse mode.\nRoom shell: the title-plaque --cart-h on .rm-head .kit-titleblock is set a rail shallower only in reward.css, event.css, rest.css and shop.css, each scoped by .scene--X. The shared .rm-head and .rm-body rules are unchanged.\nnarrative.css (outside my list): one appended rule, .scene--clubhouse .story-tools, which positions Discoveries and How to play in the clubhouse sidebar. It sits there because putting it in clubhouse.css tripped scene-css/check.py with a cross-file layout conflict.\nsettings.js: adds a nav.mm-set__index row of jump buttons. It is drawn only while the ledger has to scroll, so at 1280 and with large text, and hidden at 1600.",
+    "endings_ok": true,
+    "console_errors": 0,
+    "notes_for_merger": "Tests on :9601:\n- gamepad: 24 passed, 0 failed.\n- steam-deck: run 3 (on a quiet machine) passed 6/0. minFont did not fall anywhere: shop went from 13.4 to 15.6, gameover from 13.5 to 16, the rest are equal to base. Runs 1 and 2 failed only with \"screen did not come up\" load timeouts while three builders were capturing.\n- chrome: 26 of 27. The only failure is 60fps (28 fps under swiftshader and load).\n- scene-css: 0 conflicts. I briefly caused 2 and fixed them.\n- css-tokens: 0 undefined.\n- blueprint/estate: the master/section and non-overlap assertions pass (the committed estate.png comes from this run). It then dies on page.reload of a map region, which is the known D3D11 same-page-navigation timeout.\n- readability: on_port cannot repoint it, because it borrows steam-deck's BASE. I ran it through a wrapper that swaps deck.BASE for :9601. It hits the same same-page Page.goto timeout after title (16) and clubhouse (14), both equal to base. The steam-deck minFont table above covers the same metric for every scene.\n\nCanonical captures: all 22 were taken with capture.py, in four passes, because GPU-slot contention plus 140 s shader warm-ups made 300 s attempts time out. Each image was taken after its board's last CSS change. capture-results.json holds only the final hud-late pass; pass 1 and pass 2 results are in WT/shots/me/capture-pass1.json and capture-pass2.json. atlas and hud-late-1280 returned exit 2 (the void check on a bright board) in early passes; I looked at them and they are fine, and the final images are clean exit-0 passes.\n\nWhat changed, board by board:\n1. Atlas: PLACEMENT is now a 3x6 house section (roof/tower, upper, two ground ranges with the Foyer central, grounds, below), each wing a third of the plate wide. Each wing's title sits on one line above its plan. The key and compass have their own empty bay. Galleries are drawn only in the gaps. The tally wraps to two lines at 1280 and the dossier facts no longer collide. Wing titles are about 13.5 px at 1280; the brief asked for names small enough to leave the plan visible. ONE_LINE in atlas.js switches the single-line titles off.\n2. Shop: all five Tricks are on one shelf at both sizes. --shop-k keeps every card's lettering the size it was on the 260 px card. The room comes from 56u of art plus the portrait. The card-face ::before/::after rail moves up with the cut. Keepsakes and Snacks are rows. A \"More wares\" rail remains at both sizes for the lower shelf: about 185 px hidden at 1600 and 285 at 1280.\n3. Gameover at 1600: no rail. Four columns, all 16 Final Tricks visible, eight counts. At 1280 a rail remains (about 145 px, the stats).\n4. Reward: plaques clear of the bar at both sizes.\n5. Event: two whole choices at 1280. The moonlight is a cold-blue screen blend.\n6. Settings: whole at 1600 with no scroll, every plate on its page. At 1280 the jump index makes all seven pages reachable.\n7. Rest: all four choices at both sizes with no rail.\n8. Map: the sheet is deeper (filter on .map-paper; the crayon notes keep their colours) and the tray is lower and shallower at 1280.\n9. Story tools: brass label plates on atlas, clubhouse and rest. On the clubhouse they moved into the sidebar, so FREED/HOME is whole. Expedition log is a walnut plaque.\n\nNot done or weak:\n- the shop's lower shelves still sit under a rail;\n- gameover and settings at 1280 still scroll;\n- in the whole-house view the Foyer reads pale under its selection rim;\n- unsurveyed ghosts on the atlas are faint.\n\nOther screens looked at on :9601: title, select and combat (WT/shots/x-*.png). The combat hand's cards are unchanged.",
+    "self_score": 7.6
+   },
+   {
+    "code": "SCAPOLITE",
+    "branch": "ui/r60-boards-b",
+    "commit": "9a41fde6dcd924366a382197bd8bddeb0f9931a6",
+    "screenshots": [
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/atlas.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/atlas-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/atlas-house.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/atlas-house-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/shop.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/shop-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/gameover.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/gameover-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/reward.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/reward-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/event.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/event-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/rest.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/rest-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/settings.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/settings-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/hud-late.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/hud-late-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/map.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/map-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/clubhouse.png",
+     "D:/UILOOP/r60/judging/r60/boards/SCAPOLITE/clubhouse-1280.png"
+    ],
+    "touched_files": [
+     "game/src/scenes/atlas.css",
+     "game/src/scenes/atlas.js",
+     "game/src/scenes/clubhouse.css",
+     "game/src/scenes/event.css",
+     "game/src/scenes/event.js",
+     "game/src/scenes/gameover.css",
+     "game/src/scenes/gameover.js",
+     "game/src/scenes/map.css",
+     "game/src/scenes/r49-board-scroll.js",
+     "game/src/scenes/rest.css",
+     "game/src/scenes/reward.css",
+     "game/src/scenes/reward.js",
+     "game/src/scenes/shop.css",
+     "game/src/scenes/shop.js",
+     "game/src/ui/estate-blueprint.js",
+     "game/src/ui/hud.js",
+     "game/src/ui/settings.css"
+    ],
+    "kit_changes": "No edits to kit.css, tokens.css or tooltip files.\nRoom shell (reward.css and RoomScene in reward.js): the .kit-board.rm board now uses five rows (HUD, title band, decision area, rail, action bar). The title band is one plaque high (--bd-cart, 78-90px) with the ribbon riding the plaque's bottom rail. The room note splits into rm-room__a / __dot / __b spans with the same textContent. The two halves of the room name sit either side of the ribbon, which a ResizeObserver measures into --rib-w. _fitPictures now also treats the room-name spans as obstacles.\nr49-board-scroll.js: a rail sitting in the board's own grid row hides itself when the board would fit without it. A host-inset rail does the same when the scroller has data-rail-gives, which event.js sets on the register.\nHUD strip (ui/hud.js _fitPouch): on a crowded late-run strip it now switches to data-terse (words become icons) and re-runs before data-dense. The wing name is never ellipsized, and the pouch peeks give up an object first.\nmap.css: `:root:has(.map-screen--plan)` overrides the tokens --bp-ground (#375c98) and --bp-floor (#2a486c), and adds a brightness/contrast/saturate filter on .map-paper. This deepens the cyanotype while the map is open.\nGameover (gameover.js): elements are moved into three column wrappers (.go-col--a/b/c), the blueprint moves under the shrine, and --go-rib-w is measured.\nShop (shop.js): the greeting is now said on the footer's sh-line, and the counter plaque is hidden in the r60 layout. _layout computes --face-w/--face-h and fits the rules to the new 200u panel.\nAtlas (atlas.js): adds an at-root--r60 class and a data-file attribute on each wing. Wing labels are set on one line. The compass rose moves to the SHEET_BAY exported from estate-blueprint.js, which has a new PLACEMENT: three files of strips, the foundation line moved, the ROOF/TOWER note removed.",
+    "endings_ok": true,
+    "console_errors": 0,
+    "notes_for_merger": "Angle: one grid for every board. The title band is one plaque (title band, then decision area, then action bar), and each board is fitted around Josh's larger type.\n\nResults by screen (read from the canonical PNGs):\n- Shop: all five Tricks and every shelf show at both 1600 and 1280 with no rail. Card art shrank to 66u. Rules are refitted at 16.3-20.5px at 1600 and 15-19px at 1280; Jingle Collar is 16.9px at 1600 (same as before) and 15px at 1280 (was 16.3).\n- Reward: both rarity plaques show at both sizes.\n- Event: all three choices show at both sizes. The moonlight shafts now really blend into the painted hall. Before, .ev-hall was its own stacking context, so the screen blend fell back to a flat pale overlay.\n- Rest: all four choices show at both sizes.\n- Gameover: at 1600 everything is visible with no rail: card, every Final Trick on a two-column ruled list, all 8 stats, the record stanzas and the route. At 1280 the three columns are whole, but the stats band sits under a 'More record below' rail.\n- Settings: all seven sections are whole in three columns at 1280, 1600 and 1920, and nothing runs off its page.\n- hud-late: 'THE FOYER \u00b7 WING 1' is whole at both sizes.\n- Map: the paper is Prussian blue and keeps its darks; chalk and crayon are untouched. One small debris-patch rectangle drawn with raw BP.ground in blueprint.js reads slightly bluer than the paper.\n- Atlas: the drawn plans are visible in three files, each wing has a one-line paper label above its strip, the legend and compass are in the empty bay, the 1 OF 17 count is whole at 1280, and Discoveries and How to play use the map's brass frames (also on the clubhouse, along with the Expedition log cartouche).\n\nGates:\n- css-tokens: 0 undefined.\n- scene-css: 0 conflicts. I briefly introduced one on .story-tools and fixed it.\n- gamepad: 24 passed, 0 failed (on_port 9602).\n- blueprint/estate.py: passed its 17-plan and non-overlap assertions and the atlas click. It then timed out on Page.reload in the map loop, which matches the known same-page navigation hang on this machine.\n- readability: imports steam-deck's BASE, so on_port does not reach it. I ran it through a scratch wrapper that rewrites the port and opens a fresh page per scene. Title passed with minFont 16, then clubhouse never got MM ready in 25s under GPU contention, so minFont was not verified for the other boards.\n- chrome and steam-deck were not run, because the GPU slot was saturated by other builders.\n\nCaptures: canonical capture.py ran twice. The second run used ONLY=event,shop,atlas-house,settings,hud-late,clubhouse after GPU-slot timeouts (exit 124). After that run, the clubhouse Expedition log got a nowrap/letter-spacing fix (commit 9a41fde6). The exit-2 VOID flags on atlas and event-1280 are false positives: I looked at both frames and they are fully drawn.\n\nWARNING: worktrees share the stash list. I ran `git stash` in my worktree when there was nothing to stash, then `git stash pop`, which popped the main repo's 'pre-r59-merge grounding captures' stash into my worktree and conflicted. I reset those files in my worktree only. The stash is still intact in the list (stash@{0}), not dropped.\n\nOff-track screens photographed on 9602 and looked at: combat, which is fine, and select, which matches the base capture; its plain bottom bar is pre-existing. The dev server I started is stopped. My scratch copy of hud-late used tools/shot-scripts/hud-late.js unchanged.",
+    "self_score": 7.4
+   },
+   {
+    "code": "DIOPSIDE",
+    "branch": "ui/r60-boards-c",
+    "commit": "c8fc2dcad33370af6f84de0cbd713a5b34828bf1",
+    "screenshots": [
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/atlas.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/atlas-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/atlas-house.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/atlas-house-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/shop.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/shop-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/gameover.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/gameover-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/reward.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/reward-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/event.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/event-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/rest.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/rest-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/settings.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/settings-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/hud-late.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/hud-late-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/map.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/map-1280.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/clubhouse.png",
+     "D:/UILOOP/r60/judging/r60/boards/DIOPSIDE/clubhouse-1280.png"
+    ],
+    "touched_files": [
+     "game/src/ui/estate-blueprint.js",
+     "game/src/scenes/atlas.js",
+     "game/src/scenes/atlas.css",
+     "game/src/scenes/shop.css",
+     "game/src/scenes/reward.css",
+     "game/src/scenes/event.css",
+     "game/src/scenes/rest.css",
+     "game/src/scenes/gameover.css",
+     "game/src/scenes/gameover.js",
+     "game/src/scenes/clubhouse.css",
+     "game/src/scenes/map.css",
+     "game/src/ui/settings.css",
+     "game/src/ui/hud.js",
+     "game/src/ui/hud.css",
+     "tests/blueprint/estate.png",
+     "tests/blueprint/estate-foyer.png",
+     "tests/blueprint/bathhouse.png",
+     "tests/blueprint/lampworks.png",
+     "tests/blueprint/nursery.png",
+     "tests/blueprint/study-library.png"
+    ],
+    "kit_changes": "kit.css: none. tokens.css: none. tooltip: none. room shell: none.\nhud.js: _fitPouch now runs its search a second time with data-terse=\"1\" if the rail is still tight or the wing's name is ellipsised, before it falls back to data-dense. Result: in the pouch state the readouts lose their words and the wing's name stays whole (\"The Foyer \u00b7 Wing 1\", not \"T...\").\nhud.css: one appended rule: .mm-hud[data-belt=\"pouch\"][data-terse=\"1\"] .mm-hud__chip.mm-hud__haunt > .mm-icon { display: inline-flex }. Haunt keeps its icon on the terse pouch rail.\nmodal (settings only, from settings.css): .mm-settings-modal.mm-modal--kit overrides --dlg-top, --dlg-bottom and --dlg-side, so the settings dialog sits higher and wider. modal.css itself is unchanged.\nDiscoveries / How to play: narrative.css is unchanged. They are restyled through .scene--atlas and .scene--clubhouse rules in atlas.css and clubhouse.css. The clubhouse ones are moved with `translate`, so no scene redeclares the shared bar's own position.",
+    "endings_ok": true,
+    "console_errors": 0,
+    "notes_for_merger": "STASH WARNING, please read: the main repo's stash entry \"stash@{0}: On dev: pre-r59-merge grounding captures\" is shared by every worktree. A `git stash; git stash pop` in my worktree stashed nothing, so the pop applied that entry to my worktree and conflicted on 12 tests/grounding PNGs. I reset those files in my worktree only. The stash entry is still there and was not dropped. Nothing in the main checkout was touched.\n\nWhat changed:\n- Atlas: ui/estate-blueprint.js PLACEMENT is now a plate of 3 columns x 5 rows of ranges, plus a foundation row (exported PLATE). Each plan is as wide as its range: grounds on the west, two house ranges, the Foyer at the south door, below stairs Crypt / Passages / Heart. The NE bay holds the key and the rose.\n- drawMasterSurvey now draws a neat line, galleries across the gutters, a dotted garden wall, an L-shaped house wall and a foundation rule.\n- atlas.js: the plate view draws each plan from the playable plan's rooms, halls, boss and safe rooms, and doors (planGrid), not a shrunken drawFloorplan. Names are one-line captions lettered in the gutter under each plan; the old plates/tags are hidden. _fitNames never wraps and skips \"of ...\" shortenings. _fitSheet pads are smaller. The dossier facts are a ledger, the tally is in small caps, the paper is lighter, the vignette is softer and the earned-wing brackets are tighter.\n- tests/blueprint/estate.py still asserts the same seam, no overlapping insets, inside MASTER: PASS. Under machine load it needed longer navigation timeouts, applied in memory only.\n- Shop: the five Tricks stand on one shelf at both sizes. The art window is shorter. Rules font is pinned to the old on-screen px through calc(var(--u)*N/var(--cpx)): 22.1 / 19.2 / 16.9 px at 1600, 21.4 / 18.5 / 16.3 px at 1280. Wares are three lots abreast. shop.js's inline grid-template-columns is overridden with !important.\n- The rest of the shop's wares still sit under the \"More wares below\" rail at both sizes, but every Trick and every price is on the first screen.\n- Gameover: four columns plus one stats strip. Final Tricks are two to a line. A ledger height (min(620px, ...), align-self:start) used to overflow; it now stretches. At 1280 it is three columns and the record panel scrolls inside itself; gameover.js adds a boardScrollCue for .go-stanzas, which reuses data-board-scroll=\"record\". The old r51/r52 memorial tests may see two record cues.\n- Reward: cards lifted, smaller crest.\n- Event: at 1280 two whole choices; at 1600 all three with no rail. The moon glaze is .rm-ground::after with mix-blend-mode: color.\n- Rest: all four choices whole.\n- Settings: always three columns (except large text), all seven pages whole at 1280, 1600 and 1920.\n- Map: CSS filter on .map-paper only (saturate / brightness / contrast / hue), and the tray sits lower at 1280.\n\nTests:\n- gamepad: 24/0 via on_port.\n- chrome: 27/0. One earlier run failed only on fps 25 under load; the rerun measured 61 fps.\n- scene-css: 0 conflicts. Base had 0; I fixed the 4 I introduced.\n- css-tokens: 0 undefined.\n- steam-deck: 6 passed, 0 failed, but only with timeouts multiplied in memory. The stock run timed out on every screen under GPU contention from three builders.\n- readability: every scene comes up, spill 0, minFont did not fall (shop 16, was 13.4; gameover 16, was 13.5; the rest equal or better). This needed a wrapper, because readability imports steam-deck/run.py, whose BASE stays 8777 under on_port. The run's last assert failed on the clock rate (0.43, needs 0.50 to 0.80). That is machine load; I changed nothing in motion.\n- I measured gameover's minFont on the main :8777 server read-only: base is also 13.03 (featured card's Vanish badge).\n\nCaptures:\n- All 22 were taken with capture.py over four runs. Later runs re-shot only the screens changed after the first.\n- capture-results.json was rebuilt from all four logs: every exit is 0 except hud-late-1280, exit 2 (void flag; I looked at it and it is fine). No console files.\n- Outside my track I looked at title and select on :9603. Select drew plain under load; I did not touch it.\n\nDev server PID 9008 is stopped.",
+    "self_score": 7.6
+   }
+  ]
+ }
+}

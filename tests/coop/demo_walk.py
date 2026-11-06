@@ -149,6 +149,27 @@ STATE = """() => {
   };
 }"""
 
+# What the turn barrier is waiting on, read at a stall: the held input and every horizon.
+WIRE = """() => {
+  const r = window.MM.ctx.run, s = r && r.session, e = r && r.combat;
+  if (!s) return null;
+  const head = s.log[s._applied] || null, now = performance.now();
+  return {
+    visible: document.visibilityState, turn: s.turn(), phase: e ? e.phase : null, over: e ? !!e.over : null,
+    applied: s._applied, log: s.log.length, late: (s._late || []).length, applying: s._applying,
+    head: head && { t: head.t, act: head.act, seat: head.seat, turn: head.turn, seq: head.seq, clk: head.clk, node: head.node },
+    held: head ? s._heldByBarrier(head) : null, barrier: s._barrierTurn(), clock: s._clock, seq: s._seq,
+    ready: head && head.node && r.readyForCombatInput ? r.readyForCombatInput(head) : null,
+    node: r.currentNodeId, pendingCombat: !!r.pendingCombat,
+    horizon: Object.fromEntries([...s._horizon].map(([k, h]) => [k, h])),
+    heardAgo: Object.fromEntries([...s._heardAt].map(([k, t]) => [k, Math.round(now - t)])),
+    lost: [...s.lost], gone: [...s.gone], heldFor: s._heldSince ? Math.round(now - s._heldSince) : 0,
+    players: e ? e.players.map(p => ({ ended: !!p.ended, fallen: !!p.fallen, gone: !!p.gone, hand: p.piles.hand.length })) : null,
+    slowQ: s.transport && s.transport._slowQ ? s.transport._slowQ.length : null,
+    ring: (window.__ring || []).slice(-30),
+  };
+}"""
+
 PLAY = """async () => {
   const r = window.MM.ctx.run, e = r.combat;
   if (!e || e.over || e.phase !== 'player') return 'wait';
@@ -400,7 +421,7 @@ async def main():
         begin = loop.time()
         last_change = begin
         last_key = None
-        last_place, last_moved = None, begin
+        last_place, last_moved, last_placed = None, begin, begin
         last_backlog = 0
         apart = 0
         scenes_seen, routes, rooms = set(), set(), []
@@ -477,11 +498,24 @@ async def main():
             # A repeated vote moves the log and nothing else, so walking on is judged apart.
             place = json.dumps([[x["scene"], x["node"], x["turn"], x["region"]] for x in st])
             if place != last_place:
-                last_place, last_moved = place, now
-            if now - last_change > STALL or now - last_moved > STALL * 2:
-                check(False, "somebody can always do something", f"nothing moved for {int(now - min(last_change, last_moved))}s")
+                last_place, last_moved, last_placed = place, now, now
+            # An animation queue that keeps refilling looks like motion to both clocks above. On
+            # 11-05 a party sat seven hours in the Study boss's first turn, one seat a turn ahead,
+            # while it did; the place has to move at some point whatever is animating.
+            if now - last_change > STALL or now - last_moved > STALL * 2 or now - last_placed > STALL * 6:
+                check(False, "somebody can always do something", f"nothing moved for {int(now - min(last_change, last_moved))}s, the same place for {int(now - last_placed)}s")
                 for i, x in enumerate(st):
-                    print("   ", "ABCD"[i], json.dumps({k: x[k] for k in ("scene", "node", "region", "turn", "phase", "ended", "plate", "animating", "queueTypes", "queueHead", "maxQ", "took", "fps", "buttons", "pending", "busy")}), flush=True)
+                    print("   ", "ABCD"[i], json.dumps({k: x[k] for k in ("scene", "node", "region", "turn", "phase", "ended", "plate", "animating", "queueTypes", "queueHead", "maxQ", "took", "fps", "buttons", "pending", "busy", "log", "chooser")}), flush=True)
+                for i in range(len(pages)):
+                    try:
+                        print(f"    {'ABCD'[i]} is in {await asyncio.wait_for(stack_of(cdps[i]), 40)}", flush=True)
+                    except Exception as e:
+                        print(f"    {'ABCD'[i]} gave no stack: {e!r}", flush=True)
+                for i, pg in enumerate(pages):
+                    try:
+                        print(f"    {'ABCD'[i]} wire", json.dumps(await asyncio.wait_for(pg.evaluate(WIRE), 20)), flush=True)
+                    except Exception as e:
+                        print(f"    {'ABCD'[i]} gave no wire: {e!r}", flush=True)
                 if SHOTS:
                     for i, pg in enumerate(pages):
                         await pg.screenshot(path=os.path.join(SHOTS, f"stall-{'ABCD'[i]}.png"))
