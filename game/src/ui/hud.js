@@ -699,13 +699,22 @@ export class HUD {
       const lo = Math.min(p.k ? p.vk : 99, p.g ? p.vg : 99);
       return lo + ((p.k ? p.vk : 0) + (p.g ? p.vg : 0)) / 100;
     };
-    let best = top, bestN = -1;
-    for (let sock = top; sock >= SOCK_FLOOR; sock--) {
-      const got = lay(sock);
-      if (got > bestN) { best = sock; bestN = got; }
-      if (got >= PEEK_WANT) break;
-    }
-    if (parseFloat(this.el.style.getPropertyValue('--sock')) !== best) lay(best);
+    const run = () => {
+      let best = top, bestN = -1;
+      for (let sock = top; sock >= SOCK_FLOOR; sock--) {
+        const got = lay(sock);
+        if (got > bestN) { best = sock; bestN = got; }
+        if (got >= PEEK_WANT) break;
+      }
+      if (parseFloat(this.el.style.getPropertyValue('--sock')) !== best) lay(best);
+    };
+    run();
+    /* ROUND 60: a full late-run strip cut the wing's name to "T..." (survey
+       11, both judges): where you are is the one word the rail never gives
+       up. The readouts' words go first, as they do on the belt (each keeps
+       its icon, its figure and its tooltip), and the peeks give up objects
+       before the name does -- legibility over count. */
+    if (this._tight()) { this.el.dataset.terse = '1'; run(); }
     this.el.dataset.fold = '5';
     if (this._tight()) this.el.dataset.dense = '1';
     this.$relics.parentElement.dataset.vine = '0';
