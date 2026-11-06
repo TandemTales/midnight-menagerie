@@ -395,7 +395,15 @@ export const REGIONS = {
                        blocks and a ball strayed off the rug toward you; small,
                        for the frame budget: near the eye a quad costs its
                        whole area, and in the fight this one is under the hand) */
-                    { shape: 87, ahead: 2.25, across: -0.55, tone: 0.98, keep: true, still: true, seed: 5.9, hM: 0.32 }] },
+                    { shape: 87, ahead: 2.25, across: -0.55, tone: 0.98, keep: true, still: true, seed: 5.9, hM: 0.32 },
+                    /* ROUND 59 GRAFT (AGATE's): both sides of the near floor
+                       dressed -- a second rocking horse on the near left
+                       boards, the toy chest's twin on the near right, each
+                       whole inside the frame and not cut by its edge. In a
+                       fight they are struck while a fighter stands across
+                       them (stageAside). */
+                    { shape: 46, ahead: 4.7, across: 2.0, tone: 0.96, keep: true, still: true, seed: 6.3 },
+                    { shape: 47, ahead: 3.0, across: -1.45, tone: 0.96, keep: true, still: true, seed: 2.8 }] },
     crispFloor: true, grain: 0.012,
     nearFloor: { fall: 0.80, dye: 1, calm: 0.92, clean: 1, rug: { ahead: 3.6, hw: 1.65, hd: 1.05 }, rugGain: 0.70, rugGul: 0.85,
                  pool: { ahead: 4.0, across: 0.0, rAlong: 2.6, rAcross: 3.4, k: 2.5, color: '#ff9a50' },
