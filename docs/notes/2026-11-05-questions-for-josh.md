@@ -50,6 +50,13 @@ Each one has a default I have already taken, so nothing is waiting on you unless
 9. **The map's floor plan** lost to the old parchment with both judges ("milky", "pale"). The plan is
    yours and it stays. Round 60 deepens the sheet and thins the toolbar, nothing more.
 
+9b. **The floor plan opens with part of the sheet off-screen, and the judges count that against it.** Two
+   surveys now mark the map down for rooms cut at its right edge ("UMBRELLA GA", "VISITOR CLO"). A repair
+   framed the whole building instead, but then every room name is 5.5 to 7 px on screen, which breaks the
+   large-type rule, and it went against the 10-28 choice to open at a readable 0.85x. I kept your opening
+   view. The framed version is on branch `ui/r61-repair2` (commits `87630b49`, `1f445378`) if you want it,
+   or a middle way: open framed and zoom to 0.85x on the party's room after a moment.
+
 ## Not measured
 
 10. **Real-GPU performance with four Kids**, on the Deck or anything else. Fights of one Kid are inside
