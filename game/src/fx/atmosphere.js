@@ -2648,6 +2648,14 @@ export const ROOM_KINDS = {
           { shape: 76, edge: 0.47, z: -2.6, tone: 0.92, centre: 1, still: true },
           { shape: 74, edge: 0.55, z: -1.2, tone: 0.92, centre: 1, still: true, seed: 2.25, hM: 0.62 },
           { shape: 74, edge: 0.80, z: -1.8, tone: 0.92, centre: 1, still: true, seed: 4.15, hM: 1.60 },
+          /* ROUND 59 GRAFT (OBSIDIAN's): the puddled flags either side of
+             the fountain hold drawn things -- a second potting bench with its
+             pots and its watering can out on the open floor at the left, a
+             wirework stand of pots in three tiers at the right. (Two pieces:
+             the terrace spends the whole of MAX_PROPS, and each one here is a
+             dealt bed lost off the end of the deal.) */
+          { shape: 84, edge: 0.385, z: -5.6, tone: 0.94, centre: 1, still: true, seed: 2.1 },
+          { shape: 76, edge: 0.63, z: -5.2, tone: 0.92, centre: 1, still: true, seed: 5.7 },
         ],
         /* (round 34: 1.0 of the wing's 36 -- the 0.82 of 44 it was judged with) */
         /* (round 34 graft, GLAUCONITE's: from the gallery's near end and not
