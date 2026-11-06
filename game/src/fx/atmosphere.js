@@ -2294,7 +2294,10 @@ const FOYER_NEAR_HEARTH = [
      parlour's near corners", a PAIR of hall chairs either side of the runner
      as a parlour sets them to the fire, in its green velvet (seeds 2.2 and
      6.7); the stick stand they displace goes to the gallery) */
-  { shape: 63, edge: 0.150, z: 4.8, tone: 0.95, fore: 1, keep: true, scale: 1.1, seed: 2.2 },
+  /* (round 59 graft: the left one keeps the near-left floor under a
+     party's Companion row clear -- struck while it would sit under their
+     paws, `clear`; with one Kid nobody stands over it and it stays) */
+  { shape: 63, edge: 0.150, z: 4.8, tone: 0.95, fore: 1, keep: true, scale: 1.1, seed: 2.2, clear: 0.06 },
   { shape: 65, edge: 0.27, z: 2.6, tone: 0.95, fore: 1, keep: true },
   { shape: 63, edge: 0.855, z: 4.6, tone: 0.95, fore: 1, keep: true, scale: 1.1, seed: 6.7 },
 ];
