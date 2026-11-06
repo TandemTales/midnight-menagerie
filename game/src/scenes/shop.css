@@ -1616,7 +1616,6 @@
 .scene--shop .rm--shop .sh-side > .sh-counter { padding: 23px clamp(12px, 1.1vw, 18px) 8px; min-height: 0; }
 .scene--shop .rm--shop .sh-side .sh-list {
   display: flex; flex-direction: column; gap: 5px; padding: 0;
-  grid-template-columns: none !important;
 }
 .scene--shop .rm--shop .sh-side .sh-row.sh-pressable {
   --vw: clamp(46px, 3.5vw, 56px);
@@ -1757,4 +1756,111 @@
     inset 0 -2px 6px rgb(110 74 36 / .25),
     2px 5px 6px var(--kit-void);
   clip-path: polygon(0 7px, 7px 0, 100% 0, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 61 REPAIR: THE WARES UNDER GLASS AGAIN. Survey 12 against survey 10:
+   the Keepsakes stood under bell jars and the Snacks in sweet jars on brass
+   pedestals, three to a shelf, and today they were parchment slips. They
+   stand again, at today's reading type: each ware a column of its own -- its
+   bell or jar on the walnut foot, on a brass-bound plinth, its price tag hung
+   from the plinth's end, its name on the dark plate under it, what it does
+   lettered on the velvet below. The columns share the shelf by how much each
+   has to say (shop.js); the glass is what gives up size, never the words.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.scene--shop .rm--shop .sh-side > .sh-counter:is(.sh-counter--keeps, .sh-counter--snacks) { padding: 22px clamp(10px, .9vw, 16px) 6px; }
+.scene--shop .rm--shop .sh-side .sh-list {
+  display: grid; grid-auto-flow: column; grid-template-rows: auto;
+  align-items: start;
+  column-gap: clamp(8px, .9vw, 14px);
+  padding: clamp(6px, 1vh, 10px) 0 0;
+}
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable {
+  --vw: clamp(40px, 4.3vw, 70px);
+  --plinth-h: clamp(13px, 1.6vh, 15px);
+  --tag-shift: clamp(30px, 2.4vw, 38px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "sig" "plinth" "txt";
+  grid-template-rows: auto var(--plinth-h) auto;
+  align-items: end; justify-items: center;
+  column-gap: 4px; row-gap: 0;
+  padding: 0; min-width: 0; width: auto; height: auto;
+  background: none;
+  text-align: center;
+}
+/* the plinth: a brass-bound block the glass stands on, a grid item of its own */
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable::before {
+  content: ''; display: block; position: relative; z-index: 1; pointer-events: none;
+  grid-area: plinth; justify-self: center; align-self: stretch;
+  width: min(100%, calc(var(--vw) + var(--tag-shift) * 2 + 14px)); height: auto; margin: 0;
+  inset: auto; translate: none; border-radius: 0;
+  background: url("../../assets/ui/kit/plinth.webp") 50% 0 / 100% 100% no-repeat;
+  box-shadow: none;
+  filter: drop-shadow(0 5px 4px rgb(0 0 0 / .8));
+}
+.scene--shop .rm--shop .sh-side .sh-row .sh-row__sig.sh-vessel {
+  grid-area: sig; justify-self: center; align-self: end;
+  width: var(--vw); height: calc(var(--vw) * 184 / 160);
+  margin: 0 0 -2px; translate: calc(var(--tag-shift) * -1) 0;
+  z-index: 2;
+}
+.scene--shop .rm--shop .sh-side .sh-row .sh-vessel--jar { height: calc(var(--vw) * 184 / 150); }
+/* the price tag stands propped on the plinth beside the glass */
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable > .sh-buy {
+  grid-area: sig; justify-self: start; align-self: end;
+  margin: 0 0 -1px 50%; translate: calc(var(--vw) / 2 + 3px - var(--tag-shift)) 0;
+  z-index: 3;
+}
+.scene--shop .rm--shop .sh-side .sh-row .sh-buy.kit-price::after { display: none; }
+/* ...and BUY (or why it cannot be bought) is raised over the tag, beside the
+   glass's shoulder, never across the next ware on the shelf */
+.scene--shop .rm--shop .sh-side .sh-row .sh-buy.kit-price .kit-price__buy {
+  position: absolute; right: -2px; bottom: calc(100% + 1px); z-index: 4;
+  margin: 0;
+}
+/* the name on its dark plate, and what it does on the velvet under it */
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable .sh-row__txt,
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable:is(.is-in-hand, :hover, :focus-within) .sh-row__txt {
+  grid-area: txt; display: flex; flex-direction: column; align-items: center;
+  width: 100%; min-width: 0;
+  margin: 3px 0 0; padding: 0;
+  background: none; border: 0; box-shadow: none; clip-path: none; rotate: none;
+  text-align: center; line-height: 1.14;
+}
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable .sh-row__txt::before { content: none; }
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable .sh-row__txt b,
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable:is(.is-in-hand, :hover, :focus-within) .sh-row__txt b {
+  display: block; position: relative; z-index: 2;
+  max-width: 100%; margin: 0; padding: 2px 11px 3px;
+  white-space: normal; text-wrap: balance; overflow: visible;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 7px 12px stretch;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / .85));
+  font-family: var(--font-display); font-weight: 700; letter-spacing: .02em; line-height: 1.18;
+  color: var(--kit-gold-hi);
+  text-shadow: 0 -1px 0 rgb(0 0 0 / .95), 0 0 8px color-mix(in srgb, var(--kit-candle) 22%, transparent);
+}
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable .sh-row__txt b::after { content: none; }
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable .sh-row__txt em,
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable:is(.is-in-hand, :hover, :focus-within) .sh-row__txt em {
+  display: block; margin: 3px 0 0; padding: 0 1px;
+  font-style: normal; font-weight: 600; line-height: 1.14;
+  color: var(--kit-text);
+  text-shadow: 0 1px 2px rgb(0 0 0 / .9);
+  text-wrap: balance;
+}
+@media (max-width: 1400px) {
+  /* the Deck's narrower counter: the Snacks' jars and their tags stand whole */
+  .scene--shop .rm--shop .sh-floor { grid-template-columns: minmax(0, 1.3fr) minmax(0, .78fr) minmax(0, .94fr); }
+  .scene--shop .rm--shop .sh-side .sh-row.sh-pressable { --tag-shift: 32px; }
+  .scene--shop .rm--shop .sh-counter--snacks .sh-row.sh-pressable { --tag-shift: 37px; }
+}
+@media (max-height: 860px) {
+  /* the Deck's shorter board: the glass stands up off the shelf's ribbon and
+     the Tricks sit a little closer under theirs, so every ware stands whole */
+  .scene--shop .rm--shop .sh-side .sh-list { padding-top: 2px; }
+  .scene--shop .rm--shop .sh-side .sh-row.sh-pressable { --vw: 47px; }
+  .scene--shop .rm--shop .sh-cards { padding-top: 10px; }
+  .scene--shop .rm--shop .sh-cards::before { top: calc(10px + var(--face-h) - 4px); }
 }
