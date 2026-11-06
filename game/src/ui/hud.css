@@ -1270,3 +1270,56 @@
 .mm-hud[data-terse="1"] .mm-hud__where .mm-hud__s { flex-shrink: 0; white-space: nowrap; }
 
 .mm-hud[data-terse="1"] .mm-hud__haunt > .mm-icon { display: inline-flex; }
+
+/* ROUND 61 REPAIR 4: THE PURSE. Survey 13, both judges: the strip is "rows of small identical
+   web-like chips, nothing like the samples' cartouches". Buttons, Clues and Luck are one
+   reckoning, so they are lettered on ONE of the Companion tiles' dark enamel nameplates in its
+   bowed gilt rim (kit/cartouche-dark.webp, the plate "No Keepsakes" is set in), its left end
+   under the coin's medallion where the medallion shows, the three figures parted by gilt rules
+   engraved in its enamel instead of the rail's studs. The plate is drawn in three lengths, one
+   behind each figure (::before), meeting in the gaps between them, so the rail lays out exactly
+   as before: no figure moves and none is covered. */
+.mm-hud {
+  --purse-h: calc(var(--hud-chip-h) * 1.08);
+  --purse-x: 5.5px;              /* half the gap between two figures */
+  --purse-end: 11px;             /* how far the right-hand end reaches past Luck */
+}
+.mm-hud :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck)::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  top: 50%; translate: 0 -50%; height: var(--purse-h);
+  left: calc(var(--purse-x) * -1); right: calc(var(--purse-x) * -1);
+  border: 0 solid transparent;
+  border-image-source: url("../../assets/ui/kit/cartouche-dark.webp");
+  border-image-slice: 18 34 18 34 fill;
+  border-image-width: calc(var(--purse-h) * 18 / 64) 0;
+  border-image-repeat: stretch;
+}
+.mm-hud .mm-hud__gold::before {
+  left: -6px;
+  border-image-width: calc(var(--purse-h) * 18 / 64) 0 calc(var(--purse-h) * 18 / 64) calc(var(--purse-h) * 34 / 64);
+}
+/* with its words lettered (a wide rail) the plate's curled end reaches back into the gap
+   before BUTTONS, where it takes the place of the rail's stud */
+.mm-hud[data-terse="0"] .mm-hud__gold::before {
+  left: -10px;
+  border-image-width: calc(var(--purse-h) * 18 / 64) 0 calc(var(--purse-h) * 18 / 64) 9px;
+}
+.mm-hud[data-terse="0"] .mm-hud__gold::after { content: none; }
+/* with the coin's medallion showing, the plate's end lies under the medallion's middle */
+.mm-hud[data-terse="1"] .mm-hud__gold::before { left: calc(var(--hud-chip-h) * .56); }
+.mm-hud .mm-hud__luck::before {
+  right: calc(var(--purse-end) * -1);
+  border-image-width: calc(var(--purse-h) * 18 / 64) calc(var(--purse-h) * 34 / 64) calc(var(--purse-h) * 18 / 64) 0;
+}
+.mm-hud :is(.mm-hud__clue, .mm-hud__luck)::after {
+  left: calc(var(--purse-x) * -1 - .5px);
+  width: 1px; height: calc(var(--purse-h) * .56);
+  background: linear-gradient(180deg, transparent, var(--kit-gold-hi) 25%, var(--kit-gold) 75%, transparent);
+  box-shadow: 1px 0 0 rgba(0, 0, 0, .8);
+  filter: none;
+}
+@media (max-width: 1400px) {
+  .mm-hud { --purse-x: 2px; --purse-end: 10px; }
+  /* the plate's end stands where the stud before the Snacks was: the gap holds one of them */
+  .mm-hud__group--vitals > .mm-hud__luck + .mm-hud__snacks::after { content: none; }
+}
