@@ -70,3 +70,24 @@ The paired check was against survey 13's captures of dev, which were taken with 
 Left: the location readout and Haunt/Tricks have no plate, because a plate there would change the HUD's fit. The clubhouse's PETS VANISH clipping is cut at 1280. And the samples' double-ruled filigree is richer than these single rims.
 
 Key: `PAIRED-r61-repair4-key.json`.
+
+## Repair 5: the fight's status floaters on a framed board
+
+Merged from `ui/r61-repair5` (`game/src/fx/combatfx.js`, `combat.css`):
+
+- All of a fighter's conditions ("+2 Weak", "+3 Strength") land on one violet enamel board in a gilt rim, one line per condition with engraved rules between them, and the owner's name on a cartouche at the top (`920b2967`, `24004893`).
+- The board is kept clear of faces, nameplates, Courage bars and intents. It fades with its last line, and the lines close up as they go.
+- Type size and timing are unchanged, and damage numbers are untouched.
+
+The paired check was on combat-crowd only, against dev captured by the same script: **repair 2, dev 0**, by 2 from each judge. The two captures caught the fade at slightly different moments, so this judged the presentation, not the line count.
+
+Tests: combat-scene seam 22/0, combat 695/0, steam-deck 6/0, settings-play 19/0, scene-css 0, css-tokens 0. The r51 queue probe caught a stall in a four-enemy room in the first version, and passes 16/16 now.
+
+**Capture trap:** survey scripts' combat-crowd shot (`--steps ...|wait:3`) fires too late to catch any floaters, so a survey cannot see them. To judge them, re-apply the statuses after the wait, as `D:/UILOOP/r61/judging/REPAIR5/` did.
+
+Left:
+- At 1600 a board can touch the Butler's gilt mirror frame.
+- The rims are single, not the samples' double-ruled filigree.
+- Already broken on dev, and not this change: in foyer-6 the Coatrack Crawler's conditions never show.
+
+Key: `PAIRED-r61-repair5-key.json`.
