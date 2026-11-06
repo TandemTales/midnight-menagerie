@@ -383,7 +383,10 @@ export const REGIONS = {
                     /* (graft: the horse a stride in from the frame's edge,
                        so the Deck's 1280 sees it whole -- judge 2) */
                     { shape: 46, ahead: 4.5, across: -1.95, tone: 0.97, keep: true, still: true, seed: 2.2 },
-                    { shape: 47, ahead: 4.2, across: 2.35, tone: 0.97, keep: true, still: true, seed: 4.6 },
+                    /* (round 59: the chest a stride further in, its foot behind
+                       where the Kid's soles fall at any window, so it stands
+                       in the fight too, at her back, rather than being struck) */
+                    { shape: 47, ahead: 7.0, across: 3.1, tone: 0.97, keep: true, still: true, seed: 4.6 },
                     /* ...and the blocks tipped out of the chest onto the
                        rug, a ball rolled clear (87) */
                     { shape: 87, ahead: 3.2, across: 0.75, tone: 0.98, keep: true, still: true, seed: 1.4, hM: 0.50 },
@@ -398,7 +401,10 @@ export const REGIONS = {
                  pool: { ahead: 4.0, across: 0.0, rAlong: 2.6, rAcross: 3.4, k: 2.5, color: '#ff9a50' },
                  /* (graft, judge 1: the fire's glow carried on below the
                     rug, to the frame's foot) */
-                 pool2: { ahead: 2.4, across: 0.0, rAlong: 2.2, rAcross: 3.4, k: 2.0, color: '#f0a060' } },
+                 /* (round 59: the fire's glow laid on the middle of the floor,
+                    between the rug and the hearth, where the boards fell to
+                    black and the chest and the horses stood on nothing) */
+                 pool2: { ahead: 8.4, across: 0.0, rAlong: 3.2, rAcross: 5.0, k: 4.0, color: '#f0a060' } },
     /* (round 37: the cold fill from behind the eye laid a lavender haze on
        the near boards' left -- a third of it reaches the floor) */
     cineFloor: 0.35,
@@ -893,7 +899,10 @@ export const REGIONS = {
                     { shape: 54, edge: 0.33, z: -4.4, tone: 0.95 },
                     { shape: 56, edge: 0.85, z: -4.6, tone: 0.94 },
                     { shape: 56, ahead: 5.2, across: -2.15, tone: 0.97, scale: 0.86, keep: true, still: true, seed: 4.4 },
-                    { shape: 88, ahead: 3.9, across: -1.35, tone: 0.98, keep: true, still: true, seed: 2.6, hM: 0.36 }] },
+                    { shape: 88, ahead: 3.9, across: -1.35, tone: 0.98, keep: true, still: true, seed: 2.6, hM: 0.36 },
+                    /* (round 59: and a pile set down out on the middle floor by
+                       the desk, a footstool's height) */
+                    { shape: 88, ahead: 7.2, across: 1.5, tone: 0.97, keep: true, still: true, seed: 5.3, hM: 0.48 }] },
     crispFloor: true, grain: 0.012,
     /* (graft: CARNELIAN's even warm floor -- the near floor at 0.95, the
        carpet centred and the lamps' light lying over the whole of it and
@@ -903,7 +912,9 @@ export const REGIONS = {
                  /* (and the green lamp's warmth on the boards round the desk
                     and between the cases and the carpet -- the stripe the
                     judges named, and the cold wash behind the desk) */
-                 pool2: { ahead: 7.4, across: 2.0, rAlong: 2.6, rAcross: 3.4, k: 2.6, color: '#eab26a' } },
+                 /* (round 59: across the whole middle of the floor, between the
+                    cases and the carpet -- it was a dark band) */
+                 pool2: { ahead: 7.6, across: 0.6, rAlong: 3.0, rAcross: 4.6, k: 3.0, color: '#eab26a' } },
     /* (graft: the cinematic pair's whole light on the boards again -- at
        half, the boards between the cases and the carpet were the black
        stripe all three judges named) */
@@ -1430,7 +1441,11 @@ export const REGIONS = {
                        (FLOOR_FRAG's drifts) -- under the hand in a fight, so
                        the maze's frame, the closest to the line, pays nothing;
                        and the prop program does not grow: an urn it draws */
-                    { shape: 81, ahead: 2.4, across: 1.30, tone: 0.95, keep: true, still: true, hand: true, seed: 1.6, scale: 0.40 }] },
+                    /* (round 59: across the walk on the right-hand lawn, which
+                       was bare turf, whole in the frame -- at the seat's end it
+                       was cut by the frame's foot; in a fight it is struck only
+                       if somebody stands across it) */
+                    { shape: 81, ahead: 4.6, across: -1.6, tone: 0.95, keep: true, still: true, seed: 1.6, scale: 0.40 }] },
     /* ...and the moon laid on the walk and the turf in front of you, the
        foreground falling to nine-tenths and not two-fifths */
     /* (round 31 graft, judges 1 and 3: "lift the near path out of black with
@@ -1547,7 +1562,12 @@ export const REGIONS = {
                        ledgers, a candle stub and the keys; not the Foyer's
                        marble pier table and its vase: wfServTable) */
                     { shape: 66, edge: 0.15, z: 3.4, tone: 0.94, fore: 1, keep: true, seed: 41.4 },
-                    { shape: 66, edge: 0.85, z: 2.8, tone: 0.94, fore: 1, keep: true, seed: 43.9 }] },
+                    { shape: 66, edge: 0.85, z: 2.8, tone: 0.94, fore: 1, keep: true, seed: 43.9 },
+                    /* (round 59: and the cases pushed in along both sides of the
+                       near boards, beside the runner -- the passage's lower half
+                       was bare plank either side of it) */
+                    { shape: 8, ahead: 4.4, across: -2.35, tone: 0.95, scale: 0.85, keep: true, still: true },
+                    { shape: 8, ahead: 6.2, across: 2.4, tone: 0.94, scale: 0.80, keep: true, still: true }] },
     particles: { mix: [[PTYPE.DUST, 0.78], [PTYPE.PLASTER, 0.16], [PTYPE.WISP, 0.06]],
                  /* (round 28: 0.45, from 1.0 -- a thousand lit motes against
                     the dark end of the passage were "a starfield indoors") */
@@ -2369,6 +2389,13 @@ const GRAVE_NEAR_YARD = [
      centuries in the weather is dark, not the palest thing in the yard:
      tone 0.93 -> 0.55) */
   { shape: 70, edge: 0.30, z: 3.2, tone: 0.55, scale: 1.10, seed: 4.5 },
+  /* (round 59: the footlights -- a kerbed grave and a low stone in the near
+     lawn between the walk and the big stones, all of it below where anybody
+     stands; in a fight it is under the hand, so it is not drawn there) */
+  /* (`still`: dealt from their own hash, so the yard's yews and its moon
+     stay where the deal put them) */
+  { shape: 70, edge: 0.50, z: 0.8, tone: 0.86, scale: 0.90, seed: 2.5, hand: 1, still: true },
+  { shape: 69, edge: 0.45, z: 3.4, tone: 0.90, scale: 0.78, seed: 4.0, hand: 1, still: true },
   { shape: 70, edge: 0.03, z: -5.0, tone: 0.88 },
   { shape: 73, x:  2.80, z: -4.40, tone: 0.86, free: true },
   /* (round 44: a family's small stones leaning together in the empty lawn
@@ -2406,7 +2433,12 @@ export const ROOM_KINDS = {
         /* (round 25: the moon's cold lamp hangs further from a back wall
            this hall has brought nearer, so the paper beside the fire is
            not washed a milky lavender) */
-        lamps: [{ i: 3, z: 0.42, k: 0.70 }],
+        lamps: [{ i: 3, z: 0.42, k: 0.70 },
+                /* (round 59: the lantern standard off the Kid's shoulder --
+                   at her side its foot was on her sole line -- to the right
+                   wing of the fight, where the boards beyond the creatures
+                   were dark) */
+                { i: 2, x: 6.4, z: 0.30 }],
         /* (round 34 GRAFT, GLAUCONITE's -- J1 and J2: "the warmer pool along
            the runner": the torchere's candles laid long and warm down the
            runner between the chairs, where the parlour's lower half was a
@@ -3634,6 +3666,7 @@ function hashSeed(v) {
    gallery for a reason. */
 const STAGE_BASE = 0.39;
 const STAGE_EYE = 0.72;
+const STANDS = [[0.47, 1.00], [0.513, 1.25], [0.53, 1.50], [0.556, 1.62], [0.62, 2.05]];
 function stageRig(pal) {
   const c = pal.cam, R = pal.room;
   if (!c || !R) return;
@@ -3657,26 +3690,33 @@ function stageRig(pal) {
   const look = ey - hd * Math.tan(pitch);
   const lookA = ey - ((c.y ?? 2.3) - (c.look ?? 2.4));        // the authored pitch, from the new eye
   pal.cam = Object.assign({}, c, { y: ey, look: pal.pool ? look : Math.min(look, lookA) });
-  // The far wall alone cannot guarantee floor under a wide party in a narrow
-  // or angled room. Cast the outer standing positions onto the floor and
-  // gently pitch down until they fit inside the room, including its side walls.
-  // Leave width for resizing to a wide desktop without rebuilding the room.
-  const aspect = Math.max(pal.aspect || 16 / 9, 2);
+  /* WHERE PEOPLE REALLY STAND (round 59). The far wall alone cannot guarantee
+     floor under a wide party in a narrow room, so the rig also casts the outer
+     standing positions onto the floor and pitches down until they land inside
+     the walls. It used to ask that of nx = +-0.96 at an aspect of 2 on a 44vh
+     sole line, a position nobody occupies: a sole line that high exists only
+     for a boss, who leaves the Kid a third of the way in. Narrow rooms answered
+     by tipping down until the vault and the far wall left the frame. STANDS is
+     measured: the sole line of each board at each window, and the widest anyone
+     is from the axis on it, in units of the frame's height -- aspect * |nx|, so
+     it holds at any window. */
   const shifted = pal.trueVert && !['door', 'rail', 'gate'].includes(pal.frame);
   for (let step = 0; step < 100; step++) {
-    const L = lensOf(pal.cam, aspect);
+    const L = lensOf(pal.cam, 1);
     const slope = (ey - pal.cam.look) / hd;
-    const lens = shifted ? lensOf({ ...pal.cam, look: ey }, aspect) : L;
-    const up = 0.12 * tanV - (shifted ? slope : 0); // 44vh: highest supported sole line
+    const lens = shifted ? lensOf({ ...pal.cam, look: ey }, 1) : L;
     let clear = true;
-    for (const nx of [-0.96, 0, 0.96]) {
-      const dx = lens.fx + lens.rx * nx * lens.tanH + lens.ux * up;
-      const dy = lens.fy + lens.uy * up;
-      const dz = lens.fz + lens.rz * nx * lens.tanH + lens.uz * up;
-      const t = -ey / dy, x = ex + dx * t, z = ez + dz * t;
-      if (dy >= 0 || Math.abs(x) > R.w / 2 - 0.20 || z < -R.d + 0.20 || z > 14.8) clear = false;
-      const pool = pal.pool;
-      if (pool && Math.abs(x) < pool.hw + 0.25 && z < pool.z0 + 0.25 && z > pool.z1 - 0.25) clear = false;
+    for (const [sole, across] of STANDS) {
+      const up = (0.5 - sole) * 2 * tanV - (shifted ? slope : 0);
+      for (const nx of [-across, 0, across]) {
+        const dx = lens.fx + lens.rx * nx * lens.tanH + lens.ux * up;
+        const dy = lens.fy + lens.uy * up;
+        const dz = lens.fz + lens.rz * nx * lens.tanH + lens.uz * up;
+        const t = -ey / dy, x = ex + dx * t, z = ez + dz * t;
+        if (dy >= 0 || Math.abs(x) > R.w / 2 - 0.10 || z < -R.d + 0.20 || z > 14.8) clear = false;
+        const pool = pal.pool;
+        if (pool && Math.abs(x) < pool.hw + 0.25 && z < pool.z0 + 0.25 && z > pool.z1 - 0.25) clear = false;
+      }
     }
     if (clear) break;
     const angle = Math.atan(slope) + 0.5 * deg;
@@ -3842,7 +3882,50 @@ export class Atmosphere {
       }
     }
     if (list.length || this._actN) this.backdrop.setActors(list);
+    this._stageAside(dt, list.length > 0);
     this._actN = list.length;
+  }
+
+  /* -- THE APRON (round 59) -------------------------------------------------
+     A room is dressed like a stage set: an upstage row behind the fight, flats
+     in the wings at the frame's edges, low pieces down at the footlights. Which
+     of them is in anybody's way depends on who is on the floor and how wide the
+     window is, so it is measured here and not reserved. A floor piece whose
+     picture crosses a fighter (body or plate) with its foot in FRONT of that
+     fighter's soles is struck for as long as that holds; one whose foot is
+     behind the soles stays, because the fighter then really is in front of it.
+     Boxes are read when the board's shape changes and on a slow clock after it,
+     never on a lunge (.cb-enemy and .cb-hero do not carry the fighting clips'
+     transforms), so a piece does not flicker. */
+  _stageAside(dt, fight) {
+    if (!fight) {
+      if (this._asideSig) { this._asideSig = ''; this.backdrop.stageAside([], null); }
+      return;
+    }
+    const cv = this.ctx.stage?.renderer?.domElement, cam = this.ctx.stage?.camera;
+    if (!cv || !cam) return;
+    const living = '.cb-enemy:not(.is-removed):not(.is-dead)';
+    const sig = `${cv.clientWidth}x${cv.clientHeight}|${document.querySelectorAll(living).length}|${document.querySelectorAll('.cb-hero').length}|${this.backdrop.placed?.length}|${this.roomSeed}`;
+    this._asideT = (this._asideT || 0) - dt;
+    if (sig === this._asideSig && this._asideT > 0) return;
+    this._asideT = sig === this._asideSig ? 1.5 : 0.25;
+    this._asideSig = sig;
+    const cr = cv.getBoundingClientRect();
+    const fx = (v) => (v - cr.left) / cr.width, fy = (v) => (v - cr.top) / cr.height;
+    const boxes = [];
+    for (const el of document.querySelectorAll('.cb-hero')) {
+      const r = el.getBoundingClientRect(), sh = el.querySelector('.pr-shadow')?.getBoundingClientRect();
+      if (r.width < 2 || !sh) continue;
+      boxes.push({ l: fx(r.left), r: fx(r.right), t: fy(r.top), b: fy(sh.bottom), sole: fy(sh.top + sh.height * (0.5 - 5 / 24)) });
+    }
+    for (const el of document.querySelectorAll(living)) {
+      const r = el.getBoundingClientRect(), st = el.querySelector('.cb-enemy__stage')?.getBoundingClientRect();
+      if (r.width < 2) continue;
+      boxes.push({ l: fx(r.left), r: fx(r.right), t: fy(r.top), b: fy(r.bottom), sole: fy(st && st.height > 4 ? st.bottom - st.height * 0.026 : r.bottom) });
+    }
+    const inc = document.querySelector('.cb-incoming:not([hidden])')?.getBoundingClientRect();
+    if (inc && inc.width > 2) boxes.push({ l: fx(inc.left), r: fx(inc.right), t: fy(inc.top), b: fy(inc.bottom), sole: fy(inc.top) });
+    this.backdrop.stageAside(boxes, cam);
   }
 
   init() {
