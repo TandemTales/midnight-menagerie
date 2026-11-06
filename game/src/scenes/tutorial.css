@@ -143,7 +143,13 @@
   /* the portrait a size up: as wide as the room's height allows, so at 1600
      it stands a head taller than the page's first beat needs; at the Deck's
      1280 the width binds and it keeps clear of the plaque */
-  grid-template-columns: minmax(0, clamp(21rem, min(30vw, 52.2vh), 30rem)) minmax(0, 44rem);
+  /* ROUND 61 REPAIR 2: the page up to 52rem (was 44rem). At the larger type a
+     44rem page broke its first and third paragraphs onto a second line each, so
+     at 1600 the page ran two lines down past the portrait's frame, onto the
+     mantel and the Skip plate, and the frame stretched after it until its
+     nameplate met the room's edge (survey 12, both judges). The width was
+     there, beside the page; the 1280 page is already as wide as its room. */
+  grid-template-columns: minmax(0, clamp(21rem, min(30vw, 52.2vh), 30rem)) minmax(0, 52rem);
   align-items: stretch;
   /* a clear stretch of the lit room between the portrait and the page: they
      stand in the room, apart, rather than sharing one slab */
