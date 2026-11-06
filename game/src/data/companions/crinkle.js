@@ -178,12 +178,19 @@ function allDefs() {
 const traceCost = (c) => Math.max(0, 1 - (U.mm(c).cheapCopies ? 1 : 0));
 
 /**
- * A Trick that Traces cannot be Traced by another. Two of them in one hand were
+ * A Trick that Traces another cannot itself be Traced. Two of them in one hand were
  * an infinite at no cost: play one to copy the other, and the free copy copies
  * it again, for ever (the whole-game walk, 2026-11-06: 413 Guard and a turn
  * that never ended). A Trick still Traces ITSELF, because its copies cannot.
  */
-const tracesOthers = (k) => ((k.def || k).keywords || []).includes('trace');
+const TRACES_OTHERS = new Set([
+  'crinkle/trace-it', 'crinkle/second-copy', 'crinkle/press-cutting', 'crinkle/paper-mirror',
+  'crinkle/reference-copy', 'crinkle/impression', 'crinkle/master-copy', 'crinkle/the-long-fold',
+  'crinkle/the-whole-house-on-paper',
+]);
+/* Only a Trick that copies ANOTHER one can close the loop. Watermark, the Powers that
+   talk about copies, and the Tricks that Trace only themselves stay fair game. */
+const tracesOthers = (k) => TRACES_OTHERS.has((k.def || k).id);
 const traceable = (x) => !(x.meta && x.meta.noTrace) && !tracesOthers(x);
 
 /**

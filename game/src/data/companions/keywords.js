@@ -255,7 +255,7 @@ export const COMPANION_KEYWORDS = [
   K('fold', 'Fold X', 'Put X [Crease]s on a Trick in your hand. A Trick holds three.', { companion: 'crinkle' }),
   K('crease', 'Crease', 'PERMANENT. Each Crease on a Trick takes a Nerve off its cost and adds a third to its printed numbers — and it stays there through the discard pile, the shuffle and back into your hand. A folded piece of paper is folded. At three it is [Overfolded].', { companion: 'crinkle' }),
   K('overfolded', 'Overfolded', 'A Trick at three [Crease]s: twice its printed size, costs nothing, and removed from the Scuffle the moment you play it. The payoff and the price are the same event.', { companion: 'crinkle' }),
-  K('trace', 'Trace', 'Put a Paper Copy of a Trick into your hand. It costs 0, keeps the original\'s [Crease]s, [Vanish]es when played, and cannot itself be Traced. Nor can a Trick that Traces, except by itself.', { companion: 'crinkle' }),
+  K('trace', 'Trace', 'Put a Paper Copy of a Trick into your hand. It costs 0, keeps the original\'s [Crease]s, [Vanish]es when played, and cannot itself be Traced. Nor can a Trick that Traces another.', { companion: 'crinkle' }),
   K('refold', 'Refold', 'Turn a Trick in your hand into a DIFFERENT Trick of the same type from Crinkle\'s pool, keeping its [Crease]s. Transformation, not selection — what comes out is not up to you.', { companion: 'crinkle' }),
 ];
 

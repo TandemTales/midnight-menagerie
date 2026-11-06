@@ -30,8 +30,8 @@ Each one has a default I have already taken, so nothing is waiting on you unless
 
 6b. **Crinkle had a free infinite, and I closed it.** Two Tricks that Trace in one hand (two Impressions, say)
    looped for ever: play one to copy the other, and the free copy copies it again. The whole-game walk
-   found a turn that never ended, with Amina on 413 Guard. Now a Trick that Traces cannot be Traced by
-   another; it can still Trace itself (Paper Storm, Duplicate Beak). The keyword's text says so. If you
+   found a turn that never ended, with Amina on 413 Guard. Now a Trick that Traces ANOTHER (nine of them: Trace It, Impression, Master Copy...) cannot itself be
+   Traced; Watermark, the Powers and the self-tracers (Paper Storm, Duplicate Beak) still can. The keyword's text says so. If you
    want infinites as a reward for a built deck, the other fix is to make a Paper Copy cost 1 Paper.
 
 ## Art and look
