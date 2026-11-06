@@ -1883,3 +1883,4 @@
    selected wing is marked by its gilt rim and brackets and named in the dossier */
 .at-root.at-root--r60 .at-hots .at-hot .at-hot__tag { display: none; }
 .at-root.at-root--r60 .at-hots .at-hot:is(:hover, .is-hover, :focus-visible) .at-name { filter: drop-shadow(0 0 6px rgb(255 196 110 / .75)); opacity: 1; }
+.scene--atlas .story-tools { right: clamp(18px, 1.6vw, 28px); }
