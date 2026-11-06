@@ -209,6 +209,24 @@ try {
         `it is in ${pileOf(e, copy)}`);
     }
   }
+  {
+    /* Two Tricks that Trace were an infinite at no cost: play one to copy the other,
+       and the free copy copies it again (the whole-game walk, 2026-11-06, 413 Guard
+       and a turn that never ended). One may not Trace another. */
+    const e = await crinkle();
+    const a = give(e, 'crinkle/impression');
+    const b = give(e, 'crinkle/impression');
+    onlyInHand(e, a, b);
+    await playCard(e, a);
+    check(!e.piles.hand.some(x => x.meta && x.meta.paperCopy), 'a Trick that Traces cannot be Traced by another',
+      `hand ${e.piles.hand.map(x => (x.def ? x.def.id : x.id)).join(', ')}`);
+    const e2 = await crinkle();
+    const s = give(e2, 'crinkle/paper-storm');
+    onlyInHand(e2, s);
+    await playCard(e2, s, e2.livingEnemies()[0]);
+    const n = e2.piles.hand.filter(x => x.meta && x.meta.paperCopy).length;
+    check(n === 2, 'but one still Traces itself (Paper Storm, twice)', `${n} copies`);
+  }
 
   // ══ 3. Refold ═══════════════════════════════════════════════════════════
   {

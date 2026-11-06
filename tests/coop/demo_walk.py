@@ -170,6 +170,11 @@ WIRE = """() => {
   };
 }"""
 
+# A Trick loop with no cost keeps PLAY busy for ever; ending the turn by hand is how a
+# player gets out, and the walk says it happened (Crinkle's Trace, 2026-11-06).
+END = """() => { window.MM.ctx.run.session.input({ t: 'end' }); return true; }"""
+PLAYS_A_TURN = 60
+
 PLAY = """async () => {
   const r = window.MM.ctx.run, e = r.combat;
   if (!e || e.over || e.phase !== 'player') return 'wait';
@@ -434,6 +439,7 @@ async def main():
         drift = None
         votes_cast = {}
         shot_seen = set()
+        plays_in = {}
         stranded_for = {}
         figures_checked = False
         finished = False
@@ -450,6 +456,11 @@ async def main():
                 await asyncio.wait_for(got.wait(), 20)
             except asyncio.TimeoutError:
                 frames.append("(not in JavaScript)")
+            # A paused page answers nothing else, and the wire is read after this.
+            try:
+                await cdp.send("Debugger.resume")
+            except Exception:
+                pass
             return " < ".join(frames)
 
         async def stuck(what):
@@ -506,16 +517,16 @@ async def main():
                 check(False, "somebody can always do something", f"nothing moved for {int(now - min(last_change, last_moved))}s, the same place for {int(now - last_placed)}s")
                 for i, x in enumerate(st):
                     print("   ", "ABCD"[i], json.dumps({k: x[k] for k in ("scene", "node", "region", "turn", "phase", "ended", "plate", "animating", "queueTypes", "queueHead", "maxQ", "took", "fps", "buttons", "pending", "busy", "log", "chooser")}), flush=True)
-                for i in range(len(pages)):
-                    try:
-                        print(f"    {'ABCD'[i]} is in {await asyncio.wait_for(stack_of(cdps[i]), 40)}", flush=True)
-                    except Exception as e:
-                        print(f"    {'ABCD'[i]} gave no stack: {e!r}", flush=True)
                 for i, pg in enumerate(pages):
                     try:
                         print(f"    {'ABCD'[i]} wire", json.dumps(await asyncio.wait_for(pg.evaluate(WIRE), 20)), flush=True)
                     except Exception as e:
                         print(f"    {'ABCD'[i]} gave no wire: {e!r}", flush=True)
+                for i in range(len(pages)):
+                    try:
+                        print(f"    {'ABCD'[i]} is in {await asyncio.wait_for(stack_of(cdps[i]), 40)}", flush=True)
+                    except Exception as e:
+                        print(f"    {'ABCD'[i]} gave no stack: {e!r}", flush=True)
                 if SHOTS:
                     for i, pg in enumerate(pages):
                         await pg.screenshot(path=os.path.join(SHOTS, f"stall-{'ABCD'[i]}.png"))
@@ -584,8 +595,17 @@ async def main():
                     if x["chooser"]:
                         acts.append(pg.evaluate(ANSWER))
                     elif x["phase"] == "player" and x["pending"] == 0:
-                        acts.append(pg.evaluate(PLAY))
-                        plays += 1
+                        tk = (i, x["node"], x["turn"])
+                        plays_in[tk] = plays_in.get(tk, 0) + 1
+                        if plays_in[tk] == PLAYS_A_TURN:
+                            check(False, "no turn plays on for ever", f"{'ABCD'[i]} made {PLAYS_A_TURN} plays in {x['node']} turn {x['turn']}; ended it by hand")
+                        if plays_in[tk] >= PLAYS_A_TURN:
+                            if not x["ended"][x["seat"]]:
+                                acts.append(pg.evaluate(END))
+                                not_before[i] = now + 5
+                        else:
+                            acts.append(pg.evaluate(PLAY))
+                            plays += 1
                 elif scene == "map":
                     vk = (x["region"], x["node"], i)
                     if vk not in votes_cast:

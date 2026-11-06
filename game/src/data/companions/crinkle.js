@@ -178,6 +178,15 @@ function allDefs() {
 const traceCost = (c) => Math.max(0, 1 - (U.mm(c).cheapCopies ? 1 : 0));
 
 /**
+ * A Trick that Traces cannot be Traced by another. Two of them in one hand were
+ * an infinite at no cost: play one to copy the other, and the free copy copies
+ * it again, for ever (the whole-game walk, 2026-11-06: 413 Guard and a turn
+ * that never ended). A Trick still Traces ITSELF, because its copies cannot.
+ */
+const tracesOthers = (k) => ((k.def || k).keywords || []).includes('trace');
+const traceable = (x) => !(x.meta && x.meta.noTrace) && !tracesOthers(x);
+
+/**
  * A Paper Copy: free, keeps the original's Creases, Vanishes when played, and
  * cannot itself be Traced.
  * @returns {Object|null} the copy
@@ -185,8 +194,12 @@ const traceCost = (c) => Math.max(0, 1 - (U.mm(c).cheapCopies ? 1 : 0));
 function trace(c, k, o = {}) {
   if (!k) return null;
   if (k.meta && k.meta.noTrace) return null;
+  if (!o.self && tracesOthers(k)) return null;
   const def = k.def || k;
+  const had = U.cardsIn(c, 'hand').length;
   U.spawn(c, def, 'hand', {});
+  // A full hand takes nothing, and the last card in it is somebody else's Trick.
+  if (U.cardsIn(c, 'hand').length <= had) return null;
   const copy = U.cardsIn(c, 'hand').slice(-1)[0];
   if (!copy) return null;
   const cr = creases(k);
@@ -414,7 +427,7 @@ U.onTracker(SLUG, (e, s, seat) => {
     const st = U.mm(c);
     if (!st.massProduction || !U.once(c, 'massProduction')) return;
     const k = e.card(ev.cardUid);
-    if (k && !(k.meta && k.meta.paperCopy)) trace(c, k);
+    if (k && !(k.meta && k.meta.paperCopy)) trace(c, k, { self: true });
   });
 });
 
@@ -459,7 +472,7 @@ const basics = [
     flavor: 'Thin paper, a candle behind it, and a steady beak.',
     nums: {},
     effect: eff(async (c) => {
-      const k = await pickHand(c, { prompt: 'Trace which Trick?', filter: (x) => !(x.meta && x.meta.noTrace) });
+      const k = await pickHand(c, { prompt: 'Trace which Trick?', filter: traceable });
       if (k) trace(c, k);
     }),
     upgrade: { text: '[Trace] a Trick in your hand, then draw a Trick.' },
@@ -520,7 +533,7 @@ const commons = [
     text: 'Deal {d} damage. [Trace] this Trick.',
     flavor: 'There are two of him now. There were always two of him.',
     nums: { d: 6 },
-    effect: eff((c) => { const k = c.card; U.hit(c, NC(c).d); trace(c, k); }),
+    effect: eff((c) => { const k = c.card; U.hit(c, NC(c).d); trace(c, k, { self: true }); }),
     upgrade: { nums: { d: 9 } },
   },
   {
@@ -603,7 +616,7 @@ const commons = [
     effect: eff(async (c) => {
       const price = Math.max(0, N(c).p - (U.mm(c).cheapCopies ? 1 : 0));
       if (price > 0 && !spendPaper(c, price)) return;
-      const k = await pickHand(c, { prompt: 'Trace which Trick?', filter: (x) => !(x.meta && x.meta.noTrace) });
+      const k = await pickHand(c, { prompt: 'Trace which Trick?', filter: traceable });
       if (k) trace(c, k);
     }),
     upgrade: { nums: { p: 1 } },
@@ -754,7 +767,7 @@ const uncommons = [
     text: 'Deal {d} damage, then [Trace] this Trick.',
     flavor: 'Scissors. Glue. A certain lack of scruple.',
     nums: { d: 13 },
-    effect: eff((c) => { const k = c.card; U.hit(c, NC(c).d); trace(c, k); }),
+    effect: eff((c) => { const k = c.card; U.hit(c, NC(c).d); trace(c, k, { self: true }); }),
     upgrade: { nums: { d: 18 } },
   },
   {
@@ -856,7 +869,7 @@ const uncommons = [
     nums: { d: 8, hits: 3 },
     balance: { scalesWith: 'the copied Creases' },
     effect: eff(async (c) => {
-      const k = await pickHand(c, { optional: true, prompt: 'Trace which Trick?', filter: (x) => !(x.meta && x.meta.noTrace) });
+      const k = await pickHand(c, { optional: true, prompt: 'Trace which Trick?', filter: traceable });
       const copy = k ? trace(c, k) : null;
       U.hitN(c, NC(c).d, Math.max(1, creases(copy)));
     }),
@@ -887,7 +900,7 @@ const uncommons = [
     flavor: 'The same, but the wrong way round, and it stays.',
     nums: {},
     effect: eff(async (c) => {
-      const k = await pickHand(c, { prompt: 'Trace which Trick?', filter: (x) => !(x.meta && x.meta.noTrace) });
+      const k = await pickHand(c, { prompt: 'Trace which Trick?', filter: traceable });
       if (k) trace(c, k, { permanent: true });
     }),
     upgrade: { cost: 1 },
@@ -912,7 +925,7 @@ const uncommons = [
     nums: {},
     effect: eff((c) => {
       for (const k of U.handOthers(c)) {
-        if (k.meta && k.meta.noTrace) continue;
+        if (!traceable(k)) continue;
         if (c.e.costOf(k) === 0) trace(c, k);
       }
     }),
@@ -1038,7 +1051,7 @@ const uncommons = [
     flavor: 'Pressed hard enough to come through to the next sheet.',
     nums: { n: 1 },
     effect: eff(async (c) => {
-      const k = await pickHand(c, { prompt: 'Trace which Trick?', filter: (x) => !(x.meta && x.meta.noTrace) });
+      const k = await pickHand(c, { prompt: 'Trace which Trick?', filter: traceable });
       if (!k) return;
       const copy = trace(c, k);
       if (copy) fold(c, copy, N(c).n);
@@ -1168,7 +1181,7 @@ const rares = [
     text: '[Trace] this Trick twice, then deal {d} damage.',
     flavor: 'The Index Hall, in a draught, with the windows open.',
     nums: { d: 14 },
-    effect: eff((c) => { const k = c.card; trace(c, k); trace(c, k); U.hit(c, NC(c).d); }),
+    effect: eff((c) => { const k = c.card; trace(c, k, { self: true }); trace(c, k, { self: true }); U.hit(c, NC(c).d); }),
     upgrade: { nums: { d: 19 } },
   },
   {
@@ -1246,7 +1259,7 @@ const rares = [
     flavor: 'The one they make all the others from.',
     nums: { n: 3 },
     effect: eff(async (c) => {
-      const k = await pickHand(c, { prompt: 'Copy which Trick?', filter: (x) => !(x.meta && x.meta.noTrace) });
+      const k = await pickHand(c, { prompt: 'Copy which Trick?', filter: traceable });
       if (!k) return;
       for (let i = 0; i < N(c).n; i++) trace(c, k);
     }),
@@ -1462,7 +1475,7 @@ const coopCards = [
     flavor: 'Press hard. You are making three.',
     nums: {},
     effect: eff(async (c) => {
-      const k = await pickHand(c, { prompt: 'Copy which Trick?', filter: (x) => !(x.meta && x.meta.noTrace) });
+      const k = await pickHand(c, { prompt: 'Copy which Trick?', filter: traceable });
       if (!k) return;
       const ally = await c.chooseAlly();
       if (!ally) return;
@@ -1527,7 +1540,7 @@ const coopCards = [
         if (k) { fold(c, k, N(c).n); n++; }
       }
       for (let i = 0; i < n; i++) {
-        const own = U.handOthers(c).find(x => !(x.meta && x.meta.noTrace));
+        const own = U.handOthers(c).find(traceable);
         if (own) trace(c, own);
       }
     }),
