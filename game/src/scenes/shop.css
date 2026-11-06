@@ -1879,8 +1879,10 @@
   /* the counters stand a little closer, and the width that frees is the
      Snacks' alone: the Keepsakes and Mr. Moth keep theirs to the pixel */
   .scene--shop .rm--shop .sh-floor { column-gap: 8px; grid-template-columns: minmax(0, 1.2895fr) minmax(0, .7732fr) minmax(0, .9573fr); }
-  .scene--shop .rm--shop .sh-side > .sh-counter.sh-counter--snacks { padding-inline: 10px; }
-  .scene--shop .rm--shop .sh-counter--snacks .sh-list { --ware-min: 76px; column-gap: 10px; }
+  /* the jars stand a little nearer the shelf's ribbon, so the two-line rule
+     under Cold Milk ends above the panel's inner rule */
+  .scene--shop .rm--shop .sh-side > .sh-counter.sh-counter--snacks { padding-inline: 10px; padding-top: 18px; }
+  .scene--shop .rm--shop .sh-counter--snacks .sh-list { --ware-min: 76px; column-gap: 10px; padding-top: 0; }
   .scene--shop .rm--shop .sh-counter--snacks .sh-row.sh-pressable {
     --tag-shift: 0px;
     grid-template-areas: "sig" "plinth" "buy" "txt";
@@ -1889,12 +1891,12 @@
   .scene--shop .rm--shop .sh-counter--snacks .sh-row.sh-pressable::before { width: min(100%, calc(var(--vw) + 30px)); }
   .scene--shop .rm--shop .sh-counter--snacks .sh-row.sh-pressable > .sh-buy {
     grid-area: buy; justify-self: center; align-self: start;
-    margin: 6px 0 0; translate: none;
+    margin: 3px 0 0; translate: none;
   }
   /* its twine, from the tag's eyelet up to the plinth's foot */
   .scene--shop .rm--shop .sh-counter--snacks .sh-row .sh-buy.kit-price::after {
     display: block; left: calc(var(--tag) * .24); top: auto; bottom: 50%;
-    width: 2px; height: calc(var(--tag) * .5 + 7px); rotate: 0deg; translate: -50% 0;
+    width: 2px; height: calc(var(--tag) * .5 + 4px); rotate: 0deg; translate: -50% 0;
   }
   .scene--shop .rm--shop .sh-counter--snacks .sh-row.sh-pressable .sh-row__txt,
   .scene--shop .rm--shop .sh-counter--snacks .sh-row.sh-pressable:is(.is-in-hand, :hover, :focus-within) .sh-row__txt { margin-top: 4px; }
