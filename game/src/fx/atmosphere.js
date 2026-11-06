@@ -2443,7 +2443,12 @@ export const ROOM_KINDS = {
            the runner": the torchere's candles laid long and warm down the
            runner between the chairs, where the parlour's lower half was a
            dark plank field) */
-        nearFloor: { pool: { ahead: 4.6, across: 0.0, rAlong: 3.8, rAcross: 3.0, k: 2.1, color: '#f0a65a' } },
+        /* (round 59 graft, OBSIDIAN's: and the chandelier's pool laid on the
+           middle floor from the doorcase, 12-21 m out -- the boards from the
+           hearth forward to the fight's line, where the Kid stands, so the
+           fighters and the chairs stand on lit boards and not a dark band) */
+        nearFloor: { pool: { ahead: 4.6, across: 0.0, rAlong: 3.8, rAcross: 3.0, k: 2.1, color: '#f0a65a' },
+                     pool2: { ahead: 16.5, across: 0.0, rAlong: 4.6, rAcross: 7.0, k: 4.4, color: '#eaa860' } },
         door: 'case', vantage: { at: 'threshold', back: 2.4, lens: 0.88, dip: 0.30, dy: -0.20 } },
       /* a gallery is long and narrow, so its arcade runs away down both
          sides; it is paved in flags and vaulted bay by bay */
