@@ -3899,10 +3899,11 @@
    "stack in large type over the room and the nameplates" and "need a fixed, framed place to
    land". Each owner's conditions now arrive on ONE small board (fx/combatfx.js _fitWords): the
    party tiles' violet enamel plate in its bowed gilt rim (r58-rhyolite/mate-plaque.webp), the
-   owner lettered in gilt at its head, every condition on its own line under an engraved gilt
-   rule. The board is part of the envelope the layout keeps clear of faces, nameplates, Courage
+   owner's name on the kit's dark nameplate seated on its top rail, every condition on its own
+   line, parted by engraved gilt rules. The board is part of the envelope the layout keeps clear of faces, nameplates, Courage
    bars and intents, and fades with the last line on it. Each line keeps its colour, its size,
-   its pop and its timing; only the loose ribbon behind each word is gone, into the board. */
+   its fade and its timing; only the loose ribbon behind each word is gone, into the board, and
+   a line no longer swells past its rule as it fades. */
 .cb-fx-board {
   position: absolute; left: 0; top: 0; z-index: 0;
   box-sizing: border-box; pointer-events: none;
@@ -3915,13 +3916,13 @@
   background: linear-gradient(90deg, transparent, var(--kit-gold) 16%, var(--kit-gold-hi) 50%, var(--kit-gold) 84%, transparent);
   box-shadow: 0 1px 0 rgba(0, 0, 0, .85);
 }
-.cb-fx-board__rule:first-child { left: 9px; right: 9px; }
 .cb-num { z-index: 1; }
 .cb-fx-owner {
   z-index: 1;
-  border-image: none; border: 0; padding: 1px 8px 0;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 6px 12px stretch;
   color: var(--kit-name);
   text-shadow: 0 -1px 0 var(--kit-violet-lo), 0 1px 0 var(--kit-void);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .8));
 }
 .cb-num[data-actor-id]:not([data-actor-id=""]):is([data-kind="status"],[data-kind="buff"],[data-kind="debuff"],[data-kind="counter"],[data-kind="blocked"]) {
   border-image: none; border: 0; padding: 0 3px;

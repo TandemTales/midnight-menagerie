@@ -285,7 +285,10 @@ export class CombatFX {
       const top = Math.min(box.top, ink.top), bottom = Math.max(box.bottom, ink.bottom);
       el.style.transform = priorTransform;
       // Include scale rounding (three decimals) and translation rounding (tenths).
-      const maximum = scale * 1.12 + .0005;
+      // A line on a board never swells past its own line: _updateNumbers holds an
+      // owned word at its landed scale, so its envelope is that scale, not the 12%
+      // a loose floater grows by as it fades.
+      const maximum = scale + .0005;
       s.wordW = (right - left) * maximum + .1;
       s.wordH = (bottom - top) * maximum + .1;
       // A constant offset at maximum scale nests every smaller envelope around
@@ -317,7 +320,7 @@ export class CombatFX {
          _fitWords as part of the group's envelope, so it is held clear of every face,
          nameplate, Courage bar and intent exactly as the words were. */
       const board=document.createElement('div');board.className='cb-fx-board';
-      board.dataset.fxOwner=actor.id;board.style.visibility='hidden';this.$nums.appendChild(board);
+      board.dataset.fxBoard=actor.id;board.style.visibility='hidden';this.$nums.appendChild(board);
       const el=document.createElement('div');el.className='cb-fx-owner';
       el.dataset.fxOwner=actor.id;el.style.visibility='hidden';this.$nums.appendChild(el);
       cap={el,board};this.ownerCaptions.set(actor.id,cap);
@@ -371,8 +374,10 @@ export class CombatFX {
       const rightNeighbor=neighbors.filter(a=>a.x>actor.x).sort((a,b)=>a.x-b.x)[0];
       const ownerLeft=leftNeighbor?(leftNeighbor.x+actor.x)/2:inset;
       const ownerRight=rightNeighbor?(rightNeighbor.x+actor.x)/2:this.w-inset;
-      // The board's rim and the rules between its lines are part of the envelope.
-      const padX=13,padT=5,padB=7,rule=7,colGap=14;
+      // The board's rim and the rules between its lines are part of the envelope. The
+      // owner's nameplate is seated ON the board's top rail, half above it, the way a
+      // medallion rides a kit panel, so the band above a short enemy holds a whole board.
+      const padX=13,padT=2,padB=6,rule=7,colGap=14;
       for(let cols=1;cols<=Math.min(words.length,3);cols++){
         const rows=[];
         for(let i=0;i<words.length;i+=cols){
@@ -380,16 +385,16 @@ export class CombatFX {
           rows.push({row,w:row.reduce((a,n)=>a+n.wordW,0)+colGap*(row.length-1),h:Math.max(...row.map(n=>n.wordH))});
         }
         const inner=Math.max(cap.w,...rows.map(r=>r.w)),w=inner+padX*2;
-        const cells=[],rules=[];let y=padT+cap.h;
+        const cells=[],rules=[];let y=cap.h+padT;
         for(const r of rows){
-          rules.push(y+rule/2);y+=rule;
+          if(cells.length){rules.push(y+rule/2-cap.h/2);y+=rule;}
           let x=padX+(inner-r.w)/2;
           for(const n of r.row){cells.push({n,left:x,right:x+n.wordW,top:y+(r.h-n.wordH)/2,bottom:y+(r.h+n.wordH)/2});x+=n.wordW+colGap;}
           y+=r.h;
         }
         const h=y+padB;
-        cells.push({cap,left:(w-cap.w)/2,right:(w+cap.w)/2,top:padT,bottom:padT+cap.h});
-        cells.push({board:cap,rules,left:0,right:w,top:0,bottom:h});
+        cells.push({cap,left:(w-cap.w)/2,right:(w+cap.w)/2,top:0,bottom:cap.h});
+        cells.push({board:cap,rules,left:0,right:w,top:cap.h/2,bottom:h});
         const xs=new Set([inset,actor.x-w/2,ownerLeft-w/2+1,ownerRight-w/2-1,actor.left-w-gap,actor.right+gap]);
         const ys=new Set([68,actor.top-219-cap.h/2,actor.top-h-gap,actor.top,actor.bottom+gap]);
         for(const b of obstacles){xs.add(b.left-w-gap);xs.add(b.right+gap);ys.add(b.top-h-1);ys.add(b.bottom+1);}
@@ -605,7 +610,8 @@ export class CombatFX {
       const pop = p < 0.16 ? easeOutBack(p / 0.16) : 1;
       const rise = easeOutCubic(Math.min(1, p * 1.25));
       const fade = p < 0.62 ? 1 : 1 - (p - 0.62) / 0.38;
-      const sc = s.scale * (0.4 + 0.6 * pop) * (1 + (1 - fade) * 0.12);
+      let sc = s.scale * (0.4 + 0.6 * pop) * (1 + (1 - fade) * 0.12);
+      if (s.actorId) sc = Math.min(sc, s.scale);
       s.el.style.opacity = String(Math.max(0, fade));
       s.el.style.transform =
         `translate3d(${(s.x + s.drift * rise).toFixed(1)}px,${(s.y - s.rise * rise).toFixed(1)}px,0) scale(${sc.toFixed(3)})`;
