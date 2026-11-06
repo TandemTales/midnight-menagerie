@@ -1938,3 +1938,13 @@
 /* the earned wing's gilt brackets close round its plan, inside the gutters,
    never over the caption of the plan above it */
 .at-root .at-hots .at-hot .at-hot__frame { margin: calc(-5px / var(--k, 1)) calc(-9px / var(--k, 1)); }
+/* ROUND 60 GRAFT: Discoveries and How to play, stacked in the corner under
+   the candle, set their words INSIDE the brass frame's window: the shared
+   bar's padding (narrative.css) outranked the plate's own and laid the words
+   over the frame's screws. The two plates are one width, a hand clear of the
+   screen's edge and clear of the count at 1280. */
+.scene--atlas .story-tools { align-items: stretch; }
+.scene--atlas .story-tools.story-tools > button { min-height: 40px; padding: 0 26px 2px; }
+@media (max-width: 1400px) {
+  .scene--atlas .story-tools.story-tools > button { padding-inline: 22px; }
+}
