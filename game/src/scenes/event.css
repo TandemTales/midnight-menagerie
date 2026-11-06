@@ -1303,3 +1303,17 @@
 /* the numeral on the held slip brightens along its own rim; no blurred halo on the page */
 .ev-register .ev-opt:hover:not(:disabled)::before,
 .ev-register .ev-opt:focus-visible::before { filter: drop-shadow(0 0 .8px var(--kit-gold-hi)) drop-shadow(1px 3px 2px var(--kit-paper-ink)) brightness(1.22); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 60 SCAPOLITE: the register on the one board grid (reward.css). The
+   title band gave back ~90 px; the leaf takes it, so the story and every
+   choice are on the page at 1600x900 and at 1280x800 the story and the
+   first choices are, the carved lip only appearing when a long event still
+   runs past it. The lectern stands as it did, its foot a little lower behind
+   the leaf.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.scene--event .rm--event.kit-board > .rm-body { padding-top: 6px; padding-bottom: 4px; justify-content: flex-start; }
+.scene--event .rm--event .ev-painted-stand-r49 { margin: 2px auto 0; padding-bottom: 58px; }
+.scene--event .rm--event .ev-reading-r51 { max-height: calc(100vh - 372px); }
+.scene--event .rm--event .ev-page:has(> .r50-scrollrail:not([hidden])) .ev-reading-r51 { max-height: calc(100vh - 418px); }
+.scene--event .rm--event .ev-painted-stand-r49::after { height: 112px; }

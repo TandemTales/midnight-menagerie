@@ -19,7 +19,9 @@ export function boardScrollCue(root, scroller, label = 'page', host = null) {
     // Round 60: a rail that stands in the board's own grid row takes its
     // height from the scroller, so it is only owed when the board would still
     // overflow without it (otherwise it hides the very lines it points at).
-    const spare = !host && !rail.hidden ? rail.offsetHeight : 0;
+    // (a rail inset in a host gives its height back only where the host's CSS
+    // says so: the scroller then carries data-rail-gives)
+    const spare = !rail.hidden && (!host || scroller.dataset.railGives) ? rail.offsetHeight : 0;
     cue.hidden = max - spare < 8 || scroller.clientHeight < 1;
     if (cue.hidden) max = Math.max(0, max - spare);
     rail.hidden = cue.hidden;

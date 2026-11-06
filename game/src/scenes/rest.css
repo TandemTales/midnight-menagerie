@@ -892,3 +892,20 @@
 @media (max-width: 1400px) {
   .rs-door__vig > i { filter: drop-shadow(0 0 .8px var(--kit-parchment)) drop-shadow(0 0 .8px color-mix(in srgb, var(--kit-parchment) 50%, transparent)) drop-shadow(1px 2px 1px var(--kit-void)) brightness(1.16); }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 60 SCAPOLITE: the fort on the one board grid (reward.css). With the
+   title band one plaque high, all four of the night's choices stand on the
+   board beside the blanket fort at 1600x900 and at 1280x800: each panel is
+   as tall as its three lines and its medallion, no taller, and the scroll
+   rail only comes back for a party's six.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.scene--rest .rm--rest.kit-board > .rm-body { padding-top: 4px; }
+.scene--rest .rm--rest .rs-room { padding-top: 12px; padding-bottom: 6px; }
+.scene--rest .rm--rest .rs-choices:not(:has(> .rs-door:nth-child(5))) { gap: clamp(14px, 1.9vh, 18px); justify-content: flex-start; }
+.scene--rest .rm--rest .rs-choices:not(:has(> .rs-door:nth-child(5))) > .rs-door { flex: 0 0 auto; padding-block: clamp(13px, 1.7vh, 16px) clamp(11px, 1.4vh, 13px); }
+.scene--rest .rm--rest > .rm-foot { padding-top: 2px; }
+.scene--rest .rm--rest > .rm-foot .rm-go { --plate-h: clamp(44px, 5.6vh, 52px); }
+/* the reading plate rides the panel's first line instead of setting its height */
+.scene--rest .rm--rest .rs-choices:not(:has(> .rs-door:nth-child(5))) > .rs-door .rs-door__read { margin-block: -9px; align-self: center; }
+.scene--rest .rm--rest .rs-choices:not(:has(> .rs-door:nth-child(5))) > .rs-door { row-gap: 2px; padding-block: clamp(11px, 1.5vh, 14px) clamp(9px, 1.2vh, 11px); }
