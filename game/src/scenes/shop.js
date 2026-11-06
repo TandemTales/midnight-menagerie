@@ -641,6 +641,21 @@ export class ShopScene extends RoomScene {
     // Round 50: the generated velvet is a static painted material.
     // The shelf is read, not glanced at: rules type never prints smaller than
     // the pre-kit shop printed it at 1280x800, on a 228 px card (_cardfit.js).
+    /* ROUND 60: the five Tricks share ONE shelf, so a card is as wide as a
+       fifth of the shelf after Mr. Moth's end, and as tall as its words need
+       (shop.css: --r60-card-u design units, 86u of art). Measured here, not in
+       container units, because the shelf is the element that holds them. */
+    const cards = this.$cards;
+    const one = cards && getComputedStyle(cards);
+    const tall = one ? parseFloat(one.getPropertyValue('--r60-card-u')) : 0;
+    if (tall && cards.clientWidth) {
+      const inner = cards.clientWidth - parseFloat(one.paddingLeft) - parseFloat(one.paddingRight);
+      const gap = parseFloat(one.columnGap) || 0;
+      const n = Math.max(1, (this._cardSlots || []).length);
+      const fw = Math.max(120, Math.floor((inner - (n - 1) * gap) / n));
+      cards.style.setProperty('--face-w', `${fw}px`);
+      cards.style.setProperty('--face-h', `${Math.round(fw * tall / 224)}px`);
+    }
     for (const { slot, view } of this._cardSlots || []) {
       fitCardToSlot(view, slot.querySelector('.sh-card__face'), { legibleAt: 232, rulesPx: [12.5, 15] });
       // This scene owns a taller reading box; retain the user's text floor.
@@ -648,7 +663,11 @@ export class ShopScene extends RoomScene {
       const type = getComputedStyle(view.el);
       const floor = parseFloat(type.getPropertyValue('--card-reading-floor')) || 14;
       const cap = parseFloat(type.getPropertyValue('--card-reading-cap')) || 17;
-      if (cpx > 0) view.fitRules(176, 172, { lo: floor / cpx, hi: cap / cpx });
+      // round 60: the rules panel is 200u wide, from 123u to 10u off the face's foot (the face is inset 7u), and the words print no
+      // smaller than the old two-row shelf printed its longest rule (16.3 px), 15 on the Deck's narrower shelf
+      const badge = view.el.querySelector('.mm-card__badge') ? 17 : 0;
+      if (cpx > 0 && tall) view.fitRules(194, (tall - 147 - badge) * (cpx >= 1 ? .9 : .83), { lo: Math.max(floor, cpx >= 1 ? 16.3 : 15) / cpx, hi: Math.max(cap, cpx >= 1 ? 20.5 : 19) / cpx, lh: 1.12 });
+      else if (cpx > 0) view.fitRules(176, 172, { lo: floor / cpx, hi: cap / cpx });
     }
     // The Forgetting card is drawn, not a CardView: its rules take the same lift.
     const svc = this.root?.querySelector('.sh-service__card');
@@ -690,7 +709,10 @@ export class ShopScene extends RoomScene {
   }
 
   _buildFoot() {
-    this._say('&nbsp;');
+    // round 60: he greets you on the line he speaks on for the rest of the
+    // visit, the first thing a purchase replaces (the counter's plaque is
+    // hidden on the one-board shelf, shop.css)
+    this._say(`<i>&ldquo;${esc(this._greeting)}&rdquo;</i>`);
     // Escape belongs to Settings now, everywhere in a run — the HUD owns it.
     this._primary('Back to the blueprint', () => this._leaveRoom(), { key: 'Enter' });
     this.$go.classList.add('is-ready');

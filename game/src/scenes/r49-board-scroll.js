@@ -15,8 +15,13 @@ export function boardScrollCue(root, scroller, label = 'page', host = null) {
   if (host) host.appendChild(rail); else scroller.after(rail);
   let raf = 0;
   const refresh = () => {
-    const max = scroller.scrollHeight - scroller.clientHeight;
-    cue.hidden = max < 8 || scroller.clientHeight < 1;
+    let max = scroller.scrollHeight - scroller.clientHeight;
+    // Round 60: a rail that stands in the board's own grid row takes its
+    // height from the scroller, so it is only owed when the board would still
+    // overflow without it (otherwise it hides the very lines it points at).
+    const spare = !host && !rail.hidden ? rail.offsetHeight : 0;
+    cue.hidden = max - spare < 8 || scroller.clientHeight < 1;
+    if (cue.hidden) max = Math.max(0, max - spare);
     rail.hidden = cue.hidden;
     const end = scroller.scrollTop >= max - 8;
     cue.dataset.end = String(end);

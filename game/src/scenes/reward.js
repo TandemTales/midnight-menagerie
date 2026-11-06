@@ -96,6 +96,9 @@ export class RoomScene extends Scene {
    * (ui/hang.js fitHung; survey 5, both judges).
    */
   _fitPictures(figSel, obstacleSel, opts) {
+    // round 60: the room's name is engraved either side of the plaque now,
+    // outside the plaque's own box, so a painting keeps clear of it too
+    obstacleSel = `${obstacleSel}, .rm-head .rm-room__a, .rm-head .rm-room__b`;
     const fit = () => {
       if (this._dead || !this.root) return;
       const near = opts?.nearSel ? [...this.root.querySelectorAll(opts.nearSel)] : [];
@@ -179,7 +182,7 @@ export class RoomScene extends Scene {
             <span class="rm-eyebrow kit-ribbon">${esc(eyebrow || region.name)}</span>
             <h1 class="rm-title kit-cartouche__title">${esc(title)}</h1>
             ${sub ? `<p class="rm-sub kit-cartouche__sub">${esc(sub)}</p>` : ''}
-            ${node?.roomName ? `<p class="rm-room kit-titleblock__note">${esc(node.roomName)} &middot; ${esc(region.name)}</p>` : ''}
+            ${node?.roomName ? `<p class="rm-room kit-titleblock__note"><span class="rm-room__a">${esc(node.roomName)}</span><span class="rm-room__dot"> &middot; </span><span class="rm-room__b">${esc(region.name)}</span></p>` : ''}
           </div>
         </header>
 
@@ -191,6 +194,15 @@ export class RoomScene extends Scene {
     this.$body = this.root.querySelector('[data-body]');
     this.$foot = this.root.querySelector('[data-foot]');
     this.$hud = this.root.querySelector('[data-hud]');
+    // round 60: the room's two names stand either side of the ribbon, so the
+    // band needs the ribbon's width (reward.css, the one board grid)
+    const where = this.root.querySelector('.rm-head .rm-where');
+    const ribbon = where?.querySelector('.rm-eyebrow');
+    if (ribbon && typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => where.style.setProperty('--rib-w', `${ribbon.offsetWidth}px`));
+      ro.observe(ribbon);
+      this._own(() => ro.disconnect());
+    }
     this._syncHud();
     this._paintBackdrop();
   }
