@@ -408,8 +408,11 @@ export class ShopScene extends RoomScene {
       // long name takes its share of the column too
       const w = ems.map(e => Math.max(60, Math.min(130, e.textContent.trim().length
         + 2 * (e.parentElement.querySelector('b')?.textContent.trim().length || 0))));
+      list._wareW = w;
       list.style.gridTemplateColumns = w.map(x => `minmax(var(--ware-min, 96px), ${x}fr)`).join(' ');
     }
+    // the names' widths are only true once the display face has loaded
+    document.fonts?.ready?.then(() => { if (!this._dead) this._layout(); });
 
     // You are buying Tricks. You can see the deck you are buying them for.
     this._on(wrap.querySelector('.sh-deck'), 'click', () => this.hud?.openDeck());
@@ -671,6 +674,31 @@ export class ShopScene extends RoomScene {
       const badge = view.el.querySelector('.mm-card__badge') ? 17 : 0;
       if (cpx > 0 && tall) view.fitRules(194, (tall - 147 - badge) * (cpx >= 1 ? .9 : .83), { lo: Math.max(floor, cpx >= 1 ? 16.3 : 15) / cpx, hi: Math.max(cap, cpx >= 1 ? 20.5 : 19) / cpx, lh: 1.12 });
       else if (cpx > 0) view.fitRules(176, 172, { lo: floor / cpx, hi: cap / cpx });
+    }
+    // ROUND 61 REPAIR 3: a ware's column is never narrower than its name's
+    // longest word set on its plate (the plate's padding clears its scrolled
+    // rims, and a few pixels of air past them), nor than its price tag -- so
+    // "Liquorice" and "Stubborn" stand inside their plaques at 1280, and a
+    // short name gives its column's width to a long one.
+    for (const list of [this.$keeps, this.$snacks]) {
+      const w = list?._wareW;
+      if (!w || !list.clientWidth) continue;
+      const rows = [...list.querySelectorAll(':scope > .sh-row')];
+      const mins = rows.map(row => {
+        const b = row.querySelector('.sh-row__txt b');
+        const tag = row.querySelector(':scope > .sh-buy')?.offsetWidth || 0;
+        if (!b) return tag;
+        const words = b.textContent.trim().split(/\s+/);
+        const cs = getComputedStyle(b);
+        const probe = document.createElement('span');
+        probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;padding:0;margin:0;border:0';
+        b.appendChild(probe);
+        let word = 0;
+        for (const t of words) { probe.textContent = t; word = Math.max(word, probe.getBoundingClientRect().width); }
+        probe.remove();
+        return Math.ceil(Math.max(tag, word + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + 6));
+      });
+      list.style.gridTemplateColumns = w.map((x, i) => `minmax(max(var(--ware-min, 96px), ${mins[i] || 0}px), ${x}fr)`).join(' ');
     }
     // The Forgetting card is drawn, not a CardView: its rules take the same lift.
     const svc = this.root?.querySelector('.sh-service__card');
