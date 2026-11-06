@@ -1771,115 +1771,180 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   ROUND 60 SCAPOLITE: THE HOUSE'S DRAWN PLANS ARE WHAT YOU SEE.
-   Survey 11: the wing plates covered the footprints, so a house plan read as
-   a flowchart, and the key covered XVII Heart of the House. The plans are
-   laid out in three files now (ui/estate-blueprint.js), each strip as wide
-   as a third of the plate; every name is a small engraved label on ONE line
-   in the paper ABOVE its strip, never over it; the key and the compass stand
-   in the empty bay under the Foyer. The sheet takes more of the board's
-   width from the dossier.
+   ROUND 60 (DIOPSIDE) — THE HOUSE AS A DRAWN PLATE
+   Survey 11: "wing plates cover the footprints, so a house plan reads as a
+   flowchart; the legend covers XVII; plates collide". The plans are as wide
+   as their ranges now (ui/estate-blueprint.js PLATE), and each is named the
+   way a surveyor names the plans on one plate: a caption lettered in the
+   gutter UNDER its own plan, numeral and name, with no plate behind it and
+   nothing over the walls. The key and the rose share the plate's empty bay.
    ═══════════════════════════════════════════════════════════════════════════ */
-.at-root { --at-dos-w: clamp(320px, 23vw, 372px); }
+.at-root .at-hots .at-hot .at-hot__tag { display: none; }
 .at-root .at-hots .at-hot .at-name,
 .at-root[data-few="0"] .at-hots .at-hot.is-surveyed .at-name,
-.at-root .at-hots .at-hot.is-surveyed .at-name {
-  left: var(--tag-x, 50%) !important; top: var(--tag-top, 0%) !important;
-  transform: translate(-50%, calc(-100% - 2px)) scale(calc(1 / var(--k, 1)));
-  transform-origin: 50% 100%;
-  flex-direction: row; align-items: baseline; gap: 6px;
-  padding: 0; background: none; border: 0; box-shadow: none;
+.at-root[data-few="1"] .at-hots .at-hot.is-surveyed .at-name {
+  opacity: 1;
+  transform: translate(-50%, 2px) scale(calc(1 / var(--k, 1)));
+  transform-origin: 50% 0;
+  flex-direction: row; align-items: baseline; justify-content: center;
+  gap: .42em;
+  padding: 0; border: 0; border-image: none; background: none; filter: none;
+  isolation: auto;
+  font-family: var(--font-display); font-weight: 700;
+  text-transform: none;
+  color: #e7d3a4;
+  text-shadow: 0 1px 0 rgb(14 7 2), 0 0 3px rgb(20 10 3 / .95), 0 0 7px rgb(20 10 3 / .7);
 }
-.at-root .at-hots .at-hot .at-name .at-name__t,
-.at-root[data-few="0"] .at-hots .at-hot.is-surveyed .at-name .at-name__t {
-  font-size: 14px; letter-spacing: .05em; line-height: 1.05; white-space: nowrap;
-  padding: 1px 7px 1px; border-radius: 1px;
+.at-root .at-hots .at-hot .at-name::before,
+.at-root .at-hots .at-hot .at-name::after { content: none; }
+.at-root .at-hots .at-hot .at-name__t,
+.at-root[data-few="0"] .at-hots .at-hot.is-surveyed .at-name__t {
+  padding: 0; background: none; border: 0; box-shadow: none; clip-path: none;
+  color: inherit; text-shadow: inherit;
+  --reading-size: 10px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
+  letter-spacing: .03em; line-height: 1.05;
+  text-align: center;
 }
-.at-root .at-hots .at-hot .at-name .at-name__n { font-size: 14px; letter-spacing: .04em; }
-.at-root .at-hots .at-hot .at-name .at-name__n::before, .at-root .at-hots .at-hot .at-name .at-name__n::after { display: none; }
-/* the label of a wing not yet surveyed is the plan's own pencil, quieter */
-.at-root .at-hots .at-hot:not(.is-surveyed) .at-name { opacity: .9; }
-/* the wing being read: its rim and brackets mark it on the plan; its full
-   name is the dossier's, so its dark plate no longer lies over the next file */
-.at-root .at-hots .at-hot.is-here:not(:hover):not(.is-hover):not(:focus-visible) .at-hot__tag { opacity: 0; }
-/* the key: in the bay under the Foyer, right of the compass */
-.at-root .at-plate > .at-key {
-  left: calc((519 + 150) / 1448 * 100%); top: calc((678 + 30) / 1086 * 100%);
-  right: auto; bottom: auto; transform: scale(calc(1 / var(--k, 1))); transform-origin: 0 0;
+.at-root .at-hots .at-hot .at-name__n,
+.at-root[data-few="0"] .at-hots .at-hot.is-surveyed .at-name__n {
+  display: inline-flex; gap: .3em;
+  color: #e0a27a;
+  text-shadow: inherit;
+  --reading-size: 10px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift)));
+  letter-spacing: .06em;
 }
-.at-root .at-hots .at-hot .at-name .at-name__n,
-.at-root[data-few="0"] .at-hots .at-hot.is-surveyed .at-name .at-name__n {
-  position: static; transform: none; translate: none; margin: 0; order: 0;
-  padding: 0; background: none; border: 0; box-shadow: none;
-  color: color-mix(in srgb, var(--kit-ink-oxblood) 70%, var(--kit-gall, #1f130a));
-  text-shadow: 0 1px 0 rgb(255 236 200 / .35);
+.at-root .at-hots .at-hot .at-name__n::before { content: none; }
+.at-root .at-hots .at-hot .at-name__n::after { content: '\00B7'; width: auto; height: auto; transform: none; background: none; opacity: .8; }
+/* a surveyed wing's caption inked in gilt, ruled under in the same pen */
+.at-root .at-hots .at-hot.is-surveyed .at-name { color: #f3dfa8; }
+.at-root .at-hots .at-hot.is-surveyed .at-name__t {
+  background: linear-gradient(90deg, transparent, rgb(214 172 98 / .85) 12%, rgb(214 172 98 / .85) 88%, transparent) 50% 100% / 100% 1.4px no-repeat;
+  padding-bottom: 3px;
 }
-.at-root .at-hots .at-hot .at-name { align-items: center; }
-.at-root .at-hots .at-hot.is-here .at-hot__tag { opacity: 0; }
-/* the count stands whole beside the plaque at every size: on the Deck the
-   head gives its right-hand side the width the count needs */
+/* the wing being read: its caption lit */
+.at-root .at-hots .at-hot.is-hover .at-name,
+.at-root .at-hots .at-hot:focus-visible .at-name,
+.at-root .at-hots .at-hot.is-surveyed.is-hover .at-name {
+  opacity: 1; color: #fff0c8;
+  text-shadow: 0 1px 0 rgb(14 7 2), 0 0 3px rgb(20 10 3 / .95), 0 0 9px rgb(255 190 100 / .55);
+}
+.at-root[data-zoom="1"] .at-hots .at-hot .at-name { opacity: 0; }
+.at-root[data-choose="1"] .at-hots .at-hot.is-shut .at-name,
+.at-root[data-enter="1"] .at-hots .at-hot.is-shut .at-name { opacity: .55; }
+
+/* the key: a ruled box inked on the plate in its north-east bay, beside the
+   rose -- part of the drawing, in the survey's own iron-gall and paper */
+.at-root .at-key {
+  left: calc(988 / 1448 * 100%); top: calc(38 / 1086 * 100%);
+  right: auto; bottom: auto;
+  transform: scale(calc(1 / var(--k, 1))); transform-origin: 0 0;
+  padding: 7px 12px 7px 10px;
+  gap: 4px;
+  border: 0; border-image: none;
+  background:
+    linear-gradient(rgb(236 214 168 / .08), rgb(236 214 168 / .08)),
+    rgb(38 22 9 / .35);
+  box-shadow: inset 0 0 0 1.5px rgb(230 206 156 / .7), inset 0 0 0 4px transparent, inset 0 0 0 5px rgb(230 206 156 / .38);
+  filter: none;
+  text-transform: none; letter-spacing: .04em;
+  color: #ead7a8;
+  text-shadow: 0 1px 0 rgb(14 7 2), 0 0 4px rgb(20 10 3 / .9);
+}
+.at-root .at-key__i { gap: 8px; }
+/* the key's two swatches are pieces of the two papers, ruled as the plans are */
+.at-root .at-key__sw {
+  width: 26px; height: 14px; clip-path: none;
+  background:
+    linear-gradient(90deg, transparent 32%, rgb(31 19 10 / .9) 32% 37%, transparent 37% 66%, rgb(31 19 10 / .9) 66% 71%, transparent 71%),
+    rgb(74 52 28);
+  box-shadow: inset 0 0 0 1.4px rgb(31 19 10 / .9), 0 0 0 1px rgb(230 206 156 / .35);
+}
+.at-root .at-key__sw--seen {
+  background:
+    linear-gradient(90deg, transparent 32%, #1f130a 32% 37%, transparent 37% 66%, #1f130a 66% 71%, transparent 71%),
+    rgb(176 136 82);
+  box-shadow: inset 0 0 0 1.6px #1f130a, inset 0 0 0 3px rgb(230 201 138 / .85), 0 0 0 1px rgb(230 206 156 / .5);
+}
+
+/* the header a band shallower, so the plate below it is a size larger */
+.at-head { min-height: clamp(98px, 12.4vh, 114px); padding-top: clamp(4px, .8vh, 10px); }
+.at-body { padding-top: clamp(4px, .9vh, 10px); padding-bottom: clamp(18px, 3vh, 30px); }
+/* the tally's words in small caps, so "1 of 17" is never under the plaque */
+.at-tally .kit-enamel__label { text-transform: none; letter-spacing: .06em; }
 @media (max-width: 1400px) {
-  .at-root .at-head { grid-template-columns: minmax(0, .8fr) auto minmax(0, 1.2fr); }
-  .at-root .at-head .at-tally { justify-self: start; margin-left: 8px; }
-  .at-root .at-head .at-tally .kit-enamel__label { letter-spacing: .1em; }
+  .at-tally { padding-inline: calc(var(--h) * .5); }
+  .at-tally .kit-enamel__label { letter-spacing: .03em; }
 }
-/* DISCOVERIES AND HOW TO PLAY: the map's brass card-frames (map.css), the
-   same family on the whole house */
-.scene--atlas .story-tools > button,
-.scene--clubhouse .story-tools > button {
-  min-height: 40px; height: 40px;
-  padding: 0 20px 2px;
+
+/* DISCOVERIES AND HOW TO PLAY: the map's brass card-frames, screwed to the
+   wall in the corner under the candle, not two web buttons */
+.scene--atlas .story-tools { gap: 6px; }
+.scene--atlas .story-tools > button {
+  min-height: 40px; height: 40px; width: auto; max-width: none;
+  padding: 0 32px 2px; white-space: nowrap;
   border: 0 solid transparent; border-radius: 0;
   border-image: url("../../assets/ui/r58-variscite/label-b.webp") 18 36 21 36 fill / 7px 13px 8px 13px stretch;
   background: none;
   color: #24140a; font-weight: 600;
-  text-shadow: 0 1px 0 rgba(255, 240, 200, .38);
+  text-shadow: 0 1px 0 rgb(255 240 200 / .38);
   box-shadow: none;
-  filter: drop-shadow(0 4px 5px rgba(2, 2, 6, .7));
+  filter: drop-shadow(0 4px 5px rgb(2 2 6 / .7));
 }
-.scene--atlas .story-tools > button:last-child,
-.scene--clubhouse .story-tools > button:last-child { border-image-source: url("../../assets/ui/r58-variscite/label-c.webp"); rotate: .4deg; }
-.scene--atlas .story-tools > button:hover,
-.scene--clubhouse .story-tools > button:hover { background: none; border-color: transparent; filter: brightness(1.14) drop-shadow(0 0 6px rgba(255, 179, 92, .7)); }
-.scene--atlas .story-tools > button:focus-visible,
-.scene--clubhouse .story-tools > button:focus-visible { outline: 2px solid var(--kit-gold-hi); outline-offset: 2px; }
-/* the label: numeral and name on ONE paper tag, kept inside the sheet --
-   the left file's from its strip's left wall, the right file's to its right */
-.at-root .at-hots .at-hot .at-name,
-.at-root[data-few="0"] .at-hots .at-hot.is-surveyed .at-name {
-  padding: 1px 8px 1px 6px; gap: 6px;
-  background: linear-gradient(180deg, #e4cb98, #cfae76);
-  border: 1px solid #3a2210; border-radius: 1px;
-  box-shadow: inset 0 0 0 2px rgb(228 202 152), inset 0 0 0 2.8px rgb(58 34 16 / .55), 1px 2px 2px rgb(20 10 4 / .55);
-  color: #24140a; text-shadow: 0 1px 0 rgb(255 240 210 / .45);
+.scene--atlas .story-tools > button:last-child { border-image-source: url("../../assets/ui/r58-variscite/label-c.webp"); rotate: .4deg; }
+.scene--atlas .story-tools > button:hover { background: none; border-color: transparent; filter: brightness(1.14) drop-shadow(0 0 6px rgb(255 179 92 / .7)); }
+.scene--atlas .story-tools > button:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+
+/* the wing being read is rimmed in gilt; its plan stays legible under it */
+.at-root[data-few="0"] .at-rim.is-shown { fill: rgb(255 214 150 / .07); }
+
+/* THE PAPER a step up toward the candle: an old plate the plans can be read
+   on, browned to the frame at its edges (the light, below, still burns them) */
+.at-root .at-paper { filter: brightness(.9) saturate(1.04); }
+
+/* the dossier's facts as a ledger, a line each, label to value: "ROOM TYPES"
+   never runs into its neighbours (survey 11) */
+.at-dossier:not(:has(.at-dos__inside:not([hidden]))) .at-dos__facts {
+  grid-auto-flow: row; grid-template-columns: minmax(0, 1fr); row-gap: 0;
+  padding: 8px 6px 7px;
 }
-.at-root .at-hots .at-hot .at-name .at-name__t,
-.at-root[data-few="0"] .at-hots .at-hot.is-surveyed .at-name .at-name__t {
-  padding: 0; background: none; border: 0; box-shadow: none; color: #24140a; text-shadow: none;
+.at-dossier:not(:has(.at-dos__inside:not([hidden]))) .at-dos__facts > div {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  padding: 3px 10px 2px; text-align: left;
 }
-.at-root .at-hots .at-hot:not(.is-surveyed) .at-name { background: linear-gradient(180deg, #d9c39a, #c4a676); opacity: .86; }
-.at-root .at-hots .at-hot[data-file="l"] .at-name { left: var(--fr-l, 0%) !important; transform: translate(0, calc(-100% - 2px)) scale(calc(1 / var(--k, 1))); transform-origin: 0 100%; }
-.at-root .at-hots .at-hot[data-file="r"] .at-name { left: calc(100% - var(--fr-r, 0%)) !important; transform: translate(-100%, calc(-100% - 2px)) scale(calc(1 / var(--k, 1))); transform-origin: 100% 100%; }
-.at-root.at-root--r60 .at-hots .at-hot.is-here:not(:hover):not(.is-hover):not(:focus-visible) .at-hot__tag { opacity: 0 !important; }
-/* the dossier's three facts, each label whole over its value */
-.at-root .at-dos__facts { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 10px; }
-.at-root .at-dos__facts dt { white-space: normal; letter-spacing: .07em; text-align: center; line-height: 1.1; }
-.at-root .at-dos__facts dd { text-align: center; }
-.at-root .at-hots .at-hot[data-file="r"] .at-name { left: var(--fr-l, 0%) !important; transform: translate(0, calc(-100% - 2px)) scale(calc(1 / var(--k, 1))); transform-origin: 0 100%; }
+.at-dossier:not(:has(.at-dos__inside:not([hidden]))) .at-dos__facts > div + div::before {
+  left: 12%; right: 12%; top: 0; width: auto; height: 1px; transform: none;
+  background: linear-gradient(90deg, transparent, rgb(176 138 74 / .55) 15%, rgb(176 138 74 / .55) 85%, transparent);
+  box-shadow: none;
+}
+.at-dossier:not(:has(.at-dos__inside:not([hidden]))) .at-dos__facts dt { white-space: nowrap; align-self: baseline; }
+.at-dossier:not(:has(.at-dos__inside:not([hidden]))) .at-dos__facts dd { text-align: right; }
+
+/* the wing being read stays a drawing under its light */
+.at-root .at-hots .at-hot.is-surveyed:hover .at-hot__hit,
+.at-root .at-hots .at-hot.is-surveyed.is-hover .at-hot__hit { background: rgb(255 236 200 / .05); }
+.scene--atlas .story-tools { align-items: flex-end; }
+/* the candle reaches the plate's foot and its far bay: the foundations and
+   the east range read as drawn, not lost in the burn */
+.at-root .at-light {
+  background:
+    radial-gradient(90% 88% at 42% 40%, transparent 0%, transparent 46%, rgb(26 13 5 / .2) 74%, rgb(12 6 2 / .44) 100%),
+    linear-gradient(to bottom, rgb(12 6 4 / .12), transparent 10%, transparent 90%, rgb(12 6 4 / .2));
+}
+.at-root[data-few="0"] .at-light {
+  background:
+    radial-gradient(92% 90% at 48% 44%, transparent 0%, transparent 50%, rgb(26 13 5 / .18) 76%, rgb(12 6 2 / .4) 100%),
+    linear-gradient(to bottom, rgb(12 6 4 / .12), transparent 10%, transparent 90%, rgb(12 6 4 / .2));
+}
+/* the earned wing's gilt brackets close round its plan, inside the gutters,
+   never over the caption of the plan above it */
+.at-root .at-hots .at-hot .at-hot__frame { margin: calc(-5px / var(--k, 1)) calc(-9px / var(--k, 1)); }
+/* ROUND 60 GRAFT: Discoveries and How to play, stacked in the corner under
+   the candle, set their words INSIDE the brass frame's window: the shared
+   bar's padding (narrative.css) outranked the plate's own and laid the words
+   over the frame's screws. The two plates are one width, a hand clear of the
+   screen's edge and clear of the count at 1280. */
+.scene--atlas .story-tools { align-items: stretch; }
+.scene--atlas .story-tools.story-tools > button { min-height: 40px; padding: 0 26px 2px; }
 @media (max-width: 1400px) {
-  .at-root .at-hots .at-hot .at-name .at-name__t,
-  .at-root .at-hots .at-hot .at-name .at-name__n,
-  .at-root[data-few="0"] .at-hots .at-hot.is-surveyed .at-name .at-name__t { font-size: 14px; letter-spacing: .03em; }
-  .at-root .at-hots .at-hot .at-name { padding-inline: 5px 6px; gap: 4px; }
+  .scene--atlas .story-tools.story-tools > button { padding-inline: 22px; }
 }
-.at-root .at-dos__facts.at-dos__facts { grid-template-columns: minmax(0, 1.3fr) minmax(0, .85fr) minmax(0, 1fr); }
-.at-root .at-dos__facts dt { letter-spacing: .03em; }
-/* (all three files read from the left wall but the right-hand one, which
-   reads to its right wall, so no name leaves the sheet or meets the next) */
-.at-root .at-hots .at-hot[data-file="m"] .at-name { left: var(--fr-l, 0%) !important; transform: translate(0, calc(-100% - 2px)) scale(calc(1 / var(--k, 1))); transform-origin: 0 100%; }
-.at-root .at-hots .at-hot[data-file="r"] .at-name { left: calc(100% - var(--fr-r, 0%)) !important; transform: translate(-100%, calc(-100% - 2px)) scale(calc(1 / var(--k, 1))); transform-origin: 100% 100%; }
-/* every wing carries its own label above its strip now, so the hover plate
-   that used to name a wing over its neighbour's drawing is not drawn; the
-   selected wing is marked by its gilt rim and brackets and named in the dossier */
-.at-root.at-root--r60 .at-hots .at-hot .at-hot__tag { display: none; }
-.at-root.at-root--r60 .at-hots .at-hot:is(:hover, .is-hover, :focus-visible) .at-name { filter: drop-shadow(0 0 6px rgb(255 196 110 / .75)); opacity: 1; }

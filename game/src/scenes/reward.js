@@ -102,7 +102,10 @@ export class RoomScene extends Scene {
     const fit = () => {
       if (this._dead || !this.root) return;
       const near = opts?.nearSel ? [...this.root.querySelectorAll(opts.nearSel)] : [];
-      fitHung([...this.root.querySelectorAll(figSel)], [...this.root.querySelectorAll(obstacleSel)], near.length ? Object.assign(Object.create(opts), { near }) : opts);
+      // round 60 graft: Discoveries and How to play hang on the wall too
+      // (story.js puts them outside the board), so a painting keeps clear
+      const tools = [...document.querySelectorAll('.story-tools > button')];
+      fitHung([...this.root.querySelectorAll(figSel)], [...this.root.querySelectorAll(obstacleSel), ...tools], near.length ? Object.assign(Object.create(opts), { near }) : opts);
     };
     requestAnimationFrame(() => requestAnimationFrame(fit));
     document.fonts?.ready?.then(fit);

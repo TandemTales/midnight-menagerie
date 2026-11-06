@@ -6,7 +6,7 @@ import { bus } from '../core/bus.js';
 import { Save } from '../core/save.js';
 import { COMPANIONS, REGION_ORDER } from '../data/schema.js';
 import { regionMeta, MASTER, exitReason, ROOMS } from '../state/mapgen.js';
-import { estateSections, surveyMap, drawSurveySection, drawMasterSurvey, SHEET_BAY } from '../ui/estate-blueprint.js';
+import { estateSections, surveyMap, drawSurveySection, drawMasterSurvey, PLATE } from '../ui/estate-blueprint.js';
 import {
   ensureCss, fontsReady, el, svg, rovingFocus,
   companionPortrait, COMPANION_BY_SLUG, setReduceMotion, reduceMotion,
@@ -152,6 +152,45 @@ function penRing(g, rings, S, seed, ink) {
   g.globalAlpha = 1;
 }
 
+/**
+ * ROUND 60 (DIOPSIDE): a wing's plan as a surveyor draws it at the scale of
+ * the whole house -- every room of the PLAYABLE plan ruled as its own cell,
+ * the corridors that join them laid in a darker wash, the guardian's room
+ * hatched in oxblood -- rather than the section's full drawing shrunk until
+ * its furniture and lettering close up into one stipple. `g` is in plate px;
+ * the wing's plan is mapped onto its own rect on the plate.
+ */
+function planGrid(g, w, pw, ph, opt) {
+  const plan = surveyMap(w.slug).plan;
+  const k = (w.nw * pw) / plan.sheet.w, ox = w.nx * pw, oy = w.ny * ph;
+  const R = (r) => [ox + r.x0 * k, oy + r.y0 * k, (r.x1 - r.x0) * k, (r.y1 - r.y0) * k];
+  g.save();
+  /* the corridors: a darker wash, so the rooms read as cells off them */
+  g.fillStyle = opt.hall;
+  for (const h of plan.halls || []) { const [x, y, ww, hh] = R(h); g.fillRect(x, y, ww, hh); }
+  /* the guardian's room, and the safe rooms, marked the way a key marks them */
+  for (const r of plan.rooms || []) {
+    if (r.type !== 'boss' && r.type !== 'safe') continue;
+    const [x, y, ww, hh] = R(r);
+    g.save(); g.beginPath(); g.rect(x, y, ww, hh); g.clip();
+    g.strokeStyle = r.type === 'boss' ? opt.boss : opt.safe; g.globalAlpha = opt.markA; g.lineWidth = .9;
+    for (let t = -hh; t < ww; t += 3.2) { g.beginPath(); g.moveTo(x + t, y + hh); g.lineTo(x + t + hh, y); g.stroke(); }
+    g.restore();
+  }
+  /* every room ruled as its own cell, a hair inside its walls */
+  g.strokeStyle = opt.ink; g.globalAlpha = opt.roomA; g.lineWidth = opt.room;
+  g.lineJoin = 'miter';
+  for (const r of plan.rooms || []) { const [x, y, ww, hh] = R(r); g.strokeRect(x + .5, y + .5, Math.max(0, ww - 1), Math.max(0, hh - 1)); }
+  for (const r of plan.annexes || []) { const [x, y, ww, hh] = R(r); g.strokeRect(x + .5, y + .5, Math.max(0, ww - 1), Math.max(0, hh - 1)); }
+  /* the doorways: the wall left open where a door is hung */
+  g.globalAlpha = 1; g.fillStyle = opt.door;
+  for (const d of plan.doors || []) {
+    if (d.kind !== 'door') continue;
+    g.fillRect(ox + d.x * k - 1.1, oy + d.y * k + 1, 2.2, Math.max(1, d.w * k - 2));
+  }
+  g.restore();
+}
+
 /* ROUND 42: an unsurveyed wing's ghost walls, in a dark sepia (they were the
    pale pencil, lighter than the paper: "one beige smear") */
 /* round 46 graft (CHAROITE's ghost plans, all three judges on the atlas):
@@ -270,7 +309,7 @@ export class AtlasScene extends Scene {
        way in does: every name a hover away, only what is shut marked. */
     this.root.dataset.many = (this.choosing && this.offer.length > 4) ? '1' : '0';
 
-    this.root.classList.add('at-root', 'at-root--r60');
+    this.root.classList.add('at-root');
     this.root.classList.toggle('kit-still', reduceMotion());
     this.root.innerHTML = '';
     /* A staged board: the recovered drawing laid on the candlelit desk (the
@@ -458,7 +497,8 @@ export class AtlasScene extends Scene {
     const pencil=this._pencil=document.createElement('canvas');
     pencil.className='at-pencil';pencil.width=MASTER.w;pencil.height=MASTER.h;
     pencil.setAttribute('aria-hidden','true');plate.appendChild(pencil);
-    drawMasterSurvey(pencil.getContext('2d'),this.wings,this._tok('--bp-paper-ink','#e5d9b4'));
+    /* round 60: the plate's galleries and walls in the survey's own iron-gall */
+    drawMasterSurvey(pencil.getContext('2d'),this.wings,'#2a180b');
     this.root.setAttribute('data-pencil','1');
     const survey = this._survey = el('div', 'at-survey');
     survey.setAttribute('aria-hidden', 'true');
@@ -509,9 +549,6 @@ export class AtlasScene extends Scene {
       const b = el('button', 'at-hot');
       b.type = 'button';
       b.dataset.wing = w.slug;
-      // round 60: which of the plate's three files the wing stands in, so its
-      // label keeps inside the sheet (atlas.css)
-      b.dataset.file = w.x < MASTER.w * .3 ? 'l' : w.x < MASTER.w * .6 ? 'm' : 'r';
       b.setAttribute('role', 'option');
       b.setAttribute('aria-selected', 'false');
       b.style.left = `${w.nx * 100}%`;
@@ -578,7 +615,9 @@ export class AtlasScene extends Scene {
       b.innerHTML = `<span class="at-hot__box" aria-hidden="true"></span>`
         + `<span class="at-hot__frame" aria-hidden="true"></span>`
         + `<span class="at-hot__hit" aria-hidden="true" style="${clip}"></span>`
-        + `<span class="at-name" aria-hidden="true" style="left:${lx.toFixed(2)}%;top:${ly.toFixed(2)}%">`
+        /* round 60: the surveyor's caption, lettered in the gutter under its
+           own plan and centred on it -- never across the walls it names */
+        + `<span class="at-name" aria-hidden="true" style="left:${((fl + fr) / 2).toFixed(2)}%;top:${bot.toFixed(2)}%">`
         + `<i class="at-name__n">${esc(w.meta.roman)}</i><b class="at-name__t"></b></span>`
         + `<span class="at-hot__tag">${esc(w.meta.name)}</span>`;
       hots.appendChild(b);
@@ -839,8 +878,10 @@ export class AtlasScene extends Scene {
     if (!b.width || !b.height) return false;
     /* clear of the gilt rail, the velvet mat round the paper and a finger's
        width of the paper's own browned margin (atlas.css .at-frame, .at-paper) */
-    const pad = Math.max(30, Math.min(46, b.width * 0.04));
-    const foot = 40;                                    // the pasted title label's strip
+    /* round 60: the plate takes the paper up to the mat, and the pasted title
+       label shares the paper's foot margin instead of adding its own band */
+    const pad = Math.max(24, Math.min(34, b.width * 0.028));
+    const foot = 34;                                    // the pasted title label's strip
     const aw = Math.max(1, b.width - pad * 2);
     const ah = Math.max(1, b.height - pad * 2 - foot);
     const k = Math.min(aw / MASTER.w, ah / MASTER.h);
@@ -1056,7 +1097,7 @@ export class AtlasScene extends Scene {
            footprint only breathed on with umber, a draughtsman's pencil
            hatching laid across it, its walls (the hair canvas, below) drawn
            in clear sepia over the paper instead of sinking into a blot */
-        pg.fillStyle = 'rgb(70 44 20 / .13)';
+        pg.fillStyle = 'rgb(64 40 16 / .2)';
         pg.fill(shape);
         pg.clip(shape);
         {
@@ -1077,7 +1118,8 @@ export class AtlasScene extends Scene {
              strokes under the plan, never a grey */
           const step = 4.4, h = y1 - y0;
           for (let x = x0 - h; x < x1; x += step) {
-            pg.globalAlpha = 0.3 + rnd() * 0.1;
+            /* round 60: a breath of it, so the ruled rooms read through */
+            pg.globalAlpha = 0.1 + rnd() * 0.06;
             pg.lineWidth = 0.5 + rnd() * 0.25;
             pg.beginPath();
             pg.moveTo(x, y1 + 2);
@@ -1092,8 +1134,12 @@ export class AtlasScene extends Scene {
         pg.stroke(shape);
         pg.filter = 'none';
         pg.restore();
-        const ghost = await sectionInk(w.slug, GHOST);
-        if (token !== this._surveyToken) return;
+        /* round 60: the unwalked wing's rooms ruled in pencil over the hatching */
+        pg.save();
+        pg.setTransform(dpr, 0, 0, dpr, 0, 0);
+        planGrid(pg, w, pw, ph, { ink: 'rgb(30 18 8)', room: .9, roomA: .78, hall: 'rgb(40 24 10 / .16)', boss: 'rgb(120 30 18)', safe: 'rgb(30 60 40)', markA: .55, door: 'rgb(122 92 54 / .9)' });
+        pg.restore();
+        const ghost = null;
         if (ghost) {
           /* round 46 graft (CHAROITE): the plan in graphite on the sheet
              itself, not the faint hair layer -- its walls a line a player
@@ -1188,8 +1234,9 @@ export class AtlasScene extends Scene {
       /* the wing's own drawing in iron-gall over the wash, at the bitmap's
          own fine line: its rooms and doors read at the Deck's 1280 instead of
          closing up into one black mass */
-      const drawn = await sectionInk(w.slug, GALL);
-      if (token !== this._surveyToken) { pg.restore(); return; }
+      /* round 60: the walked wing's rooms ruled in iron-gall on its wash */
+      planGrid(pg, w, pw, ph, { ink: GALL, room: 1.05, roomA: .9, hall: 'rgb(50 28 10 / .3)', boss: 'rgb(132 26 14)', safe: 'rgb(26 70 52)', markA: .8, door: hi });
+      const drawn = null;
       if (drawn) {
         pg.imageSmoothingQuality = 'high';
         /* round 38 graft 4: the densest wings (the Lampworks' and the
@@ -1209,7 +1256,7 @@ export class AtlasScene extends Scene {
       /* the walls left off where the wing's name is lettered, the way a
          draughtsman letters a plan: the wash laid again over them there,
          feathered, in the wash's own colour */
-      const nb = few ? null : nameBox.get(w.slug);
+      const nb = null;   // round 60: names are captions in the gutter, off the plan
       if (nb) {
         pg.setTransform(dpr, 0, 0, dpr, 0, 0);
         pg.shadowColor = hi; pg.shadowBlur = 7 * dpr;
@@ -1266,8 +1313,8 @@ export class AtlasScene extends Scene {
    * drawing says which way is north.
    */
   _drawRose(g, dpr, S, ink) {
-    // round 60: in the empty bay under the Foyer, left of the key
-    const cx = (SHEET_BAY.x + 70) * S, cy = (SHEET_BAY.y + 82) * S, r = 54 * S;
+    /* round 60: in the north-east bay with the key, north up the sheet */
+    const cx = (PLATE.key[0] + PLATE.w - 62) * S, cy = (PLATE.key[1] + 96) * S, r = 52 * S;
     if (r < 10) return;
     g.save();
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -1322,7 +1369,8 @@ export class AtlasScene extends Scene {
     const g = cv.getContext('2d');
     g.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
     const ls = parseFloat(cs.letterSpacing) || 0;
-    const width = (s) => g.measureText(s.toUpperCase()).width + ls * s.length;
+    const up = cs.textTransform === 'uppercase';
+    const width = (s) => g.measureText(up ? s.toUpperCase() : s).width + ls * s.length;
     /* every way this wing's name can be set inside its footprint, widest
        first: its first half on one line, then on two balanced lines, then its
        shorter forms, then its second half ("The Bathhouse and Rain Wing" ->
@@ -1337,15 +1385,18 @@ export class AtlasScene extends Scene {
        lines, and a crowded name wraps, it never changes or goes. A line that
        is one word may run a little past the wing's walls, as lettering on a
        plan does (x1.42); a phrase may not. */
-    const REF_PW = 694, REF_FS = 12;
+    const REF_PW = 720, REF_FS = 16;
+    const probeN = this._hots.querySelector('.at-name__n');
+    const csN = probeN ? getComputedStyle(probeN) : cs;
+    const gN = document.createElement('canvas').getContext('2d');
+    gN.font = `${csN.fontWeight} ${csN.fontSize} ${csN.fontFamily}`;
+    const numW = (w) => gN.measureText(String(w.meta.roman) + ' ·').width + (parseFloat(csN.letterSpacing) || 0) * (String(w.meta.roman).length + 2) + parseFloat(cs.fontSize) * 0.45;
     const fs = parseFloat(cs.fontSize) || REF_FS;
     const refK = Math.min(1, REF_PW / pw);               // the reference room, never a wider one
     const fitsIn = (lines, room, wd, run = 1.42) => lines.every((l) => wd(l) <= room * (/\s/.test(l) ? 1 : run));
     const formsOf = (s) => {
       const ws = s.split(/\s+/);
       const forms = [[s]];
-      // round 60: the name is one line above its strip, never a stack
-      if (this.root?.classList.contains('at-root--r60')) return forms;
       let best = null;
       for (let i = 1; i < ws.length; i++) {
         const a = ws.slice(0, i).join(' '), c = ws.slice(i).join(' ');
@@ -1367,12 +1418,16 @@ export class AtlasScene extends Scene {
       return forms;
     };
     const optionsFor = (w) => {
-      const room = w.span ? (w.span[1] - w.span[0]) * S * 0.96 : w.nw * pw * 0.7;
+      /* the caption's own numeral shares the line with the name */
+      const room = (w.span ? (w.span[1] - w.span[0]) * S * 0.97 : w.nw * pw * 0.7) - numW(w);
       const halves = String(w.meta.name).replace(/^The\s+/i, '').split(/\s+and\s+/i);
       const tries = [];
       for (const h of halves.slice(0, 2)) {
         const words = h.split(/\s+/);
         tries.push(h);
+        /* round 60: "Heart of the House" shortens to "Heart", never to
+           "of the House" */
+        if (/\s+of\s+/i.test(h)) tries.push(h.split(/\s+of\s+/i)[0]);
         if (words.length > 2) tries.push(words.slice(1).join(' '));
         if (words.length > 1) tries.push(words[words.length - 1]);
       }
@@ -1382,20 +1437,23 @@ export class AtlasScene extends Scene {
       /* (chosen strictly -- no word running past the walls -- so a name that
          only fits by spilling onto its neighbour's is passed over for the
          wing's other name, which then holds at every size) */
-      const name = tries.find((s) => formsOf(s).some((f) => fitsIn(f, refRoom, refW, 1.12)))
-        || tries.find((s) => formsOf(s).some((f) => fitsIn(f, refRoom, refW))) || tries[0];
+      const fine = (t) => !/^(of|and|the|in)(\s|$)/i.test(t);
+      for (let i = tries.length - 1; i >= 0; i--) if (!fine(tries[i])) tries.splice(i, 1);
+      const name = tries.find((s) => fitsIn([s], refRoom, refW, 1.0))
+        || tries.find((s) => fitsIn([s], refRoom, refW, 1.12)) || tries[tries.length - 1];
       /* ...and its settings at this size, widest first: those that fit, then
          the narrowest one whether or not it does (a name never goes) */
-      const forms = formsOf(name).map((lines) => ({ lines, m: Math.max(...lines.map(width)) }));
+      /* round 60: a caption is ONE line in the gutter under its plan -- a
+         longer name gives way to the wing's shorter one, it never wraps onto
+         the plan below it */
+      const forms = [[name]].map((lines) => ({ lines, m: Math.max(...lines.map(width)) }));
       const out = forms.filter((f) => fitsIn(f.lines, room, width));
       const narrow = forms.reduce((a, b) => (b.m < a.m ? b : a));
       if (!out.includes(narrow)) out.push(narrow);
       return out;
     };
     const set = (t, o) => {
-      // round 60: a wing's name is one engraved line in the paper above its
-      // strip, so its chosen setting is set on that one line
-      t.innerHTML = o ? o.lines.map(esc).join(' ') : '';
+      t.innerHTML = o ? o.lines.map(esc).join('<br>') : '';
       t.hidden = !o;
     };
     const items = [];

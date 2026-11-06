@@ -2407,3 +2407,12 @@
 .map-screen--plan .map-sheet > .map-paper { filter: brightness(.84) contrast(1.18) saturate(1.18); }
 .map-screen--plan .map-lamp,
 .map-screen--plan .map-shade { opacity: .1; }
+
+/* ROUND 60 GRAFT (DIOPSIDE 0ac8fd76): on the Deck the pencil tray lies lower,
+   its brass rail on the frame's own foot rail, and its boxwood rule a little
+   slimmer, so the sheet's bottom row of rooms and notes shows above it; every
+   control is still on it, at its size. */
+@media (max-width: 1400px) {
+  .map-screen .map-tools { bottom: calc(var(--map-foot) - 9px); padding-bottom: 15px; }
+  .map-screen .map-tools .map-tools__status { height: 22px; margin-bottom: 1px; }
+}
