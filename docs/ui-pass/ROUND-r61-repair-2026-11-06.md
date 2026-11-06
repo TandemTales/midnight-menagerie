@@ -40,3 +40,19 @@ The paired check against survey 12, by two blind judges in opposite orders: **re
 **The map was NOT merged** (`87630b49`, `1f445378`). Framing the whole floor plan, as the judges asked, puts every room name at 5.5 to 7 px on screen. That breaks the large-type rule, and it reverses the 10-28 choice to open at a readable 0.85x. It is a question for Josh, in the questions file, and the branch keeps it.
 
 Key: `PAIRED-r61-repair2-key.json`. Judges' answers: `D:/UILOOP/pairs61b/`.
+
+## Repair 3: the shop's snacks, gameover's seed, the reward's title
+
+Merged from `ui/r61-repair3`:
+
+- **Shop at 1280:** each snack jar is centred on its plinth with its price tag hung beneath it, and every ware's column is at least as wide as the longest word of its name. "Liquorice" and "Stubborn Toffee" now sit inside their plaques.
+- **Gameover at 1280:** the seed is laid out like Courage beside it, so COPY and its caption stay inside the panel.
+- **Reward:** the title plaque is taller (96-110 px), so ROOM CLEARED hangs below it.
+
+The paired check was against dev captured with the same tool, so neither side shows the preview ribbon: **repair 6, dev 0.** Shop and gameover went 2 and 2, reward 1 and 1. Tests: scene-css 0, css-tokens 0, readability with every font floor equal to the base.
+
+Left open:
+- At 1600 the snack tags still press on the next jar.
+- A Big Scare reward keeps the old, thinner plaque, because the taller one made that board overflow by 13 px.
+
+Key: `PAIRED-r61-repair3-key.json`.
