@@ -217,6 +217,10 @@ export class GameOverScene extends Scene {
 
     this._wire();
     this._offs.push(boardScrollCue(root, wrap, 'record'));
+    /* round 60 graft: the ledger's rail is owed only while the Tricks would
+       still run past it -- a rail shown during the first layout (before the
+       fonts settle) gives its height back once every Trick fits */
+    for (const s of root.querySelectorAll('.go-block--deck, .go-block--keep')) s.dataset.railGives = '1';
     this._offs.push(boardScrollCue(root, root.querySelector('.go-block--deck'), 'Tricks', root.querySelector('.go-ledger')));
     this._offs.push(boardScrollCue(root, root.querySelector('.go-block--keep'), 'Keepsakes', root.querySelector('.go-ledger')));
     await fontsReady();
