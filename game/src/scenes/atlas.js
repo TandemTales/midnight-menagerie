@@ -6,7 +6,7 @@ import { bus } from '../core/bus.js';
 import { Save } from '../core/save.js';
 import { COMPANIONS, REGION_ORDER } from '../data/schema.js';
 import { regionMeta, MASTER, exitReason, ROOMS } from '../state/mapgen.js';
-import { estateSections, surveyMap, drawSurveySection, drawMasterSurvey, PLATE } from '../ui/estate-blueprint.js';
+import { estateSections, surveyMap, drawSurveySection, drawMasterSurvey, PLATE, toPlate } from '../ui/estate-blueprint.js';
 import {
   ensureCss, fontsReady, el, svg, rovingFocus,
   companionPortrait, COMPANION_BY_SLUG, setReduceMotion, reduceMotion,
@@ -162,8 +162,14 @@ function penRing(g, rings, S, seed, ink) {
  */
 function planGrid(g, w, pw, ph, opt) {
   const plan = surveyMap(w.slug).plan;
-  const k = (w.nw * pw) / plan.sheet.w, ox = w.nx * pw, oy = w.ny * ph;
-  const R = (r) => [ox + r.x0 * k, oy + r.y0 * k, (r.x1 - r.x0) * k, (r.y1 - r.y0) * k];
+  /* round 61: plan px to plate px through the wing's own placement, turned
+     a quarter for a tower (ui/estate-blueprint.js toPlate) */
+  const S = pw / MASTER.w;
+  const P = (u, v) => { const [x, y] = toPlate(w, u, v); return [x * S, y * S]; };
+  const R = (r) => {
+    const [ax, ay] = P(r.x0, r.y0), [bx, by] = P(r.x1, r.y1);
+    return [Math.min(ax, bx), Math.min(ay, by), Math.abs(bx - ax), Math.abs(by - ay)];
+  };
   g.save();
   /* the corridors: a darker wash, so the rooms read as cells off them */
   g.fillStyle = opt.hall;
@@ -186,7 +192,9 @@ function planGrid(g, w, pw, ph, opt) {
   g.globalAlpha = 1; g.fillStyle = opt.door;
   for (const d of plan.doors || []) {
     if (d.kind !== 'door') continue;
-    g.fillRect(ox + d.x * k - 1.1, oy + d.y * k + 1, 2.2, Math.max(1, d.w * k - 2));
+    const [ax, ay] = P(d.x, d.y), [bx, by] = P(d.x, d.y + d.w);
+    if (Math.abs(bx - ax) < Math.abs(by - ay)) g.fillRect(ax - 1.1, Math.min(ay, by) + 1, 2.2, Math.max(1, Math.abs(by - ay) - 2));
+    else g.fillRect(Math.min(ax, bx) + 1, ay - 1.1, Math.max(1, Math.abs(bx - ax) - 2), 2.2);
   }
   g.restore();
 }
@@ -566,6 +574,8 @@ export class AtlasScene extends Scene {
       if (this.offered.has(w.slug)) { if (this.choosing) b.classList.add('is-open'); }
       else if (this.choosing || this.entering) b.classList.add('is-shut');
       if (this.surveyed.has(w.slug)) b.classList.add('is-surveyed');
+      b.dataset.cap = w.cap || 'below';
+      if (w.stack) b.dataset.stack = '1';
       /* round 30 graft: a surveyed wing's nameplate hangs BELOW it, or above
          it for a wing at the foot of the plan (atlas.css) */
       if (w.ny + w.nh > 0.86) b.dataset.foot = '1';
@@ -617,7 +627,9 @@ export class AtlasScene extends Scene {
         + `<span class="at-hot__hit" aria-hidden="true" style="${clip}"></span>`
         /* round 60: the surveyor's caption, lettered in the gutter under its
            own plan and centred on it -- never across the walls it names */
-        + `<span class="at-name" aria-hidden="true" style="left:${((fl + fr) / 2).toFixed(2)}%;top:${bot.toFixed(2)}%">`
+        /* round 61: over its plan where the paper below is taken, and on two
+           lines under a tower (ui/estate-blueprint.js `cap`, `stack`) */
+        + `<span class="at-name" aria-hidden="true" style="left:${((fl + fr) / 2).toFixed(2)}%;top:${(w.cap === 'above' ? top : bot).toFixed(2)}%">`
         + `<i class="at-name__n">${esc(w.meta.roman)}</i><b class="at-name__t"></b></span>`
         + `<span class="at-hot__tag">${esc(w.meta.name)}</span>`;
       hots.appendChild(b);
@@ -958,7 +970,7 @@ export class AtlasScene extends Scene {
     cv.style.width=`${w.nw*100}%`;cv.style.height=`${w.nh*100}%`;
     const scale=Math.min(k*(window.devicePixelRatio||1),INK_MAX/Math.max(r.w,r.h));
     cv.width=Math.max(1,Math.round(r.w*scale));cv.height=Math.max(1,Math.round(r.h*scale));
-    drawSurveySection(cv.getContext('2d'),w.slug,cv.width,cv.height,GALL);cv.hidden=false;
+    drawSurveySection(cv.getContext('2d'),w.slug,cv.width,cv.height,GALL,w.rot);cv.hidden=false;
   }
 
   /**
@@ -1313,8 +1325,8 @@ export class AtlasScene extends Scene {
    * drawing says which way is north.
    */
   _drawRose(g, dpr, S, ink) {
-    /* round 60: in the north-east bay with the key, north up the sheet */
-    const cx = (PLATE.key[0] + PLATE.w - 62) * S, cy = (PLATE.key[1] + 96) * S, r = 52 * S;
+    /* round 61: on the south lawn, between the Foyer and the glasshouse */
+    const cx = PLATE.rose[0] * S, cy = PLATE.rose[1] * S, r = PLATE.rose[2] * S;
     if (r < 10) return;
     g.save();
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -1419,7 +1431,8 @@ export class AtlasScene extends Scene {
     };
     const optionsFor = (w) => {
       /* the caption's own numeral shares the line with the name */
-      const room = (w.span ? (w.span[1] - w.span[0]) * S * 0.97 : w.nw * pw * 0.7) - numW(w);
+      /* (a tower's caption sets its numeral on a line of its own) */
+      const room = (w.span ? (w.span[1] - w.span[0]) * S * 0.97 : w.nw * pw * 0.7) - (w.stack ? 0 : numW(w));
       const halves = String(w.meta.name).replace(/^The\s+/i, '').split(/\s+and\s+/i);
       const tries = [];
       for (const h of halves.slice(0, 2)) {

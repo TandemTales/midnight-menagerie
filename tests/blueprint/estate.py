@@ -20,7 +20,13 @@ with sync_playwright() as p:
       for(const s of sections){
         const a=surveyMap(s.slug).plan,b=generateRegionMap(s.slug,42,{style:'plan'}).plan;
         if(JSON.stringify(a)!==JSON.stringify(b))errors.push('section/map mismatch '+s.slug);
-        const rings=footprintRings(b.footprint).map(r=>r.map((v,i)=>(i%2?s.y:s.x)+v*s.w/b.sheet.w));
+        // A wing may be laid on the master a quarter turn clockwise (rot 90,
+        // its door at the top); the footprint must still be the section's own,
+        // at one scale, turned exactly so.
+        const turned=s.rot===90,k=turned?s.w/b.sheet.h:s.w/b.sheet.w;
+        if(Math.abs((turned?b.sheet.w:b.sheet.h)*k-s.h)>.0001)errors.push('section scale not uniform '+s.slug);
+        const P=(u,v)=>turned?[s.x+(b.sheet.h-v)*k,s.y+u*k]:[s.x+u*k,s.y+v*k];
+        const rings=footprintRings(b.footprint).map(r=>{const o=[];for(let i=0;i+1<r.length;i+=2)o.push(...P(r[i],r[i+1]));return o;});
         if(rings.length!==s.outline.length||rings.some((r,i)=>r.length!==s.outline[i].length||r.some((v,j)=>Math.abs(v-s.outline[i][j])>.0001)))errors.push('master footprint mismatch');
         if(s.x<0||s.y<0||s.x+s.w>1448||s.y+s.h>1086)errors.push('section outside master');
       }
