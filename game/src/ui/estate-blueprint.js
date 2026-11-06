@@ -213,14 +213,23 @@ export function drawMasterSurvey(g,wings,color){
     const cg=cv.getContext('2d'),img=cg.createImageData(MW,MH),px=img.data;
     const ink=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(color)||[0,'2a','18','0b'];
     const IR=parseInt(ink[1],16),IG=parseInt(ink[2],16),IB=parseInt(ink[3],16);
-    const plans=maskOf(F.map(f=>f.b));
+    /* the plans themselves, by their own footprints: the courts' wash and the
+       vaults' hatching stop at a wing's walls, not at its bounding box */
+    const plans=new Uint8Array(MW*MH);
+    {
+      const pc=document.createElement('canvas');pc.width=MW;pc.height=MH;
+      const pg=pc.getContext('2d');pg.fillStyle='#000';
+      for(const f of F){pg.beginPath();for(const r of f.w.outline||[]){for(let i=0;i+1<r.length;i+=2)pg[i?'lineTo':'moveTo'](r[i],r[i+1]);pg.closePath();}pg.fill();}
+      const d=pg.getImageData(0,0,MW,MH).data;
+      for(let i=0;i<plans.length;i++)plans[i]=d[i*4+3]>0?1:0;
+    }
     const put=(i,a)=>{if(a>px[i*4+3]){px[i*4]=IR;px[i*4+1]=IG;px[i*4+2]=IB;px[i*4+3]=a;}};
     if(mass.house){
       /* the outer wall, heavy, and its plinth line a step outside it; the
          courts and halls inside laid in a wash and hatched as paving */
       const C=mass.house,w5=grow(C,5),w9=grow(C,9),w11=grow(C,11);
       for(let i=0;i<C.length;i++){
-        if(C[i]){if(!plans[i]){const x=i%MW,y=(i/MW)|0;put(i,((x+y)%6===0)?78:40);}}
+        if(C[i]){if(!plans[i]){const x=i%MW,y=(i/MW)|0;put(i,((x+y)%5===0)?150:88);}}
         else if(w5[i])put(i,240);
         else if(w11[i]&&!w9[i])put(i,170);
       }
