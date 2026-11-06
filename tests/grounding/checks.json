@@ -10,7 +10,8 @@
       "floor": 417,
       "arena": "normal",
       "actors": 4,
-      "shifted": 3,
+      "pieces": 16,
+      "struck": 0,
       "failures": []
     },
     {
@@ -23,7 +24,8 @@
       "floor": 669,
       "arena": "normal",
       "actors": 4,
-      "shifted": 3,
+      "pieces": 16,
+      "struck": 0,
       "failures": []
     },
     {
@@ -36,7 +38,8 @@
       "floor": 394,
       "arena": "normal",
       "actors": 4,
-      "shifted": 3,
+      "pieces": 16,
+      "struck": 0,
       "failures": []
     },
     {
@@ -49,7 +52,8 @@
       "floor": 417,
       "arena": "normal",
       "actors": 4,
-      "shifted": 4,
+      "pieces": 54,
+      "struck": 0,
       "failures": []
     },
     {
@@ -62,7 +66,8 @@
       "floor": 669,
       "arena": "normal",
       "actors": 4,
-      "shifted": 4,
+      "pieces": 54,
+      "struck": 0,
       "failures": []
     },
     {
@@ -75,7 +80,8 @@
       "floor": 394,
       "arena": "normal",
       "actors": 4,
-      "shifted": 4,
+      "pieces": 54,
+      "struck": 0,
       "failures": []
     },
     {
@@ -88,7 +94,8 @@
       "floor": 390,
       "arena": "boss",
       "actors": 3,
-      "shifted": 3,
+      "pieces": 6,
+      "struck": 2,
       "failures": []
     },
     {
@@ -101,7 +108,8 @@
       "floor": 624,
       "arena": "boss",
       "actors": 3,
-      "shifted": 3,
+      "pieces": 6,
+      "struck": 1,
       "failures": []
     },
     {
@@ -114,7 +122,8 @@
       "floor": 367,
       "arena": "boss",
       "actors": 3,
-      "shifted": 3,
+      "pieces": 6,
+      "struck": 1,
       "failures": []
     },
     {
@@ -127,7 +136,8 @@
       "floor": 417,
       "arena": "normal",
       "actors": 6,
-      "shifted": 1,
+      "pieces": 12,
+      "struck": 4,
       "failures": []
     },
     {
@@ -140,7 +150,8 @@
       "floor": 669,
       "arena": "normal",
       "actors": 6,
-      "shifted": 1,
+      "pieces": 12,
+      "struck": 1,
       "failures": []
     },
     {
@@ -153,7 +164,176 @@
       "floor": 394,
       "arena": "normal",
       "actors": 6,
-      "shifted": 1,
+      "pieces": 12,
+      "struck": 5,
+      "failures": []
+    },
+    {
+      "room": "nursery",
+      "view": null,
+      "viewport": [
+        1280,
+        800
+      ],
+      "floor": 417,
+      "arena": "normal",
+      "actors": 5,
+      "pieces": 10,
+      "struck": 3,
+      "failures": []
+    },
+    {
+      "room": "nursery",
+      "view": null,
+      "viewport": [
+        1920,
+        1080
+      ],
+      "floor": 669,
+      "arena": "normal",
+      "actors": 5,
+      "pieces": 10,
+      "struck": 2,
+      "failures": []
+    },
+    {
+      "room": "nursery",
+      "view": null,
+      "viewport": [
+        1024,
+        768
+      ],
+      "floor": 394,
+      "arena": "normal",
+      "actors": 5,
+      "pieces": 10,
+      "struck": 3,
+      "failures": []
+    },
+    {
+      "room": "foyer",
+      "view": "along",
+      "viewport": [
+        1280,
+        800
+      ],
+      "floor": 417,
+      "arena": "normal",
+      "actors": 6,
+      "pieces": 29,
+      "struck": 3,
+      "failures": []
+    },
+    {
+      "room": "foyer",
+      "view": "along",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "floor": 669,
+      "arena": "normal",
+      "actors": 6,
+      "pieces": 29,
+      "struck": 0,
+      "failures": []
+    },
+    {
+      "room": "foyer",
+      "view": "along",
+      "viewport": [
+        1024,
+        768
+      ],
+      "floor": 394,
+      "arena": "normal",
+      "actors": 6,
+      "pieces": 29,
+      "struck": 4,
+      "failures": []
+    },
+    {
+      "room": "foyer",
+      "view": "threshold",
+      "viewport": [
+        1280,
+        800
+      ],
+      "floor": 390,
+      "arena": "boss",
+      "actors": 3,
+      "pieces": 34,
+      "struck": 4,
+      "failures": []
+    },
+    {
+      "room": "foyer",
+      "view": "threshold",
+      "viewport": [
+        1920,
+        1080
+      ],
+      "floor": 624,
+      "arena": "boss",
+      "actors": 3,
+      "pieces": 34,
+      "struck": 2,
+      "failures": []
+    },
+    {
+      "room": "foyer",
+      "view": "threshold",
+      "viewport": [
+        1024,
+        768
+      ],
+      "floor": 367,
+      "arena": "boss",
+      "actors": 3,
+      "pieces": 34,
+      "struck": 4,
+      "failures": []
+    },
+    {
+      "room": "crypt",
+      "view": null,
+      "viewport": [
+        1280,
+        800
+      ],
+      "floor": 417,
+      "arena": "normal",
+      "actors": 6,
+      "pieces": 10,
+      "struck": 2,
+      "failures": []
+    },
+    {
+      "room": "crypt",
+      "view": null,
+      "viewport": [
+        1920,
+        1080
+      ],
+      "floor": 669,
+      "arena": "normal",
+      "actors": 6,
+      "pieces": 10,
+      "struck": 1,
+      "failures": []
+    },
+    {
+      "room": "crypt",
+      "view": null,
+      "viewport": [
+        1024,
+        768
+      ],
+      "floor": 394,
+      "arena": "normal",
+      "actors": 6,
+      "pieces": 10,
+      "struck": 2,
       "failures": []
     }
   ],
