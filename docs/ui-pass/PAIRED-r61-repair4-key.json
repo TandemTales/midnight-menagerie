@@ -1,0 +1,17 @@
+{
+ "map": {
+  "new_is_A": false
+ },
+ "hud-late": {
+  "new_is_A": true
+ },
+ "clubhouse": {
+  "new_is_A": true
+ },
+ "atlas": {
+  "new_is_A": false
+ },
+ "combat-boss": {
+  "new_is_A": false
+ }
+}
