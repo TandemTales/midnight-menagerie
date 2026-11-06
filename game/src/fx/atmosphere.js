@@ -1955,6 +1955,25 @@ export const REGIONS = {
                   a prop quad costs its whole area, and these three were a
                   millisecond of a fight's frame under the hand) */
                { shape: 27, ahead: 3.25, across: 1.85, tone: 0.97, hM: 0.58, keep: true, still: true, seed: 4.5 },
+               /* ROUND 59 GRAFT (AGATE's and OBSIDIAN's): THE PUMPKINS FORWARD
+                  ACROSS THE FLAGS, as survey 10 had them -- carved lanterns and
+                  grey ones set down over the middle and near court at several
+                  depths, the lower left and the centre too, where the flags
+                  between the patch and the hand were bare paving. The nearest
+                  are under the hand in a fight (`hand`); the rest are struck
+                  only while a fighter stands across them (stageAside). */
+               { shape: 27, ahead: 3.4, across: -0.9, tone: 0.97, hM: 0.62, keep: true, still: true, seed: 5.2, hand: true },
+               { shape: 27, ahead: 4.5, across: -1.9, tone: 0.97, hM: 0.80, keep: true, still: true, seed: 6.7, hand: true },
+               { shape: 27, ahead: 4.9, across: 0.6, tone: 0.97, hM: 0.66, keep: true, still: true, seed: 2.9, hand: true },
+               { shape: 27, ahead: 2.9, across: 0.3, tone: 0.97, hM: 0.40, keep: true, still: true, seed: 7.7, hand: true },
+               { shape: 27, ahead: 7.4, across: -1.3, tone: 0.96, hM: 0.64, keep: true, still: true, seed: 6.9 },
+               { shape: 27, ahead: 8.6, across: 1.5, tone: 0.96, hM: 0.70, keep: true, still: true, seed: 2.9 },
+               { shape: 27, ahead: 6.6, across: 0.2, tone: 0.96, hM: 0.52, keep: true, still: true, seed: 1.7 },
+               /* ...and a bale stacked with pumpkins anchoring the near left,
+                  as the one at the right does (OBSIDIAN's) */
+               { shape: 86, ahead: 5.6, across: -3.3, tone: 0.95, keep: true, still: true, seed: 1.9 },
+               { shape: 27, ahead: 5.42, across: -3.20, y: 0.43, tone: 0.96, hM: 0.52, keep: true, still: true, seed: 4.1 },
+               { shape: 27, ahead: 6.3, across: -3.9, tone: 0.95, hM: 0.56, keep: true, still: true, seed: 1.1 },
              ] },
     crispFloor: true, flagK: 4,
     nearFloor: { fall: 0.92, calm: 0.85, clean: 1,
