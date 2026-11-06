@@ -1055,3 +1055,24 @@
 .cl-log summary:focus-visible { outline: 2px solid var(--kit-gold-hi); outline-offset: 3px; }
 .cl-log summary { white-space: nowrap; }
 @media (max-width: 1400px) { .cl-log summary { letter-spacing: .07em; padding-inline: 18px 20px; } }
+
+/* ROUND 60 GRAFT (DIOPSIDE 0ac8fd76): DISCOVERIES and HOW TO PLAY leave the
+   corner under the candle, where the screen's edge cut their frames, and hang
+   side by side on the wall of the side column over the way in, whole at 1600
+   and on the Deck. On the Deck the Haunt Level's heading set on two lines and
+   rose into the panel's shield crest: the panel keeps the crest's room above
+   it and gives the heading the width its padding held, so it reads on ONE
+   line, centred under the crest, at its size. */
+.scene--clubhouse .story-tools {
+  top: auto; bottom: clamp(112px, 14.6vh, 136px); right: clamp(52px, 4.6vw, 84px);
+  flex-direction: row; align-items: center; gap: 8px;
+}
+.scene--clubhouse .story-tools > button { width: auto; padding: 0 22px 2px; white-space: nowrap; }
+.scene--clubhouse .story-tools > button:first-child { rotate: -.4deg; }
+@media (max-width: 1400px) {
+  .cl__side .cl-haunt { padding-inline: 18px; }
+  .cl-haunt__h.kit-heading { column-gap: 6px; letter-spacing: .18em; white-space: nowrap; }
+}
+@media (max-height: 800px) {
+  .cl__side .cl-haunt { padding-top: 30px; }
+}
