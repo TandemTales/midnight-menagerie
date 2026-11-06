@@ -1864,3 +1864,38 @@
   .scene--shop .rm--shop .sh-cards { padding-top: 10px; }
   .scene--shop .rm--shop .sh-cards::before { top: calc(10px + var(--face-h) - 4px); }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 61 REPAIR 3: AT THE DECK'S 1280 EVERY SNACK'S NAME ON ITS OWN PLAQUE.
+   "Stubborn Toffee" and "Liquorice" ran past their plates' rims and each tag
+   pressed on the next jar: a jar and its tag side by side are wider than a
+   third of the shelf. So on the narrow shelf each jar stands centred on its
+   plinth and its price tag hangs under the plinth on its twine, in the air the
+   two-line rules leave below them; the counters stand closer, which gives the
+   shelf a little width; and every column is at least as wide as its name's longest word on
+   its plate (shop.js _layout). The words keep their size.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 1400px) {
+  /* the counters stand a little closer, and the width that frees is the
+     Snacks' alone: the Keepsakes and Mr. Moth keep theirs to the pixel */
+  .scene--shop .rm--shop .sh-floor { column-gap: 8px; grid-template-columns: minmax(0, 1.2895fr) minmax(0, .7732fr) minmax(0, .9573fr); }
+  .scene--shop .rm--shop .sh-side > .sh-counter.sh-counter--snacks { padding-inline: 10px; }
+  .scene--shop .rm--shop .sh-counter--snacks .sh-list { --ware-min: 76px; column-gap: 10px; }
+  .scene--shop .rm--shop .sh-counter--snacks .sh-row.sh-pressable {
+    --tag-shift: 0px;
+    grid-template-areas: "sig" "plinth" "buy" "txt";
+    grid-template-rows: auto var(--plinth-h) auto auto;
+  }
+  .scene--shop .rm--shop .sh-counter--snacks .sh-row.sh-pressable::before { width: min(100%, calc(var(--vw) + 30px)); }
+  .scene--shop .rm--shop .sh-counter--snacks .sh-row.sh-pressable > .sh-buy {
+    grid-area: buy; justify-self: center; align-self: start;
+    margin: 6px 0 0; translate: none;
+  }
+  /* its twine, from the tag's eyelet up to the plinth's foot */
+  .scene--shop .rm--shop .sh-counter--snacks .sh-row .sh-buy.kit-price::after {
+    display: block; left: calc(var(--tag) * .24); top: auto; bottom: 50%;
+    width: 2px; height: calc(var(--tag) * .5 + 7px); rotate: 0deg; translate: -50% 0;
+  }
+  .scene--shop .rm--shop .sh-counter--snacks .sh-row.sh-pressable .sh-row__txt,
+  .scene--shop .rm--shop .sh-counter--snacks .sh-row.sh-pressable:is(.is-in-hand, :hover, :focus-within) .sh-row__txt { margin-top: 4px; }
+}
