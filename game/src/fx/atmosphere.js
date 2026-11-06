@@ -2657,7 +2657,7 @@ export const ROOM_KINDS = {
              wirework stand of pots in three tiers at the right. (Two pieces:
              the terrace spends the whole of MAX_PROPS, and each one here is a
              dealt bed lost off the end of the deal.) */
-          { shape: 84, edge: 0.385, z: -5.6, tone: 0.94, centre: 1, still: true, seed: 2.1 },
+          { shape: 84, edge: 0.43, z: -5.6, tone: 0.94, centre: 1, still: true, seed: 2.1 },
           { shape: 76, edge: 0.63, z: -5.2, tone: 0.92, centre: 1, still: true, seed: 5.7 },
         ],
         /* (round 34: 1.0 of the wing's 36 -- the 0.82 of 44 it was judged with) */
