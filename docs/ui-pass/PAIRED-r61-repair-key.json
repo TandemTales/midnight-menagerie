@@ -1,0 +1,11 @@
+{
+ "atlas": {
+  "new_is_A": true
+ },
+ "atlas-house": {
+  "new_is_A": false
+ },
+ "shop": {
+  "new_is_A": true
+ }
+}
