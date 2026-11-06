@@ -796,3 +796,59 @@
 }
 .scene--reward .rw-skip.kit-btn em { font-style: normal; --reading-size: 13px; font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--kit-text); }
 .scene--reward .rw-skip.kit-btn:disabled { opacity: .55; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 60 SCAPOLITE: ONE GRID FOR EVERY BOARD.
+   Josh's larger type stays; the chrome is what gives up the height. Every
+   node board (reward, event, rest, shop) is the same five rows:
+
+     1  the run strip                 (ui/hud.js, its own height)
+     2  the TITLE BAND                one cartouche of --bd-cart, its ribbon
+                                      riding the bottom rail, the room's name
+                                      engraved either side of the plaque
+     3  the DECISION AREA             everything you choose between, sized to
+                                      the height that is left (1fr)
+     4  a scroll rail, only when a board still overflows (r49-board-scroll.js)
+     5  the ACTION BAR                the way out and the quiet choices, one
+                                      plate high
+
+   The title band used to be three stacked tiers (plaque, ribbon, room line)
+   and cost 180-200 px on reward, event and rest; it is ~100 px everywhere now.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.kit-board.rm {
+  --bd-cart: clamp(78px, 10vh, 90px);
+  --bd-gap: clamp(8px, 1.2vh, 14px);
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+}
+.kit-board.rm > .rm-head { padding: 2px var(--rm-pad) 0; justify-content: center; text-align: center; }
+.kit-board.rm > .rm-head > .rm-where.kit-titleblock {
+  --cart-h: var(--bd-cart);
+  max-width: min(1180px, calc(100vw - 2 * var(--rm-pad) - 300px));
+}
+.kit-board.rm > .rm-head .rm-title.kit-cartouche__title {
+  --reading-size: clamp(27px, 2.25vw, 36px);
+  line-height: 1;
+}
+.kit-board.rm > .rm-head .rm-sub.kit-cartouche__sub { margin-top: 1px; line-height: 1.18; }
+/* the ribbon rides the plaque's bottom rail instead of hanging under it */
+.kit-board.rm > .rm-head .kit-titleblock > .kit-ribbon { margin-top: calc(var(--bd-cart) * -.08); }
+/* the room's name: its two halves engraved either side of the ribbon, on the
+   ribbon's own line under the plaque's rail -- the same element and the same
+   words, no row of its own (reward.js measures the ribbon into --rib-w) */
+.kit-board.rm > .rm-head .rm-where > .rm-room {
+  /* an absolute grid item's box is its grid area: the ribbon's row */
+  grid-row: 3; grid-column: 1;
+  position: absolute; inset: 0; margin: 0;
+  pointer-events: none; z-index: 3;
+}
+.kit-board.rm > .rm-head .rm-where > .rm-room > :is(.rm-room__a, .rm-room__b) {
+  position: absolute; top: 50%; translate: 0 -40%;
+  width: max-content; max-width: 30vw; white-space: nowrap;
+  line-height: 1.2; letter-spacing: .14em;
+}
+.kit-board.rm > .rm-head .rm-where > .rm-room > .rm-room__a { right: calc(50% + var(--rib-w, 240px) / 2 + 10px); text-align: right; }
+.kit-board.rm > .rm-head .rm-where > .rm-room > .rm-room__b { left: calc(50% + var(--rib-w, 240px) / 2 + 10px); text-align: left; }
+.kit-board.rm > .rm-head .rm-where > .rm-room > .rm-room__dot { position: absolute; opacity: 0; width: 1px; overflow: hidden; }
+/* the decision area and the action bar */
+.kit-board.rm > .rm-body { padding-top: var(--bd-gap); padding-bottom: 0; min-height: 0; }
+.kit-board.rm > .rm-foot { padding-top: 4px; padding-bottom: clamp(8px, 1.3vh, 14px); }

@@ -2390,3 +2390,20 @@
 .map-ballot__seat:not(.is-in) > img { filter: grayscale(.8) brightness(.5); }
 .map-ballot__seat:not(.is-in)::before { filter: brightness(.55) saturate(.6); }
 /* == end round 58 == */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 60 SCAPOLITE: the cyanotype holds its darks. Survey 11, both
+   independent judges: the sheet read "milky", a grey teal under a haze. The
+   floor plan and the Kids' crayon are untouched; only the paper the plan is
+   printed on is deepened -- Prussian blue, saturated, its folds and burnt
+   edges kept as tone -- and the lamp's wash over it is lighter still.
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* the copier's pigment the paper is tinted with (ui/blueprint.js reads it off
+   the root when it prints the sheet): Prussian blue rather than grey teal */
+:root:has(.map-screen--plan) { --bp-ground: #375c98; --bp-floor: #2a486c; }
+/* ...and printed darker: the pigment's darks held, the chalk and crayon kept
+   bright by the contrast (the rubbed patches under the marks, --bp-floor, are
+   matched to the printed paper) */
+.map-screen--plan .map-sheet > .map-paper { filter: brightness(.84) contrast(1.18) saturate(1.18); }
+.map-screen--plan .map-lamp,
+.map-screen--plan .map-shade { opacity: .1; }

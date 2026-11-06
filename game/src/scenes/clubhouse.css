@@ -1012,3 +1012,46 @@
 .cl-panel--backpack .packshelf__list { grid-template-columns: 1fr; }
 .cl-panel--backpack .packbag__list, .cl-panel--backpack .packshelf__list { gap: 5px; }
 .cl-panel--backpack .cl-pages { margin-top: 6px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 60 SCAPOLITE: the last web controls on the Clubhouse, into the family
+   the map's already are. DISCOVERIES and HOW TO PLAY are the map's brass card
+   frames (atlas.css carries the shared rule), stacked in the corner under the
+   candle clear of the FREED plaque, as on the whole house; the EXPEDITION LOG
+   is a dark cartouche with a gilt rim and a turning gilt diamond, not a 1px
+   box with a browser triangle.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.scene--clubhouse .story-tools { flex-direction: column; align-items: stretch; gap: 5px; top: clamp(46px, 7vh, 60px); }
+.scene--clubhouse .story-tools > button {
+  min-height: 40px; height: 40px; padding: 0 18px 2px;
+  border: 0 solid transparent; border-radius: 0;
+  border-image: url("../../assets/ui/r58-variscite/label-b.webp") 18 36 21 36 fill / 7px 13px 8px 13px stretch;
+  background: none; color: #24140a; font-weight: 600;
+  text-shadow: 0 1px 0 rgba(255, 240, 200, .38); box-shadow: none;
+  filter: drop-shadow(0 4px 5px rgba(2, 2, 6, .7));
+}
+.scene--clubhouse .story-tools > button:last-child { border-image-source: url("../../assets/ui/r58-variscite/label-c.webp"); rotate: .4deg; }
+.scene--clubhouse .story-tools > button:hover { background: none; filter: brightness(1.14) drop-shadow(0 0 6px rgba(255, 179, 92, .7)); }
+.scene--clubhouse .story-tools > button:focus-visible { outline: 2px solid var(--kit-gold-hi); outline-offset: 2px; }
+.cl-log summary {
+  list-style: none; display: flex; align-items: center; gap: 12px;
+  min-height: 46px; padding: 6px 26px 7px 22px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 12px 22px stretch;
+  background: none;
+  font-family: var(--font-display); font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--kit-gold-hi); text-shadow: 0 1px 0 rgb(0 0 0 / .9);
+  filter: drop-shadow(0 4px 5px rgb(0 0 0 / .7));
+}
+.cl-log summary::-webkit-details-marker { display: none; }
+.cl-log summary::before {
+  content: ''; flex: none; width: 10px; height: 10px; rotate: 45deg;
+  background: linear-gradient(135deg, var(--kit-gold-hi), var(--kit-gold) 55%, var(--kit-gold-lo));
+  box-shadow: 0 0 0 1px rgb(0 0 0 / .6), 0 0 6px color-mix(in srgb, var(--kit-candle) 45%, transparent);
+  transition: rotate var(--t-quick) var(--ease-out);
+}
+.cl-log[open] summary::before { rotate: 0deg; }
+.cl-log summary:hover { filter: drop-shadow(0 4px 5px rgb(0 0 0 / .7)) brightness(1.12); }
+.cl-log summary:focus-visible { outline: 2px solid var(--kit-gold-hi); outline-offset: 3px; }
+.cl-log summary { white-space: nowrap; }
+@media (max-width: 1400px) { .cl-log summary { letter-spacing: .07em; padding-inline: 18px 20px; } }

@@ -108,7 +108,11 @@ export class EventScene extends RoomScene {
     const mine = r.eventAnswerFor ? r.eventAnswerFor() : (r.pendingEvent?.resolved
       ? { resolved: r.pendingEvent.resolved, pending: r.pendingEvent.pending } : null);
     if (mine) this._showOutcome(mine.resolved, mine.pending, false);
-    this._own(boardScrollCue(this.root, this.$page.querySelector('.ev-reading-r51'), 'story', this.$page));
+    // round 60: the leaf is taller when its rail is not owed (event.css), so
+    // the rail only stays while the story would still run past the lip
+    const reading = this.$page.querySelector('.ev-reading-r51');
+    if (reading) reading.dataset.railGives = '1';
+    this._own(boardScrollCue(this.root, reading, 'story', this.$page));
     bus.emit('event:ready', { id: this.def.id });
   }
 

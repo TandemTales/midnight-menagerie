@@ -1671,3 +1671,194 @@
 .go-shrine .go-mvp__h .kit-plate__name { white-space: nowrap; }
 /* its candle glow no longer runs up into the scroller top, which cut it dead */
 .go-stage::before { top: 58%; width: 118%; aspect-ratio: 5 / 2; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 60 SCAPOLITE: THE MEMORIAL ON THE ONE BOARD GRID (reward.css).
+   Survey 11: the featured card, the Final Tricks and the stats ran behind
+   "More below" and an empty "Memorial record" strip. The words keep their
+   size; the plaque, the portraits and the shrine give up height instead:
+     the band   one plaque high, the room's wing either side of its ribbon
+     column 1   the two who went in, HOW FAR, what you found, the search
+     column 2   the shrine (the card from your final deck), the route drawn
+     column 3   the ledger (Courage | seed, every Final Trick two to a row),
+                what resets
+     the foot   the eight stats in one engraved row, then the three ways on
+   ═══════════════════════════════════════════════════════════════════════════ */
+.go-board:has(.go-wrap--r60) { --go-mvp-s: .66; }
+.go-board:has(.go-wrap--r60) > .go-head.kit-titleblock--compact { --cart-h: clamp(80px, 10vh, 90px); margin-top: 6px; }
+.go-board:has(.go-wrap--r60) > .go-head .go-ribbon { margin-top: calc(var(--cart-h) * -.08); }
+.go-board:has(.go-wrap--r60) > .go-head > .go-kicker {
+  /* the wing, engraved beside the ribbon rather than on a line of its own
+     (gameover.js measures the ribbon into --go-rib-w) */
+  grid-row: 3; grid-column: 1; position: absolute; top: 50%; left: calc(50% + var(--go-rib-w, 320px) / 2 + 12px);
+  translate: 0 -40%; margin: 0; white-space: nowrap;
+}
+.go-wrap.go-wrap--r60 {
+  grid-template-columns: minmax(0, .92fr) minmax(0, 1fr) minmax(0, 1.08fr);
+  grid-template-areas: "a b c" "stats stats stats";
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 8px 16px; padding-top: 2px; align-content: stretch;
+}
+.go-wrap--r60 > .go-col { display: flex; flex-direction: column; gap: 8px; min-height: 0; min-width: 0; }
+.go-wrap--r60 > .go-col--a { grid-area: a; }
+.go-wrap--r60 > .go-col--b { grid-area: b; }
+.go-wrap--r60 > .go-col--c { grid-area: c; }
+.go-wrap--r60 .go-block--mvp.go-block--mvp { --card-w: clamp(188px, 14vw, 222px); }
+/* HOW FAR keeps the frame it wore as the board's own grid item */
+.go-wrap--r60 .go-col > .go-reach {
+  position: relative; inset: auto; translate: none; box-sizing: border-box; width: 100%; margin: 0;
+  display: grid; grid-template-columns: auto auto 1fr; grid-template-areas: "label count unit" "where where wing";
+  justify-items: start; align-items: center; gap: 0 10px; padding: 6px 16px 8px; min-height: 0; height: auto;
+  background: radial-gradient(ellipse at 20% 5%,color-mix(in srgb,var(--kit-candle) 13%,transparent),transparent 70%),url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") center / cover;
+  border: 0 solid transparent; border-image: url("../../assets/ui/kit/frame.webp") 52 / 17px stretch;
+}
+.go-wrap--r60 .go-col > .go-reach .go-tri__rule { display: none; }
+.go-wrap--r60 .go-col > .go-reach .go-reach__n { font-size: 44px; line-height: 1; margin: 0; }
+.go-wrap--r60 .go-col > .go-reach .go-reach__where { justify-self: start; }
+.go-wrap--r60 .go-col > .go-reach .go-reach__wing { justify-self: end; }
+.go-wrap--r60 .go-col > .go-stanzas.kit-panel { flex: 1 1 auto; min-height: 0; margin: 0; padding-block: 12px 10px; }
+.go-wrap--r60 .go-col > .go-altar.go-shrine { flex: 1 1 auto; margin: 0; padding-bottom: 22px; }
+.go-wrap--r60 .go-col > .go-ledger { flex: 1 1 auto; margin: 0; min-height: 0; padding-top: 26px; padding-bottom: 10px; }
+.go-wrap--r60 .go-col > .go-bp--r60 {
+  display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: center; column-gap: 12px;
+  position: relative; box-sizing: border-box; margin: 0; padding: 10px 16px 12px;
+  background: radial-gradient(ellipse at 20% 5%, color-mix(in srgb, var(--kit-candle) 13%, transparent), transparent 70%), url("../../assets/ui/r50-garnet/quiet-velvet-v1.webp") center / cover;
+  border: 0 solid transparent; border-image: url("../../assets/ui/kit/frame.webp") 52 / 17px stretch;
+}
+.go-wrap--r60 .go-bp--r60 .go-bp__frame { margin: 0; --fk: .36; }
+.go-wrap--r60 .go-bp--r60 .go-bp__meta { margin: 0; display: grid; gap: 4px; }
+.go-wrap--r60 .go-stanzas .go-stanza { padding-block: 4px; }
+.go-wrap--r60 .go-stanzas .go-stanza ul { margin: 0; }
+.go-wrap--r60 .go-stanzas .go-stanza li { line-height: 1.2; }
+.go-wrap--r60 .go-stanza--pet .go-pet__snap { width: 58px; height: 72px; }
+.go-wrap--r60 > .go-stats { grid-area: stats; }
+/* the ledger's head: Courage and the seed side by side */
+.go-wrap--r60 .go-col > .go-ledger .go-ledhead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 14px; align-items: start; }
+.go-wrap--r60 .go-col > .go-ledger .go-courage { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "lbl n" "track track" "note note"; gap: 2px 8px; align-items: center; }
+.go-wrap--r60 .go-col > .go-ledger .go-courage > .go-lbl { grid-area: lbl; }
+.go-wrap--r60 .go-col > .go-ledger .go-courage__track { grid-area: track; width: 100%; margin: 2px 0; }
+.go-wrap--r60 .go-col > .go-ledger .go-courage__n { grid-area: n; justify-self: end; }
+.go-wrap--r60 .go-col > .go-ledger .go-courage__note { grid-area: note; }
+.go-wrap--r60 .go-col > .go-ledger .go-seed { margin: 0; }
+/* every Final Trick, two to a row, each on its own small plate */
+.go-wrap--r60 .go-col > .go-ledger .go-block--deck { overflow: visible; }
+.go-wrap--r60 .go-col > .go-ledger .go-tricks.go-tricks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 6px; width: 100%; }
+.go-wrap--r60 .go-col > .go-ledger .go-trick.go-trick { --plate-h: 30px; width: auto; min-width: 0; margin: 0; min-height: 0; padding-block: 2px; }
+.go-wrap--r60 .go-col > .go-ledger .go-trick .go-trick__name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* the stats: one engraved row of eight */
+.go-wrap--r60 > .go-stats.kit-stats { grid-template-columns: repeat(8, minmax(0, 1fr)); grid-auto-flow: row; padding-block: 6px; margin: 0; }
+.go-wrap--r60 > .go-stats .go-stat { min-height: 0; padding-block: 2px; }
+@media (max-width: 1400px) {
+  .go-wrap--r60 > .go-stats.kit-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.go-board:has(.go-wrap--r60) > .go-foot { padding-top: 0; }
+
+/* HOW FAR on one engraved line pair: the count, then where */
+/* the ledger's two pages' tabs side by side */
+.go-wrap--r60 .go-col > .go-ledger .go-fold.kit-tabs { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.go-wrap--r60 .go-col > .go-ledger .go-trick .go-trick__name { white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.05; }
+.go-wrap--r60 .go-col > .go-ledger .go-trick.go-trick { height: auto; min-height: 30px; }
+/* the stats: the figure, then its name, one line each */
+.go-wrap--r60 > .go-stats .go-stat { display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto; grid-template-areas: "ico val lbl"; column-gap: 7px; align-items: center; justify-content: center; }
+.go-wrap--r60 > .go-stats .go-stat > b { align-self: center; }
+.go-wrap--r60 > .go-stats .go-stat > .go-lbl { align-self: center; }
+.go-wrap--r60 > .go-stats .go-stat .kit-stats__label { text-transform: none; letter-spacing: .02em; font-family: var(--font-body); font-weight: 700; white-space: nowrap; }
+.go-wrap--r60 .go-stanza--pet .go-pet__text { margin: 0; }
+/* every Final Trick on one ruled clerk's list, two columns: its cost on the
+   gold coin, its name in the body face, the count after it */
+.go-wrap--r60 .go-col > .go-ledger .go-tricks > .go-trick.go-trick.kit-plate {
+  --coin: 24px;
+  display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px;
+  width: auto; height: auto; min-height: 32px; min-width: 0; margin: 0; padding: 2px 4px 3px 2px;
+  border: 0; border-image: none; border-radius: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--kit-gold-lo) 60%, transparent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--kit-violet-lo, #3a2458) 36%, transparent), transparent 85%);
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--kit-void) 80%, transparent);
+  filter: none;
+}
+.go-wrap--r60 .go-col > .go-ledger .go-tricks > .go-trick.go-trick.kit-plate::before,
+.go-wrap--r60 .go-col > .go-ledger .go-tricks > .go-trick.go-trick.kit-plate::after { content: none; }
+.go-wrap--r60 .go-col > .go-ledger .go-tricks > .go-trick.go-trick .go-trick__cost { position: static; flex: none; width: var(--coin); height: var(--coin); margin: 0; translate: none; }
+.go-wrap--r60 .go-col > .go-ledger .go-tricks > .go-trick.go-trick .go-trick__name {
+  flex: 1 1 auto; min-width: 0; padding: 0; margin: 0;
+  font-family: var(--font-body); font-weight: 700; text-transform: none; letter-spacing: .01em;
+  font-size: var(--fs-sm); line-height: 1.1; white-space: normal; text-align: left;
+}
+.go-wrap--r60 .go-col > .go-ledger .go-tricks > .go-trick.go-trick .go-trick__n { position: static; flex: none; margin: 0 0 0 auto; translate: none; }
+.go-wrap--r60 .go-col > .go-ledger .go-tricks.go-tricks { column-gap: 14px; row-gap: 2px; }
+
+.go-wrap--r60 .go-stage { --go-pic-w: clamp(104px, 7.8vw, 128px); }
+.go-wrap--r60 .go-col > .go-ledger .go-fold.kit-tabs { flex-wrap: nowrap; gap: 6px; }
+.go-wrap--r60 .go-col > .go-ledger .go-fold .go-fold__tab { min-width: 0; padding-inline: 14px; letter-spacing: .08em; }
+.go-wrap--r60 .go-col > .go-ledger .go-ledhead { margin-bottom: 4px; }
+.go-wrap.go-wrap--r60:has(.go-shrine) { row-gap: 7px; }
+.go-wrap--r60 > .go-stats.kit-stats { padding-block: 4px; }
+.go-board:has(.go-wrap--r60) > .go-foot .go-btn { --plate-h: clamp(44px, 5.4vh, 48px); }
+
+/* the ledger's head, two lines a side */
+.go-wrap--r60 .go-col > .go-ledger .go-courage { grid-template-areas: "lbl n" "track track" "note note"; row-gap: 0; }
+.go-wrap--r60 .go-col > .go-ledger .go-seed { display: grid; grid-template-columns: auto 1fr; grid-template-areas: "lbl row" "hint hint"; column-gap: 10px; row-gap: 2px; align-items: center; }
+.go-wrap--r60 .go-col > .go-ledger .go-seed > .go-lbl { grid-area: lbl; }
+.go-wrap--r60 .go-col > .go-ledger .go-seed__row { grid-area: row; }
+.go-wrap--r60 .go-col > .go-ledger .go-seed__hint { grid-area: hint; line-height: 1.15; }
+.go-wrap--r60 .go-col > .go-ledger .go-tricks > .go-trick.go-trick.kit-plate { min-height: 29px; padding-block: 1px 2px; }
+/* the stats band: one plate high */
+.go-wrap--r60 > .go-stats.kit-stats { --plate-h: 46px; margin: 2px 6px 0; }
+.go-wrap--r60 > .go-stats.kit-stats.kit-stats { min-height: 0; grid-template-rows: auto; padding-block: 6px; gap: 8px; }
+.go-wrap--r60 > .go-stats.kit-stats .go-stat.go-stat { min-height: 0; padding: 5px 8px; }
+@media (max-width: 1400px) { .go-wrap--r60 > .go-stats.kit-stats.kit-stats { grid-template-rows: auto auto; } }
+.go-wrap--r60 .go-stanzas .go-stanza--found, .go-wrap--r60 .go-stanzas .go-stanza--lost { padding-block: 2px; }
+/* the record's lines closer, the two who went in a frame smaller */
+.go-wrap--r60 .go-stanzas .go-stanza ul { gap: 1px; }
+.go-wrap--r60 .go-stanzas .go-stanza li.go-stanza li, .go-wrap--r60 .go-stanzas .go-stanza li { line-height: 1.16; }
+.go-wrap--r60 .go-stanzas .go-sh { margin-bottom: 3px; }
+.go-wrap--r60 .go-stanzas .go-stanza + .go-stanza { margin-top: 2px; padding-top: 6px; }
+.go-wrap--r60 .go-stage .go-portrait__pic { max-width: 118px; }
+/* the ledger's head: Courage on one line, the seed on the next, each with
+   its note under it */
+.go-wrap--r60 .go-col > .go-ledger .go-ledhead { grid-template-columns: minmax(0, 1fr); row-gap: 6px; }
+.go-wrap--r60 .go-col > .go-ledger .go-courage { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "lbl track n" "note note note"; column-gap: 12px; }
+.go-wrap--r60 .go-col > .go-ledger .go-seed { grid-template-columns: auto auto 1fr; grid-template-areas: "lbl row ." "hint hint hint"; }
+/* each stat: its figure over its name */
+.go-wrap--r60 > .go-stats .go-stat { grid-template-columns: auto auto; grid-template-rows: auto auto; grid-template-areas: "ico val" "ico lbl"; row-gap: 0; justify-content: center; }
+.go-wrap--r60 > .go-stats .go-stat > b { line-height: 1; }
+.go-wrap--r60 > .go-stats .go-stat > .go-lbl { line-height: 1.05; }
+.go-wrap--r60 .go-col > .go-stanzas--r60.kit-panel { flex: 0 0 auto; padding-block: 8px 8px; }
+.go-wrap--r60 .go-col--c > .go-ledger { flex: 1 1 auto; }
+.go-board:has(.go-wrap--r60) > .go-head.kit-titleblock--compact { --cart-h: clamp(76px, 9.4vh, 84px); margin-top: 3px; }
+.go-board:has(.go-wrap--r60) > .go-foot { padding-block: 0 6px; }
+.go-board:has(.go-wrap--r60) > .go-foot .go-btn { --plate-h: clamp(42px, 5vh, 46px); }
+.go-wrap--r60 .go-col > .go-reach .go-reach__n { font-size: 36px; }
+.go-wrap--r60 .go-col > .go-reach { padding-block: 4px 6px; }
+.go-wrap--r60 .go-stage .go-portrait__plate.kit-plate { padding-block: 3px 4px; }
+.go-wrap--r60 .go-col > .go-stanzas.kit-panel { padding-block: 9px 6px; }
+.go-wrap--r60 > .go-col { gap: 6px; }
+.go-wrap--r60 .go-stanza--pet .go-pet__snap { width: 54px; height: 66px; }
+/* the Deck's narrower board: the eight stats keep one row, figure over name,
+   and a column that still runs long scrolls the record under its rail
+   rather than over the stats */
+@media (max-width: 1400px) {
+  .go-wrap--r60 > .go-stats.kit-stats.kit-stats { grid-template-columns: repeat(8, minmax(0, 1fr)); grid-template-rows: auto; gap: 5px; }
+  .go-wrap--r60 > .go-stats.kit-stats .go-stat.go-stat { padding: 4px 4px; column-gap: 4px; }
+  .go-wrap--r60 > .go-stats .go-stat .go-stat__ico { width: 22px; }
+  .go-wrap.go-wrap--r60 { grid-template-rows: auto auto; }
+  .go-wrap--r60 > .go-col { min-height: auto; }
+}
+@media (max-width: 1400px) {
+  .go-wrap.go-wrap--r60 { grid-template-columns: minmax(0, 1.06fr) minmax(0, .86fr) minmax(0, 1.08fr); column-gap: 12px; }
+  .go-wrap--r60 .go-stage .go-portrait__pic { max-width: 100px; }
+  .go-wrap--r60 .go-col > .go-ledger .go-fold .go-fold__tab { padding-inline: 10px; letter-spacing: .04em; }
+  .go-wrap--r60 .go-col > .go-ledger .go-fold .go-fold__n { display: inline; margin-left: 4px; }
+}
+.go-wrap--r60 > .go-stats.kit-stats.kit-stats { min-height: min-content; }
+@media (max-width: 1400px) {
+  .go-wrap.go-wrap--r60 { grid-template-rows: auto max-content; }
+  .go-wrap--r60 > .go-stats.kit-stats.kit-stats { height: 58px; flex: none; }
+  .go-wrap--r60 > .go-stats.kit-stats .go-stat.go-stat { height: 100%; }
+}
+@media (max-width: 1400px) {
+  /* the two tabs stand one over the other on the narrow ledger, each whole */
+  .go-wrap--r60 .go-col > .go-ledger .go-fold.kit-tabs { flex-direction: column; align-items: center; gap: 4px; }
+  .go-wrap--r60 .go-bp--r60 .go-bp__label, .go-wrap--r60 .go-bp--r60 .go-bp__count { white-space: normal; }
+  .go-wrap--r60 .go-col > .go-bp--r60 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding-inline: 12px; }
+}

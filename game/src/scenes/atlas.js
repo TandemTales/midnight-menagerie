@@ -6,7 +6,7 @@ import { bus } from '../core/bus.js';
 import { Save } from '../core/save.js';
 import { COMPANIONS, REGION_ORDER } from '../data/schema.js';
 import { regionMeta, MASTER, exitReason, ROOMS } from '../state/mapgen.js';
-import { estateSections, surveyMap, drawSurveySection, drawMasterSurvey } from '../ui/estate-blueprint.js';
+import { estateSections, surveyMap, drawSurveySection, drawMasterSurvey, SHEET_BAY } from '../ui/estate-blueprint.js';
 import {
   ensureCss, fontsReady, el, svg, rovingFocus,
   companionPortrait, COMPANION_BY_SLUG, setReduceMotion, reduceMotion,
@@ -270,7 +270,7 @@ export class AtlasScene extends Scene {
        way in does: every name a hover away, only what is shut marked. */
     this.root.dataset.many = (this.choosing && this.offer.length > 4) ? '1' : '0';
 
-    this.root.classList.add('at-root');
+    this.root.classList.add('at-root', 'at-root--r60');
     this.root.classList.toggle('kit-still', reduceMotion());
     this.root.innerHTML = '';
     /* A staged board: the recovered drawing laid on the candlelit desk (the
@@ -509,6 +509,9 @@ export class AtlasScene extends Scene {
       const b = el('button', 'at-hot');
       b.type = 'button';
       b.dataset.wing = w.slug;
+      // round 60: which of the plate's three files the wing stands in, so its
+      // label keeps inside the sheet (atlas.css)
+      b.dataset.file = w.x < MASTER.w * .3 ? 'l' : w.x < MASTER.w * .6 ? 'm' : 'r';
       b.setAttribute('role', 'option');
       b.setAttribute('aria-selected', 'false');
       b.style.left = `${w.nx * 100}%`;
@@ -1263,7 +1266,8 @@ export class AtlasScene extends Scene {
    * drawing says which way is north.
    */
   _drawRose(g, dpr, S, ink) {
-    const cx = 1378 * S, cy = 178 * S, r = 54 * S;
+    // round 60: in the empty bay under the Foyer, left of the key
+    const cx = (SHEET_BAY.x + 70) * S, cy = (SHEET_BAY.y + 82) * S, r = 54 * S;
     if (r < 10) return;
     g.save();
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -1340,6 +1344,8 @@ export class AtlasScene extends Scene {
     const formsOf = (s) => {
       const ws = s.split(/\s+/);
       const forms = [[s]];
+      // round 60: the name is one line above its strip, never a stack
+      if (this.root?.classList.contains('at-root--r60')) return forms;
       let best = null;
       for (let i = 1; i < ws.length; i++) {
         const a = ws.slice(0, i).join(' '), c = ws.slice(i).join(' ');
@@ -1387,7 +1393,9 @@ export class AtlasScene extends Scene {
       return out;
     };
     const set = (t, o) => {
-      t.innerHTML = o ? o.lines.map(esc).join('<br>') : '';
+      // round 60: a wing's name is one engraved line in the paper above its
+      // strip, so its chosen setting is set on that one line
+      t.innerHTML = o ? o.lines.map(esc).join(' ') : '';
       t.hidden = !o;
     };
     const items = [];

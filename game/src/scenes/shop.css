@@ -1553,3 +1553,182 @@
 .scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid].is-text-xlong .mm-card__rules { font-size: calc(14.5 * var(--u) * var(--rules-k, 1)); }
 .scene--shop .sh-card .mm-card[data-rarity][data-type][data-uid].is-fitted.is-board-fit:not(.is-text-long):not(.is-text-xlong) .mm-card__rules { font-size: calc(max(var(--rules-fit, 19), 19) * var(--u)); }
 /* == end round 58 == */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 60 SCAPOLITE: THE WHOLE MARKET ON ONE BOARD (reward.css, the grid).
+   Survey 11: three of five Tricks and a "More wares below" rail. The words
+   keep their size; the chrome, the portrait and the cards' art give it up:
+   - the five Tricks stand in ONE row on the curtained shelf, Mr. Moth's
+     mirror at its left end at the height of a card;
+   - each Trick's art window is shorter (86u, was 126u) and its rules panel as
+     tall as the words need -- the rules print at the size they did, or larger
+     (shop.js _layout fits them between the old sizes);
+   - under the shelf the counter: the three Keepsakes as tied rows under their
+     bells, Mr. Moth's counter, the three Snacks as rows by their jars.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.scene--shop .rm--shop.kit-board > .rm-body { justify-content: flex-start; padding-inline: clamp(38px, 3.9vw, 62px); }
+.scene--shop .rm--shop .sh-floor {
+  margin: 0; padding: 0 0 6px; width: 100%;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, .72fr) minmax(0, .98fr);
+  grid-template-rows: auto auto;
+  column-gap: clamp(10px, 1vw, 16px); row-gap: clamp(13px, 1.7vh, 16px);
+}
+/* ── the shelf of Tricks ── */
+.scene--shop .rm--shop .sh-counter--cards {
+  --keeper-w: clamp(98px, 8.2vw, 132px); --keeper-x: clamp(34px, 3.4vw, 50px);
+  --moth-h: calc(var(--keeper-w) * 711 / 348);
+  min-height: 0; height: auto; padding: 14px 12px 4px;
+}
+.scene--shop .rm--shop .sh-counter--cards .sh-keeper { top: auto; bottom: calc(var(--tag-h) + 8px); }
+.scene--shop .rm--shop .sh-keeper .sh-moth__name.sh-moth__name { top: calc(100% + 4px); }
+.scene--shop .rm--shop .sh-keeper .sh-moth__name.kit-plate { min-width: calc(var(--keeper-w) * 1.34); --plate-h: clamp(34px, 4.6vh, 42px); }
+.scene--shop .rm--shop .sh-cards {
+  --r60-card-u: 284;
+  display: grid; grid-template-columns: repeat(5, var(--face-w, 1fr)); justify-content: space-between;
+  column-gap: clamp(12px, 1.2vw, 20px); row-gap: 0;
+  padding: 16px clamp(8px, 1vw, 18px) 0 calc(var(--keeper-x) + var(--keeper-w) + 14px);
+  min-height: 0; height: auto;
+}
+.scene--shop .rm--shop .sh-card:nth-child(n) { translate: none; width: var(--face-w); }
+.scene--shop .rm--shop .sh-card .sh-card__face { width: var(--face-w); height: var(--face-h); }
+.scene--shop .rm--shop .sh-card::before { top: calc(var(--face-h) - 4px); }
+.scene--shop .rm--shop .sh-cards::before { top: calc(16px + var(--face-h) - 4px); }
+.scene--shop .rm--shop .sh-card > .sh-buy { margin-top: 2px; }
+.scene--shop .rm--shop .sh-card__own { z-index: 4; }
+/* the card: a shorter art window, the rules panel the height of its words */
+.scene--shop .rm--shop .sh-card .mm-card.mm-card { height: calc(284 * var(--u)); }
+.scene--shop .rm--shop .sh-card .mm-card[data-uid] .mm-card__art { height: calc(66 * var(--u)); background-position: 50% 40%; }
+.scene--shop .rm--shop .sh-card .mm-card[data-uid] .mm-card__artline { top: calc(65 * var(--u)); }
+.scene--shop .rm--shop .sh-card .mm-card[data-rarity][data-type][data-uid] .mm-card__banner { top: auto; bottom: calc((var(--r60-card-u, 284) - 113) * var(--u)); height: auto; min-height: calc(34 * var(--u)); padding-block: calc(4 * var(--u)); }
+.scene--shop .rm--shop .sh-card .mm-card[data-uid] .mm-card__type { top: calc(99 * var(--u)); }
+.scene--shop .rm--shop .sh-card .mm-card[data-rarity][data-type][data-uid] .mm-card__rules,
+.scene--shop .rm--shop .sh-card .mm-card[data-rarity][data-type][data-uid].is-largetext .mm-card__rules,
+.scene--shop .rm--shop .sh-card .mm-card[data-rarity][data-type][data-uid].is-text-long .mm-card__rules,
+.scene--shop .rm--shop .sh-card .mm-card[data-rarity][data-type][data-uid].is-text-xlong .mm-card__rules,
+.scene--shop .rm--shop .sh-card .mm-card[data-rarity][data-type][data-uid].is-fitted.is-board-fit:not(.is-text-long):not(.is-text-xlong) .mm-card__rules {
+  top: calc(123 * var(--u)); bottom: calc(10 * var(--u)); height: auto; max-height: none; margin: 0;
+  font-size: calc(var(--rules-fit, 16) * var(--u)); line-height: var(--rules-lh, 1.12);
+}
+.scene--shop .rm--shop .sh-ledge { bottom: calc(var(--tag-h) * .2); }
+.scene--shop .rm--shop .sh-still--l, .scene--shop .rm--shop .sh-still--m { display: none; }
+
+/* ── the counter under the shelf: rows, the bell or jar at the left ── */
+.scene--shop .rm--shop .sh-side > .sh-counter { padding: 23px clamp(12px, 1.1vw, 18px) 8px; min-height: 0; }
+.scene--shop .rm--shop .sh-side .sh-list {
+  display: flex; flex-direction: column; gap: 5px; padding: 0;
+  grid-template-columns: none !important;
+}
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable {
+  --vw: clamp(46px, 3.5vw, 56px);
+  display: grid; grid-template-columns: var(--vw) minmax(0, 1fr) auto; grid-template-rows: auto;
+  align-items: center; column-gap: 12px; width: auto; height: auto; min-height: 0;
+}
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable::before { display: none; }
+.scene--shop .rm--shop .sh-side .sh-row .sh-row__sig.sh-vessel { grid-column: 1; grid-row: 1; width: var(--vw); height: var(--vw); margin: 0; align-self: center; }
+.scene--shop .rm--shop .sh-side .sh-row .sh-row__txt { display: block; grid-column: 2; grid-row: 1; min-width: 0; }
+/* the ware's name runs into its rule on one tied slip */
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable .sh-row__txt :is(b, em),
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable:is(.is-in-hand, :hover, :focus-within) .sh-row__txt :is(b, em) {
+  display: inline; position: static; margin: 0; padding: 0; min-height: 0; width: auto;
+  background: none; border: 0; box-shadow: none; rotate: none; filter: none;
+}
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable .sh-row__txt {
+  position: relative; padding: 3px 10px 4px;
+  color: var(--kit-paper-ink);
+  background: url("../../assets/ui/kit/paper.webp") center / 170px, var(--kit-parchment);
+  background-blend-mode: multiply;
+  border: 1px solid var(--kit-gold-lo);
+  box-shadow: inset 0 0 10px color-mix(in srgb, var(--kit-paper-ink) 28%, transparent), 2px 4px 5px var(--kit-void);
+  line-height: 1.14;
+}
+.scene--shop .rm--shop .sh-side .sh-row:nth-child(odd) .sh-row__txt { rotate: -.35deg; }
+.scene--shop .rm--shop .sh-side .sh-row:nth-child(even) .sh-row__txt { rotate: .35deg; }
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable .sh-row__txt::before {
+  /* the slip's string, tied back to the bell */
+  content: ''; position: absolute; left: -12px; top: 50%; width: 12px; height: 2px;
+  background: var(--kit-gold); box-shadow: 0 1px 1px var(--kit-void);
+}
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable .sh-row__txt b {
+  font-family: var(--font-display); font-weight: 700; text-transform: none; letter-spacing: .02em;
+  color: color-mix(in srgb, var(--kit-paper-ink) 70%, #4a1630);
+  white-space: normal; overflow-wrap: normal; hyphens: none;
+}
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable .sh-row__txt b::after { content: ' \2014  '; font-weight: 400; color: var(--kit-gold-lo); }
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable .sh-row__txt em { font-style: normal; font-weight: 600; line-height: 1.14; color: var(--kit-paper-ink); text-shadow: none; }
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable > .sh-buy { grid-column: 3; grid-row: 1; margin: 0; align-self: center; }
+
+/* ── Mr. Moth's counter: what he says, his service, what you carry ── */
+.scene--shop .rm--shop .sh-counter--moth { padding: 22px clamp(10px, 1vw, 16px) 8px; }
+.scene--shop .rm--shop .sh-moth__say { grid-template-rows: auto auto auto; row-gap: 6px; align-content: start; height: auto; }
+.scene--shop .rm--shop .sh-moth__plaque { padding: 6px 14px; }
+.scene--shop .rm--shop .sh-moth__line { margin: 0; line-height: 1.18; }
+.scene--shop .rm--shop .sh-service.sh-service--plaque { padding-block: 4px; height: auto; min-height: 0; align-items: center; }
+.scene--shop .rm--shop .sh-moth__you { --ring: clamp(36px, 2.8vw, 44px); grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-flow: row; row-gap: 6px; column-gap: 8px; padding: 0 2px; height: auto; }
+.scene--shop .rm--shop .sh-moth__you > div { min-height: 0; height: auto; display: grid; grid-template-columns: var(--ring) minmax(0, 1fr); grid-template-rows: auto; align-items: center; justify-items: start; column-gap: 8px; }
+.scene--shop .rm--shop .sh-moth__you dd { grid-row: 1; grid-column: 1; }
+.scene--shop .rm--shop .sh-moth__you dt { grid-row: 1; grid-column: 2; letter-spacing: .04em; white-space: nowrap; }
+
+/* ── the action bar ── */
+.scene--shop .rm--shop > .rm-foot { padding-top: 2px; }
+
+/* Mr. Moth's counter holds his service and what you carry; what he says when
+   you walk in is said where everything else he says is, on the action bar's
+   line (shop.js _buildFoot), lettered on its own dark slip */
+.scene--shop .rm--shop .sh-counter--moth .sh-moth__plaque { display: none; }
+.scene--shop .rm--shop .sh-moth__say { align-content: space-evenly; height: 100%; }
+.scene--shop .rm--shop > .rm-foot .sh-line {
+  max-width: calc(50% - 230px); padding: 5px 18px 6px; align-self: center;
+  font-family: var(--font-body); font-style: italic; font-size: var(--fs-sm); line-height: 1.2;
+  color: var(--kit-text);
+  background:
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold) 75%, transparent) 12%, color-mix(in srgb, var(--kit-gold) 75%, transparent) 88%, transparent) 0 0 / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--kit-gold-lo) 80%, transparent) 12%, color-mix(in srgb, var(--kit-gold-lo) 80%, transparent) 88%, transparent) 0 100% / 100% 1px no-repeat,
+    radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--kit-void) 88%, transparent), color-mix(in srgb, var(--kit-void) 55%, transparent) 70%, transparent);
+  text-wrap: balance;
+}
+
+/* the rules panel's ground and its rail rise with the type tab (kit.css:
+   the tab at 144u astride the rail at 149u, the ground from 153.5u) */
+.scene--shop .rm--shop .sh-card .mm-card[data-rarity] .mm-card__face::after { top: calc(102 * var(--u)); }
+.scene--shop .rm--shop .sh-card .mm-card[data-rarity][data-type][data-uid] .mm-card__face::after { top: calc(104 * var(--u)); }
+.scene--shop .rm--shop .sh-card .mm-card[data-rarity][data-type][data-uid] .mm-card__face::before { top: calc(108.5 * var(--u)); }
+/* the card's height follows the reading size the board can afford: on a wide
+   board 100u of rules holds the longest Trick at its old size (16.9 px) */
+@media (min-width: 1500px) and (min-height: 860px) {
+  .scene--shop .rm--shop .sh-cards { --r60-card-u: 254; }
+  .scene--shop .rm--shop .sh-card .mm-card.mm-card { height: calc(254 * var(--u)); }
+}
+/* Forgetting: its name and price on the plaque's first line, the words under
+   them at the counter's full width */
+.scene--shop .rm--shop .sh-counter--moth .sh-service--plaque {
+  grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "medal head buy" "rules rules rules";
+  row-gap: 2px; align-items: center;
+}
+.scene--shop .rm--shop .sh-counter--moth .sh-service__body { display: contents; }
+.scene--shop .rm--shop .sh-counter--moth .sh-service--plaque .sh-service__medal { grid-area: medal; width: clamp(30px, 2.3vw, 38px); }
+.scene--shop .rm--shop .sh-counter--moth .sh-service--plaque .sh-service__h { grid-area: head; margin: 0; flex-wrap: wrap; row-gap: 0; }
+.scene--shop .rm--shop .sh-counter--moth .sh-service--plaque .sh-service__rules { grid-area: rules; padding: 0 2px; }
+.scene--shop .rm--shop .sh-counter--moth .sh-service--plaque .sh-remove { grid-area: buy; }
+.scene--shop .rm--shop .sh-counter--moth .sh-remove__blurb { margin: 0; text-align: center; }
+
+/* a Trick with a keyword badge (Vanish, Retain) keeps the badge whole on the
+   panel's foot, its words standing above it (shop.js fits them to the rest) */
+.scene--shop .rm--shop .sh-card .mm-card[data-rarity][data-type][data-uid]:has(.mm-card__badge) .mm-card__rules { bottom: calc(27 * var(--u)); }
+.scene--shop .rm--shop .sh-card .mm-card[data-uid] .mm-card__badges { bottom: calc(9 * var(--u)); z-index: 3; }
+/* the four things you carry, two by two: the ring, then its name */
+.scene--shop .rm--shop .sh-moth__you dt { text-transform: none; letter-spacing: .01em; font-family: var(--font-body); font-weight: 700; font-size: var(--fs-xs); color: var(--kit-text); }
+.scene--shop .rm--shop .sh-moth__you { padding-inline: 16px; }
+.scene--shop .rm--shop .sh-moth__you { background: none; }
+.scene--shop .rm--shop .sh-counter--moth .sh-service--plaque { padding-inline: 12px 14px; }
+@media (max-width: 1400px) {
+  /* the Deck's narrower counter: Mr. Moth's share grows so the four things
+     you carry keep their names whole; the Snacks' slips are short */
+  .scene--shop .rm--shop .sh-floor { grid-template-columns: minmax(0, 1.32fr) minmax(0, .8fr) minmax(0, .9fr); }
+  .scene--shop .rm--shop .sh-side .sh-row.sh-pressable { column-gap: 9px; }
+}
+@media (max-width: 1400px) {
+  /* the counter's own crescent medallion stands over this plaque already:
+     on the narrow counter the plaque's small one gives its width to the name */
+  .scene--shop .rm--shop .sh-counter--moth .sh-service--plaque .sh-service__medal { display: none; }
+  .scene--shop .rm--shop .sh-counter--moth .sh-service--plaque { grid-template-areas: "head head buy" "rules rules rules"; }
+}

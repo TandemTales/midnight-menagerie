@@ -4,25 +4,35 @@ import { generateRegionMap, MASTER, regionMeta } from '../state/mapgen.js';
 import { REGION_ORDER, COMPANIONS } from '../data/schema.js';
 import { drawFloorplan } from './blueprint.js';
 
+/* ROUND 60 SCAPOLITE: every playable plan is a long strip (about 3.4 to 1),
+   so the house is laid out as three files of them, wide enough that a wing's
+   own rooms read on the plate -- the grounds on the left, the house's spine
+   down the middle (Greenhouse, Kitchens, Nursery, Foyer), its far rooms and
+   the tower on the right -- and the three spaces below the house under the
+   foundation line. The galleries between them run straight. The empty bay
+   under the Foyer holds the compass and the key. [left, top, maxW, maxH]. */
+const COL=[30,519,1008],ROW=[30,192,354,516,678],FW=410,FH=150;
 const PLACEMENT={
-  'hedge-maze':[40,60,220,390,'grounds'],
-  'pumpkin-grounds':[270,55,300,160,'grounds'],
-  greenhouse:[580,55,300,160,'ground'],
-  kennels:[270,225,300,210,'ground'],
-  'kitchens-cellars':[580,225,300,180,'ground'],
-  bathhouse:[890,225,260,180,'ground'],
-  nursery:[580,415,300,205,'upper'],
-  'sleeping-quarters':[890,415,300,160,'upper'],
-  ballroom:[270,630,300,200,'ground'],
-  foyer:[580,630,300,200,'ground'],
-  'study-library':[890,585,300,245,'ground'],
-  graveyard:[40,470,220,330,'grounds'],
-  lampworks:[1210,60,190,390,'tower'],
-  'attic-observatory':[1210,485,190,345,'roof'],
-  crypt:[70,860,320,145,'foundation'],
-  'secret-passages':[480,860,360,145,'wall spaces'],
-  heart:[900,860,300,145,'below'],
+  'hedge-maze':[COL[0],ROW[0],FW,FH,'grounds'],
+  greenhouse:[COL[1],ROW[0],FW,FH,'ground'],
+  lampworks:[COL[2],ROW[0],FW,FH,'tower'],
+  'pumpkin-grounds':[COL[0],ROW[1],FW,FH,'grounds'],
+  'kitchens-cellars':[COL[1],ROW[1],FW,FH,'ground'],
+  bathhouse:[COL[2],ROW[1],FW,FH,'ground'],
+  kennels:[COL[0],ROW[2],FW,FH,'ground'],
+  nursery:[COL[1],ROW[2],FW,FH,'upper'],
+  'sleeping-quarters':[COL[2],ROW[2],FW,FH,'upper'],
+  ballroom:[COL[0],ROW[3],FW,FH,'ground'],
+  foyer:[COL[1],ROW[3],FW,FH,'ground'],
+  'study-library':[COL[2],ROW[3],FW,FH,'ground'],
+  graveyard:[COL[0],ROW[4],FW,FH,'grounds'],
+  'attic-observatory':[COL[2],ROW[4],FW,FH,'roof'],
+  crypt:[COL[0],900,FW,FH,'foundation'],
+  'secret-passages':[COL[1],900,FW,FH,'wall spaces'],
+  heart:[COL[2],900,FW,FH,'below'],
 };
+/** the empty bay under the Foyer: the compass and the sheet's key (atlas.js) */
+export const SHEET_BAY={x:COL[1],y:ROW[4],w:FW,h:FH};
 const maps=new Map();
 export function surveyMap(slug){
   if(!maps.has(slug))maps.set(slug,generateRegionMap(slug,42,{style:'plan'}));
@@ -98,7 +108,7 @@ export function drawMasterSurvey(g,wings,color){
     g.save();g.globalAlpha=.8;
     for(const o of [-3,3]){g.beginPath();g.moveTo(ax,ay+o);g.lineTo(bx,ay+o);g.lineTo(bx,by);g.stroke();}g.restore();
   }
-  g.setLineDash([4,6]);g.beginPath();g.moveTo(35,835);g.lineTo(1405,835);g.moveTo(1195,40);g.lineTo(1195,825);g.stroke();g.setLineDash([]);
-  g.font='18px Georgia';g.textAlign='left';g.fillText('FOUNDATIONS & WALL SPACES — separate survey below the main house',45,855);
-  g.fillText('ROOF / TOWER',1220,465);
+  // the foundation line, under the house's five files of wings
+  g.setLineDash([4,6]);g.beginPath();g.moveTo(35,868);g.lineTo(1413,868);g.stroke();g.setLineDash([]);
+  g.font='18px Georgia';g.textAlign='right';g.fillText('FOUNDATIONS & WALL SPACES — separate survey below the main house',1413,858);
 }
