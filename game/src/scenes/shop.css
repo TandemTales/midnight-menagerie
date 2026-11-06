@@ -1732,3 +1732,29 @@
   .scene--shop .rm--shop .sh-counter--moth .sh-service--plaque .sh-service__medal { display: none; }
   .scene--shop .rm--shop .sh-counter--moth .sh-service--plaque { grid-template-areas: "head head buy" "rules rules rules"; }
 }
+
+/* ROUND 60 GRAFT: THE WARES AS THINGS ON A SHELF. Every Keepsake and Snack
+   stands on a grained shelf board (kit shelfboard) under its bell or jar and
+   its brass price tag, and its words are a parchment shop ticket tied back to
+   it -- notched corners, a punched eyelet for the string, the name and its
+   rule set from the left like a shopkeeper's hand, not centred on a flat
+   beige strip. The words keep their size. */
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable {
+  background: url("../../assets/ui/kit/shelfboard.webp") 0 100% / 1100px 13px repeat-x;
+}
+.scene--shop .rm--shop .sh-side .sh-row.sh-pressable .sh-row__txt {
+  text-align: left;
+  padding: 3px 10px 4px 17px;
+  border: 0;
+  background:
+    radial-gradient(circle at 8px 50%, rgb(34 20 10) 0 2.6px, rgb(176 134 72) 2.8px 4px, transparent 4.4px),
+    radial-gradient(ellipse 120% 140% at 30% 20%, rgb(255 248 228 / .4), transparent 60%),
+    url("../../assets/ui/kit/paper.webp") center / 170px,
+    linear-gradient(180deg, #efdcb2, #dcc28e);
+  background-blend-mode: normal, normal, soft-light, normal;
+  box-shadow:
+    inset 0 0 0 1px rgb(92 62 30 / .5),
+    inset 0 -2px 6px rgb(110 74 36 / .25),
+    2px 5px 6px var(--kit-void);
+  clip-path: polygon(0 7px, 7px 0, 100% 0, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+}
