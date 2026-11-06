@@ -110,6 +110,20 @@ during a scene curtain and reported the screen "not on screen". It waits for the
 now. A four-player walk through ballroom, crypt, graveyard, hedge maze and kennels passed
 37/0 in sync, every ending each player's own Kid's.
 
+**2026-11-06: the three stalls were a card, not the wire.** Walk f (three seats: Crinkle,
+Wisp, Taffy; mixed profiles) stalled at the Lampworks boss, the Study boss, and in Pumpkin
+and Attic fights. Every tab had applied every input and the barrier held nothing. One seat
+was playing for ever: Crinkle's Trace had a free infinite, because a copy of a Trick that
+Traces could Trace another one still in hand. It is closed in `39749300`. The walk now:
+
+- reports a party whose PLACE has not moved for 15 minutes, since a refilling animation
+  queue had fooled both old stall clocks;
+- dumps each tab's barrier, horizons and held input before pausing it for a stack;
+- ends, and fails, any turn past 60 plays.
+
+After the fix walk f went 31 of 31 to a victory, in step, in 4.4 hours. With the earlier
+walks, all seventeen wings have now been walked in co-op.
+
 ## What has NOT been tested
 
 **Nothing here has run against real Steam, because there is no App ID yet.**
