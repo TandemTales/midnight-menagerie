@@ -1188,43 +1188,36 @@
 .mm-set__choice--swatch.kit-hw-swatch { min-width: 96px; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   ROUND 60 SCAPOLITE: every page of the ledger on the board, at the larger
-   type, at 1600x900 and at the Deck's 1280x800 -- three columns at both, as
-   survey 10's whole three columns were. The frame gives up the room round
-   it (the HUD is dimmed behind the plaque, the floor shows a finger's width
-   under the frame); the colour palette's four plates stand two by two, the
-   disc beside its name, so no plate runs off its page.
+   ROUND 60 GRAFT (DIOPSIDE's ledger) — EVERY PAGE OF THE LEDGER IN VIEW
+   Survey 11: at 1600 the Reading and Danger pages ran under the buttons and
+   the Tritanopia plate stood 20 px off its page; at 1280 two columns pushed
+   Play, Seed and Danger out of sight. The ledger is laid a little higher in
+   the room (its plaque over the HUD's dimmed rail, the room still round it),
+   always in its three columns, the pages' air closed up, and the colour
+   plates set in one row inside their page. The words keep their size.
    ═══════════════════════════════════════════════════════════════════════════ */
-.mm-modal--kit.mm-settings-modal {
-  --dlg-top: calc(var(--hud-h, 46px) + clamp(26px, 3.6vh, 36px));
-  --dlg-bottom: clamp(8px, 1.4vh, 14px);
-  --dlg-side: clamp(22px, 2.6vw, 56px);
+.mm-settings-modal.mm-modal--kit {
+  --dlg-top: calc(var(--hud-h, 46px) * .35 + clamp(50px, 6.4vh, 60px));
+  --dlg-bottom: clamp(10px, 1.6vh, 16px);
+  --dlg-side: clamp(14px, 2.6vw, 64px);
 }
-.mm-settings-modal .mm-modal__dialog { width: min(100%, 92rem); max-height: none; }
-.mm-settings-modal .mm-set.mm-set {
-  grid-template-columns: minmax(0, .98fr) minmax(0, 1.1fr) minmax(0, .96fr);
-  gap: 0 clamp(14px, 1.5vw, 26px);
-}
-.mm-settings-modal .mm-set__choices:has(> .mm-set__choice--swatch) {
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px; justify-items: start;
-}
-.mm-settings-modal .mm-set__choice--swatch.kit-hw-swatch {
-  min-width: 0; max-width: 100%; display: flex; flex-direction: row; align-items: center; gap: 8px;
-}
-.mm-settings-modal .mm-set__choice--swatch.kit-hw-swatch > .kit-hw-swatch__disc { flex: none; width: 34px; height: 34px; margin: 0; }
-.mm-settings-modal .mm-set__choice--swatch.kit-hw-swatch > .mm-set__choicename { white-space: nowrap; }
+.mm-settings-modal .mm-modal__dialog { width: min(100%, 92rem); }
+:root:not([data-large-text="1"]) .mm-set { grid-template-columns: minmax(0, 1fr) minmax(0, 1.06fr) minmax(0, 1fr); gap: 0 clamp(14px, 1.4vw, 24px); }
+:root:not([data-large-text="1"]) .mm-set { --pad-x: clamp(18px, 1.6vw, 28px); }
+/* the four colour plates on one line, inside their page */
+.mm-set__choices:has(> .mm-set__choice--swatch) { flex-wrap: nowrap; justify-content: space-between; column-gap: 4px; }
+.mm-set__choice--swatch.kit-hw-swatch { min-width: 0; flex: 1 1 0; }
+.mm-set__choice--swatch.kit-hw-swatch > .mm-set__choicename { padding-inline: 6px; letter-spacing: 0; max-width: 100%; box-sizing: border-box; }
 @media (max-width: 1400px) {
-  .mm-settings-modal .mm-set { --pad-x: 18px; --slot-w: 84px; --read-w: 60px; }
-}
-@media (max-width: 1400px) {
-  /* the Play page's switches are the widest rows on the Deck: its column takes
-     the width the Reading page's air gave, and a long name sets on two lines */
-  .mm-settings-modal .mm-set.mm-set { grid-template-columns: minmax(0, .9fr) minmax(0, 1.12fr) minmax(0, .98fr); }
-  .mm-settings-modal .mm-set__group[data-group="play"] .mm-set__label > span:first-child { white-space: normal; max-width: 9em; line-height: 1.1; }
-}
-@media (max-width: 1400px) {
-  .mm-modal--kit.mm-settings-modal { --dlg-side: 14px; }
-  .mm-settings-modal .mm-set.mm-set { grid-template-columns: minmax(0, .96fr) minmax(0, 1.08fr) minmax(0, .98fr); gap: 0 12px; }
-  .mm-settings-modal .mm-set { --pad-x: 15px; }
-  .mm-settings-modal .mm-modal__body { padding-inline: 8px; }
+  :root:not([data-large-text="1"]) .mm-set { --pad-x: 16px; --slot-w: 88px; --stack: 11px; --pad-b: 14px; gap: 0 12px; }
+  /* the colour plates two to a row, each medallion seated on its nameplate */
+  .mm-set__choices:has(> .mm-set__choice--swatch) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 10px; padding-block: 4px 2px; }
+  .mm-set__choice--swatch.kit-hw-swatch { --disc: 34px; --plate-h: 27px; flex: none; display: flex; flex-direction: row; align-items: center; height: var(--disc); }
+  .mm-set__choice--swatch.kit-hw-swatch > .kit-hw-swatch__disc { height: var(--disc); flex: none; }
+  .mm-set__choice--swatch.kit-hw-swatch > .mm-set__choicename { margin-left: calc(var(--disc) * -.42); margin-top: 0; padding: 1px 8px 0 calc(var(--disc) * .5); flex: 1 1 auto; }
+  /* a long name gives its line to the control, not the page's edge */
+  :root:not([data-large-text="1"]) .mm-set__row:not(:has(.mm-btn--danger)) { grid-template-columns: minmax(0, auto) minmax(6px, 1fr) auto; column-gap: 6px; }
+  :root:not([data-large-text="1"]) .mm-set__row:has(.mm-set__toggle) > .mm-set__label > span:first-child { white-space: normal; }
+  .mm-settings-modal .mm-set .mm-btn.kit-btn:not(.mm-btn--danger) { letter-spacing: .03em; padding-inline: 10px 40px; }
+  :root:not([data-large-text="1"]) .mm-set { --stack: 8px; --pad-b: 10px; --row-pad: 2px; }
 }
