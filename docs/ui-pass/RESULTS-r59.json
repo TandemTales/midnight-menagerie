@@ -1,0 +1,2542 @@
+{
+ "rooms": {
+  "track": "ROOMS",
+  "rule": "refine",
+  "winner": "CARNELIAN",
+  "winnerHow": "2 of 2 judges",
+  "screenWinners": {
+   "room-graveyard": "CARNELIAN",
+   "room-nursery": "AGATE",
+   "room-hedge": "CARNELIAN",
+   "room-pumpkin": "AGATE",
+   "room-foyer": "OBSIDIAN",
+   "room-study": "CARNELIAN",
+   "room-crypt": "CARNELIAN",
+   "room-passages": "CARNELIAN",
+   "room-greenhouse": "CARNELIAN",
+   "room-sleeping": "CARNELIAN",
+   "fight-foyer": "CARNELIAN",
+   "fight-nursery": "CARNELIAN",
+   "fight-graveyard": "CARNELIAN",
+   "fight-party": "OBSIDIAN"
+  },
+  "screenHow": {
+   "room-graveyard": "2 of 2 judges",
+   "room-nursery": "2 of 2 judges",
+   "room-hedge": "2 of 2 judges",
+   "room-pumpkin": "2 of 2 judges",
+   "room-foyer": "no majority (OBSIDIAN 1, CARNELIAN 1); head-to-head wins OBSIDIAN 2, CARNELIAN 2, AGATE 1, BASALT 0; Borda OBSIDIAN 5, CARNELIAN 5, AGATE 2, BASALT 0",
+   "room-study": "2 of 2 judges",
+   "room-crypt": "2 of 2 judges",
+   "room-passages": "no majority (AGATE 1, CARNELIAN 1); head-to-head wins CARNELIAN 2, AGATE 2, OBSIDIAN 1, BASALT 0; Borda CARNELIAN 5, AGATE 5, OBSIDIAN 2, BASALT 0",
+   "room-greenhouse": "2 of 2 judges",
+   "room-sleeping": "2 of 2 judges",
+   "fight-foyer": "no majority (OBSIDIAN 1, CARNELIAN 1); head-to-head wins CARNELIAN 2, OBSIDIAN 2, AGATE 1, BASALT 0; Borda CARNELIAN 5, OBSIDIAN 5, AGATE 2, BASALT 0",
+   "fight-nursery": "2 of 2 judges",
+   "fight-graveyard": "2 of 2 judges",
+   "fight-party": "no majority (OBSIDIAN 1, CARNELIAN 1); head-to-head wins OBSIDIAN 2, AGATE 1, CARNELIAN 0, BASALT 0; Borda OBSIDIAN 5, AGATE 3, CARNELIAN 3, BASALT 1"
+  },
+  "summary": [
+   {
+    "code": "CARNELIAN",
+    "per": [
+     {
+      "screen": "room-graveyard",
+      "mean": 6.75,
+      "fits": false
+     },
+     {
+      "screen": "room-nursery",
+      "mean": 6.1,
+      "fits": false
+     },
+     {
+      "screen": "room-hedge",
+      "mean": 6.25,
+      "fits": false
+     },
+     {
+      "screen": "room-pumpkin",
+      "mean": 5.4,
+      "fits": false
+     },
+     {
+      "screen": "room-foyer",
+      "mean": 6.05,
+      "fits": false
+     },
+     {
+      "screen": "room-study",
+      "mean": 6.25,
+      "fits": false
+     },
+     {
+      "screen": "room-crypt",
+      "mean": 6.55,
+      "fits": false
+     },
+     {
+      "screen": "room-passages",
+      "mean": 5.7,
+      "fits": false
+     },
+     {
+      "screen": "room-greenhouse",
+      "mean": 6.75,
+      "fits": false
+     },
+     {
+      "screen": "room-sleeping",
+      "mean": 6.5,
+      "fits": false
+     },
+     {
+      "screen": "fight-foyer",
+      "mean": 6.699999999999999,
+      "fits": false
+     },
+     {
+      "screen": "fight-nursery",
+      "mean": 6.9,
+      "fits": false
+     },
+     {
+      "screen": "fight-graveyard",
+      "mean": 6.8,
+      "fits": false
+     },
+     {
+      "screen": "fight-party",
+      "mean": 6.199999999999999,
+      "fits": false
+     }
+    ],
+    "mean": 6.3500000000000005
+   },
+   {
+    "code": "OBSIDIAN",
+    "per": [
+     {
+      "screen": "room-graveyard",
+      "mean": 6.25,
+      "fits": false
+     },
+     {
+      "screen": "room-nursery",
+      "mean": 5.55,
+      "fits": false
+     },
+     {
+      "screen": "room-hedge",
+      "mean": 5.35,
+      "fits": false
+     },
+     {
+      "screen": "room-pumpkin",
+      "mean": 5.8,
+      "fits": false
+     },
+     {
+      "screen": "room-foyer",
+      "mean": 6.1,
+      "fits": false
+     },
+     {
+      "screen": "room-study",
+      "mean": 5,
+      "fits": false
+     },
+     {
+      "screen": "room-crypt",
+      "mean": 4.8,
+      "fits": false
+     },
+     {
+      "screen": "room-passages",
+      "mean": 5.15,
+      "fits": false
+     },
+     {
+      "screen": "room-greenhouse",
+      "mean": 5.8,
+      "fits": false
+     },
+     {
+      "screen": "room-sleeping",
+      "mean": 5.35,
+      "fits": false
+     },
+     {
+      "screen": "fight-foyer",
+      "mean": 6.65,
+      "fits": false
+     },
+     {
+      "screen": "fight-nursery",
+      "mean": 6.4,
+      "fits": false
+     },
+     {
+      "screen": "fight-graveyard",
+      "mean": 5.8,
+      "fits": false
+     },
+     {
+      "screen": "fight-party",
+      "mean": 6.55,
+      "fits": false
+     }
+    ],
+    "mean": 5.753571428571427
+   },
+   {
+    "code": "AGATE",
+    "per": [
+     {
+      "screen": "room-graveyard",
+      "mean": 5.25,
+      "fits": false
+     },
+     {
+      "screen": "room-nursery",
+      "mean": 6.35,
+      "fits": false
+     },
+     {
+      "screen": "room-hedge",
+      "mean": 5,
+      "fits": false
+     },
+     {
+      "screen": "room-pumpkin",
+      "mean": 6,
+      "fits": false
+     },
+     {
+      "screen": "room-foyer",
+      "mean": 5.4,
+      "fits": false
+     },
+     {
+      "screen": "room-study",
+      "mean": 5.65,
+      "fits": false
+     },
+     {
+      "screen": "room-crypt",
+      "mean": 5.4,
+      "fits": false
+     },
+     {
+      "screen": "room-passages",
+      "mean": 5.55,
+      "fits": false
+     },
+     {
+      "screen": "room-greenhouse",
+      "mean": 4.8,
+      "fits": false
+     },
+     {
+      "screen": "room-sleeping",
+      "mean": 6.25,
+      "fits": false
+     },
+     {
+      "screen": "fight-foyer",
+      "mean": 5.9,
+      "fits": false
+     },
+     {
+      "screen": "fight-nursery",
+      "mean": 5.9,
+      "fits": false
+     },
+     {
+      "screen": "fight-graveyard",
+      "mean": 5.85,
+      "fits": false
+     },
+     {
+      "screen": "fight-party",
+      "mean": 6.4,
+      "fits": false
+     }
+    ],
+    "mean": 5.692857142857142
+   },
+   {
+    "code": "BASALT",
+    "per": [
+     {
+      "screen": "room-graveyard",
+      "mean": 3.25,
+      "fits": false
+     },
+     {
+      "screen": "room-nursery",
+      "mean": 4,
+      "fits": false
+     },
+     {
+      "screen": "room-hedge",
+      "mean": 4.25,
+      "fits": false
+     },
+     {
+      "screen": "room-pumpkin",
+      "mean": 3.75,
+      "fits": false
+     },
+     {
+      "screen": "room-foyer",
+      "mean": 4,
+      "fits": false
+     },
+     {
+      "screen": "room-study",
+      "mean": 4.15,
+      "fits": false
+     },
+     {
+      "screen": "room-crypt",
+      "mean": 5.6,
+      "fits": false
+     },
+     {
+      "screen": "room-passages",
+      "mean": 4.25,
+      "fits": false
+     },
+     {
+      "screen": "room-greenhouse",
+      "mean": 4,
+      "fits": false
+     },
+     {
+      "screen": "room-sleeping",
+      "mean": 4.8,
+      "fits": false
+     },
+     {
+      "screen": "fight-foyer",
+      "mean": 5.55,
+      "fits": false
+     },
+     {
+      "screen": "fight-nursery",
+      "mean": 5.75,
+      "fits": false
+     },
+     {
+      "screen": "fight-graveyard",
+      "mean": 5.55,
+      "fits": false
+     },
+     {
+      "screen": "fight-party",
+      "mean": 6,
+      "fits": false
+     }
+    ],
+    "mean": 4.635714285714285
+   }
+  ],
+  "verdicts": [
+   {
+    "screens": [
+     {
+      "screen": "room-graveyard",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5,
+        "palette": 7,
+        "typography": 5,
+        "material": 6,
+        "background": 6.5,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "The near-left foreground is a long low mausoleum slab plus a bare dark corner; the bottom-left quarter reads as one grey box rather than a dressed near plot."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 4,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5,
+        "composition": 5,
+        "readability": 6.5,
+        "coherence": 5,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The whole middle floor between the path and the three right-hand headstones is bare grass; the graves sit in a row along the back fence."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 3,
+        "palette": 6,
+        "typography": 5,
+        "material": 4.5,
+        "background": 3.5,
+        "composition": 3.5,
+        "readability": 5,
+        "coherence": 4,
+        "overall": 3.5,
+        "fits_between_samples": false,
+        "worst_problem": "The yard holds no graves at all, only two lamps, and a translucent grey smear no one can name lies across the centre-foreground grass."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6,
+        "composition": 6.5,
+        "readability": 6.5,
+        "coherence": 5.5,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "A black pine silhouette stands directly in front of the moon at top centre and cuts the sky's focal point in half."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "OBSIDIAN",
+       "AGATE",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-nursery",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6,
+        "composition": 6,
+        "readability": 7,
+        "coherence": 5.5,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The left middle floor between the toy chest and the rug is empty boards while all the weight (horse, crib) sits on the right."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6.2,
+        "composition": 6.5,
+        "readability": 6.5,
+        "coherence": 5.5,
+        "overall": 6.2,
+        "fits_between_samples": false,
+        "worst_problem": "The left rocking horse is cut by the frame edge so only its rear half and runner show, reading as a fragment rather than an object."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 4,
+        "composition": 4,
+        "readability": 6,
+        "coherence": 4.5,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "Every toy is in a row along the back wall; the rug and the whole near and middle floor are bare."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5.6,
+        "composition": 5.5,
+        "readability": 6.5,
+        "coherence": 5,
+        "overall": 5.6,
+        "fits_between_samples": false,
+        "worst_problem": "The big rocking horse is pushed off the right edge so only a sliver shows, leaving the right middle floor bare."
+       }
+      ],
+      "ranking": [
+       "AGATE",
+       "CARNELIAN",
+       "OBSIDIAN",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-hedge",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 6,
+        "composition": 6,
+        "readability": 7,
+        "coherence": 5.5,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The near floor below the bench and urn line, about a third of the frame, is bare path and lawn."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 4,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 5,
+        "composition": 5,
+        "readability": 6,
+        "coherence": 5,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The whole right lawn from the path to the frame edge is empty; only one urn far back stands there."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4,
+        "palette": 5.5,
+        "typography": 5,
+        "material": 5,
+        "background": 4,
+        "composition": 4,
+        "readability": 6,
+        "coherence": 4.5,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "The camera tilts down so the sky and hedge tops are cut off, and the path fills the frame."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 4.5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 5.2,
+        "composition": 5.2,
+        "readability": 6,
+        "coherence": 5,
+        "overall": 5.2,
+        "fits_between_samples": false,
+        "worst_problem": "The right lawn and the near path are bare; the bench and statue sit back by the hedge wall."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "OBSIDIAN",
+       "AGATE",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-pumpkin",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5.3,
+        "composition": 5,
+        "readability": 6.5,
+        "coherence": 5,
+        "overall": 5.3,
+        "fits_between_samples": false,
+        "worst_problem": "The centre and left of the near flagstones are an empty plaza; the pumpkins bunch at the wall and the right edge."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 6,
+        "composition": 6,
+        "readability": 6.5,
+        "coherence": 5.5,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The pumpkins are scattered singles of one size, so the middle floor still reads as open paving with dots on it."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 4,
+        "composition": 4,
+        "readability": 6,
+        "coherence": 4.5,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "Every pumpkin is in one strip against the back wall, and the whole lower two-thirds of the frame is empty flagstone."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5.8,
+        "composition": 5.8,
+        "readability": 6.5,
+        "coherence": 5.5,
+        "overall": 5.8,
+        "fits_between_samples": false,
+        "worst_problem": "The lower-centre flagstones under the two small jack-o-lanterns are still a broad empty band."
+       }
+      ],
+      "ranking": [
+       "AGATE",
+       "OBSIDIAN",
+       "CARNELIAN",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-foyer",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 5.8,
+        "composition": 5.8,
+        "readability": 6.5,
+        "coherence": 5.5,
+        "overall": 5.8,
+        "fits_between_samples": false,
+        "worst_problem": "The floor drops into a black band between the back wall and the middle floor, so the back furniture floats apart from the near chairs."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5,
+        "composition": 5,
+        "readability": 6,
+        "coherence": 5,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The two near chairs are cut by the frame edges and the middle floor holds only one candelabrum; the side walls' furniture is gone."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4.5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 4,
+        "composition": 4,
+        "readability": 6,
+        "coherence": 4.5,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "The near and middle floor on both sides of the runner are bare boards; everything sits against the back wall."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 5.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6.2,
+        "composition": 6.2,
+        "readability": 6.5,
+        "coherence": 5.5,
+        "overall": 6.2,
+        "fits_between_samples": false,
+        "worst_problem": "The right middle floor in front of the glass cabinet is dark empty boards in cold blue light, with nothing standing there."
+       }
+      ],
+      "ranking": [
+       "OBSIDIAN",
+       "CARNELIAN",
+       "AGATE",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-study",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6,
+        "composition": 6,
+        "readability": 6.5,
+        "coherence": 5.5,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The near floor below the rug is bare planks, and the right of the rug holds only two small book stacks."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 4.5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5.3,
+        "composition": 5.3,
+        "readability": 6,
+        "coherence": 5,
+        "overall": 5.3,
+        "fits_between_samples": false,
+        "worst_problem": "The wing chair on the left is cut by the frame and the middle floor around the rug is empty; the desk sits small at the back wall."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4.5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 4.3,
+        "composition": 4.3,
+        "readability": 5.5,
+        "coherence": 4.5,
+        "overall": 4.3,
+        "fits_between_samples": false,
+        "worst_problem": "All the furniture is in one row against the bookcases, and the red wing chair is jammed into the globe."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 4.5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 5,
+        "composition": 5,
+        "readability": 5.5,
+        "coherence": 5,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The near and middle floor holds only small book stacks; the chairs and desk are lined up at the back wall, and the red chair runs into the globe."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "AGATE",
+       "OBSIDIAN",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-crypt",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6.3,
+        "composition": 6.3,
+        "readability": 6.5,
+        "coherence": 5.5,
+        "overall": 6.3,
+        "fits_between_samples": false,
+        "worst_problem": "The near-centre flagstones below the two open graves are an empty dark spread taking the bottom quarter of the frame."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 4.5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5,
+        "composition": 5,
+        "readability": 6,
+        "coherence": 5,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The headstones are pushed to the frame edges and half cut off, leaving the whole centre floor bare."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4.5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5.2,
+        "composition": 5,
+        "readability": 6,
+        "coherence": 5,
+        "overall": 5.2,
+        "fits_between_samples": false,
+        "worst_problem": "The camera tilts down so the vaulted ceiling is lost, and the lower half of the frame is empty flagstones."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 4.5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 4.6,
+        "composition": 4.6,
+        "readability": 6,
+        "coherence": 4.5,
+        "overall": 4.6,
+        "fits_between_samples": false,
+        "worst_problem": "Graves and altar are a row at the back wall; the middle floor holds only two small skull pyramids and the near floor is bare."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "BASALT",
+       "AGATE",
+       "OBSIDIAN"
+      ]
+     },
+     {
+      "screen": "room-passages",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5.4,
+        "composition": 5.4,
+        "readability": 6.5,
+        "coherence": 5,
+        "overall": 5.4,
+        "fits_between_samples": false,
+        "worst_problem": "The near half of the floor on both sides of the runner is bare boards; the side tables sit at the frame edges."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5,
+        "background": 5.5,
+        "composition": 5.5,
+        "readability": 6,
+        "coherence": 5,
+        "overall": 5.5,
+        "fits_between_samples": false,
+        "worst_problem": "The middle-floor crates are featureless near-black cubes; they fill the floor but read as untextured boxes rather than drawn crates."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 4,
+        "composition": 4,
+        "readability": 6,
+        "coherence": 4.5,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "The camera tilts down so the ceiling is gone, and the runner and bare floor fill the lower two-thirds."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5,
+        "background": 5,
+        "composition": 5,
+        "readability": 6,
+        "coherence": 5,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The tables and crates are back by the far walls; the near and middle floor either side of the runner is empty."
+       }
+      ],
+      "ranking": [
+       "AGATE",
+       "CARNELIAN",
+       "OBSIDIAN",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-greenhouse",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6.5,
+        "composition": 6.5,
+        "readability": 6.5,
+        "coherence": 5.5,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "The planters and ferns crowd the near and middle floor so densely that the open floor is lost under a single green mass."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 4.5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 4.8,
+        "composition": 4.8,
+        "readability": 5.5,
+        "coherence": 4.5,
+        "overall": 4.8,
+        "fits_between_samples": false,
+        "worst_problem": "The back planters and fountain sink into black, and the middle floor is a dark puddled plain with a few small stands at the near rail."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4,
+        "palette": 5.5,
+        "typography": 5,
+        "material": 5,
+        "background": 4,
+        "composition": 4,
+        "readability": 5.5,
+        "coherence": 4.5,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "Nothing stands on the floor except one lamp; the whole middle and near floor is puddled tile."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5.6,
+        "composition": 5.6,
+        "readability": 6,
+        "coherence": 5,
+        "overall": 5.6,
+        "fits_between_samples": false,
+        "worst_problem": "The centre floor between the back planters and the potting stands is an empty puddled band."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "OBSIDIAN",
+       "AGATE",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-sleeping",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6.2,
+        "composition": 6.2,
+        "readability": 6.5,
+        "coherence": 5.5,
+        "overall": 6.2,
+        "fits_between_samples": false,
+        "worst_problem": "The near-right floor beneath the rocking horse is bare dark boards that fall nearly to black."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6,
+        "composition": 6,
+        "readability": 6.5,
+        "coherence": 5.5,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The beds have retreated into the dark at the side walls, so the middle floor holds only the toy chest and horse."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4.5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5.5,
+        "background": 4.6,
+        "composition": 4.6,
+        "readability": 6,
+        "coherence": 4.5,
+        "overall": 4.6,
+        "fits_between_samples": false,
+        "worst_problem": "The camera tilts down, cutting off the arched window and ceiling, and the lower two-thirds is runner and bare boards."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5.2,
+        "composition": 5.2,
+        "readability": 6,
+        "coherence": 5,
+        "overall": 5.2,
+        "fits_between_samples": false,
+        "worst_problem": "The right middle floor is empty, and the near-left toy chest is cut by the frame edge."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "AGATE",
+       "OBSIDIAN",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "fight-foyer",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 6.5,
+        "composition": 6.5,
+        "readability": 7.5,
+        "coherence": 6.5,
+        "overall": 6.6,
+        "fits_between_samples": false,
+        "worst_problem": "The floor under the Kid and Bones is in a dark band, so the pair stands in shadow while the dressing around them is lit."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 6,
+        "composition": 6,
+        "readability": 7.5,
+        "coherence": 6,
+        "overall": 6.2,
+        "fits_between_samples": false,
+        "worst_problem": "The right side of the hall behind the Butler is empty dark floor; the only chairs are cut by the right frame edge."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 7,
+        "palette": 6.5,
+        "typography": 7,
+        "material": 6,
+        "background": 5.3,
+        "composition": 5.5,
+        "readability": 7,
+        "coherence": 5.5,
+        "overall": 5.8,
+        "fits_between_samples": false,
+        "worst_problem": "The room behind both fighters is bare floor, and at 1280 the lamp stand's base meets the Kid's right crutch tip."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 6.8,
+        "composition": 6.8,
+        "readability": 7.5,
+        "coherence": 6.5,
+        "overall": 6.8,
+        "fits_between_samples": false,
+        "worst_problem": "The standing lamp sits tight against the Kid's right crutch; it reads as behind her, but only just."
+       }
+      ],
+      "ranking": [
+       "OBSIDIAN",
+       "CARNELIAN",
+       "AGATE",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "fight-nursery",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 7,
+        "composition": 7,
+        "readability": 7.5,
+        "coherence": 6.5,
+        "overall": 6.8,
+        "fits_between_samples": false,
+        "worst_problem": "The spilled blocks just right of the Doll's Courage bar crowd it; they don't cross it, but they pull the eye at the plate."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6,
+        "background": 5.8,
+        "composition": 6,
+        "readability": 7.5,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The right half of the nursery behind the Doll is empty floor; the crib and toy chest are cut at the right frame edge."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6,
+        "background": 6,
+        "composition": 6,
+        "readability": 7.5,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The horse and crib stand in a row at the back wall, and the middle floor around both fighters is bare."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 6.5,
+        "composition": 6.5,
+        "readability": 7.5,
+        "coherence": 6.5,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "The rocking horse is cut by the right frame edge, so it shows only as a sliver and leaves the right middle floor bare."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "OBSIDIAN",
+       "BASALT",
+       "AGATE"
+      ]
+     },
+     {
+      "screen": "fight-graveyard",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 7,
+        "composition": 7,
+        "readability": 7.5,
+        "coherence": 6.5,
+        "overall": 6.8,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 a lantern post shows between the Coatrack Crawler's legs, a thin vertical that tangles with its leg lines."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 6.5,
+        "composition": 6.5,
+        "readability": 7.5,
+        "coherence": 6.5,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "The middle floor around both enemies is bare grass; the graves sit back along the fence."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 7,
+        "palette": 6.5,
+        "typography": 7,
+        "material": 6,
+        "background": 5.5,
+        "composition": 5.5,
+        "readability": 7,
+        "coherence": 5.5,
+        "overall": 5.8,
+        "fits_between_samples": false,
+        "worst_problem": "The graveyard holds no graves near the fighters, only a lamp, so the fight takes place on a bare lawn."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 7,
+        "palette": 6.5,
+        "typography": 7,
+        "material": 6,
+        "background": 6.5,
+        "composition": 5.5,
+        "readability": 5.5,
+        "coherence": 6,
+        "overall": 5.6,
+        "fits_between_samples": false,
+        "worst_problem": "A Celtic cross and a row of headstones stand directly behind the Coatrack Crawler's and Dust Bunny's Courage bars, and the cross's head touches the 34/34 bar at both sizes."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "AGATE",
+       "BASALT",
+       "OBSIDIAN"
+      ]
+     },
+     {
+      "screen": "fight-party",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 6.5,
+        "composition": 6,
+        "readability": 6.5,
+        "coherence": 6,
+        "overall": 5.8,
+        "fits_between_samples": false,
+        "worst_problem": "At 1600 Bones the skeleton puppy stands with his paws on the top of a green chair back at near-left, so he reads as standing on the chair."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 6.3,
+        "composition": 6.5,
+        "readability": 7.5,
+        "coherence": 6.5,
+        "overall": 6.6,
+        "fits_between_samples": false,
+        "worst_problem": "The right half of the parlour behind the Calling Bell is empty dark floor; the one chair is cut by the right edge."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 7,
+        "palette": 6.5,
+        "typography": 7,
+        "material": 6,
+        "background": 5.8,
+        "composition": 6,
+        "readability": 7.5,
+        "coherence": 6,
+        "overall": 6.2,
+        "fits_between_samples": false,
+        "worst_problem": "There is no furniture on the floor around either side of the fight; the room is a bare stage."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 7,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 6.8,
+        "composition": 6.8,
+        "readability": 7.5,
+        "coherence": 6.5,
+        "overall": 6.8,
+        "fits_between_samples": false,
+        "worst_problem": "The floor in front of the four Kids and their Companions is bare and dim; all the dressing is behind the enemies on the right."
+       }
+      ],
+      "ranking": [
+       "OBSIDIAN",
+       "AGATE",
+       "BASALT",
+       "CARNELIAN"
+      ]
+     }
+    ],
+    "winner": "CARNELIAN",
+    "screen_winners": [
+     {
+      "screen": "room-graveyard",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "room-nursery",
+      "code": "AGATE"
+     },
+     {
+      "screen": "room-hedge",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "room-pumpkin",
+      "code": "AGATE"
+     },
+     {
+      "screen": "room-foyer",
+      "code": "OBSIDIAN"
+     },
+     {
+      "screen": "room-study",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "room-crypt",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "room-passages",
+      "code": "AGATE"
+     },
+     {
+      "screen": "room-greenhouse",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "room-sleeping",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "fight-foyer",
+      "code": "OBSIDIAN"
+     },
+     {
+      "screen": "fight-nursery",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "fight-graveyard",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "fight-party",
+      "code": "OBSIDIAN"
+     }
+    ],
+    "winner_fixes": [
+     "fight-party (1600x900): the green chair back at near-left sits right under Bones' paws so he reads as standing on it. Keep that chair out of the Companion row's floor band, or give a chair there a footprint that ends behind the fighters' feet.",
+     "room-foyer / fight-foyer: the floor falls into a black band between the back wall and the middle floor. Light that band (a candle pool or the chandelier's spill) so the back furniture and the near chairs sit on one continuous floor and the Kid stands on lit boards.",
+     "room-pumpkin: the centre and left near flagstones are an empty plaza. Add pumpkins, hay bales and a cart or lantern post across the middle and near floor, the way AGATE and OBSIDIAN spread them, not only at the wall and the right edge.",
+     "fight-graveyard (1280): a lantern post shows between the Coatrack Crawler's legs. Move that post clear of the enemy column so no thin vertical tangles with an enemy's silhouette.",
+     "room-passages: the near half of the floor either side of the runner is bare. Bring the vase tables and crates forward to the middle floor and give the crates visible plank and brace texture, not dark blank cubes.",
+     "room-greenhouse: the planters and ferns fill the near and middle floor in one green mass. Keep the density but open one lit stretch of tile in the middle floor so the room reads as a floor with things on it.",
+     "room-nursery: the left middle floor between the toy chest and the rug is empty while the horse and crib weigh down the right. Put a second large toy (a second rocking horse or a toy chest, as AGATE does) on the left middle floor, fully inside the frame.",
+     "room-crypt: the near-centre flagstones below the open graves are a dark empty spread. Add an ossuary pile, a bone urn or a candle stand on the near floor so the bottom quarter is not bare stone.",
+     "room-study / room-hedge: the floor below the rug or the bench and urn line is bare. Add a footstool, a book cart or a fallen urn on the near floor so the bottom third holds a drawn object."
+    ],
+    "grafts": [
+     {
+      "from": "OBSIDIAN",
+      "idea": "Foyer floor lighting: a warm pool around the Kid's spot and a continuous lit floor from the back wall forward, with the same chairs and cabinets, so fighters stand on lit boards instead of a dark band."
+     },
+     {
+      "from": "AGATE",
+      "idea": "Pumpkin courtyard spread: jack-o-lanterns and grey pumpkins scattered across the middle and near flagstones at several depths, instead of bunched at the wall."
+     },
+     {
+      "from": "OBSIDIAN",
+      "idea": "Pumpkin courtyard hay bales stacked with pumpkins on the near-left and right floor: a large drawn object that anchors the near ground."
+     },
+     {
+      "from": "AGATE",
+      "idea": "Nursery: a second rocking horse and a big moon toy chest framing both sides of the middle floor, so the room is dressed left and right, kept fully inside the frame."
+     },
+     {
+      "from": "OBSIDIAN",
+      "idea": "fight-party: keep the near-left floor under the Companion row clear of furniture (no chair there) while still dressing the enemy side with chairs and cabinets."
+     }
+    ],
+    "verdict": "CARNELIAN is the most coherent room system. It wins 7 of 14 screens (graveyard, hedge, study, crypt, greenhouse, sleeping quarters, and the nursery and graveyard fights), and it is the only candidate that steadily puts drawn, shadowed objects on the middle and near floor while keeping the ceiling and walls in frame. Its one serious defect is in fight-party at 1600, where Bones stands on a green chair back at near-left. That must be fixed before it ships. OBSIDIAN wins the foyer room, the foyer fight and the party fight with better floor lighting and clear fighter footing, but a Celtic cross sits on a Courage bar in fight-graveyard and its crypt, study and hedge are back-row rooms. AGATE wins nursery, pumpkin and passages by spreading objects across the floor, but it crops its big pieces at the frame edges and leaves wide bare stretches elsewhere. BASALT is the bare baseline: back-row dressing, cameras tilted down so ceilings are lost, and an unnamed translucent smear in the graveyard. None of the four is close to the painted hand of the references. Rooms sit at 4-6.5 and fights at 5.6-6.8."
+   },
+   {
+    "screens": [
+     {
+      "screen": "room-graveyard",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5,
+        "palette": 7,
+        "typography": 5,
+        "material": 6,
+        "background": 7,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 6.5,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "The bottom-centre near floor between the foreground headstones goes to a murky grey haze with nothing drawn on it."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6.5,
+        "composition": 6.5,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "A flat dark tree silhouette is pasted over the moon at top centre, and the mid lawn on the right behind the graves is bare."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 3,
+        "palette": 6,
+        "typography": 5,
+        "material": 4,
+        "background": 3.5,
+        "composition": 3,
+        "readability": 6,
+        "coherence": 4,
+        "overall": 3,
+        "fits_between_samples": false,
+        "worst_problem": "The near and middle lawn has no graves at all, only two lamps, and a translucent grey smear that nobody could name sits at bottom centre."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5.5,
+        "composition": 5.5,
+        "readability": 7,
+        "coherence": 5.5,
+        "overall": 5.5,
+        "fits_between_samples": false,
+        "worst_problem": "The lower-left and centre near floor is a bare dark slope with leaves on it; the graves are packed along the back fence."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "OBSIDIAN",
+       "AGATE",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-nursery",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6.5,
+        "composition": 6,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6.2,
+        "fits_between_samples": false,
+        "worst_problem": "The left mid floor between the back toy chest and the rug is empty boards, so the room tips right toward the big rocking horse."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5.5,
+        "composition": 5,
+        "readability": 7,
+        "coherence": 5.5,
+        "overall": 5.5,
+        "fits_between_samples": false,
+        "worst_problem": "The crib and toys sit back against the wall, and the right rocking horse is cut off at the frame edge, leaving the middle floor bare."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 4,
+        "composition": 3.5,
+        "readability": 7,
+        "coherence": 4.5,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "Every toy is lined up along the back wall; the rug and the whole near floor are bare boards."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6.5,
+        "composition": 6.5,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "The near-left rocking horse is cropped by the frame edge and reads as a fragment, not a whole object."
+       }
+      ],
+      "ranking": [
+       "AGATE",
+       "CARNELIAN",
+       "OBSIDIAN",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-hedge",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6.5,
+        "composition": 6.5,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "The right near lawn below the urn is a flat, empty green slope out to the frame edge."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 4,
+        "palette": 6,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5.5,
+        "composition": 5.5,
+        "readability": 7,
+        "coherence": 5.5,
+        "overall": 5.5,
+        "fits_between_samples": false,
+        "worst_problem": "The whole right lawn from the mid ground to the near ground has nothing on it."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4,
+        "palette": 5.5,
+        "typography": 5,
+        "material": 5,
+        "background": 4.5,
+        "composition": 4.5,
+        "readability": 7,
+        "coherence": 5,
+        "overall": 4.5,
+        "fits_between_samples": false,
+        "worst_problem": "The sky and the hedge tops are cut off at the top of the frame, and the right half of the lawn is bare."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 4,
+        "palette": 6,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5,
+        "composition": 5,
+        "readability": 7,
+        "coherence": 5,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The near-left urn stands through the stone bench, and the right lawn is empty."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "OBSIDIAN",
+       "AGATE",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-pumpkin",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6,
+        "composition": 5.5,
+        "readability": 7,
+        "coherence": 5.5,
+        "overall": 5.5,
+        "fits_between_samples": false,
+        "worst_problem": "The lower-left and centre third of the frame is bare flagstone; the pumpkins bunch at the back wall and on the right."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6,
+        "composition": 5.8,
+        "readability": 7,
+        "coherence": 5.5,
+        "overall": 5.8,
+        "fits_between_samples": false,
+        "worst_problem": "The pumpkins on the near floor are small and scattered thinly, so the bottom third still reads as empty paving."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 3.5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 3.5,
+        "composition": 3,
+        "readability": 7,
+        "coherence": 4,
+        "overall": 3.5,
+        "fits_between_samples": false,
+        "worst_problem": "Two-thirds of the frame is empty flagstone, with a single row of small pumpkins along the back wall."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6,
+        "composition": 6,
+        "readability": 7,
+        "coherence": 5.5,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The bottom-centre floor strip under the label is bare, and the grey pumpkins in the middle are unlit."
+       }
+      ],
+      "ranking": [
+       "AGATE",
+       "OBSIDIAN",
+       "CARNELIAN",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-foyer",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5.5,
+        "palette": 7,
+        "typography": 5,
+        "material": 6,
+        "background": 6.5,
+        "composition": 6.3,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6.3,
+        "fits_between_samples": false,
+        "worst_problem": "The floor falls to a black band between the hearth wall and the mid floor (y≈330-400), so the furniture at the back floats."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 5.5,
+        "palette": 7,
+        "typography": 5,
+        "material": 6,
+        "background": 6,
+        "composition": 6,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "Everything except two edge chairs sits on the back wall; the mid floor either side of the runner is bare boards."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 4,
+        "composition": 4,
+        "readability": 7,
+        "coherence": 5,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "The near and mid floor holds nothing but the runner and one lamp; the chairs and cabinets have sunk into the dark at the back."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 5.5,
+        "palette": 7,
+        "typography": 5,
+        "material": 6,
+        "background": 5.8,
+        "composition": 5.8,
+        "readability": 7,
+        "coherence": 5.8,
+        "overall": 5.8,
+        "fits_between_samples": false,
+        "worst_problem": "The right mid floor is a bare blue-lit expanse, with only a cropped chair at the frame edge."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "OBSIDIAN",
+       "AGATE",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-study",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6.5,
+        "composition": 6.5,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "The right near floor and the bottom strip below the rug are bare dark boards."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5,
+        "composition": 5,
+        "readability": 7,
+        "coherence": 5,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The red armchair stands through the globe at the back left, and the mid floor is bare apart from little book stacks."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4.5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 4,
+        "composition": 4,
+        "readability": 7,
+        "coherence": 4.5,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "The armchair is jammed into the globe at the back wall, and the whole mid and near floor is empty boards and the rug."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6.5,
+        "composition": 6,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The right half of the floor goes to unlit black, and the near-left armchair is cropped by the frame edge."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "AGATE",
+       "OBSIDIAN",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-crypt",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6.5,
+        "background": 7,
+        "composition": 6.8,
+        "readability": 7,
+        "coherence": 6.5,
+        "overall": 6.8,
+        "fits_between_samples": false,
+        "worst_problem": "The lower-left quarter of the near floor is bare flagstone beside the open grave."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 4.5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5,
+        "composition": 5,
+        "readability": 7,
+        "coherence": 5,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The headstones and the altar sit at the back wall, leaving the floor bare except for two little skull pyramids."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6,
+        "composition": 6,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The vaulted ceiling and the far wall top are cut off at the top of the frame, and the bottom half is bare paving."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6,
+        "composition": 5.8,
+        "readability": 7,
+        "coherence": 5.8,
+        "overall": 5.8,
+        "fits_between_samples": false,
+        "worst_problem": "The headstones are pushed to the two frame edges, and the open graves are cropped at the bottom corners, leaving the centre floor empty."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "BASALT",
+       "AGATE",
+       "OBSIDIAN"
+      ]
+     },
+     {
+      "screen": "room-passages",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6,
+        "composition": 6,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The lower half of the frame either side of the runner is bare boards; all the side tables and crates stop at mid depth."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5.3,
+        "composition": 5.3,
+        "readability": 7,
+        "coherence": 5.5,
+        "overall": 5.3,
+        "fits_between_samples": false,
+        "worst_problem": "The tables and crates hug the far end and the right wall, leaving the near two-thirds of the corridor floor bare."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 4.5,
+        "composition": 4.5,
+        "readability": 7,
+        "coherence": 5,
+        "overall": 4.5,
+        "fits_between_samples": false,
+        "worst_problem": "The ceiling and the upper walls are cut off at the top, and the near floor is bare boards and runner."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5,
+        "background": 5.6,
+        "composition": 5.8,
+        "readability": 7,
+        "coherence": 5.5,
+        "overall": 5.6,
+        "fits_between_samples": false,
+        "worst_problem": "The crates on the mid floor are near-black, featureless slabs that read as flat boxes, not drawn crates."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "AGATE",
+       "OBSIDIAN",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-greenhouse",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5,
+        "palette": 7,
+        "typography": 5,
+        "material": 6.5,
+        "background": 7,
+        "composition": 7,
+        "readability": 7,
+        "coherence": 6.5,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "The far floor behind the back planters (y≈300-380) falls to black, so the glasshouse's back half has no floor."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6,
+        "composition": 6,
+        "readability": 7,
+        "coherence": 6,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "The centre floor is a wide, bare puddled expanse between the back planters and the near plant stands."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4,
+        "palette": 6,
+        "typography": 5,
+        "material": 5,
+        "background": 4,
+        "composition": 4,
+        "readability": 7,
+        "coherence": 4.5,
+        "overall": 4,
+        "fits_between_samples": false,
+        "worst_problem": "Every planter is in one row on the back wall, and the whole floor holds only puddles and one lamp."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 4,
+        "palette": 5.5,
+        "typography": 5,
+        "material": 5,
+        "background": 4.8,
+        "composition": 4.8,
+        "readability": 6.5,
+        "coherence": 4.8,
+        "overall": 4.8,
+        "fits_between_samples": false,
+        "worst_problem": "The back planters are unlit, nearly invisible silhouettes, and the centre floor is a dark, empty plain of puddles."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "OBSIDIAN",
+       "AGATE",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "room-sleeping",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6.8,
+        "composition": 6.8,
+        "readability": 7,
+        "coherence": 6.5,
+        "overall": 6.8,
+        "fits_between_samples": false,
+        "worst_problem": "The near right floor below the rocking horse, and the strip beside the runner, are bare boards."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 4.5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5.5,
+        "composition": 5.5,
+        "readability": 7,
+        "coherence": 5.5,
+        "overall": 5.5,
+        "fits_between_samples": false,
+        "worst_problem": "The beds and the toy chest sit back against the wall, and the right rocking horse is cropped at the edge, so the mid floor is empty."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 4.5,
+        "palette": 6,
+        "typography": 5,
+        "material": 5.5,
+        "background": 5,
+        "composition": 5,
+        "readability": 7,
+        "coherence": 5,
+        "overall": 5,
+        "fits_between_samples": false,
+        "worst_problem": "The ceiling and the arched window are cut off at the top of the frame, and the bottom half is bare boards."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 5,
+        "palette": 6.5,
+        "typography": 5,
+        "material": 6,
+        "background": 6.5,
+        "composition": 6.5,
+        "readability": 7,
+        "coherence": 6.3,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "The beds are pushed to the frame edges and cropped there, so the dormitory reads as sparser than its name."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "AGATE",
+       "OBSIDIAN",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "fight-foyer",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 6.5,
+        "composition": 6.8,
+        "readability": 7.5,
+        "coherence": 6.8,
+        "overall": 6.8,
+        "fits_between_samples": false,
+        "worst_problem": "The right mid floor between the Butler and the cabinets is an empty dark patch, so the room's right half feels unfurnished."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 6.3,
+        "composition": 6.5,
+        "readability": 7.5,
+        "coherence": 6.5,
+        "overall": 6.5,
+        "fits_between_samples": false,
+        "worst_problem": "The right mid floor beside the Butler is bare boards fading to blue-black."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 7.5,
+        "palette": 6.5,
+        "typography": 7,
+        "material": 6,
+        "background": 5,
+        "composition": 5.3,
+        "readability": 7.5,
+        "coherence": 5.8,
+        "overall": 5.3,
+        "fits_between_samples": false,
+        "worst_problem": "The furniture has sunk into the dark back wall, so the fighters stand in an empty hall with one lamp."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 7.5,
+        "palette": 6.5,
+        "typography": 7,
+        "material": 6,
+        "background": 5.5,
+        "composition": 5.6,
+        "readability": 7.5,
+        "coherence": 6,
+        "overall": 5.6,
+        "fits_between_samples": false,
+        "worst_problem": "The left and right halves of the room are dim and nearly empty, with only one cropped chair at the right edge."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "OBSIDIAN",
+       "AGATE",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "fight-nursery",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 7,
+        "composition": 7,
+        "readability": 7.5,
+        "coherence": 7,
+        "overall": 7,
+        "fits_between_samples": false,
+        "worst_problem": "The block pile to the right of the Porcelain Doll's Courage bar crowds the bar's end at 1280."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 6.3,
+        "composition": 6.3,
+        "readability": 7.5,
+        "coherence": 6.5,
+        "overall": 6.3,
+        "fits_between_samples": false,
+        "worst_problem": "The right rocking horse is cropped at the frame edge, and the floor between the Doll and the crib is empty."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 7.5,
+        "palette": 6.5,
+        "typography": 7,
+        "material": 6,
+        "background": 5.5,
+        "composition": 5.5,
+        "readability": 7.5,
+        "coherence": 6,
+        "overall": 5.5,
+        "fits_between_samples": false,
+        "worst_problem": "All the toys sit on the back wall, and the right half of the floor is dark and bare."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 7,
+        "material": 6,
+        "background": 5.8,
+        "composition": 5.8,
+        "readability": 7.5,
+        "coherence": 6,
+        "overall": 5.8,
+        "fits_between_samples": false,
+        "worst_problem": "The floor around both fighters is bare lit boards, with only a cropped crib at the right edge."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "OBSIDIAN",
+       "AGATE",
+       "BASALT"
+      ]
+     },
+     {
+      "screen": "fight-graveyard",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 7,
+        "composition": 6.8,
+        "readability": 7,
+        "coherence": 6.8,
+        "overall": 6.8,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 a lantern post stands between the Coatrack Crawler's legs, behind its body."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 6.5,
+        "composition": 6,
+        "readability": 6.3,
+        "coherence": 6.3,
+        "overall": 6,
+        "fits_between_samples": false,
+        "worst_problem": "A row of headstones rises under the Dust Bunny's and the Coatrack Crawler's Courage bars, and a cross headstone touches the 34/34 bar's end."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 7.5,
+        "palette": 6.5,
+        "typography": 7,
+        "material": 6,
+        "background": 5,
+        "composition": 5.3,
+        "readability": 7,
+        "coherence": 5.5,
+        "overall": 5.3,
+        "fits_between_samples": false,
+        "worst_problem": "The yard has no graves around the fighters, only a lamp, and a lamp post sits between the Coatrack Crawler's legs."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 7.5,
+        "palette": 6.5,
+        "typography": 7,
+        "material": 6,
+        "background": 5.8,
+        "composition": 5,
+        "readability": 6,
+        "coherence": 5.5,
+        "overall": 5.2,
+        "fits_between_samples": false,
+        "worst_problem": "A Celtic cross stands straight up behind the Coatrack Crawler, its shaft rising out of the fighter's head and stopping under the DEBUFF sign."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "OBSIDIAN",
+       "BASALT",
+       "AGATE"
+      ]
+     },
+     {
+      "screen": "fight-party",
+      "candidates": [
+       {
+        "code": "CARNELIAN",
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 6.5,
+        "composition": 6.5,
+        "readability": 7,
+        "coherence": 6.6,
+        "overall": 6.6,
+        "fits_between_samples": false,
+        "worst_problem": "The green chair at bottom left sits half under Marmalade's LIVES plate, so the plate reads as pasted over furniture."
+       },
+       {
+        "code": "OBSIDIAN",
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.5,
+        "background": 6.3,
+        "composition": 6.3,
+        "readability": 6.8,
+        "coherence": 6.3,
+        "overall": 6.3,
+        "fits_between_samples": false,
+        "worst_problem": "At 1280 a floor lamp stands right between the red-haired Kid's magnifier and the Door Greeter, where it reads as part of the fight."
+       },
+       {
+        "code": "BASALT",
+        "ornament": 7.5,
+        "palette": 6.5,
+        "typography": 7,
+        "material": 6,
+        "background": 5.5,
+        "composition": 5.8,
+        "readability": 7,
+        "coherence": 5.8,
+        "overall": 5.8,
+        "fits_between_samples": false,
+        "worst_problem": "The room behind the party is dim and nearly unfurnished, so the Kids stand in an empty hall."
+       },
+       {
+        "code": "AGATE",
+        "ornament": 7.5,
+        "palette": 7,
+        "typography": 7,
+        "material": 6.3,
+        "background": 6.2,
+        "composition": 6.2,
+        "readability": 7,
+        "coherence": 6.2,
+        "overall": 6.2,
+        "fits_between_samples": false,
+        "worst_problem": "The right third of the floor behind the Calling Bell is bare and dark, with one cropped chair at the edge."
+       }
+      ],
+      "ranking": [
+       "CARNELIAN",
+       "OBSIDIAN",
+       "AGATE",
+       "BASALT"
+      ]
+     }
+    ],
+    "winner": "CARNELIAN",
+    "screen_winners": [
+     {
+      "screen": "room-graveyard",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "room-nursery",
+      "code": "AGATE"
+     },
+     {
+      "screen": "room-hedge",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "room-pumpkin",
+      "code": "AGATE"
+     },
+     {
+      "screen": "room-foyer",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "room-study",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "room-crypt",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "room-passages",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "room-greenhouse",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "room-sleeping",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "fight-foyer",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "fight-nursery",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "fight-graveyard",
+      "code": "CARNELIAN"
+     },
+     {
+      "screen": "fight-party",
+      "code": "CARNELIAN"
+     }
+    ],
+    "winner_fixes": [
+     "room-pumpkin: the lower-left and centre near floor is bare flagstone. Put drawn pumpkin groups, a hay bale and a barrow on the near floor, the way the right side is dressed.",
+     "room-foyer: the floor falls to a black band between the hearth wall and the mid floor (y≈330-400). Carry the lit floorboards up to the back wall so the back chairs and cabinets stand on floor.",
+     "room-passages: the bottom half either side of the runner is bare boards. Stand drawn benches, side tables and crates on the near floor at both sides.",
+     "room-hedge: the right near lawn below the urn is empty. Add a drawn bench, topiary or second urn on the near-right lawn to match the near-left bench.",
+     "room-study: the right near floor and the strip below the rug are bare. Add a reading table, book stacks or a footstool on the near right.",
+     "room-graveyard: the bottom-centre near floor between the foreground headstones is a grey haze. Replace it with drawn graves, grave edging and leaf litter.",
+     "room-greenhouse: the far floor behind the back planters falls to black. Light the back tiles so the glasshouse floor reads all the way to the far railing.",
+     "room-nursery: the left mid floor between the toy chest and the rug is empty. Add a doll pram or a crib on the near-left floor, the way the rocking horse anchors the right.",
+     "fight-graveyard (1280): a lantern post stands between the Coatrack Crawler's legs. Keep props out of every fighter's footprint at every width.",
+     "fight-party: the bottom-left green chair sits under Marmalade's LIVES plate. Place that chair clear of the companion plate."
+    ],
+    "grafts": [
+     {
+      "from": "AGATE",
+      "idea": "room-study: frame the upper gallery and the arched moonlit window, so the ceiling and far wall read as architecture rather than a cropped shelf band."
+     },
+     {
+      "from": "AGATE",
+      "idea": "room-nursery: flank the near floor with furniture on both sides (rocking horse near left, star toy chest near right) instead of weighting only one side."
+     },
+     {
+      "from": "AGATE",
+      "idea": "room-sleeping: bring the chandelier and the ceiling into frame above the arched window, for a lit top and a fuller sense of the room."
+     },
+     {
+      "from": "AGATE",
+      "idea": "room-pumpkin: scatter lit jack-o'-lanterns across the near floor (lower left and centre), not only at the back wall and on the right."
+     },
+     {
+      "from": "OBSIDIAN",
+      "idea": "room-greenhouse: put tiered plant stands, a potting table and a watering can on the mid floor so the puddled centre holds drawn objects."
+     },
+     {
+      "from": "OBSIDIAN",
+      "idea": "room-foyer: keep the floorboards lit continuously up to the hearth wall; that removes the black band CARNELIAN has."
+     },
+     {
+      "from": "AGATE",
+      "idea": "fight-party / fight-foyer: hang the foyer portraits with readable painted faces on the far wall, so the back wall carries more drawn detail."
+     }
+    ],
+    "verdict": "CARNELIAN is the most coherent room system. Across both tracks it most often puts drawn objects with shadows on the middle and near floor, and it keeps ceilings and side walls in frame (graveyard, greenhouse, crypt, study, sleeping, hedge). It wins 12 of 14 screens; AGATE takes nursery and pumpkin narrowly. In the fights, CARNELIAN's rooms stay furnished around and behind the fighters, and nothing a fighter stands on or through is worse than a lamp behind the Coatrack Crawler's legs at 1280. AGATE has a real collision: a Celtic cross rises out of the Coatrack Crawler's head under its DEBUFF sign. OBSIDIAN's headstones crowd the graveyard Courage bars. BASALT is consistently the barest: everything sits on the back wall, ceilings are cropped, and the graveyard has a nameless translucent smear. None reaches the reference paintings' hand. Bare near-floor strips remain in pumpkin, passages and foyer, and the foyer and greenhouse floors fall to black at the back. No screen meets coherence 9."
+   }
+  ],
+  "builds": [
+   {
+    "code": "OBSIDIAN",
+    "branch": "ui/r59-rooms-a",
+    "commit": "d29f433859f1cb7429d58af977eee0f302960cd2",
+    "screenshots": [
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/room-graveyard.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/room-nursery.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/room-hedge.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/room-pumpkin.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/room-foyer.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/room-study.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/room-crypt.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/room-passages.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/room-greenhouse.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/room-sleeping.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/fight-foyer.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/fight-nursery.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/fight-graveyard.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/fight-party.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/fight-foyer-1280.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/fight-nursery-1280.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/fight-graveyard-1280.png",
+     "D:/UILOOP/r59/judging/r59/rooms/OBSIDIAN/fight-party-1280.png"
+    ],
+    "touched_files": [
+     "game/src/fx/backdrop.js",
+     "game/src/fx/atmosphere.js",
+     "tests/grounding/run.py",
+     "tests/grounding/soles.py",
+     "tests/grounding/checks.json"
+    ],
+    "kit_changes": "none: kit.css, tokens.css, the HUD, the tooltip and the room shell were not touched",
+    "endings_ok": true,
+    "console_errors": 0,
+    "notes_for_merger": "What changed (3 commits on ui/r59-rooms-a, base 5e4e3886, only fx/backdrop.js, fx/atmosphere.js and tests/grounding/):\n1. CLEARANCE RULE (backdrop.js). I measured the sole line from CombatScene._stageFl across 10 window sizes and 6 encounter shapes. Script is tests/grounding/soles.py. Only window HEIGHT moves it, because the hand is a fixed pixel size: boss .457-.683, everyone else .514-.715. That gives SOLE_LINES, plus soleBand(innerHeight) at build time. A piece is in the way only when its foot sits below the band's top line, its head sits above the band's bottom line, and its end lies inside the fighters' reach. Reach is measured too: right REACH_RIGHT 1.22 half-heights; left 0.92 x aspect, with aspect held at 16:9 or wider. A piece that is in the way goes to whichever is the shortest move: forward of everyone's feet (low pieces only, kept on their line from the lens), out to the right edge (toTheEdge), or back behind the fight with a seeded spread so pieces do not form a rank.\n   - Grave headstones and lamp standards now go through the same rule. A lamp moves its pal.lights entry and any nearFloor pool within 3 m with it.\n   - Resize: a room is placed for the window it was built in. Backdrop._standAside(sole, aspect) reads the live sole line from Atmosphere._syncActors each tick. It collapses any piece the new line now stands in (instance scale 0, shadows included) and restores it when the window comes back.\n2. CAMERA (stageRig). Square rigs now cast the measured stance (STANCE) at the real aspect, held to at least 16:9, and allow the floor to run R.w/2 + floorOver - 0.05. When the floor test fails, the eye comes down in 5 cm steps (floor STAGE_EYE_MIN 0.95) with the wall foot held on STAGE_BASE. It only pitches after that. Pools and non-square vantages keep the old 0.96-at-aspect-2 stance, so the Greenhouse gallery frames as before.\n   - Wall foot is back at .39 in Sleeping and Attic, .38 in Crypt, .35 in Hedge, .335 in Passages (all were .16-.28). Crypt and Passages eyes are now 0.97 m.\n3. LIGHT: a pool2 on the middle floor for the parlour kind (ahead 16.5), study (10.6) and nursery (pool widened to 6.2).\n4. GRAVEYARD: the translucent arch in BASALT was a stone's ghost. It is gone, and two solid near stones (hand-flagged) now stand on the remaining moonlit patch.\n5. NEW NEAR PIECES, all drawn from shapes already in each wing's PROP_SHAPES, so no new programs: pumpkins and a straw bale across the court's near flags, book piles in the study, low charnel mounds in the crypt, a toy box in the dormitory.\n6. TEST (tests/grounding/run.py). It no longer skips graves, slabs or standing fixtures. It tests each actor across 0.8 of its shadow radius. Any stood-down piece must have scale exactly 0. Six rooms were added: parlor boss, nursery x4, yard x3, catacomb x4, dormitory x3, courtyard x4. PASS on all of them. `--original` runs only the old four.\n\nNot done:\n- Item 5 (hedge cells and flagstone softness) is shader work and was not attempted. The hedge only got its camera back.\n- No shader files were edited and no prop program changed, so there was no getProgramInfoLog to read.\n\nVerified:\n- grounding PASS (checks.json committed; the regenerated checked-*.png were restored so ~32 MB of churn is not committed).\n- tests/chrome 27/0 errors, steam-deck 6 passed, combat-scene seam 22 passed.\n- gpuprof graveyard fight at 1600x900: T_full 13.3 ms. This is one reading, under the 15.5 ms budget.\n\nCapture caveat:\n- capture.py's 900 s subprocess timeout expired twice while waiting in the GPU queue behind other builders.\n- The canonical PNGs were therefore made with capture.py's exact commands, run without the timeout: the same room_batch line (`--tier medium --w 1280 --h 800 --prefix OBSIDIAN-room-`), and the same shot.py arguments as its FIGHTS table. The runner is a copy of that table without the timeout.\n- All 18 PNGs were looked at. None are void, and there are no console.txt files.\n\nKnown risk:\n- At 1920x1080 a room built for 1024x768 stands aside many near pieces (the test counted 18 in the yard). A room entered at 1080p is placed for 1080p, so a player only sees this after resizing mid-fight.\n- At 1080p and above the near floor is legitimately emptier, because the sole line sits lower.",
+    "self_score": 7
+   },
+   {
+    "code": "CARNELIAN",
+    "branch": "ui/r59-rooms-b",
+    "commit": "fa3367b09cf99096473aad43d25349503d7b36ea",
+    "screenshots": [
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/room-graveyard.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/room-nursery.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/room-hedge.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/room-pumpkin.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/room-foyer.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/room-study.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/room-crypt.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/room-passages.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/room-greenhouse.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/room-sleeping.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/fight-foyer.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/fight-nursery.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/fight-graveyard.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/fight-party.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/fight-foyer-1280.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/fight-nursery-1280.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/fight-graveyard-1280.png",
+     "D:/UILOOP/r59/judging/r59/rooms/CARNELIAN/fight-party-1280.png"
+    ],
+    "touched_files": [
+     "game/src/fx/backdrop.js",
+     "game/src/fx/atmosphere.js",
+     "game/src/fx/shaders/backdrop.js",
+     "tests/grounding/run.py",
+     "tests/grounding/checks.json",
+     "tests/grounding/checked-*.png"
+    ],
+    "kit_changes": "none. kit.css, tokens.css, the HUD, the tooltip and the room shell were not touched; every change is in fx/ (backdrop.js, atmosphere.js, and two lines of the floor shader) plus tests/grounding.",
+    "endings_ok": true,
+    "console_errors": 0,
+    "notes_for_merger": "WHAT CHANGED\n1. The clearance rule (backdrop.js). The static pass that walked every floor piece back until its foot was above 42.5% of the screen is gone, along with the now-unused onStage, stageLens and stageShift. In its place Backdrop#stageAside(boxes, camera) is called from the new Atmosphere#_stageAside, which hangs off _syncActors. It \"strikes\" a floor piece (scale set to 0 on the piece, its contact shadow and its SHADOW_EXTRA pools, the same mechanism as _handCull) only while two things are both true: the piece's projected quad (10% inset) crosses a fighter's box (.cb-hero rect down to its shadow, each living .cb-enemy rect including its plate, and .cb-incoming), and the piece's foot is not at least 0.012 of the frame behind that fighter's sole line. Pieces it never touches: hang, arch, fixture, hand, and anything with y > 1. The boxes are re-read when a signature changes (canvas size, enemy count, hero count, placed count, room seed) and otherwise every 1.5 s. So resizing, summons and deaths re-place within one sync, and lunges never cause flicker. Pieces put themselves back when the fighter leaves. Empty rooms strike nothing, which is why they look like survey 10's again.\n2. The camera (stageRig). The pitch loop now casts measured standing positions, STANDS = [[sole, aspect*|nx|]] = [.47,1.0] [.513,1.25] [.53,1.5] [.556,1.62] [.62,2.05]. These were measured with a geometry probe over every board shape (1 to 5 enemies, elite, boss, party) at 1280x800, 1600x900, 1920x1080, 1024x768 and 2560x1080. It replaces nx 0.96 at aspect 2 on a 44vh line. Crypt, Passages, Sleeping, Attic and Hedge get their vaults, end walls and skies back, and the 4-enemy corridor still passes.\n3. The graveyard shader (fx/shaders/backdrop.js, MM_R25W 4). The translucent grey shape was the near end of SPHENE's trodden path p1, which started 4.5 m from the eye. It now starts at 12 m. The crisp rank-grass patch, a black shape on the open near lawn, is limited to the lawn's sides (|across| > 4 to 6.5 m) as its comment intended.\n4. Rooms dressed by hand:\n- Nursery: the toy chest moved upstage of every sole line, so it stays at the Kid's back in fights. The fire's glow (pool2) is laid on the middle boards.\n- Parlour: lamps i:2 moved to x 6.4 / z 0.30, taking the lantern standard off the Kid's shoulder to the fight's right wing.\n- Churchyard: footlights, a kerbed grave and a low stone, both marked still and hand, so the yews and moon do not move.\n- Study: the middle floor pool widened, and a book pile added on the middle floor.\n- Passages: two crate stacks on the near boards.\n- Hedge: the near urn moved to the bare right-hand verge. It is no longer hand-culled.\n- Every addition is marked still, so no deal stream moved. One exception: an early graveyard addition without still moved the yews over the moon; it was caught and fixed.\n\nPROOF\n- tests/grounding/run.py (on_port 9592) passes. It covers 8 rooms x 3 sizes (added nursery, graveyard 4-enemy, foyer boss parlour, crypt 4-enemy). It now checks every drawn (unstruck) floor piece against each fighter's body box as well as the soles, and checks standing lamps against the soles.\n- tests/combat-scene/seam.py: 22/0.\n- tests/chrome: 26/27. The only failure is the harness's 60fps check (median 55) on a GPU three builders are sharing.\n- tests/steam-deck: fails with screens timing out (lobby, map, combat, reward on my build; select first time). I started BASE 5e4e3886 on :9599 and ran the same test there: it fails worse (2 of 11 screens reached). This is machine load and D3D state, not this branch; :9599 was stopped afterwards.\n- gpuprof --settle 14, fight-graveyard (the most props) at 1600x900: T_full 10.1 and 9.3 ms, under the 15.5 budget. The BASE server on :9590 was down, so there is no A/B.\n- No console errors in any capture state.json.\n- The floor program draws: the lawn's leaves, roots and turf render in every graveyard capture, and the only compile log is the usual X4000 warning.\n\nCAVEATS\n- capture.py's 600 s shot timeout includes time spent waiting for the GPU slot. Under three builders several shots returned 124, and capture.py then copies any stale shots/CODE-*.png it finds. I deleted the stale ones and re-ran only the failed screens with capture.py ONLY. All 18 PNGs in CARNELIAN/ are from this build (14:58 to 16:52) and I looked at every one.\n- Rooms outside the track were checked visually in a room_batch: kitchens, attic, lampworks, ballroom, bathhouse, kennels, heart. Title and map were photographed on :9592 and looked at.\n- The crypt's floor-painted open graves still lie under the corridor fight's creatures, as on BASE. They are not props, so stageAside cannot strike them.",
+    "self_score": 7.4
+   },
+   {
+    "code": "AGATE",
+    "branch": "ui/r59-rooms-c",
+    "commit": "e9777a1372cbd9ccf503a0658f4b151f71750eb2",
+    "screenshots": [
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/room-graveyard.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/room-nursery.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/room-hedge.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/room-pumpkin.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/room-foyer.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/room-study.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/room-crypt.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/room-passages.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/room-greenhouse.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/room-sleeping.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/fight-foyer.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/fight-nursery.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/fight-graveyard.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/fight-party.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/fight-foyer-1280.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/fight-nursery-1280.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/fight-graveyard-1280.png",
+     "D:/UILOOP/r59/judging/r59/rooms/AGATE/fight-party-1280.png"
+    ],
+    "touched_files": [
+     "game/src/fx/atmosphere.js",
+     "game/src/fx/backdrop.js",
+     "game/src/fx/shaders/backdrop.js",
+     "tests/grounding/run.py",
+     "tests/grounding/checks.json",
+     "tests/grounding/checked-*.png (the 4 existing cases, regenerated)"
+    ],
+    "kit_changes": "none -- no change to kit.css, tokens.css, the HUD, the tooltip or the room shell DOM. Every change is in the WebGL room: fx/atmosphere.js, fx/backdrop.js, and the floor fragment in fx/shaders/backdrop.js (one new uniform pair, uMidPool/uMidPoolC).",
+    "endings_ok": true,
+    "console_errors": 0,
+    "notes_for_merger": "THE ANGLE IS CAMERA FIRST. Measured before changing anything (scratchpad soles.py: 6 window shapes, normal/elite/boss, 0-6 creatures). The highest sole is 0.457 of the screen height. Measured in half-heights from the middle, the furthest anyone stands is the Companion at -0.86 x aspect (left) and a creature at +1.05 (right, the same at every width). The last plate reaches 1.22.\n\n1) stageRig (atmosphere.js) now asks the frame for floor at exactly those two points, at a 0.45 sole line, instead of nx +-0.96 at aspect>=2. It holds a margin up to 1.85:1. Atmosphere#_reRig rebuilds the room once if a window is dragged wider than that. STAGE_BASE goes from 0.39 to 0.41, and a vantage may set its own (kind.stageBase; the yard uses 0.35). Shells were reshaped for their ceilings: nursery h 4.0; sleeping 11x3.9 with the eye back; study eye +4 m, h 5.8, key and fill moved back with it, and a new pal.frameDz so its near frame stays behind the eye; crypt w13; passages w8.8; hedge w13 with a lower eye; parlour h x0.82 and lens 0.96.\n\n2) The clearance rule (Backdrop onStage) keeps a piece only if it is BEHIND (foot <= 0.445), LOW (its whole height >= 0.635, under the lowest sole at 1920x1080), or OUT RIGHT (left edge >= 1.25 half-heights). Everything else walks back as before. A walked piece then goes on back by a hashed share of the floor left behind it, so pieces no longer stand in one rank. Its tone is lifted to >=0.8, because a layout's darkened front rank was turning into black cut-outs. Graves now walk too: a Kid was standing through a Crypt headstone. Standing lamp fittings walk back together with their light.\n\n3) nearFloor.mid is a pool measured from the rig, from the far wall's foot to the soles. It is set in 9 of the 10 rooms (greenhouse unchanged).\n\n4) Graveyard: the translucent grey shape is the empty room's NEAR FRAME clutter band. It stayed in the same screen place under every camera, and props=0 did not remove it. The yard's vantage now has frame:'none' (fights already ran fightFrame:false). The yard looks further down, a lantern now stands among the rows, and the near stones are hand-placed. The black dithered jags left of the walk are still there and I could not name their source.\n\n5) Near-floor dressing uses the round-39 `hand` flag (culled while a fight stands) for tall pieces under the cards. Survey 10's pumpkins come forward across the flags this way. Low pieces and right-zone pieces stay in fights.\n\nTESTS (all run through on_port 9593): tests/grounding PASS on 15 cases x 3 sizes. I added nursery, yard, parlour boss, parlour with 4 creatures, dormitory with 4, catacomb, hedge, courtyard, conservatory and library. The test is STRONGER, not weaker: it now checks both ends of each footprint, and it no longer exempts graves, slabs or fittings. That surfaced a real pre-existing collision, the Conservatory's fountain lamp, which is fixed. I raised the cold-room timeout from 90 to 300 s and the post-resize wait from 1.3 to 2.6 s: the plates refit at 2.2 s, and under three builders the 1024 case read mid-refit. combat-scene/seam 22/22. chrome 26/27: the one fail is 60fps (median 33) on a machine shared by three capturers, not code. steam-deck 5/7: lobby did not come up (TimeoutError), so 10 of 11 screens. Lobby is not mine and was not re-run. gpuprof --settle 14: fight-nursery T_full 14.38 ms, fight-graveyard 14.27 ms, one reading each under load. linkprof on the floor programs: 26 programs, worst 12.1 s, every link true; the proglog link status in gpuprof is also true.\n\nCaptures: capture.py's own 900 s timeout counts time spent queued for the GPU slot and killed my first run. I took the canonical set with an untimed copy (scratchpad capture_nt.py): same commands, same arguments, same output names. Off-track screens, photographed and looked at: title, shop, default combat (stair hall).",
+    "self_score": 7.6
+   }
+  ]
+ }
+}
