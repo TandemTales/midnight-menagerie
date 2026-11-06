@@ -8,12 +8,20 @@ deck=importlib.util.module_from_spec(spec);spec.loader.exec_module(deck)
 async def main():
  async with async_playwright() as p:
   browser=await p.chromium.launch(channel='chrome',args=['--enable-unsafe-swiftshader','--autoplay-policy=no-user-gesture-required'])
-  page=await browser.new_page(viewport={'width':1280,'height':800},reduced_motion='reduce')
+  ctx=await browser.new_context(viewport={'width':1280,'height':800},reduced_motion='reduce')
   errors=[];missing=[];results={}
-  page.on('pageerror',lambda e:errors.append(str(e)))
-  page.on('response',lambda r:missing.append(r.url) if r.status==404 else None)
+  page=None
+  # A FRESH page per screen: on this machine's D3D11 driver a page navigated a second
+  # time can hang in goto for good (2026-10-14, again 11-06). One context keeps the save.
+  async def fresh():
+   nonlocal page
+   if page: await page.close()
+   page=await ctx.new_page()
+   page.on('pageerror',lambda e:errors.append(str(e)))
+   page.on('response',lambda r:missing.append(r.url) if r.status==404 else None)
+   return page
   for scene, _ in deck.SCENES:
-   await page.goto('about:blank')
+   await fresh()
    await page.goto(deck.BASE+'#scene='+scene+'&seed=42&companion=bones')
    await deck.settle(page,scene)
    await page.evaluate('document.fonts.ready')
@@ -46,8 +54,8 @@ async def main():
   await page.screenshot(path=str(OUT/'settings-large.png'))
   # A large-text map must keep its toolbar above the wrapped footer at both sizes.
   for width,height in [(1280,800),(1600,900)]:
+   await fresh()
    await page.set_viewport_size({'width':width,'height':height})
-   await page.goto('about:blank')
    await page.goto(deck.BASE+'#scene=map&seed=42&companion=bones')
    await page.wait_for_selector('.map-screen.is-drawn',timeout=60000)
    await page.locator('.map-node.is-legal').first.focus()

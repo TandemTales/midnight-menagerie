@@ -1,0 +1,160 @@
+{
+ "new": "GRAFT (ui/r60-graft, merged a992df2e)",
+ "old": "SCAPOLITE (ui/r60-boards-b)",
+ "key": {
+  "atlas": {
+   "new_is_A": true
+  },
+  "atlas-house": {
+   "new_is_A": true
+  },
+  "shop": {
+   "new_is_A": true
+  },
+  "gameover": {
+   "new_is_A": false
+  },
+  "reward": {
+   "new_is_A": true
+  },
+  "event": {
+   "new_is_A": false
+  },
+  "rest": {
+   "new_is_A": false
+  },
+  "settings": {
+   "new_is_A": false
+  },
+  "hud-late": {
+   "new_is_A": false
+  },
+  "map": {
+   "new_is_A": true
+  },
+  "clubhouse": {
+   "new_is_A": true
+  }
+ },
+ "votes": {
+  "judge1": {
+   "atlas": {
+    "pick": "A",
+    "by": 2,
+    "why": "A's wing plans are drawn as crisp, legible room grids with captions set clear beneath them, while B's plaque labels sit on top of the plan outlines (the \"I FORGOTTEN FOYER\" plaque is struck through by its own plan) and the Discoveries / How to play plaques are jammed against the screen edge."
+   },
+   "atlas-house": {
+    "pick": "A",
+    "by": 2,
+    "why": "A's surveyed plans read as inked, coloured room-by-room drawings, while B's are soft blurred silhouettes and its legend plaque overlaps the Moonlit Attic plan at both sizes."
+   },
+   "shop": {
+    "pick": "A",
+    "by": 1,
+    "why": "the Keepsake and Snack tickets in A are warm cream paper with dark ink, while B's are a milky grey-khaki that drains contrast from the same text; the cards above are identical."
+   },
+   "gameover": {
+    "pick": "B",
+    "by": 2,
+    "why": "at 1280 A hides the whole stats strip (Scuffles won ... Turns taken) under a \"More record below\" rail, while B fits the strip on screen; at 1600 the two are almost identical."
+   },
+   "reward": {
+    "pick": "A",
+    "by": 0,
+    "why": "near-identical; A keeps the location line inside the title cartouche with ROOM CLEARED alone on its ribbon, which reads a little tidier than B's location words floating either side of the ribbon."
+   },
+   "event": {
+    "pick": "B",
+    "by": 2,
+    "why": "B stacks RISK and GAIN on their own lines inside each torn-paper option, while A wraps option III so that \"Courage\" and \"Clue\" are left as orphaned fragments under their labels at both sizes."
+   },
+   "rest": {
+    "pick": "B",
+    "by": 1,
+    "why": "B stacks Discoveries / How to play down the right edge clear of the second painting and gives each option row more room; at 1280 the two are near-identical."
+   },
+   "settings": {
+    "pick": "B",
+    "by": 2,
+    "why": "B's whole board fits inside its gilt frame with a margin at both sizes, while A's frame runs off the bottom edge of the screen and its panels press against the frame at 1280; B's palette medallions are also richer objects."
+   },
+   "hud-late": {
+    "pick": "B",
+    "by": 1,
+    "why": "identical at 1600; at 1280 B sets the notes tray lower so the \"NOT a coat rack\" chalk note above it shows, which A's tray covers."
+   },
+   "map": {
+    "pick": "A",
+    "by": 1,
+    "why": "identical at 1600; at 1280 A is the build whose tray sits lower and leaves the \"NOT a coat rack\" note visible, where B's tray covers it."
+   },
+   "clubhouse": {
+    "pick": "A",
+    "by": 2,
+    "why": "at 1280 B moves Discoveries / How to play into the top-right corner, crammed against the FREED counter, and breaks the HAUNT LEVEL heading onto two lines that run into its shield crest; A keeps both plaques tidy in the right column."
+   }
+  },
+  "judge2": {
+   "clubhouse": {
+    "pick": "A",
+    "by": 2,
+    "why": "at 1280 B's Haunt Level plaque breaks \"HAUNT / LEVEL\" over two lines into its shield crest, and B jams the Discoveries / How to play tags against the top-right edge, where A sets them as a tidy brass pair above Plan the Expedition."
+   },
+   "map": {
+    "pick": "A",
+    "by": 1,
+    "why": "the 1600 frames are pixel-identical; at 1280 A's pencil-tray toolbar sits lower, so the \"NOT a coat rack\" chalk note shows in full, while B's toolbar cuts it off."
+   },
+   "hud-late": {
+    "pick": "B",
+    "by": 1,
+    "why": "the 1600 frames are identical; at 1280 B is the build with the lower pencil tray, so the bottom chalk note shows, while A's tray covers it."
+   },
+   "settings": {
+    "pick": "B",
+    "by": 2,
+    "why": "B's board fits inside its gilt frame at both sizes, with the colour palette as a row of round enamel medallions; A's board runs into the screen's bottom edge, so the Restore Defaults / Done rail and the frame's lower border are cut off at both 1600 and 1280."
+   },
+   "rest": {
+    "pick": "B",
+    "by": 1,
+    "why": "B stacks the Discoveries / How to play tags in the corner clear of the right-hand painting, and its four option plaques have more air; A sets the tags in one row that butts into the painting frame (1280 is near-identical)."
+   },
+   "event": {
+    "pick": "B",
+    "by": 2,
+    "why": "B gives Risk and Gain their own lines on each torn parchment slip, while A crams them side by side, so choice III wraps into orphaned \"Courage\" and \"Clue\" fragments at both sizes."
+   },
+   "reward": {
+    "pick": "B",
+    "by": 1,
+    "why": "B flanks the Room Cleared ribbon with the two place names on one line, where A stacks three header tiers so the ribbon crowds the crescent medallion; B's card rules text is also a touch larger. Otherwise the pair is near-identical."
+   },
+   "gameover": {
+    "pick": "B",
+    "by": 2,
+    "why": "at 1280 A hides the whole row of stat medallions behind a \"Memorial Record / More record below\" rail; B shows all eight on screen at both sizes."
+   },
+   "shop": {
+    "pick": "A",
+    "by": 2,
+    "why": "A's Keepsake and Snack plaques are cream parchment with dark ink, left-aligned and crisp; B's are a washed grey-tan with low-contrast, centred text, which reads as a milky, disabled defect."
+   },
+   "atlas-house": {
+    "pick": "A",
+    "by": 2,
+    "why": "A draws every wing as a crisp inked room grid with a door, a clean label beneath it, and a ruled Guardian / Room Types / Survey table; B's wings are blurry blobs, its Surveyed / Unsurveyed legend plaque sits on top of the Moonlit Attic drawing, \"ROOM TYPES\" wraps above its 20, and at 1280 its wing counter butts into Discoveries."
+   },
+   "atlas": {
+    "pick": "A",
+    "by": 3,
+    "why": "B's unsurveyed wing nameplates are dark text on dark plaques, blurred to near-illegibility, and the Forgotten Foyer label runs through its own selection bracket; A keeps every label legible and every wing an inked grid."
+   }
+  }
+ },
+ "tally": {
+  "new": 20,
+  "old": 1,
+  "same": 1
+ }
+}
