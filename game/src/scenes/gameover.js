@@ -177,6 +177,37 @@ export class GameOverScene extends Scene {
     const wrap = el('div', 'go-wrap');
     wrap.appendChild(this._buildBeat());
     wrap.appendChild(this._buildLedger());
+    /* ROUND 60: the memorial on the one board grid. Its three stanzas stand
+       as panels of their own in the board's columns (gameover.css), and the
+       route the party drew leaves "What resets" to hang under the shrine, so
+       every part of the record is on the board at once. Moved, not removed. */
+    const bp = wrap.querySelector('.go-stanza--lost > .go-bp');
+    if (bp) bp.classList.add('go-bp--r60');
+    // three stacks, each at its own pace: the two who went in and the
+    // record of the expedition | the shrine and the route | the ledger
+    const shrine = wrap.querySelector('.go-altar');
+    if (shrine) {
+      const col = (k, items) => {
+        const c = el('div', `go-col go-col--${k}`);
+        for (const it of items) if (it) c.appendChild(it);
+        return c;
+      };
+      const q = (sel) => wrap.querySelector(sel);
+      const pet = q('.go-stanza--pet');
+      const a = col('a', [q('.go-stage'), q('.go-reach'), q('.go-stanzas')]);
+      const b = col('b', [shrine, bp]);
+      const c = col('c', [q('.go-ledger')]);
+      // (the search stays the record's last stanza: a column of its own
+      // would leave the ledger short of its Tricks)
+      void pet;
+      wrap.prepend(a, b, c);
+      wrap.classList.add('go-wrap--r60');
+    }
+    const head = board.querySelector('.go-head'), rib = head?.querySelector('.go-ribbon');
+    if (rib && typeof ResizeObserver === 'function') {
+      const ro = new ResizeObserver(() => head.style.setProperty('--go-rib-w', `${rib.offsetWidth}px`));
+      ro.observe(rib); this._offs.push(() => ro.disconnect());
+    }
     board.appendChild(wrap);
 
     board.appendChild(this._buildFoot());
