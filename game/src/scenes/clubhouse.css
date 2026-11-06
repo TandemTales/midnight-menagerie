@@ -1021,7 +1021,7 @@
    is a dark cartouche with a gilt rim and a turning gilt diamond, not a 1px
    box with a browser triangle.
    ═══════════════════════════════════════════════════════════════════════════ */
-.scene--clubhouse .story-tools { flex-direction: column; align-items: stretch; gap: 5px; top: clamp(46px, 7vh, 60px); }
+.scene--clubhouse .story-tools { align-items: stretch; gap: 5px; top: clamp(46px, 7vh, 60px); }
 .scene--clubhouse .story-tools > button {
   min-height: 40px; height: 40px; padding: 0 18px 2px;
   border: 0 solid transparent; border-radius: 0;
@@ -1064,8 +1064,10 @@
    it and gives the heading the width its padding held, so it reads on ONE
    line, centred under the crest, at its size. */
 .scene--clubhouse .story-tools {
-  top: auto; bottom: clamp(112px, 14.6vh, 136px); right: clamp(52px, 4.6vw, 84px);
-  flex-direction: row; align-items: center; gap: 8px;
+  /* moved by translate from the shared bar's corner (narrative.css), so no
+     scene redeclares that bar's own position (tests/scene-css) */
+  translate: calc(var(--s-3) - clamp(52px, 4.6vw, 84px)) calc(100vh - clamp(112px, 14.6vh, 136px) - 40px - clamp(46px, 7vh, 60px));
+  align-items: center; gap: 8px;
 }
 .scene--clubhouse .story-tools > button { width: auto; padding: 0 22px 2px; white-space: nowrap; }
 .scene--clubhouse .story-tools > button:first-child { rotate: -.4deg; }
