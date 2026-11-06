@@ -1221,3 +1221,23 @@
   .mm-settings-modal .mm-set .mm-btn.kit-btn:not(.mm-btn--danger) { letter-spacing: .03em; padding-inline: 10px 40px; }
   :root:not([data-large-text="1"]) .mm-set { --stack: 8px; --pad-b: 10px; --row-pad: 2px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 61 REPAIR 2 — EVERY RIBBON ITS OWN ROOM AT THE DECK'S 1280x800
+   Survey 12 (J1): at 1280 "its READING and DANGER ribbons sit on the panels
+   above and descriptions touch box edges". The 16 px between two stacked
+   pages put each lower page's ribbon 3 px under the page above it and its
+   crest 6 px INTO it; the last line of every page stood 11 px off its foot.
+   Now the ribbon stands 16 px clear and the crest 7 px (1600's are 14 and 4),
+   and each last line 17 px off its page's foot. The height is paid by width,
+   never by a letter: the ledger takes the body's side margins (15 px each
+   side, the frame's own rule is outside them), and that width goes to Play,
+   Seed and Danger, where "Confirm single target" and three descriptions then
+   each fit one line, so the tallest column comes out SHORTER than before;
+   the buttons sit 16 px nearer the frame's foot. */
+@media (max-width: 1400px) and (max-height: 860px) {
+  :root:not([data-large-text="1"]) .mm-set__col { row-gap: 29px; }
+  :root:not([data-large-text="1"]) .mm-set { --pad-b: 16px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr) minmax(0, 1.1fr); padding-inline: 2px; }
+  :root:not([data-large-text="1"]) .mm-settings-modal .mm-modal__body { padding-inline: 4px; }
+  :root:not([data-large-text="1"]) .mm-settings-modal.mm-modal--kit .mm-modal__foot { margin-bottom: 18px; }
+}
