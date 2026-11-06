@@ -1,0 +1,85 @@
+{
+ "key": {
+  "room-graveyard": {
+   "new_is_A": true
+  },
+  "room-nursery": {
+   "new_is_A": false
+  },
+  "room-hedge": {
+   "new_is_A": false
+  },
+  "room-pumpkin": {
+   "new_is_A": true
+  },
+  "room-foyer": {
+   "new_is_A": false
+  },
+  "room-study": {
+   "new_is_A": true
+  },
+  "room-crypt": {
+   "new_is_A": false
+  },
+  "room-passages": {
+   "new_is_A": true
+  },
+  "room-greenhouse": {
+   "new_is_A": true
+  },
+  "room-sleeping": {
+   "new_is_A": true
+  },
+  "fight-foyer": {
+   "new_is_A": false
+  },
+  "fight-nursery": {
+   "new_is_A": false
+  },
+  "fight-graveyard": {
+   "new_is_A": false
+  },
+  "fight-party": {
+   "new_is_A": false
+  }
+ },
+ "votes": {
+  "judge1": [
+   "room-graveyard: = by 0 -- pixel-for-pixel the same apart from a few faint path lines on the right-hand lawn; every tomb, cross and chest-tomb is in the same place.",
+   "room-nursery: B by 1 -- B puts a big star-and-moon toy chest and a teddy on the near-right floor, both with feet and shadows, though its second rocking horse straddles the left toy box and partly hides it.",
+   "room-hedge: = by 0 -- near-identical; only the ragged silhouette of the hedge tops at the two upper corners differs.",
+   "room-pumpkin: A by 2 -- A keeps the hay bale with its jack-o'-lantern and the scattered pumpkins on the left and centre middle floor, where B leaves a bare expanse of tiles.",
+   "room-foyer: B by 2 -- A's floor falls into a black band between the fireplace wall and the middle floor and its runner stops short, while B's boards and red runner run unbroken to the back wall.",
+   "room-study: A by 1 -- A frames the whole upper gallery and its arched moonlit window, where B crops the gallery at the frame top so the window reads as a sliver (B's lit centre door is its one gain).",
+   "room-crypt: = by 0 -- pixel-identical.",
+   "room-passages: = by 0 -- pixel-identical.",
+   "room-greenhouse: A by 1 -- A keeps the potting bench with its watering can and the tiered plant stand on the middle floor, which B replaces with a few loose pots.",
+   "room-sleeping: A by 1 -- A shows the arched window whole, with its sill and the hanging lamp clear above it, where B crops the arch and hangs the lamp into its top.",
+   "fight-foyer: B by 1 -- at both sizes B's red runner and boards run continuously behind the Butler and the Kid to the fireplace, where A's far floor sinks into a dark band; no fighter touches furniture in either.",
+   "fight-nursery: A by 1 -- B crops the animal frieze along the top to a strip of legs and crowds a toy chest and teddy in behind the hand and the DISCARD pile, while A keeps the frieze whole and the right floor clean; the Porcelain Doll and the Kid stand on clear lit floor in both.",
+   "fight-graveyard: = by 0 -- the same room at both sizes; only an animation frame differs (in B at 1600 the Coatrack Crawler's eyes are shut), and no fighter stands on a tomb.",
+   "fight-party: B by 1 -- as in the foyer, B's runner carries on past the Door Greeter to the back wall, where A's far floor darkens; the party, Door Greeter, Dust Bunny and Calling Bell are all on lit floor and clear of furniture in both."
+  ],
+  "judge2": [
+   "fight-party: B by 1 -- the red medallion runner in B runs back from the fighters to the far wall under the Dust Bunny and the Door Greeter at both sizes, where A's middle floor goes dark and blank; no fighter stands on furniture in either.",
+   "fight-graveyard: = by 0 -- near-identical at both sizes (the room shifts a few pixels and the placeholder blobs blink); same chapel, fence, graves and lit path, no fighter on any stone.",
+   "fight-nursery: B by 1 -- B puts a star-and-moon toy chest and a teddy on the near-right floor, standing clear of the Porcelain Doll and her nameplate at both sizes, though B's ceiling frieze is cut to animal legs where A shows the whole elephant-and-duck border.",
+   "fight-foyer: B by 1 -- in B the medallion runner continues back under the Butler's feet to the fireplace, while in A it fades out before him and he stands on dark plain boards; the mirror behind him and both nameplates are the same in each.",
+   "room-sleeping: A by 2 -- A keeps the ceiling strip and the hanging globe lamp above the arched window, while B enlarges the window to the top edge so the lamp is cut and crosses the glass, and the side windows lose their tops.",
+   "room-greenhouse: A by 1 -- A has a potting bench with a watering can and a tiered plant stand on the lit middle floor beside the fountain, and B leaves that floor bare.",
+   "room-passages: = by 0 -- pixel-identical captures.",
+   "room-crypt: = by 0 -- pixel-identical captures.",
+   "room-study: A by 2 -- A shows the whole upper gallery with its balustrade and arched moonlit window, while B pushes the lower shelves up until the gallery is a sliver and the window a cut fragment behind the chandeliers.",
+   "room-foyer: B by 2 -- in A a black band cuts across the middle floor between the runner and the fireplace, and in B the runner and the boards hold together all the way to the hearth.",
+   "room-pumpkin: A by 2 -- A has a hay bale with a jack-o'-lantern, several pumpkins and a pale gourd on the near and middle flagstones, and B clears that floor to empty paving.",
+   "room-hedge: = by 0 -- near-identical; only the jagged tops of the left and right hedges differ slightly, with A a touch crisper.",
+   "room-nursery: B by 1 -- B adds a star-and-moon toy chest and a teddy with shadows to the near-right rug, though its second rocking horse on the left is a twin of the right one and hides the back toy chest.",
+   "room-graveyard: = by 0 -- identical apart from a few fallen leaves near the right-hand headstones."
+  ]
+ },
+ "tally": {
+  "graft": 17,
+  "CARNELIAN": 1,
+  "same": 10
+ }
+}
