@@ -1862,3 +1862,45 @@
   .go-wrap--r60 .go-bp--r60 .go-bp__label, .go-wrap--r60 .go-bp--r60 .go-bp__count { white-space: normal; }
   .go-wrap--r60 .go-col > .go-bp--r60 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding-inline: 12px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 60 GRAFT: THE WHOLE MEMORIAL IN VIEW, THE PLAQUE CLEAR OF THE EDGE.
+   At 1600 the title's cartouche ran into the top of the screen: the board
+   stands it a finger lower and takes the finger from the air under the stats.
+   On the Deck the eight stats sat under a "More record below" rail. They hold
+   their own row at the foot of the board now, and the three stacks give the
+   height up from chrome and art, never from the words: the two portraits a
+   size smaller, HOW FAR's frame a breath tighter, Courage and the seed side by
+   side on the ledger's head, the route drawn across its panel with its words
+   under it (two lines where they were five), the shrine's foot closer. Each
+   stat's figure stands beside its icon and its name has the plate's whole
+   width under them, so no name runs into the plate's rim (DIOPSIDE's one
+   strip of stats clipped its names; this one does not).
+   ═══════════════════════════════════════════════════════════════════════════ */
+.go-wrap--r60 > .go-stats .go-stat.go-stat {
+  grid-template-columns: auto auto; grid-template-areas: "ico val" "lbl lbl";
+  justify-content: center; justify-items: center; column-gap: 6px; padding: 2px 12px 6px;
+}
+.go-wrap--r60 > .go-stats .go-stat > .go-lbl { justify-self: center; }
+@media (min-width: 1401px) {
+  .go-board:has(.go-wrap--r60) > .go-head.kit-titleblock--compact { margin-top: 14px; }
+  .go-wrap.go-wrap--r60 { padding-bottom: 12px; }
+}
+@media (max-width: 1400px) {
+  .go-board:has(.go-wrap--r60) > .go-head.kit-titleblock--compact { margin-top: 6px; }
+  .go-wrap.go-wrap--r60 { grid-template-rows: minmax(0, 1fr) auto; padding-bottom: 4px; }
+  .go-wrap--r60 > .go-col { min-height: 0; }
+  .go-wrap--r60 .go-col > .go-ledger .go-ledhead { grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); column-gap: 14px; }
+  .go-wrap--r60 .go-col > .go-ledger .go-courage { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "lbl n" "track track" "note note"; }
+  .go-wrap--r60 .go-col > .go-ledger .go-seed { grid-template-columns: auto auto; grid-template-areas: "lbl lbl" "row row" "hint hint"; justify-items: start; }
+  .go-wrap--r60 .go-col > .go-ledger .go-seed__hint { white-space: normal; }
+  .go-wrap--r60 .go-stage .go-portrait__pic { max-width: 82px; }
+  .go-wrap--r60 .go-col > .go-reach { padding-block: 2px 4px; }
+  .go-wrap--r60 .go-col > .go-altar.go-shrine { padding-bottom: 12px; }
+  .go-wrap--r60 .go-col > .go-bp--r60 { grid-template-columns: minmax(0, 1fr); row-gap: 4px; padding: 8px 14px; justify-items: center; text-align: center; }
+  .go-wrap--r60 .go-col > .go-bp--r60 .go-bp__frame { width: 66%; }
+  .go-wrap--r60 .go-col > .go-bp--r60 .go-bp__meta { justify-items: center; gap: 0; }
+  .go-wrap--r60 .go-col > .go-bp--r60 .go-bp__meta > * { justify-self: center; text-align: center; }
+  .go-wrap--r60 > .go-stats.kit-stats.kit-stats { height: 62px; padding-block: 3px; }
+  .go-wrap--r60 > .go-stats .go-stat.go-stat { column-gap: 5px; }
+}
