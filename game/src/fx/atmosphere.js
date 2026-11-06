@@ -460,7 +460,7 @@ export const REGIONS = {
     /* (round 29: the wing's own shell IS the dormitory now, 8 x 8.4 m --
        the fight is played in it, and a room kind's `room` never reaches
        the wing's main room; the bedroom scales up from it to what it was) */
-    room: { w: 8.0, d: 8.36, h: 4.6, side: 0.04, ceilPattern: 3, wallPad: 4.0, floorOver: 0.4 },
+    room: { w: 8.0, d: 8.36, h: 3.9, side: 0.04, ceilPattern: 3, wallPad: 4.0, floorOver: 0.4 },   // (round 59 graft, AGATE's: 3.9 from 4.6, the chandelier and the ceiling over the arched window in the frame)
     cam: { y: 2.10, z: 6.6, look: 1.95, fov: 41 },
     nookSide: -1,
     deep: '#18162c', mid: '#262238', hi: '#3a3352', accent: '#5e76aa',
