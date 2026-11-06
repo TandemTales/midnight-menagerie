@@ -1317,3 +1317,19 @@
 .scene--event .rm--event .ev-reading-r51 { max-height: calc(100vh - 372px); }
 .scene--event .rm--event .ev-page:has(> .r50-scrollrail:not([hidden])) .ev-reading-r51 { max-height: calc(100vh - 418px); }
 .scene--event .rm--event .ev-painted-stand-r49::after { height: 112px; }
+
+/* the moonlight wedges: painted light, not a milky film. The hall was its own
+   stacking context (z-index 2), so each shaft's screen blend met nothing and
+   painted as a flat pale overlay. The shafts now blend into the painted room
+   itself -- the hall's furniture keeps its place over the vignette -- as cold
+   saturated moonlight through the casement's four panes, its mullions the
+   dark between them, no blur. */
+.rm--event .ev-hall { z-index: auto; }
+.rm--event .ev-hall > :not(.ev-hall__beam) { z-index: 2; }
+.rm--event .ev-hall > .ev-hall__beam {
+  z-index: auto; filter: none; opacity: .72; mix-blend-mode: screen;
+  background:
+    linear-gradient(90deg, transparent 0 9%, rgb(78 112 214 / .42) 13% 29%, transparent 31% 35%, rgb(92 128 232 / .5) 37% 63%, transparent 65% 69%, rgb(78 112 214 / .42) 71% 87%, transparent 91%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 9%, rgb(0 0 0 / .85) 60%, rgb(0 0 0 / .45) 88%, transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 9%, rgb(0 0 0 / .85) 60%, rgb(0 0 0 / .45) 88%, transparent 100%);
+}
