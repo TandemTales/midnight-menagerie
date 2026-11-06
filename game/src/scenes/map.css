@@ -2279,7 +2279,7 @@
 @media (max-width: 1420px) {
   .map-screen .map-tools { gap: 0 2px; padding-left: 15px; padding-right: 15px; }
   .map-screen .map-tools .map-tools__status { width: calc(100% + 24px); margin-left: -12px; margin-right: -12px; }
-  .map-screen .map-tools button:not(.map-pencil):not([data-tool="erase"]):not([data-action="out"]):not([data-action="in"]) { border-image-width: 6px 8px 7px 8px; border-image-slice: 18 24 21 24 fill; padding-inline: 10px; }
+  .map-screen .map-tools [data-tool="pan"] { padding-inline: 13px; }
   .map-screen .map-tools button svg { display: none; }
   .map-screen .map-tools .map-tools__title { margin-right: 2px; letter-spacing: .03em; }
 }
@@ -2287,6 +2287,77 @@
 @media (max-width: 1100px) {
   .map-screen .map-tools .map-pencil { min-width: 74px; padding: 0; }
   .map-screen .map-tools .map-tools__title { display: none; }
+}
+
+/* ROUND 61 REPAIR 4: THE TRAY'S ACTIONS ARE ENAMEL CARTOUCHES (survey 13, both judges: "rows
+   of small identical web-like chips"). The six brass card-frames become three of the Companion
+   tiles' near-black enamel nameplates in their bowed gilt rims (kit/cartouche-dark.webp), each holding a
+   PAIR of actions that belong together -- Undo and Clear, X room and Unmark, You are here and
+   Overview -- parted by an engraved gilt rule, lettered in gold. The Hand is a nameplate of its
+   own, lit (cartouche-lit.webp) while it is the tool in hand. Every word is the same word at
+   the same size; a pair costs less of the tray than its two frames did. */
+.map-screen .map-tools .map-tools__case {
+  position: relative;
+  display: inline-flex; align-items: stretch;
+  height: 34px;
+  border: 0 solid transparent;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 9px 17px stretch;
+  filter: drop-shadow(0 3px 3px rgba(3, 2, 8, .8));
+}
+.map-screen .map-tools [data-tool="pan"],
+.map-screen .map-tools .map-tools__case > button {
+  color: var(--kit-gold-hi);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 8px rgba(0, 0, 0, .55);
+}
+.map-screen .map-tools [data-tool="pan"] {
+  --lab: url("../../assets/ui/kit/cartouche-dark.webp");
+  padding: 0 16px 2px;
+  border-image: var(--lab) 18 34 18 34 fill / 9px 17px stretch;
+  filter: drop-shadow(0 3px 3px rgba(3, 2, 8, .8));
+}
+.map-screen .map-tools [data-tool="pan"][aria-pressed="true"] {
+  --lab: url("../../assets/ui/kit/cartouche-lit.webp");
+  color: #fff1d2;
+  filter: brightness(1.12) drop-shadow(0 0 7px rgba(255, 190, 100, .9)) drop-shadow(0 5px 2px rgba(0, 0, 0, .65));
+}
+.map-screen .map-tools .map-tools__case > button {
+  height: 34px; min-height: 34px;
+  padding: 0 8px 2px;
+  border: 0; border-image: none;
+  background: none;
+}
+.map-screen .map-tools .map-tools__case > button:first-child { padding-left: 16px; }
+.map-screen .map-tools .map-tools__case > button:last-child { padding-right: 16px; }
+/* the engraved rule between the pair: a gilt line cut into the enamel, dark on its shadow side */
+.map-screen .map-tools .map-tools__case > button + button::before {
+  content: ''; position: absolute; left: -1px; top: 9px; bottom: 9px; width: 1px;
+  background: linear-gradient(180deg, transparent, var(--kit-gold-hi) 25%, var(--kit-gold) 75%, transparent);
+  box-shadow: 1px 0 0 rgba(0, 0, 0, .8);
+  pointer-events: none;
+}
+/* a hovered action lights in its own half of the plate; the plate stays put */
+.map-screen .map-tools .map-tools__case > button:hover:not(:disabled) {
+  transform: none; filter: none;
+  color: #fff1d2;
+  background: radial-gradient(60% 70% at 50% 55%, rgba(255, 190, 110, .26), transparent 75%);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95), 0 0 10px rgba(255, 190, 100, .75);
+}
+.map-screen .map-tools .map-tools__case > button:focus-visible { outline: 2px solid #fff3d0; outline-offset: -4px; }
+/* an action with nothing to act on: the enamel sinks darker under it, its gold word still reads */
+.map-screen .map-tools .map-tools__case > button:disabled {
+  border-image: none;
+  color: color-mix(in srgb, var(--kit-gold) 78%, var(--kit-text-mid));
+  font-weight: 600;
+  background: radial-gradient(70% 62% at 50% 52%, rgba(6, 3, 10, .55), rgba(6, 3, 10, .2) 80%, transparent);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .95);
+  filter: none; transform: none;
+}
+@media (max-width: 1420px) {
+  .map-screen .map-tools .map-tools__case > button { padding-inline: 6px; }
+  .map-screen .map-tools .map-tools__case > button:first-child { padding-left: 14px; }
+  .map-screen .map-tools .map-tools__case > button:last-child { padding-right: 14px; }
+  .map-screen .map-tools .map-tools__case { border-image-width: 9px 13px; }
+  .map-screen .map-tools [data-tool="pan"] { border-image-width: 9px 13px; }
 }
 
 /* DISCOVERIES AND HOW TO PLAY: the same brass card-frames, screwed to the wall of the sheet. */
