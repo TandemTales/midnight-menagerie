@@ -23,7 +23,7 @@ export const PLATE={key:[1084,6,358,148],rose:[1006,820,46],rule:884};
 const P=(x,y,k,rot,level,cap='below')=>({x,y,k,rot,level,cap});
 const PLACEMENT={
   'hedge-maze':P(44,30,0.074,90,'grounds'),
-  'pumpkin-grounds':P(223,5,0.07,0,'grounds'),
+  'pumpkin-grounds':P(223,5,0.073,0,'grounds'),
   'sleeping-quarters':P(208,222,0.062,0,'upper'),
   graveyard:P(8,553,0.064,0,'grounds'),
   kennels:P(29,729,0.058,0,'ground'),
