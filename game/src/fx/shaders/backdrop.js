@@ -14489,6 +14489,14 @@ uniform vec3  uNearPoolC;
    the lower third's own warm pool, a dark corner's spill; black = none) */
 uniform vec4  uNearPool2;
 uniform vec3  uNearPool2C;
+/* (round 61 repair 6: the lamp behind the eye -- nearFloor.foot -- its
+   colour x strength on the floor's albedo, and how deep, in eye metres, it
+   reaches before it has let go; black = none) */
+uniform vec3  uNearFootC;
+uniform float uNearFootR;
+/* (...and how much more of it reaches the frame's two sides, where the
+   lens's vignette takes half of what the floor gives: 0 = even) */
+uniform float uNearFootS;
 uniform vec2  uNearFwd;
 uniform float uRugDye;
 /* ...and uNearCalm, how far the floor's mottle and grit are laid to rest
@@ -18637,6 +18645,21 @@ void main(){
       float pool2 = exp(-r22*1.6)*0.80 + exp(-sqrt(r22)*1.3)*0.38;
       col += alb * uNearPool2C * pool2 * (0.62 + 0.38*smear);
     }
+  }
+  /* ---- ROUND 61 REPAIR 6: THE LAMP BEHIND YOU ----------------------------
+     Survey 13, both judges: "the near floor falls toward black at the foot"
+     of the crypt, kennels, lampworks, bathhouse, kitchens and attic. The
+     pools above lie AHEAD of the eye; nothing lit the strip between them and
+     the frame's foot. The lamp you came in by does: the floor's own albedo
+     lit evenly across the whole width out to uNearFootR eye metres, letting
+     go over its far half, broken by the smear field so it lies on a surface.
+     Its joints, grain and straw run on through it to the bottom edge. Off
+     (black) in every room that does not ask. */
+  if (uIsCeiling < 0.5 && uNearFootR > 0.0) {
+    float footE = 1.0 - smoothstep(uNearFootR*0.5, uNearFootR, vDepth);
+    float footX = vClip.x / max(vClip.z, 1e-4);
+    footE *= 1.0 + uNearFootS*footX*footX;
+    col += alb * uNearFootC * footE * (0.62 + 0.38*smear);
   }
 #if MM_RUGK == 9
   /* ---- ROUND 44 GRAFT (EUCLASE's): THE NURSERY'S FLOOR LIT TO ITS WALL ---

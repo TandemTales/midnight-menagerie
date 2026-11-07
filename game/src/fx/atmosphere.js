@@ -592,7 +592,8 @@ export const REGIONS = {
        purple/orange colour split" -- the near pools at two-thirds and in a
        paler lamplight, not the fire's orange; and the flags SMALL and
        worn, MM_FLAGK) */
-    nearFloor: { fall: 0.90, dye: 1, calm: 0.95, rug: { ahead: 6.9, hw: 1.45, hd: 0.85 },
+    footBand: false,   // (round 61 repair 6: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 1.1, reach: 5.0, sides: 4.5, color: '#e8a868' }, fall: 0.90, dye: 1, calm: 0.95, rug: { ahead: 6.9, hw: 1.45, hd: 0.85 },
                  pool: { ahead: 3.8, across: 0.0, rAlong: 3.0, rAcross: 3.6, k: 0.48, color: '#eeb27a' },
                  pool2: { ahead: 2.6, across: 0.0, rAlong: 2.0, rAcross: 4.0, k: 0.34, color: '#e6b47e' } },
     flagK: 1,
@@ -1050,7 +1051,9 @@ export const REGIONS = {
        left and the skylight's moon laid on the boards at your right, the
        foreground falling to nine-tenths and not two-fifths, and the boards'
        cloud laid to rest so each one is a board and not a haze */
-    nearFloor: { fall: 0.90, calm: 0.85, clean: 1, dye: 1, rug: { ahead: 5.6, hw: 1.5, hd: 1.0 },
+    footBand: false,   // (round 61 repair 6: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    propShadow: 1.4,   // (round 61 repair 6, survey 13: "firmer contact shadows" -- Backdrop.build)
+    nearFloor: { foot: { k: 5.5, reach: 5.5, sides: 1.0, color: '#d8a070' }, fall: 0.90, calm: 0.85, clean: 1, dye: 1, rug: { ahead: 5.6, hw: 1.5, hd: 1.0 },
                  /* (round 35 graft: the lamp's pool brought onto the near
                     boards by the trunk, ahead 9.6 -> 6.0, and a little more
                     of it, so the floor in front of you is lit by a lamp and
@@ -1142,14 +1145,19 @@ export const REGIONS = {
                { shape: 34, edge: 0.27, z: 3.0, tone: 0.97, free: true, keep: true, seed: 41.0, wM: 2.30 },
                               /* (and a third crate of lamps on the near floor, in the
                   pool the hanging lanterns lay there -- nearFloor.pool2) */
-               { shape: 34, ahead: 3.5, across: -2.4, tone: 0.97, keep: true, hand: true, seed: 45.0, wM: 2.30 },
+               { shape: 34, ahead: 4.0, across: -1.45, tone: 0.97, keep: true, hand: true, seed: 45.0, wM: 2.30 },
                /* (round 39 graft, J1-J3: "the lampworks room's bare left near
                   floor dressed (a second bench, a stool, a lamp crate)" -- a
                   second bench brought out at the near left, its lamps lit,
                   and a crate of lamps by it; in a fight the Kid stands
                   there, so both lie under the hand -- _handCull) */
                { shape: 34, ahead: 5.3, across: 2.7, tone: 0.97, keep: true, hand: true, seed: 6.0 },
-               { shape: 34, ahead: 3.6, across: 1.5, tone: 0.97, keep: true, hand: true, seed: 47.0, wM: 2.30 },
+               /* (round 61 repair 6, survey 13's "LAMPS crates cut into
+                  fragments": both near crates whole in the frame -- this one
+                  a stride in, 1.5 -> 1.2; the right-hand one in from the
+                  edge, 2.4 -> 1.45, and a step back, so its crates, lantern
+                  and oil can all stand in the frame) */
+               { shape: 34, ahead: 3.6, across: 1.2, tone: 0.97, keep: true, hand: true, seed: 47.0, wM: 2.30 },
                { shape: 34, edge: 0.80, z: -0.8, tone: 0.95 },
                { shape: 34, edge: 0.22, z: -4.6, tone: 0.92 },
                { shape: 33, x: -6.0, z: -3.0, y: 3.2, tone: 0.95 },
@@ -1167,7 +1175,8 @@ export const REGIONS = {
        light at the left; the cinematic key off the floor (it laid the warm
        smear at the foot of the frame) and the canvas tooth down, as the
        Kitchens' */
-    nearFloor: { fall: 0.95, calm: 0.92, clean: 1,
+    footBand: false,   // (round 61 repair 6: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 3.0, reach: 6.5, sides: 1.2, color: '#eaa260' }, fall: 0.95, calm: 0.92, clean: 1,
                  /* (round 39 graft, all three: CHALCEDONY's bench "its lamplight
                     on the floor" -- the forward bench's lamps laid on the flags
                     under it twice as strong, and a little longer) */
@@ -1358,7 +1367,9 @@ export const REGIONS = {
        laid under the pricket stand and mirrored with it, the foreground
        falling a little further, and the key from behind the eye a step
        down, 1.61 -> 1.20: it laid the warm wash across the whole near floor) */
-    nearFloor: { fall: 0.84, calm: 0.90, clean: 1,
+    footBand: false,   // (round 61 repair 6: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    propShadow: 1.5,   // (round 61 repair 6, survey 13: "firmer contact shadows" -- Backdrop.build)
+    nearFloor: { foot: { k: 1.2, reach: 5.5, sides: 1.5, color: '#e8a462' }, fall: 0.84, calm: 0.90, clean: 1,
                  pool: { ahead: 4.8, across: -1.9, rAlong: 2.6, rAcross: 2.2, k: 1.6, color: '#f0a55a' },
                  /* (round 43: and the graves' candles' spill on the near flags
                     across from the stand, so the corner it never reached is
@@ -1667,7 +1678,12 @@ export const REGIONS = {
                   the frame's left edge, and a second towel horse with its
                   stool at the right, both in the band the hand covers in a
                   fight -- the empty room's foreground, not the fight's */
-               { shape: 32, ahead: 3.3, across: 3.5, tone: 0.97, scale: 1.20, keep: true, hand: true, seed: 11.0 },
+               /* (round 61 repair 6, survey 13: "the bathhouse's right-hand
+                  tub cut into a fragment" -- a hand of rim at the frame's
+                  edge. In 3.5 -> 3.05, so its rolled end, its water and its
+                  claw foot are in the frame and it reads as a bath running
+                  on out of it) */
+               { shape: 32, ahead: 3.3, across: 3.05, tone: 0.97, scale: 1.20, keep: true, hand: true, seed: 11.0 },
                { shape: 32, ahead: 3.8, across: -3.0, tone: 0.97, keep: true, hand: true, seed: 42.0, hM: 1.25, wM: 1.90 },
                /* (round 39 graft, J2: "a bench or tub in the near centre, not
                   a lone drain"; J3: the bench with stacked towels and a pail --
@@ -1700,7 +1716,8 @@ export const REGIONS = {
        pool laid in front of the near bath and the windows' cold light in a
        second on the left; the cinematic key's tan wash off the floor
        (cineFloor) -- it was the "hazy grey-blue empty plane". */
-    nearFloor: { fall: 0.94, calm: 0.92, clean: 1, rug: { ahead: 3.9, hw: 1.05, hd: 0.52, dx: -0.4 },
+    footBand: false,   // (round 61 repair 6: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 5.0, reach: 6.0, sides: 4.0, color: '#e2aa70' }, fall: 0.94, calm: 0.92, clean: 1, rug: { ahead: 3.9, hw: 1.05, hd: 0.52, dx: -0.4 },
                  /* (round 43: the lamp's pool a stride nearer and a third stronger,
                     4.2 / 2.2 -> 3.5 / 3.0, so the wet tiles at your feet are lit) */
                  pool: { ahead: 3.5, across: 0.3, abs: true, rAlong: 2.6, rAcross: 4.2, k: 3.0, color: '#e8b070' },   // (round 47: wider, 3.4 -> 4.2, over the near left the second pool left)
@@ -1757,7 +1774,7 @@ export const REGIONS = {
     straw: 1.0,
     /* (round 28 graft: its doghouses, beds and tubs set down on the flags in
        a denser contact shadow -- Backdrop.build's pal.propShadow) */
-    propShadow: 1.7,
+    propShadow: 2.0,   // (round 61 repair 6, survey 13: "firmer contact shadows", 1.7 -> 2.0)
     /* (round 28 graft: each kennel's lit door laid as a warm pool on the flags) */
     kennelGlow: 0.85,
     /* (round 28: and the beams a stop down -- still "a milky grey band"
@@ -1792,7 +1809,10 @@ export const REGIONS = {
                 FRONT of the stalls", with their water bowls) -- set by hand
                 forward of the stall row, where the fight leaves room */
              near: [
-               { shape: 39, edge: 0.80, z: -0.8, tone: 0.95 },
+               /* (round 61 repair 6: in with the red house before it, 0.80 ->
+                  0.76, so what shows past it is its roof and not a sliver
+                  at the frame's edge) */
+               { shape: 39, edge: 0.76, z: -0.8, tone: 0.95 },
                { shape: 40, edge: 0.64, z: -1.9, tone: 0.95 },
                { shape: 40, edge: 0.22, z: -3.0, tone: 0.94 },
                /* ROUND 34 (both survey-5 judges: "the floor below the
@@ -1819,7 +1839,10 @@ export const REGIONS = {
                   room's, not the fight's: in kn-1 the right one stands under
                   the House Rule panel and the trough behind the creatures,
                   and the two cost the fight ~1 ms between them, measured) */
-               { shape: 39, edge: 0.79, z: 0.5, tone: 0.97, keep: true, hand: true, seed: 8.6, scale: 1.05 },
+               /* (round 61 repair 6, survey 13: in from the frame's edge,
+                  0.79 -> 0.73 -- cut by it, its gable and door post read as
+                  a fragment) */
+               { shape: 39, edge: 0.73, z: 0.5, tone: 0.97, keep: true, hand: true, seed: 8.6, scale: 1.05 },
                /* (...and the range's FEEDING TROUGH with a straw bale beside
                   it and a bowl on the flags, between the two, a little back
                   -- the basket's quad, seed > 50: wgTroughSD) */
@@ -1862,7 +1885,8 @@ export const REGIONS = {
     /* ...and THE NEAR FLOOR (round 31's rule): the flags run on toward the
        hand, the lantern's pool laid on them in front of you, and the straw
        heaped where the dogs drag it (FLOOR_FRAG, uStraw's heaps) */
-    nearFloor: { fall: 0.86, calm: 0.5,
+    footBand: false,   // (round 61 repair 6: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 3.6, reach: 5.5, sides: 0.6, color: '#e2a862' }, fall: 0.86, calm: 0.5,
                  /* (round 41: the lantern's pool a stop up and wider, so the
                     near flags and the straw on them are lit, not an empty
                     dim mottle -- survey-7 judge 2) */
@@ -4854,6 +4878,7 @@ export class Atmosphere {
       L.houseS = T.houseS; L.houseK = T.houseK; L.floorRot = T.floorRot; L.runner = T.runner; L.runX = T.runX;
       L.door = T.door; L.rail = T.rail; L.subForm = T.subForm; L.pool = T.pool;
       L.nearDark = T.nearDark;
+      L.footBand = T.footBand;          // (round 61 repair 6: the foot of the frame goes with the room)
       L.nearFloor = T.nearFloor;        // (round 31: the near floor goes with the room)
       L.rug = T.rug;                    // (round 25 graft: the carpet goes with the room)
       L.straw = T.straw;                // (round 28 graft: and the kennels' straw)
