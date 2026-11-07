@@ -91,3 +91,25 @@ Left:
 - Already broken on dev, and not this change: in foyer-6 the Coatrack Crawler's conditions never show.
 
 Key: `PAIRED-r61-repair5-key.json`.
+
+## Repair 6: six rooms lit to the foot of the frame
+
+Merged from `ui/r61-repair6` (`9d6db13b`, `cbd3d0c7`), in the crypt, kennels, lampworks, bathhouse, kitchens and attic:
+
+- **Near floor:** a "lamp behind the eye" (`nearFloor.foot`, a new floor uniform that is off in every other wing) lights each room's near floor down to the bottom edge. In those six wings the near frame's clutter band is off (`footBand: false`).
+- **Edge props:**
+  - kennels: the red doghouse moved in and is whole;
+  - lampworks: both LAMPS stacks, with their lantern and oil can, are whole;
+  - bathhouse: the right-hand copper tub reads as a tub running out of frame.
+- **Contact shadows:** firmer in the crypt, attic and kennels.
+
+The paired check was against survey 13's rooms: **repair 12, dev 0.** Lampworks went 3 and 2; bathhouse and kennels 2 and 2; kitchens 2 and 1; crypt and attic 1 and 1.
+
+Tests: grounding PASS (nobody stands through furniture), steam-deck 6/0, and the shader info logs are not empty. The foyer is byte-identical. The greenhouse differs only in its floating motes.
+
+Left:
+- The bathhouse's bottom-right corner is still dark tile.
+- Near floors are broad, low-detail planes next to `mainMenu.png`'s cobbles.
+- The far walls and ceilings want more drawn detail.
+
+Key: `PAIRED-r61-repair6-key.json`.
