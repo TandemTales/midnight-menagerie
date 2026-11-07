@@ -1,8 +1,145 @@
-# Midnight Menagerie handoff · November 5, 2026
+# Midnight Menagerie handoff · November 6, 2026
 
-**The demo is ready for Josh's App ID.** Co-op was rebuilt for a real wire on November 3, and on November 4 a party of four walked the whole demo to its ending over a simulated 60-180 ms wire, in step, with no errors. That walk found a game freeze and two faults no suite could see (the notes have them). Rounds 56 to 58 are in, and no blob stands in the demo's wings. All of it is committed and pushed on `dev`. D: must be attached, because it holds the worktrees and evidence.
+## START HERE (2026-11-06): read this first if you have never seen this project
 
-**Later on November 5.** Whole-GAME walks now run in under an hour (`demo_walk.py --full --fast --mixed --walked FILE --party c:k,...`), and they found two network faults the demo walk could not: a quiet friend made every other client re-send that friend's whole expedition (now a 64-input tail plus `RESEND` naming what is missing), and two friends coming back to a save never matched on two machines (the host's `GO` now stamps one time, `roster.at`). Survey 11 LOST its paired test against survey 10; rounds 59 (rooms, merged with its graft) and 60 (boards fitted to the larger type) repair it, and a new survey paired against survey 10 follows. Questions for Josh are in `docs/notes/2026-11-05-questions-for-josh.md`, each with the default already taken.
+**What this is.** Midnight Menagerie is a co-op deckbuilder in the style of Slay the Spire. One to four Kids, each with a Companion, walk a haunted house wing by wing and play Tricks (cards) against its creatures. The game is a browser game (plain ES modules, WebGL for the rooms) wrapped in Electron for Steam. The repository is this folder. Work happens on branch `dev`; `main` lags behind. The owner is Josh, who decides design. Everything you need to know about how Josh wants things is below or in the questions file. Do not ask Josh what is already decided.
+
+**Where you are.** As of November 6:
+
+- **The demo and the full game are ready for Josh's Steam App ID.** Nothing has ever run against real Steam. Only Josh can fill `shell/steam_appid.txt` and `shell/steam_appid_demo.txt`. Never use 480.
+- **Co-op is proven over a simulated wire in every wing.** All seventeen wings have been walked by parties of two to four, in step, to a victory (`docs/notes/2026-11-03-co-op-on-a-real-wire.md`, last section).
+- **The UI loop's last measurement is survey 13** (`docs/ui-pass/SURVEY-2026-11-06b.md`). It beat survey 12, 17-0-49, with nothing worse. Six single-builder repairs since survey 12 each won their blind paired test outright. The next step is survey 14.
+- **Nothing of this session is still running.** All servers and processes it started are stopped, and every change is committed and pushed on `dev`.
+
+**Run nothing until you have read these, in this order:**
+1. This section.
+2. `docs/notes/2026-11-05-questions-for-josh.md`. Every open question has the default already taken, so nothing is blocked on Josh.
+3. `docs/notes/2026-11-03-co-op-on-a-real-wire.md`, if you touch multiplayer.
+4. "### A round, step by step" further down, if you run the UI loop.
+
+### Rules that hold everywhere (Josh's, standing)
+
+- **Never use Steam App ID 480 (Spacewar),** not even to smoke-test.
+- **Keep authored art out of git:** `art/`, `animations/`, the `.docx` files, `marketing/`, `output/` and `.claude/` stay untracked. Commit explicit paths, never `git add -A`.
+- **Josh's larger reading type and the global two-thirds animation speed are NON-NEGOTIABLE.** Fit layouts around the type; never shrink text to fit.
+- **The floor-plan map is Josh's design and stays.** The classic map is kept behind `MAP_STYLES`.
+- **Paintings never carry names.**
+- **When a design call is in doubt, make it easier for the player to win.**
+- **A drawn object beats an empty or dimmed surface.** A change that removes or dims something has lost blind tests every time; brief it as a richer replacement.
+- **Line endings are mixed** (some files CRLF, some LF). Count bytes before editing, patch with Python `newline=''`, and run `python tools/endings_guard.py --base HEAD` before committing. `sed -i` on a CRLF file flips the whole file.
+- **One GPU browser job at a time** (captures, readability, the battery). Two at once make both fail in ways that look like bugs.
+- **Worktrees go on `D:/UILOOP/<round>/`**, never C: (it fills) and never the scratchpad (paths exceed 260 characters). Never delete anything on D: without asking Josh.
+- **Stop only processes you started, by PID.** Josh runs Unreal Editor on this machine. GPU work beside it is fine, but timing numbers taken beside it are not.
+- **Close any Browser-pane tab you open;** a hidden pane with the game loaded once trapped Josh's cursor. Test headless.
+- **Commit messages end with** `Co-Authored-By: <your model> <noreply@anthropic.com>`, or your own attribution.
+- **Stop at 5% weekly usage left** and update this section for the next person.
+
+### The UI loop: what it is and what is next
+
+Josh's standing order (2026-09-12) is to keep improving the game's look toward the painted samples in `UI/*.png`, judged by blind judges, "until perfected". It is not needed to ship; it is ongoing polish.
+
+**The two instruments:**
+
+- **A round.** Three builders each attempt the same brief in their own worktree. Two blind judges score them, and a third breaks a tie. The winner is merged. A "graft" then carries the losers' best ideas into the winner, and a blind PAIRED test (graft against the plain winner, two judges in opposite orders, one coin per screen) decides whether the graft merges.
+  - Script: `docs/ui-pass/round-workflow.js`.
+  - Args: a hand-written `docs/ui-pass/round-<n>.args.json`, plus `BRIEF-r<n>.md` and `RUBRIC-r<n>.md`. Copy round 60's.
+  - Captures: per-round scripts like `D:/UILOOP/r60/capture.py WORKTREE PORT CODE [screens]`.
+  - A full round costs about 19% of a week's usage; a single-builder repair costs about 1-2%.
+- **A survey.** Capture every screen and room from dev (`docs/ui-pass/survey-2026-11-06.sh` from a worktree at dev's tip, with its server on 8711), then pair it blind against the LAST survey's images. Never compare scores across surveys: each panel's scale drifts. A round's own test cannot see what a merge did to other screens, which is why surveys exist.
+
+**Pairing tools** (in the tree):
+
+- `python tools/make_pairs.py OUT KEY NEW_DIR OLD_DIR screen,screen` makes blind A/B pairs, one coin per screen, with `-1280` twins sharing a coin.
+- `python tools/tally_pairs.py KEY judge1.md judge2.md` unblinds the answers.
+
+Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIRED-boards.md` and `PAIRED-survey.md`. Give one judge the order as listed and the other the reverse, opening B before A.
+
+**What happened recently:**
+
+- **Round 59** put the rooms' furniture back.
+- **Round 60** fitted the boards to the larger type (SCAPOLITE +2.52; graft paired 20-1-1).
+- **Survey 12** beat survey 10, 33-19-14, but seven screens still lost.
+- **Round 61 was six single-builder repairs.** Each was paired blind against dev and won every vote:
+  1. the atlas as a composed house, and the shop's jars under glass (6-0);
+  2. settings at 1280, the lobby's shelf, and the opening at 1600 (6-0);
+  3. the shop's snack row, gameover's seed, and the reward's title (6-0);
+  4. the pencil tray, Discoveries / How to play and the HUD's figures as gilt enamel cartouches (10-0);
+  5. the fight's status floaters on one framed board per fighter (2-0);
+  6. six rooms' near floors lit to the foot of the frame, with their edge props whole (12-0).
+
+  See `docs/ui-pass/ROUND-r61-repair-2026-11-06.md`. A repair costs about 1% of a week, where a full round costs about 19%, and it is the better tool for a named defect.
+- **Survey 13** (`SURVEY-2026-11-06b.md`, taken after repairs 1-3) beat survey 12, 17-0-49. Every repaired screen was better, and nothing was worse. Repairs 4-6 merged after it, so **no survey has seen them together yet.**
+- **`tools/shot.py` now hides the "Standalone preview" ribbon,** which had covered real buttons in every judged capture of reward, rest, event and the shop.
+
+**Next, in order:**
+
+1. **Survey 14,** paired against survey 13 (`D:/UILOOP/survey13/NOW/`). It is the first look at repairs 4-6 merged together. Copy `docs/ui-pass/survey-2026-11-06b.sh`, changing `survey13` to `survey14`, cut a detached worktree at dev's tip on `D:/UILOOP/survey14/wt`, and start its server on 8711. Run `bash <script>`, then `bash <script> --rooms`. Pair the results with `tools/make_pairs.py`, using `docs/ui-pass/prompts/PAIRED-survey.md`, and give two judges opposite orders.
+   - Its combat-crowd shot fires too late to catch the status floaters, so judge those separately, as repair 5 did.
+2. **Then repairs** from survey 14's judges. Still open from earlier:
+   - the clubhouse's PETS VANISH clipping is cut at 1280;
+   - the rims are single where the samples' frames are double-ruled filigree;
+   - near floors are low-detail planes;
+   - at 1600 the snack tags press on the next jar;
+   - in foyer-6 the Coatrack Crawler's conditions never show. That is a bug: find it.
+3. **The map's cut right edge** waits on Josh (question 9b). Don't redo it.
+4. **Wing silhouettes on the atlas** need the plan generator (`game/src/ui/estate-blueprint.js`'s source plans).
+
+**How to run a repair** (what worked six times running):
+
+1. Cut a worktree: `git worktree add -b ui/<name> D:/UILOOP/<round>/wt/<name> HEAD`. It takes 2-3 minutes; let it.
+2. Give one general-purpose agent a brief: the defect, with the judges' words and the image paths; the rules above; its own server port; the exact capture commands; the tests that must pass; and "revert what is not clearly better".
+3. Pair its captures against dev's, taken by the SAME tool with the same timing, using two judges in opposite orders.
+4. If it wins, `git merge --no-ff` it. Check `git diff <branch> HEAD -- game` shows only dev's own changes, and write it up.
+
+### Multiplayer: what is proven and what is not
+
+- **Proven over a simulated 60-180 ms wire:** all seventeen wings, parties of two to four, mixed Companions and save profiles, in step to a victory with no logged errors.
+- **The walker:** `tests/coop/demo_walk.py N <room> --full --fast --mixed --walked FILE --party companion:kid,...`. It takes one to five hours on software rendering, so run it in the background.
+- **The walker reports a stall** when the party's place has not moved for 15 minutes. It then dumps each tab's barrier and wire state. Read the WIRE lines first: if every tab has applied every input and nothing is held, it is a player loop (as Crinkle's was), not a network fault.
+- **Suites, all green on this tree:**
+  - lobby 39/0;
+  - rejoin 29/0 (it has failed 2 of 29 twice under heavy machine load and passed on rerun);
+  - cards 1470/0;
+  - seat-sweep 1669/0;
+  - Crinkle 56/0.
+- **Fixed this session:** Crinkle's Trace was a free infinite. Two Tricks that Trace could copy each other for ever, and the walker hung on it for hours. Now a Trick that Traces cannot be Traced by another (`39749300`; question 6b in the questions file).
+- **Not proven, and needs Josh:**
+  - anything on real Steam: invites, relays, the overlay, Cloud;
+  - performance with four Kids on a real GPU or the Steam Deck;
+  - a real two-machine test.
+
+  `docs/RELEASE.md` lists Josh's own items.
+
+### Housekeeping left for whoever is next
+
+- `git stash@{0}` holds old grounding captures from before round 59. Keep it; it is not yours to drop.
+- Judges left folders at `C:/judge1tmp/` and `C:/J2crops/`. Not deleted; ask Josh.
+- `D:/UILOOP/r60`, `r61` and `survey12` hold this session's worktrees and evidence. Keep them.
+- `ui/r61-repair2` keeps the unmerged whole-plan map (`87630b49`, `1f445378`) for Josh's answer.
+
+### The battery on this tree (2026-11-06)
+
+**`python tools/gates.py`: 118 gates in 49 minutes, 4 red.** It needs the dev server on 8777, and nothing else should use the browser while it runs.
+
+- **Three reds are known and looked at:**
+  - `tests/sprites/check.py`: 7 halo clips, a standing decision.
+  - `tests/seams/check.py`: 4 false positives, the floor plan's own local `Map`.
+  - `tests/enemy-clips/check.py`: 5 timing flakes in a clip's hand-back to idle. It fails alone too.
+- **The fourth was** `tests/base-effects/run.py`, which the first Crinkle rule tripped (Watermark). It is fixed and passes 170/0.
+- **Green includes:**
+  - net 227;
+  - every co-op suite;
+  - the run gate (50 runs, 0 errors);
+  - steam-deck 6/0;
+  - readability (no font floor fell);
+  - all sixteen Companions' suites.
+
+**Depots:** `python tools/package_release.py --smoke` and `--demo --smoke` both build and boot to the title with no errors, with `storage=host` and `steam=no`, as expected with no App ID.
+
+**Before you change anything:** run the battery, because it is the definition of green here. After any change to rooms, the wire or a chooser, also run a walk in the background.
+
+
+The sections below are history. Where they disagree with this one, this one wins.
 
 ## Steam demo: where it stands
 
