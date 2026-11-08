@@ -1927,3 +1927,24 @@
   .go-wrap--r60 .go-col > .go-ledger .go-seed__copy { grid-area: copy; justify-self: end; }
   .go-wrap--r60 .go-col > .go-ledger .go-seed__hint { justify-self: stretch; text-align: left; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 61 REPAIR 8: THE WAYS OUT CLEAR OF THE FRAME. Survey 14: TITLE and GO
+   STRAIGHT BACK IN sat on the frame's lower rail at both sizes (their plates
+   ended 5-6px INTO it). The foot stands 12px higher. At 1600 the height comes
+   from the air under the stats and the columns' slack. At the Deck's 1280 the
+   columns had none, so it comes from art, never from words: the two portraits
+   and the route's drawing a size smaller, and the ledger's cost coins 3px
+   narrower with their figures kept at the size they were. The stats keep
+   their height and their gap to the buttons, so no medallion reaches a label.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (min-width: 1401px) {
+  .go-board:has(.go-wrap--r60) > .go-foot { padding-bottom: 18px; }
+  .go-wrap.go-wrap--r60 { padding-bottom: 8px; }
+}
+@media (max-width: 1400px) {
+  .go-board:has(.go-wrap--r60) > .go-foot { padding-bottom: 18px; }
+  .go-wrap--r60 .go-stage .go-portrait__pic { max-width: 68px; }
+  .go-wrap--r60 .go-col > .go-bp--r60 .go-bp__frame { width: 50%; }
+  .go-ledger[data-fold] .go-trick.go-trick .go-trick__cost { --coin: 28px; --reading-size: max(12px, calc(31px * .54)); }
+}
