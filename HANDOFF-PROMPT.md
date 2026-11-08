@@ -8,7 +8,7 @@
 
 - **The demo and the full game are ready for Josh's Steam App ID.** Nothing has ever run against real Steam. Only Josh can fill `shell/steam_appid.txt` and `shell/steam_appid_demo.txt`. Never use 480.
 - **Co-op is proven over a simulated wire in every wing.** All seventeen wings have been walked by parties of two to four, in step, to a victory (`docs/notes/2026-11-03-co-op-on-a-real-wire.md`, last section).
-- **The UI loop's last measurement is survey 13** (`docs/ui-pass/SURVEY-2026-11-06b.md`). It beat survey 12, 17-0-49, with nothing worse. Six single-builder repairs since survey 12 each won their blind paired test outright. The next step is survey 14.
+- **The UI loop's last measurement is survey 14** (`docs/ui-pass/SURVEY-2026-11-07.md`). It beat survey 13, 25-4-37, and repair 7 since fixed the one collision behind its four losses. Seven single-builder repairs since survey 12 each won their blind paired test outright. The next step is survey 15.
 - **Nothing of this session is still running.** All servers and processes it started are stopped, and every change is committed and pushed on `dev`.
 
 **Run nothing until you have read these, in this order:**
@@ -66,16 +66,20 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
   4. the pencil tray, Discoveries / How to play and the HUD's figures as gilt enamel cartouches (10-0);
   5. the fight's status floaters on one framed board per fighter (2-0);
   6. six rooms' near floors lit to the foot of the frame, with their edge props whole (12-0).
+  7. the help plaques moved clear of the corner candle on rest and in fights (6-0).
 
   See `docs/ui-pass/ROUND-r61-repair-2026-11-06.md`. A repair costs about 1% of a week, where a full round costs about 19%, and it is the better tool for a named defect.
-- **Survey 13** (`SURVEY-2026-11-06b.md`, taken after repairs 1-3) beat survey 12, 17-0-49. Every repaired screen was better, and nothing was worse. Repairs 4-6 merged after it, so **no survey has seen them together yet.**
+- **Survey 13** (`SURVEY-2026-11-06b.md`, taken after repairs 1-3) beat survey 12, 17-0-49. Every repaired screen was better, and nothing was worse. **Survey 14** (`SURVEY-2026-11-07.md`) then beat survey 13, 25-4-37. Its four losses were one collision, which repair 7 fixed.
 - **`tools/shot.py` now hides the "Standalone preview" ribbon,** which had covered real buttons in every judged capture of reward, rest, event and the shop.
 
 **Next, in order:**
 
-1. **Survey 14,** paired against survey 13 (`D:/UILOOP/survey13/NOW/`). It is the first look at repairs 4-6 merged together. Copy `docs/ui-pass/survey-2026-11-06b.sh`, changing `survey13` to `survey14`, cut a detached worktree at dev's tip on `D:/UILOOP/survey14/wt`, and start its server on 8711. Run `bash <script>`, then `bash <script> --rooms`. Pair the results with `tools/make_pairs.py`, using `docs/ui-pass/prompts/PAIRED-survey.md`, and give two judges opposite orders.
-   - Its combat-crowd shot fires too late to catch the status floaters, so judge those separately, as repair 5 did.
-2. **Then repairs** from survey 14's judges. Still open from earlier:
+1. **Survey 15,** paired against survey 14 (`D:/UILOOP/survey14/NOW/`), with `docs/ui-pass/survey-2026-11-07.sh` as the template (change `survey14` to `survey15`). The survey's combat-crowd shot fires too late to catch the status floaters, so judge those separately, as repair 5 did.
+2. **Then repairs** from survey 15's judges. Still open:
+   - the rooms' remaining dark lower corners (heart, foyer, sleeping);
+   - the HUD's Buttons / Clues / Luck plate at 1280 swallows its divider pip;
+   - gameover's bottom buttons sit tight to the frame;
+   - the help plaques read as loose tabs, not cartouches built into the frame;
    - the clubhouse's PETS VANISH clipping is cut at 1280;
    - the rims are single where the samples' frames are double-ruled filigree;
    - near floors are low-detail planes;
@@ -84,7 +88,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 3. **The map's cut right edge** waits on Josh (question 9b). Don't redo it.
 4. **Wing silhouettes on the atlas** need the plan generator (`game/src/ui/estate-blueprint.js`'s source plans).
 
-**How to run a repair** (what worked six times running):
+**How to run a repair** (what worked seven times running):
 
 1. Cut a worktree: `git worktree add -b ui/<name> D:/UILOOP/<round>/wt/<name> HEAD`. It takes 2-3 minutes; let it.
 2. Give one general-purpose agent a brief: the defect, with the judges' words and the image paths; the rules above; its own server port; the exact capture commands; the tests that must pass; and "revert what is not clearly better".
@@ -114,7 +118,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 
 - `git stash@{0}` holds old grounding captures from before round 59. Keep it; it is not yours to drop.
 - Judges left folders at `C:/judge1tmp/` and `C:/J2crops/`. Not deleted; ask Josh.
-- `D:/UILOOP/r60`, `r61` and `survey12` hold this session's worktrees and evidence. Keep them.
+- `D:/UILOOP/r60`, `r61`, `survey12`, `survey13` and `survey14` hold this session's worktrees and evidence. Keep them.
 - `ui/r61-repair2` keeps the unmerged whole-plan map (`87630b49`, `1f445378`) for Josh's answer.
 
 ### The battery on this tree (2026-11-06)

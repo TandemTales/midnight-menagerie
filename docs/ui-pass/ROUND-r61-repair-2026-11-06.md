@@ -113,3 +113,19 @@ Left:
 - The far walls and ceilings want more drawn detail.
 
 Key: `PAIRED-r61-repair6-key.json`.
+
+## Repair 7: the help plaques clear of the corner candle (after survey 14)
+
+Survey 14 lost four votes to one collision: repair 4's wider "How to play" medallion sat over the kit's right corner candle (`.kit-dress__corner--r`).
+
+Merged from `ui/r61-repair7` (`a3f92096`):
+- **Rest:** Discoveries and How to play are a row in the footer, bottom left, level with Pack up.
+- **Fights:** How to play hangs just left of the corner candle.
+
+No candle was moved or dimmed. The paired check was against survey 14: **repair 6, dev 0.** Rest went 2 and 2; combat-boss and combat-crowd 1 and 1. Tests: scene-css 0, css-tokens 0, combat-scene seam 22/0.
+
+Left:
+- The help plaques still read as loose tabs rather than cartouches built into the frame.
+- In standalone preview only, the preview flag overlaps rest's status line once the fort is used.
+
+Key: `PAIRED-r61-repair7-key.json`.

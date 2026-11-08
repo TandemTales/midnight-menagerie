@@ -1,0 +1,11 @@
+{
+ "rest": {
+  "new_is_A": false
+ },
+ "combat-boss": {
+  "new_is_A": false
+ },
+ "combat-crowd": {
+  "new_is_A": false
+ }
+}
