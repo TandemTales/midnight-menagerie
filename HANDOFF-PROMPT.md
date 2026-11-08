@@ -8,7 +8,7 @@
 
 - **The demo and the full game are ready for Josh's Steam App ID.** Nothing has ever run against real Steam. Only Josh can fill `shell/steam_appid.txt` and `shell/steam_appid_demo.txt`. Never use 480.
 - **Co-op is proven over a simulated wire in every wing.** All seventeen wings have been walked by parties of two to four, in step, to a victory (`docs/notes/2026-11-03-co-op-on-a-real-wire.md`, last section).
-- **The UI loop's last measurement is survey 14** (`docs/ui-pass/SURVEY-2026-11-07.md`). It beat survey 13, 25-4-37, and repair 7 since fixed the one collision behind its four losses. Seven single-builder repairs since survey 12 each won their blind paired test outright. The next step is survey 15.
+- **The UI loop's last measurement is survey 15** (`docs/ui-pass/SURVEY-2026-11-07b.md`). It beat survey 14, 12-3-51. Its 3 losses all trace to where the help buttons now sit. Ten single-builder repairs since survey 12 each won their blind paired test, bar one change left out. The next step is a fixed home for the help buttons.
 - **Nothing of this session is still running.** All servers and processes it started are stopped, and every change is committed and pushed on `dev`.
 
 **Run nothing until you have read these, in this order:**
@@ -72,13 +72,16 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
   10. the heart, foyer and sleeping quarters lit to the foot of the frame (6-0).
 
   See `docs/ui-pass/ROUND-r61-repair-2026-11-06.md`. A repair costs about 1% of a week, where a full round costs about 19%, and it is the better tool for a named defect.
-- **Survey 13** (`SURVEY-2026-11-06b.md`, taken after repairs 1-3) beat survey 12, 17-0-49. Every repaired screen was better, and nothing was worse. **Survey 14** (`SURVEY-2026-11-07.md`) then beat survey 13, 25-4-37. Its four losses were one collision, which repair 7 fixed.
+- **Survey 13** (`SURVEY-2026-11-06b.md`, taken after repairs 1-3) beat survey 12, 17-0-49. Every repaired screen was better, and nothing was worse. **Survey 14** (`SURVEY-2026-11-07.md`) then beat survey 13, 25-4-37; its four losses were one collision, fixed by repair 7. **Survey 15** (`SURVEY-2026-11-07b.md`), after repairs 7-10, beat survey 14, 12-3-51.
 - **`tools/shot.py` now hides the "Standalone preview" ribbon,** which had covered real buttons in every judged capture of reward, rest, event and the shop.
 
 **Next, in order:**
 
-1. **Survey 15,** paired against survey 14 (`D:/UILOOP/survey14/NOW/`), with `docs/ui-pass/survey-2026-11-07.sh` as the template (change `survey14` to `survey15`). The survey's combat-crowd shot fires too late to catch the status floaters, so judge those separately, as repair 5 did.
-2. **Then repairs** from survey 15's judges. Still open:
+1. **One fixed home for the Discoveries / How to play buttons,** checked on every screen at both sizes, as a cartouche built into the gold frame. Repairs 4, 7 and 9 moved them three times, and survey 15's three losses are all them: in the draw-pile modal the fight's How to play pokes out as a cut-off "play", and in fights one judge finds it crowding the hand's corner. It must never sit on a candle (`.kit-dress__corner--r`), the hand, or out from under a modal, and the status boards' band under the HUD must stay free (`tests/ui-r51-spinel/probe-queue.py`). Settle it once, then run survey 16 against survey 15 (`D:/UILOOP/survey15/NOW/`, template `docs/ui-pass/survey-2026-11-07b.sh`).
+2. **Then repairs.** Still open:
+   - gameover's wing strip under "As far as we got" shrank to a sliver at 1280 when repair 8 lifted the buttons;
+   - near floors still black at the front corners in the nursery, ballroom, study and kitchens (the `nearFloor.foot` recipe of repairs 6 and 10);
+   - the clubhouse's tape note covers the "1" of "1 / 17 WINGS" at 1600;
    - contact shadows under near props, and props cut by the frame (the heart's right candle cluster, the foyer's left chair);
    - the HUD's Buttons / Clues / Luck plate at 1280 swallows its divider pip (repair 8's narrower plate lost 0-4: the fix must not push Luck into the scroll end);
    - the help plaques read as loose tabs, not cartouches built into the frame;
@@ -120,7 +123,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 
 - `git stash@{0}` holds old grounding captures from before round 59. Keep it; it is not yours to drop.
 - Judges left folders at `C:/judge1tmp/` and `C:/J2crops/`. Not deleted; ask Josh.
-- `D:/UILOOP/r60`, `r61`, `survey12`, `survey13` and `survey14` hold this session's worktrees and evidence. Keep them.
+- `D:/UILOOP/r60`, `r61` and `survey12` to `survey15` hold this session's worktrees and evidence. Keep them.
 - `ui/r61-repair2` keeps the unmerged whole-plan map (`87630b49`, `1f445378`) for Josh's answer.
 
 ### The battery on this tree (2026-11-06)
