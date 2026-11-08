@@ -406,7 +406,8 @@ export const REGIONS = {
                     { shape: 46, ahead: 4.7, across: 2.0, tone: 0.96, keep: true, still: true, seed: 6.3 },
                     { shape: 47, ahead: 3.0, across: -1.45, tone: 0.96, keep: true, still: true, seed: 2.8 }] },
     crispFloor: true, grain: 0.012,
-    nearFloor: { fall: 0.80, dye: 1, calm: 0.92, clean: 1, rug: { ahead: 3.6, hw: 1.65, hd: 1.05 }, rugGain: 0.70, rugGul: 0.85,
+    footBand: false,   // (round 61 repair 13: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 3.5, reach: 6.5, sides: 1.8, color: '#e8a868' }, fall: 0.80, dye: 1, calm: 0.92, clean: 1, rug: { ahead: 3.6, hw: 1.65, hd: 1.05 }, rugGain: 0.70, rugGul: 0.85,
                  pool: { ahead: 4.0, across: 0.0, rAlong: 2.6, rAcross: 3.4, k: 2.5, color: '#ff9a50' },
                  /* (graft, judge 1: the fire's glow carried on below the
                     rug, to the frame's foot) */
@@ -595,7 +596,7 @@ export const REGIONS = {
        paler lamplight, not the fire's orange; and the flags SMALL and
        worn, MM_FLAGK) */
     footBand: false,   // (round 61 repair 6: the floor drawn to the frame's foot -- Backdrop.applyPalette)
-    nearFloor: { foot: { k: 1.1, reach: 5.0, sides: 4.5, color: '#e8a868' }, fall: 0.90, dye: 1, calm: 0.95, rug: { ahead: 6.9, hw: 1.45, hd: 0.85 },
+    nearFloor: { foot: { k: 1.3, reach: 7.0, sides: 9.0, color: '#e8a868' }, fall: 0.90, dye: 1, calm: 0.95, rug: { ahead: 6.9, hw: 1.45, hd: 0.85 },
                  pool: { ahead: 3.8, across: 0.0, rAlong: 3.0, rAcross: 3.6, k: 0.48, color: '#eeb27a' },
                  pool2: { ahead: 2.6, across: 0.0, rAlong: 2.0, rAcross: 4.0, k: 0.34, color: '#e6b47e' } },
     flagK: 1,
@@ -918,7 +919,8 @@ export const REGIONS = {
     /* (graft: CARNELIAN's even warm floor -- the near floor at 0.95, the
        carpet centred and the lamps' light lying over the whole of it and
        the boards to the frame's foot -- with BERYL's lattice carpet on it) */
-    nearFloor: { fall: 0.95, dye: 1, calm: 0.92, clean: 1, rug: { ahead: 4.6, hw: 1.9, hd: 1.15 }, rugGain: 0.70, rugGul: 0.85,
+    footBand: false,   // (round 61 repair 13: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 2.2, reach: 6.0, sides: 2.0, color: '#e8a868' }, fall: 0.95, dye: 1, calm: 0.92, clean: 1, rug: { ahead: 4.6, hw: 1.9, hd: 1.15 }, rugGain: 0.70, rugGul: 0.85,
                  pool: { ahead: 5.0, across: -1.4, rAlong: 2.8, rAcross: 2.6, k: 2.2, color: '#eab26a' },
                  /* (and the green lamp's warmth on the boards round the desk
                     and between the cases and the carpet -- the stripe the
@@ -1263,7 +1265,8 @@ export const REGIONS = {
     /* ROUND 39: THE NEAR FLOOR -- the chandelier's light laid on the marble
        in front of you, the petals where the fan fell, and the cold violet
        fill OFF the floor (cineFloor: "the purple haze off the floor") */
-    nearFloor: { fall: 0.92, calm: 0.70, rug: { ahead: 5.4, hw: 2.2, hd: 1.4 },
+    footBand: false,   // (round 61 repair 13: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 2.5, reach: 9.0, sides: 3.5, color: '#e6c08a' }, fall: 0.92, calm: 0.70, rug: { ahead: 5.4, hw: 2.2, hd: 1.4 },
                  pool: { ahead: 5.6, across: 0.4, rAlong: 3.4, rAcross: 3.6, k: 1.55, color: '#e9c88c' },   // (round 39 graft: the candelabrum's warm pool, J2 J3)
                  pool2: { ahead: 4.6, across: -3.6, abs: true, rAlong: 2.4, rAcross: 2.4, k: 1.10, color: '#eac27e' } },
     cineFloor: 0.30,
