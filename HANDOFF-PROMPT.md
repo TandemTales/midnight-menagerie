@@ -70,6 +70,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
   8. the Coatrack Crawler's status bug fixed, and gameover's bottom buttons clear of the frame (2-0). Its HUD-pip change lost 0-4 and was left out.
   9. the fight's How to play moved over the discard shelf, so every status board lands at 1280. `probe-queue.py` passes 18/18 and is in the battery now.
   10. the heart, foyer and sleeping quarters lit to the foot of the frame (6-0).
+  11. gameover's wing strip full size again at 1280 (2-0).
 
   See `docs/ui-pass/ROUND-r61-repair-2026-11-06.md`. A repair costs about 1% of a week, where a full round costs about 19%, and it is the better tool for a named defect.
 - **Survey 13** (`SURVEY-2026-11-06b.md`, taken after repairs 1-3) beat survey 12, 17-0-49. Every repaired screen was better, and nothing was worse. **Survey 14** (`SURVEY-2026-11-07.md`) then beat survey 13, 25-4-37; its four losses were one collision, fixed by repair 7. **Survey 15** (`SURVEY-2026-11-07b.md`), after repairs 7-10, beat survey 14, 12-3-51.
@@ -79,7 +80,6 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 
 1. **One fixed home for the Discoveries / How to play buttons,** checked on every screen at both sizes, as a cartouche built into the gold frame. Repairs 4, 7 and 9 moved them three times, and survey 15's three losses are all them: in the draw-pile modal the fight's How to play pokes out as a cut-off "play", and in fights one judge finds it crowding the hand's corner. It must never sit on a candle (`.kit-dress__corner--r`), the hand, or out from under a modal, and the status boards' band under the HUD must stay free (`tests/ui-r51-spinel/probe-queue.py`). Settle it once, then run survey 16 against survey 15 (`D:/UILOOP/survey15/NOW/`, template `docs/ui-pass/survey-2026-11-07b.sh`).
 2. **Then repairs.** Still open:
-   - gameover's wing strip under "As far as we got" shrank to a sliver at 1280 when repair 8 lifted the buttons;
    - near floors still black at the front corners in the nursery, ballroom, study and kitchens (the `nearFloor.foot` recipe of repairs 6 and 10);
    - the clubhouse's tape note covers the "1" of "1 / 17 WINGS" at 1600;
    - contact shadows under near props, and props cut by the frame (the heart's right candle cluster, the foyer's left chair);
@@ -93,7 +93,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 3. **The map's cut right edge** waits on Josh (question 9b). Don't redo it.
 4. **Wing silhouettes on the atlas** need the plan generator (`game/src/ui/estate-blueprint.js`'s source plans).
 
-**How to run a repair** (ten so far; nine won outright):
+**How to run a repair** (eleven so far; ten won outright):
 
 1. Cut a worktree: `git worktree add -b ui/<name> D:/UILOOP/<round>/wt/<name> HEAD`. It takes 2-3 minutes; let it.
 2. Give one general-purpose agent a brief: the defect, with the judges' words and the image paths; the rules above; its own server port; the exact capture commands; the tests that must pass; and "revert what is not clearly better".

@@ -166,3 +166,7 @@ Left:
 - The foyer's right half keeps a cold blue cast.
 
 Key: `PAIRED-r61-repair10-key.json`.
+
+## Repair 11: gameover's wing strip restored at 1280
+
+Repair 8 lifted gameover's buttons and, at 1280, shrank the route strip under "As far as we got" to a sliver. `ed3cfe1a` (merged) gives the route frame its 66% back (198x57 px, about survey 14's size). The space comes from the padding around the card in the centre column. The buttons still clear the foot rule by 12 px, no text changed size, and 1600 is pixel-identical. The paired check was against survey 15: **2-0.** Key: `PAIRED-r61-repair11-key.json`.
