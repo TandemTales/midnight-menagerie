@@ -8,7 +8,7 @@
 
 - **The demo and the full game are ready for Josh's Steam App ID.** Nothing has ever run against real Steam. Only Josh can fill `shell/steam_appid.txt` and `shell/steam_appid_demo.txt`. Never use 480.
 - **Co-op is proven over a simulated wire in every wing.** All seventeen wings have been walked by parties of two to four, in step, to a victory (`docs/notes/2026-11-03-co-op-on-a-real-wire.md`, last section).
-- **The UI loop's last measurement is survey 15** (`docs/ui-pass/SURVEY-2026-11-07b.md`). It beat survey 14, 12-3-51. Its 3 losses all trace to where the help buttons now sit. Ten single-builder repairs since survey 12 each won their blind paired test, bar one change left out. The next step is a fixed home for the help buttons.
+- **The UI loop's last measurement is survey 15** (`docs/ui-pass/SURVEY-2026-11-07b.md`). It beat survey 14, 12-3-51. Its 3 losses all trace to where the help buttons now sit. Thirteen single-builder repairs since survey 12 each won their blind paired test, bar one change left out. The next step is a fixed home for the help buttons.
 - **Nothing of this session is still running.** All servers and processes it started are stopped, and every change is committed and pushed on `dev`.
 
 **Run nothing until you have read these, in this order:**
@@ -72,6 +72,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
   10. the heart, foyer and sleeping quarters lit to the foot of the frame (6-0).
   11. gameover's wing strip full size again at 1280 (2-0).
   12. the clubhouse's wing count and PETS VANISH clipping whole (2-0).
+  13. the nursery, ballroom, study and kitchens lit to the foot of the frame (8-0); 13 of 17 rooms now carry the foot lamp.
 
   See `docs/ui-pass/ROUND-r61-repair-2026-11-06.md`. A repair costs about 1% of a week, where a full round costs about 19%, and it is the better tool for a named defect.
 - **Survey 13** (`SURVEY-2026-11-06b.md`, taken after repairs 1-3) beat survey 12, 17-0-49. Every repaired screen was better, and nothing was worse. **Survey 14** (`SURVEY-2026-11-07.md`) then beat survey 13, 25-4-37; its four losses were one collision, fixed by repair 7. **Survey 15** (`SURVEY-2026-11-07b.md`), after repairs 7-10, beat survey 14, 12-3-51.
@@ -81,7 +82,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 
 1. **One fixed home for the Discoveries / How to play buttons,** checked on every screen at both sizes, as a cartouche built into the gold frame. Repairs 4, 7 and 9 moved them three times, and survey 15's three losses are all them: in the draw-pile modal the fight's How to play pokes out as a cut-off "play", and in fights one judge finds it crowding the hand's corner. It must never sit on a candle (`.kit-dress__corner--r`), the hand, or out from under a modal, and the status boards' band under the HUD must stay free (`tests/ui-r51-spinel/probe-queue.py`). Settle it once, then run survey 16 against survey 15 (`D:/UILOOP/survey15/NOW/`, template `docs/ui-pass/survey-2026-11-07b.sh`).
 2. **Then repairs.** Still open:
-   - near floors still black at the front corners in the nursery, ballroom, study and kitchens (the `nearFloor.foot` recipe of repairs 6 and 10);
+   - in the rooms: contact shadows under freestanding props, something standing on the empty near floor (study, ballroom), and ceilings fully in frame (ballroom, nursery, study);
    - contact shadows under near props, and props cut by the frame (the heart's right candle cluster, the foyer's left chair);
    - the HUD's Buttons / Clues / Luck plate at 1280 swallows its divider pip (repair 8's narrower plate lost 0-4: the fix must not push Luck into the scroll end);
    - the help plaques read as loose tabs, not cartouches built into the frame;
@@ -92,7 +93,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 3. **The map's cut right edge** waits on Josh (question 9b). Don't redo it.
 4. **Wing silhouettes on the atlas** need the plan generator (`game/src/ui/estate-blueprint.js`'s source plans).
 
-**How to run a repair** (twelve so far; eleven won outright):
+**How to run a repair** (thirteen so far; twelve won outright):
 
 1. Cut a worktree: `git worktree add -b ui/<name> D:/UILOOP/<round>/wt/<name> HEAD`. It takes 2-3 minutes; let it.
 2. Give one general-purpose agent a brief: the defect, with the judges' words and the image paths; the rules above; its own server port; the exact capture commands; the tests that must pass; and "revert what is not clearly better".

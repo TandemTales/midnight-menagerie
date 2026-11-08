@@ -1,0 +1,14 @@
+{
+ "SURVEY-room-ballroom-ballroom": {
+  "new_is_A": false
+ },
+ "SURVEY-room-kitchens-kitchen": {
+  "new_is_A": true
+ },
+ "SURVEY-room-nursery-nursery": {
+  "new_is_A": false
+ },
+ "SURVEY-room-study-library": {
+  "new_is_A": false
+ }
+}

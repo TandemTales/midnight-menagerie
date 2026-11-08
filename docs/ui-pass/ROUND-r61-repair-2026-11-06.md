@@ -184,3 +184,22 @@ Left:
 - The five "?" notes are plain tan squares.
 
 Key: `PAIRED-r61-repair12-key.json`.
+
+## Repair 13: four more rooms lit to the foot of the frame
+
+The `nearFloor.foot` recipe of repairs 6 and 10, applied as data in `game/src/fx/atmosphere.js`. Corners are the mean luma of a 160x100 patch, bottom left / bottom right:
+
+| Room | Commit | Corners before | Corners after |
+|---|---|---|---|
+| Nursery | `6676dd4b` | 9/5 | 58/37 |
+| Ballroom | `0fad45be` | 21/1 | 46/26 |
+| Study | `618f1b03` | 21/5 | 68/53 |
+| Kitchens (lamp widened) | `23569dd1` | 15/9 | 37/18 |
+
+Saturation stays between 0.67 and 0.91, so the floor is not milky. Grounding passed (captures `cb16bb46`), steam-deck 6/0, and the graveyard is unchanged.
+
+The paired check was against survey 15: **8-0.** Nursery, ballroom and study went 2 and 2, kitchens 1 and 1.
+
+Now 13 of the 17 rooms carry the foot lamp. Next, for the rooms: contact shadows under freestanding props, something standing on the near floor band, ceilings fully in frame, and edge objects that read as fragments.
+
+Key: `PAIRED-r61-repair13-key.json`.
