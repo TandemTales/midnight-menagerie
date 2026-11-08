@@ -170,3 +170,17 @@ Key: `PAIRED-r61-repair10-key.json`.
 ## Repair 11: gameover's wing strip restored at 1280
 
 Repair 8 lifted gameover's buttons and, at 1280, shrank the route strip under "As far as we got" to a sliver. `ed3cfe1a` (merged) gives the route frame its 66% back (198x57 px, about survey 14's size). The space comes from the padding around the card in the centre column. The buttons still clear the foot rule by 12 px, no text changed size, and 1600 is pixel-identical. The paired check was against survey 15: **2-0.** Key: `PAIRED-r61-repair11-key.json`.
+
+## Repair 12: the clubhouse's two clippings
+
+`55fcb6d4` (merged):
+- Clue cards i and ii moved below the map card, so "1 / 17 WINGS" reads whole.
+- At 1280 the newspaper cutting is widened to 132 px and the slogan strips moved right, so "PETS VANISH" and its sub-line read whole. Fonts were not reduced.
+
+The paired check was against survey 15: **2-0**, by 2 from each judge.
+
+Left:
+- The gaps are tight: the sub-line ends at the paper's edge at 1280, and at 1600 the empty cards are 3-5 px apart.
+- The five "?" notes are plain tan squares.
+
+Key: `PAIRED-r61-repair12-key.json`.
