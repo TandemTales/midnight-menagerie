@@ -3933,16 +3933,18 @@
 /* ROUND 61 REPAIR 8: a long owner's name on two lines, only where no one-line board fits
    (fx/combatfx.js _ownerCaption). Same face, same size; it wraps at the space. */
 .cb-fx-owner.is-stacked { width: min-content; white-space: normal; text-align: center; }
-/* ROUND 61 REPAIR 7: HOW TO PLAY hangs on the wall just inside the right corner
-   candle, not over it. Repair 4's medallion on its left end reached ~20px
-   further in and sat on that candle's flame (survey 14, both judges, the boss
-   fight at both sizes). Its right end now stops a clear gap short of the
-   candle's wax: the corner painting (ui/kit.css .kit-dress__corner--r) is
-   clamp(190px, 17.5vw, 290px) wide at the board's edge, and the candle's left
-   side stands .61 of that in from its right. The Guardian's voice, when it
-   joins, rides the same row further in. Moved by translate from the shared
-   bar's corner (narrative.css), so no scene redeclares its position. */
+/* ROUND 61 REPAIR 9: HOW TO PLAY stands over the discard shelf, its right edge level
+   with the shelf's and its foot a gap above the tallest thing on it (the deck's count,
+   the shelf candle's flame). Repair 7 hung it under the HUD just inside the right
+   corner candle, in the band the condition boards take above the creatures at
+   1280x800, and the Red Carpet Runner's board found no place (probe-queue). There it
+   is clear of both corner candles, the fan and every plate. CombatScene#_syncHelpSpot
+   measures the shelf; moved by translate from the shared bar's corner (narrative.css),
+   so no scene redeclares its position. The Guardian's voice, when it joins, rides the
+   same row further in. */
 .scene--combat .story-tools {
-  translate: calc(var(--s-3) - clamp(8px, .7vw, 12px) - clamp(190px, 17.5vw, 290px) * .62 - 10px) 0;
+  translate:
+    calc(var(--s-3) - var(--cb-help-rg, var(--s-3)))
+    calc(var(--cb-help-foot, calc(100% + var(--hud-h) + var(--s-2))) - 100% - var(--hud-h) - var(--s-2));
 }
-/* == end round 61 repair 7 == */
+/* == end round 61 repair 9 == */

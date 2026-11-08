@@ -37,7 +37,7 @@ function hang(plate) {
   const mates = document.querySelector('.cb-mates:not([hidden])')?.getBoundingClientRect();
   const help = document.querySelector('.story-tools')?.getBoundingClientRect();
   const lo = Math.max(16, (mates?.right ?? 0) + 10);
-  const hi = (help && me.top < help.bottom ? help.left - 10 : innerWidth - 16) - me.width;
+  const hi = (help && me.top < help.bottom && me.bottom > help.top ? help.left - 10 : innerWidth - 16) - me.width;
   const hidden = x => clear.reduce((sum, r) =>
     sum + Math.max(0, Math.min(x + me.width, r.right) - Math.max(x, r.left)) * Math.max(0, Math.min(me.bottom + 8, r.bottom) - Math.max(me.top, r.top)), 0);
   const mid = (innerWidth - me.width) / 2;
