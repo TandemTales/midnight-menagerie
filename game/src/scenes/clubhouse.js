@@ -327,7 +327,7 @@ export class ClubhouseScene extends Scene {
        empty in one row along the foot — so the corner opposite them is free for
        the House, the cutting and the verdict, and every card on the board is
        either something to read or an honest gap. */
-    const cluePos = [[66, 46], [83, 51], [57.5, 76], [72, 77], [86, 76]];
+    const cluePos = [[66, 52], [83, 53], [59.4, 76], [73, 77], [86.4, 76]];
     const clueNo  = ['i', 'ii', 'iii', 'iv', 'v'];
     boardClues().forEach((c, i) => {
       const [title, text, known] = c;
@@ -372,14 +372,14 @@ export class ClubhouseScene extends Scene {
       '<span class="pin kit-pin kit-pin--blue cl-cutting__pin" aria-hidden="true"></span>'
       + '<p class="kit-newscutting__head">Pets vanish</p>'
       + '<p class="cl-cutting__sub">eight gone this year</p>');
-    cut.style.cssText = 'left:19.4%;top:70.6%;--rot:3.2deg';
+    cut.style.cssText = 'left:19.4%;top:69.4%;--rot:3.2deg';
     cork.appendChild(cut);
 
     /* The thesis, cut out and pinned up beside them: each phrase torn from a
        sheet of red paper the way a kid makes a headline, the last one on a
        scrap of the index cards and underlined in red biro. */
     const thesis = el('div', 'scrawl');
-    thesis.style.cssText = 'left:34.6%;top:70.5%;--rot:-1.2deg';
+    thesis.style.cssText = 'left:37%;top:70.5%;--rot:-1.2deg';
     thesis.innerHTML = `<span class="scrawl__cut kit-clipping" style="--rot:-3deg">too many pets.</span> `
       + `<span class="scrawl__cut kit-clipping" style="--rot:2.2deg">same house.</span> `
       + `<span class="scrawl__cut scrawl__cut--last kit-clipping kit-clipping--card" style="--rot:-1deg"><u>not a coincidence.</u></span>`

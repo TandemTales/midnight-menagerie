@@ -495,7 +495,7 @@
   font-weight: 400; --reading-size: clamp(11px, .8vw, 12.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); line-height: 1.12;
   color: color-mix(in oklab, var(--kit-paper-ink) 66%, var(--kit-paper));
 }
-.cl-cutting { --cut-w: clamp(108px, 8.9vw, 142px); z-index: 3; }
+.cl-cutting { --cut-w: clamp(132px, 8.9vw, 142px); z-index: 3; }
 /* pinned through its torn top edge, clear of the headline */
 .cl-cutting__pin { left: 16%; top: -8px; transform: none; }
 /* the standfirst under the headline's rule: the figure the whole board is
@@ -528,7 +528,7 @@
 .scrawl__cut--last { margin-left: .3em; }
 .scrawl__pin { --pin-w: clamp(16px, 1.2vw, 20px); left: 58%; top: -.45em; z-index: 1; }
 /* the three unknown cards, narrower: a "?" and three words */
-.ch-note.is-unknown { width: clamp(98px, 8.1vw, 130px); }
+.ch-note.is-unknown { width: clamp(98px, calc(10vw - 30px), 130px); }
 /* the purple enamel studs, each over the boss of the frame's corner mount
    (frame-carved.webp's boss is 27 of its 116-pixel rail in from the corner,
    and the rail stands --carve-w - 3px outside the box) */
