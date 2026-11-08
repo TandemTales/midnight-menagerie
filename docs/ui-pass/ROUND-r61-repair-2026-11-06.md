@@ -152,3 +152,17 @@ Fix (`9c401b2a`, merged): in fights, "How to play" stands over the discard shelf
 The probe passes 18/18 at both sizes. It prints a `RESULT:` line and is in `tools/gates.py`'s EXTRAS, so the battery runs it now. Also: seam 22/0, steam-deck 6/0, scene-css 0, css-tokens 0.
 
 Left: a condition board can still cover a corner candle's flame (the player's over the left one in combat-crowd, the Runner's over the right one in crowd-3).
+
+## Repair 10: three more rooms lit to the foot of the frame
+
+Merged from `ui/r61-repair10`: repair 6's `nearFloor.foot` and `footBand: false`, applied to the heart, the foyer (parlor) and the sleeping quarters (dormitory), as data only in `game/src/fx/atmosphere.js` (`957d4cff`). The heart's lens stands far back, so its reach is 12 m. Its bottom corners went from 21/31 to 46/61, the foyer's bottom right from 24 to 49, and the dormitory's corners from 8/2 to 37/39.
+
+The paired check was against survey 14: **repair 6, dev 0.** Heart and dormitory went 2 and 2, foyer 1 and 1. Both judges measured that the lift kept the floor saturated, not milky. Grounding passed (captures `589232e5`), steam-deck 6/0, and the graveyard is unchanged.
+
+Left:
+- Props standing on the near floor want contact shadows (the heart's candle clusters, the dormitory's teddy).
+- The heart's right cluster and the foyer's left chair are cut by the frame.
+- The far walls' upper band is soft.
+- The foyer's right half keeps a cold blue cast.
+
+Key: `PAIRED-r61-repair10-key.json`.

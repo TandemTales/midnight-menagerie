@@ -69,6 +69,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
   7. the help plaques moved clear of the corner candle on rest and in fights (6-0).
   8. the Coatrack Crawler's status bug fixed, and gameover's bottom buttons clear of the frame (2-0). Its HUD-pip change lost 0-4 and was left out.
   9. the fight's How to play moved over the discard shelf, so every status board lands at 1280. `probe-queue.py` passes 18/18 and is in the battery now.
+  10. the heart, foyer and sleeping quarters lit to the foot of the frame (6-0).
 
   See `docs/ui-pass/ROUND-r61-repair-2026-11-06.md`. A repair costs about 1% of a week, where a full round costs about 19%, and it is the better tool for a named defect.
 - **Survey 13** (`SURVEY-2026-11-06b.md`, taken after repairs 1-3) beat survey 12, 17-0-49. Every repaired screen was better, and nothing was worse. **Survey 14** (`SURVEY-2026-11-07.md`) then beat survey 13, 25-4-37. Its four losses were one collision, which repair 7 fixed.
@@ -78,7 +79,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 
 1. **Survey 15,** paired against survey 14 (`D:/UILOOP/survey14/NOW/`), with `docs/ui-pass/survey-2026-11-07.sh` as the template (change `survey14` to `survey15`). The survey's combat-crowd shot fires too late to catch the status floaters, so judge those separately, as repair 5 did.
 2. **Then repairs** from survey 15's judges. Still open:
-   - the rooms' remaining dark lower corners (heart, foyer, sleeping);
+   - contact shadows under near props, and props cut by the frame (the heart's right candle cluster, the foyer's left chair);
    - the HUD's Buttons / Clues / Luck plate at 1280 swallows its divider pip (repair 8's narrower plate lost 0-4: the fix must not push Luck into the scroll end);
    - the help plaques read as loose tabs, not cartouches built into the frame;
    - a fight's condition board can cover a corner candle's flame (combat-crowd, crowd-3);
@@ -89,7 +90,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 3. **The map's cut right edge** waits on Josh (question 9b). Don't redo it.
 4. **Wing silhouettes on the atlas** need the plan generator (`game/src/ui/estate-blueprint.js`'s source plans).
 
-**How to run a repair** (eight so far; seven won outright):
+**How to run a repair** (ten so far; nine won outright):
 
 1. Cut a worktree: `git worktree add -b ui/<name> D:/UILOOP/<round>/wt/<name> HEAD`. It takes 2-3 minutes; let it.
 2. Give one general-purpose agent a brief: the defect, with the judges' words and the image paths; the rules above; its own server port; the exact capture commands; the tests that must pass; and "revert what is not clearly better".

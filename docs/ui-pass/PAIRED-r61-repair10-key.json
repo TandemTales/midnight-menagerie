@@ -1,0 +1,11 @@
+{
+ "SURVEY-room-foyer-parlor": {
+  "new_is_A": false
+ },
+ "SURVEY-room-heart-heart": {
+  "new_is_A": false
+ },
+ "SURVEY-room-sleeping-dormitory": {
+  "new_is_A": true
+ }
+}
