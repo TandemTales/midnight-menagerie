@@ -1264,7 +1264,8 @@ export const REGIONS = {
     /* ROUND 39: THE NEAR FLOOR -- the chandelier's light laid on the marble
        in front of you, the petals where the fan fell, and the cold violet
        fill OFF the floor (cineFloor: "the purple haze off the floor") */
-    nearFloor: { fall: 0.92, calm: 0.70, rug: { ahead: 5.4, hw: 2.2, hd: 1.4 },
+    footBand: false,   // (round 61 repair 13: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 2.5, reach: 9.0, sides: 3.5, color: '#e6c08a' }, fall: 0.92, calm: 0.70, rug: { ahead: 5.4, hw: 2.2, hd: 1.4 },
                  pool: { ahead: 5.6, across: 0.4, rAlong: 3.4, rAcross: 3.6, k: 1.55, color: '#e9c88c' },   // (round 39 graft: the candelabrum's warm pool, J2 J3)
                  pool2: { ahead: 4.6, across: -3.6, abs: true, rAlong: 2.4, rAcross: 2.4, k: 1.10, color: '#eac27e' } },
     cineFloor: 0.30,
