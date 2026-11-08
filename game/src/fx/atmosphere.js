@@ -323,7 +323,8 @@ export const REGIONS = {
        black"): round 31's rule, here -- the boards running on lit toward
        the hand, and a pool of candlelight laid on them in front of you from
        the near torchere, with the runner in its Turkey dyes */
-    nearFloor: { fall: 0.90, dye: 1, calm: 0.6,
+    footBand: false,   // (round 61 repair 10: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 1.8, reach: 9.0, sides: 3.5, color: '#e8a868' }, fall: 0.90, dye: 1, calm: 0.6,
                  pool: { ahead: 3.6, across: -0.8, rAlong: 2.8, rAcross: 3.0, k: 1.15, color: '#e8a460' },
                  /* (round 34 GRAFT, all three judges on the fight: "a warm
                     light pool on the floor between the Kid and the enemies,
@@ -501,7 +502,8 @@ export const REGIONS = {
        washstand candle's pool by the near beds; the foreground falls to
        nine-tenths, not two-fifths. The grain at half the house's. */
     crispFloor: true, grain: 0.012,
-    nearFloor: { fall: 0.90, dye: 1, calm: 0.70, clean: 1,
+    footBand: false,   // (round 61 repair 10: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 3.5, reach: 5.5, sides: 3.0, color: '#e8a868' }, fall: 0.90, dye: 1, calm: 0.70, clean: 1,
                  pool: { ahead: 5.6, across: 1.6, rAlong: 3.0, rAcross: 2.2, k: 1.0, color: '#aab0c6' },
                  pool2: { ahead: 3.9, across: -1.7, abs: true, rAlong: 2.2, rAcross: 2.0, k: 6.0, color: '#f0a65a' } },
   },
@@ -2108,7 +2110,8 @@ export const REGIONS = {
        their line -- both their feet and the runner between them in it,
        TOURMALINE's pools -- and BERYL's pool before the pillar candles kept,
        so the runner and the boards are lit to the frame's foot) */
-    nearFloor: { fall: 0.92, dye: 1, calm: 0.85, clean: 1,
+    footBand: false,   // (round 61 repair 10: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 2.2, reach: 12.0, sides: 3.2, color: '#e0aa78' }, fall: 0.92, dye: 1, calm: 0.85, clean: 1,
                  pool: { ahead: 4.6, across: 0.0, rAlong: 2.6, rAcross: 3.6, k: 3.0, color: '#f0a65a' },
                  pool2: { ahead: 9.2, across: 0.0, rAlong: 2.2, rAcross: 5.2, k: 4.0, color: '#f0a65a' } },
     /* (round 29 graft, judge 1: "give the lower half of the hall drawn
