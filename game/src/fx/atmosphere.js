@@ -596,7 +596,7 @@ export const REGIONS = {
        paler lamplight, not the fire's orange; and the flags SMALL and
        worn, MM_FLAGK) */
     footBand: false,   // (round 61 repair 6: the floor drawn to the frame's foot -- Backdrop.applyPalette)
-    nearFloor: { foot: { k: 1.1, reach: 5.0, sides: 4.5, color: '#e8a868' }, fall: 0.90, dye: 1, calm: 0.95, rug: { ahead: 6.9, hw: 1.45, hd: 0.85 },
+    nearFloor: { foot: { k: 1.3, reach: 7.0, sides: 9.0, color: '#e8a868' }, fall: 0.90, dye: 1, calm: 0.95, rug: { ahead: 6.9, hw: 1.45, hd: 0.85 },
                  pool: { ahead: 3.8, across: 0.0, rAlong: 3.0, rAcross: 3.6, k: 0.48, color: '#eeb27a' },
                  pool2: { ahead: 2.6, across: 0.0, rAlong: 2.0, rAcross: 4.0, k: 0.34, color: '#e6b47e' } },
     flagK: 1,
