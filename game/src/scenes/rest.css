@@ -929,6 +929,22 @@
   font-size: 1.24em; color: var(--kit-gold-hi);
   text-shadow: 0 1px 0 rgb(0 0 0 / .9), 0 0 14px color-mix(in srgb, var(--kit-candle) 45%, transparent);
 }
-@media (min-width: 1401px) {
-  .scene--rest .story-tools { flex-direction: column; align-items: stretch; }
+
+/* ROUND 61 REPAIR 7: DISCOVERIES and HOW TO PLAY come down off the top corner.
+   Since repair 4 seated a medallion on each plate's left end, the pair reached
+   ~20px further in and the "?" sat on the right corner candle's flame (survey
+   14, both judges: on it at 1600, hiding it at 1280). There is no wall up there
+   to take them instead: at 1600 the right picture hangs between the plaque and
+   that candle, and at 1280 the plaque runs almost to the candle. So the pair
+   stands in the footer, on the fort's floor at its left end, centred on the
+   way out's line, a row at every size; the status line begins after them.
+   Moved by translate from the shared bar's corner (narrative.css), so no scene
+   redeclares that bar's own position (tests/scene-css). The left edge is the
+   status line's text start (reward.css --rm-pad + 40px, + .6 of the vine). */
+.scene--rest .story-tools {
+  translate:
+    calc(clamp(18px, 2.4vw, 40px) + 40px + clamp(38px, 3.5vw, 60px) * .6 - 100vw + var(--s-3) + 100%)
+    calc(100vh - 47px - 50% - var(--hud-h) - var(--s-2));
 }
+/* the pair is two plates of 60px of rim and medallion round ~9em of words */
+.scene--rest .rs-line { padding-left: calc(clamp(38px, 3.5vw, 60px) * .6 + 125px + 9.2em + 24px); }

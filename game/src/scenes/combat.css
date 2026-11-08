@@ -3930,3 +3930,16 @@
   text-shadow: 0 1px 0 var(--kit-void), 1px 1px 0 var(--ink-900);
 }
 /* == end round 61 repair 5 == */
+/* ROUND 61 REPAIR 7: HOW TO PLAY hangs on the wall just inside the right corner
+   candle, not over it. Repair 4's medallion on its left end reached ~20px
+   further in and sat on that candle's flame (survey 14, both judges, the boss
+   fight at both sizes). Its right end now stops a clear gap short of the
+   candle's wax: the corner painting (ui/kit.css .kit-dress__corner--r) is
+   clamp(190px, 17.5vw, 290px) wide at the board's edge, and the candle's left
+   side stands .61 of that in from its right. The Guardian's voice, when it
+   joins, rides the same row further in. Moved by translate from the shared
+   bar's corner (narrative.css), so no scene redeclares its position. */
+.scene--combat .story-tools {
+  translate: calc(var(--s-3) - clamp(8px, .7vw, 12px) - clamp(190px, 17.5vw, 290px) * .62 - 10px) 0;
+}
+/* == end round 61 repair 7 == */
