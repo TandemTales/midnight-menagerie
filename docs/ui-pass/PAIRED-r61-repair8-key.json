@@ -1,0 +1,11 @@
+{
+ "shop": {
+  "new_is_A": true
+ },
+ "map": {
+  "new_is_A": false
+ },
+ "gameover": {
+  "new_is_A": false
+ }
+}

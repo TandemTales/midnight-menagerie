@@ -67,6 +67,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
   5. the fight's status floaters on one framed board per fighter (2-0);
   6. six rooms' near floors lit to the foot of the frame, with their edge props whole (12-0).
   7. the help plaques moved clear of the corner candle on rest and in fights (6-0).
+  8. the Coatrack Crawler's status bug fixed, and gameover's bottom buttons clear of the frame (2-0). Its HUD-pip change lost 0-4 and was left out.
 
   See `docs/ui-pass/ROUND-r61-repair-2026-11-06.md`. A repair costs about 1% of a week, where a full round costs about 19%, and it is the better tool for a named defect.
 - **Survey 13** (`SURVEY-2026-11-06b.md`, taken after repairs 1-3) beat survey 12, 17-0-49. Every repaired screen was better, and nothing was worse. **Survey 14** (`SURVEY-2026-11-07.md`) then beat survey 13, 25-4-37. Its four losses were one collision, which repair 7 fixed.
@@ -75,20 +76,19 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 **Next, in order:**
 
 1. **Survey 15,** paired against survey 14 (`D:/UILOOP/survey14/NOW/`), with `docs/ui-pass/survey-2026-11-07.sh` as the template (change `survey14` to `survey15`). The survey's combat-crowd shot fires too late to catch the status floaters, so judge those separately, as repair 5 did.
+0. **First, a known red:** `tests/ui-r51-spinel/probe-queue.py` fails crowd-3, all and all-long at 1280. The Red Carpet Runner's status board misses by a few px beside How to play, which repair 7 moved. Fix it, and add the probe to `tools/gates.py`, which does not run it.
 2. **Then repairs** from survey 15's judges. Still open:
    - the rooms' remaining dark lower corners (heart, foyer, sleeping);
-   - the HUD's Buttons / Clues / Luck plate at 1280 swallows its divider pip;
-   - gameover's bottom buttons sit tight to the frame;
+   - the HUD's Buttons / Clues / Luck plate at 1280 swallows its divider pip (repair 8's narrower plate lost 0-4: the fix must not push Luck into the scroll end);
    - the help plaques read as loose tabs, not cartouches built into the frame;
    - the clubhouse's PETS VANISH clipping is cut at 1280;
    - the rims are single where the samples' frames are double-ruled filigree;
    - near floors are low-detail planes;
    - at 1600 the snack tags press on the next jar;
-   - in foyer-6 the Coatrack Crawler's conditions never show. That is a bug: find it.
 3. **The map's cut right edge** waits on Josh (question 9b). Don't redo it.
 4. **Wing silhouettes on the atlas** need the plan generator (`game/src/ui/estate-blueprint.js`'s source plans).
 
-**How to run a repair** (what worked seven times running):
+**How to run a repair** (eight so far; seven won outright):
 
 1. Cut a worktree: `git worktree add -b ui/<name> D:/UILOOP/<round>/wt/<name> HEAD`. It takes 2-3 minutes; let it.
 2. Give one general-purpose agent a brief: the defect, with the judges' words and the image paths; the rules above; its own server port; the exact capture commands; the tests that must pass; and "revert what is not clearly better".
