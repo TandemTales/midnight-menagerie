@@ -919,7 +919,8 @@ export const REGIONS = {
     /* (graft: CARNELIAN's even warm floor -- the near floor at 0.95, the
        carpet centred and the lamps' light lying over the whole of it and
        the boards to the frame's foot -- with BERYL's lattice carpet on it) */
-    nearFloor: { fall: 0.95, dye: 1, calm: 0.92, clean: 1, rug: { ahead: 4.6, hw: 1.9, hd: 1.15 }, rugGain: 0.70, rugGul: 0.85,
+    footBand: false,   // (round 61 repair 13: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 2.2, reach: 6.0, sides: 2.0, color: '#e8a868' }, fall: 0.95, dye: 1, calm: 0.92, clean: 1, rug: { ahead: 4.6, hw: 1.9, hd: 1.15 }, rugGain: 0.70, rugGul: 0.85,
                  pool: { ahead: 5.0, across: -1.4, rAlong: 2.8, rAcross: 2.6, k: 2.2, color: '#eab26a' },
                  /* (and the green lamp's warmth on the boards round the desk
                     and between the cases and the carpet -- the stripe the
