@@ -72,9 +72,12 @@ with sync_playwright() as p:
  page.wait_for_function('window.MM && MM.ctx.stage.warmStage==="done"',timeout=150000)
  for width,height in ([(1280,800)] if os.environ.get('R49_QUICK') else [(1280,800),(1600,900)]):
   page.set_viewport_size({'width':width,'height':height})
-  for kind,mode in ([('boss','0'),('crowd','0'),('crowd','all')] if os.environ.get('R49_QUICK') else [('boss','0'),('crowd','0'),('crowd','1'),('crowd','2'),('crowd','3'),('crowd','all'),('crowd','repeats'),('crowd','all-long')]):
+  # 'tall': foyer-6's Coatrack Crawler, whose intent rides so high at 1280x800 that no board
+  # fits under the midpoint rule; its conditions never showed there before round 61 repair 8
+  for kind,mode in ([('boss','0'),('crowd','0'),('crowd','all'),('tall','0')] if os.environ.get('R49_QUICK') else [('boss','0'),('crowd','0'),('crowd','1'),('crowd','2'),('crowd','3'),('crowd','all'),('crowd','repeats'),('crowd','all-long'),('tall','0')]):
    params={'seed':42,'companion':('crumbula' if mode=='all-long' else 'bones'),'kid':'maya'}
    if kind=='boss':params['encounter']='foyer-boss'
+   elif kind=='tall':params['encounter']='foyer-6'
    else:params.update(region='passages',room='Narrow Corridor',tier='standard',enemies=4)
    page.evaluate('p=>MM.goto("combat",p)',params)
    page.wait_for_function('()=>{const s=MM.ctx.scenes.current;return s.engine&&s._opening===false&&!MM.ctx.stage.roomPending()&&s.$coldRoom.hidden&&s.hero._kidSrc}',timeout=150000)
@@ -94,5 +97,6 @@ assert all(r['all'] and not r['failures'] and len(r['delivered'])==6 and len(r['
 assert all(len(r['starts'])==6 and all(e['elapsed']>=e['duration'] for e in r['expired']) and [e['serial'] for e in r['starts']]==sorted(e['serial'] for e in r['starts']) for r in results if r['mode']=='repeats'),'Repeated label conservation/FIFO/lifetime failure'
 assert all(r['peak']==6 for r in results if r['kind']=='boss'),'Boss should preserve six simultaneous labels'
 
-assert len([r for r in results if r['mode']!='all-long'])==14 and sum(len(r['delivered']) for r in results if r['mode']!='all-long')==84,'Canonical Bones84-label battery must remain complete'
+assert len([r for r in results if r['mode']!='all-long' and r['kind']!='tall'])==14 and sum(len(r['delivered']) for r in results if r['mode']!='all-long' and r['kind']!='tall')==84,'Canonical Bones84-label battery must remain complete'
 assert len([r for r in results if r['mode']=='all-long'])==2,'Longer actual party name must be displayed at both sizes'
+assert len([r for r in results if r['kind']=='tall'])==2,"The tall enemy's conditions (foyer-6, Coatrack Crawler) must be delivered at both sizes"

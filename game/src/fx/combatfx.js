@@ -329,11 +329,21 @@ export class CombatFX {
     const name=actor.name||actor.id;
     if(cap.el.textContent!==name){
       cap.el.textContent=name;
-      const range=document.createRange();range.selectNodeContents(cap.el);
-      const box=cap.el.getBoundingClientRect(),text=range.getBoundingClientRect();
-      cap.dx=Math.max(0,box.left-text.left);cap.dy=Math.max(0,box.top-text.top);
-      cap.w=Math.max(box.right,text.right)-Math.min(box.left,text.left);
-      cap.h=Math.max(box.bottom,text.bottom)-Math.min(box.top,text.top);
+      const measure=()=>{
+        const range=document.createRange();range.selectNodeContents(cap.el);
+        const box=cap.el.getBoundingClientRect(),text=range.getBoundingClientRect();
+        return {dx:Math.max(0,box.left-text.left),dy:Math.max(0,box.top-text.top),
+          w:Math.max(box.right,text.right)-Math.min(box.left,text.left),
+          h:Math.max(box.bottom,text.bottom)-Math.min(box.top,text.top)};
+      };
+      /* ROUND 61 REPAIR 8: a long name may also stand on two lines. A tall enemy at 1280x800
+         (the Coatrack Crawler in foyer-6) wears its intent so high that the band under the
+         HUD is shorter than a board, and "Coatrack Crawler" made the board wider than the gap
+         between the Kid and that intent, so its conditions waited in the queue forever. The
+         stacked nameplate is a fallback, laid only where no one-line board fits. */
+      cap.el.classList.remove('is-stacked');cap.one=measure();cap.two=null;
+      if(/\s/.test(name.trim())){cap.el.classList.add('is-stacked');cap.two=measure();cap.el.classList.remove('is-stacked');}
+      Object.assign(cap,cap.one);
     }
     return cap;
   }
@@ -378,25 +388,33 @@ export class CombatFX {
       // owner's nameplate is seated ON the board's top rail, half above it, the way a
       // medallion rides a kit panel, so the band above a short enemy holds a whole board.
       const padX=13,padT=2,padB=6,rule=7,colGap=14;
+      /* ROUND 61 REPAIR 8: fallbacks, each tried only when everything before it found no
+         place: the name on two lines, then the board free of the midpoint rule so long as
+         its every part stands clear of a neighbour's own span (it carries its owner's name,
+         so it cannot be read as someone else's). The tall Coatrack Crawler at 1280x800 has
+         no strict place for any board, and its conditions waited in the queue all fight. */
+      const overNeighbor=box=>{const mx=(box.left+box.right)/2;return neighbors.some(a=>mx>=a.left&&mx<=a.right);};
+      const tiers=[[cap.one,false],[cap.two,false],[cap.one,true],[cap.two,true]].filter(([form])=>form);
+      for(const [form,relaxed] of tiers){if(candidates.length)break;
       for(let cols=1;cols<=Math.min(words.length,3);cols++){
         const rows=[];
         for(let i=0;i<words.length;i+=cols){
           const row=words.slice(i,i+cols);
           rows.push({row,w:row.reduce((a,n)=>a+n.wordW,0)+colGap*(row.length-1),h:Math.max(...row.map(n=>n.wordH))});
         }
-        const inner=Math.max(cap.w,...rows.map(r=>r.w)),w=inner+padX*2;
-        const cells=[],rules=[];let y=cap.h+padT;
+        const inner=Math.max(form.w,...rows.map(r=>r.w)),w=inner+padX*2;
+        const cells=[],rules=[];let y=form.h+padT;
         for(const r of rows){
-          if(cells.length){rules.push(y+rule/2-cap.h/2);y+=rule;}
+          if(cells.length){rules.push(y+rule/2-form.h/2);y+=rule;}
           let x=padX+(inner-r.w)/2;
           for(const n of r.row){cells.push({n,left:x,right:x+n.wordW,top:y+(r.h-n.wordH)/2,bottom:y+(r.h+n.wordH)/2});x+=n.wordW+colGap;}
           y+=r.h;
         }
         const h=y+padB;
-        cells.push({cap,left:(w-cap.w)/2,right:(w+cap.w)/2,top:0,bottom:cap.h});
-        cells.push({board:cap,rules,left:0,right:w,top:cap.h/2,bottom:h});
+        cells.push({cap,form,left:(w-form.w)/2,right:(w+form.w)/2,top:0,bottom:form.h});
+        cells.push({board:cap,rules,left:0,right:w,top:form.h/2,bottom:h});
         const xs=new Set([inset,actor.x-w/2,ownerLeft-w/2+1,ownerRight-w/2-1,actor.left-w-gap,actor.right+gap]);
-        const ys=new Set([68,actor.top-219-cap.h/2,actor.top-h-gap,actor.top,actor.bottom+gap]);
+        const ys=new Set([68,actor.top-219-form.h/2,actor.top-h-gap,actor.top,actor.bottom+gap]);
         for(const b of obstacles){xs.add(b.left-w-gap);xs.add(b.right+gap);ys.add(b.top-h-1);ys.add(b.bottom+1);}
         for(const x0 of xs){const x=Math.round(x0);
           if(x<inset||x+w>this.w-inset||Math.abs(x+w/2-actor.x)>Math.max(230,(actor.right-actor.left)/2+180))continue;
@@ -405,13 +423,13 @@ export class CombatFX {
             const cx=x+w/2,cy=y+h/2;
             if(cy<actor.top-180||cy>actor.bottom+80)continue;
             const boxes=cells.map(c=>({left:x+c.left,right:x+c.right,top:y+c.top,bottom:y+c.bottom}));
-            if(boxes.some(box=>(box.top+box.bottom)/2<actor.top-220||(box.top+box.bottom)/2>actor.bottom+100||(box.left+box.right)/2<ownerLeft||(box.left+box.right)/2>ownerRight||Math.abs((box.left+box.right)/2-actor.x)>Math.max(230,(actor.right-actor.left)/2+180)||obstacles.some(b=>hit(box,b))))continue;
+            if(boxes.some(box=>(box.top+box.bottom)/2<actor.top-220||(box.top+box.bottom)/2>actor.bottom+100||(relaxed?overNeighbor(box):(box.left+box.right)/2<ownerLeft||(box.left+box.right)/2>ownerRight)||Math.abs((box.left+box.right)/2-actor.x)>Math.max(230,(actor.right-actor.left)/2+180)||obstacles.some(b=>hit(box,b))))continue;
             // one line per condition, stacked, unless no single column fits
             const score=Math.hypot(cx-actor.x,(cy-actor.top)*.9)+w*.08+h*.03+(cols-1)*160;
             candidates.push({boxes,cells,score,actor});
           }
         }
-      }
+      }}
       candidates.sort((a,b)=>a.score-b.score);domains.push({words,candidates:candidates.slice(0,100)});
     }
     domains.sort((a,b)=>a.candidates.length-b.candidates.length);
@@ -443,7 +461,11 @@ export class CombatFX {
         b.replaceChildren(...cell.rules.map(y=>{const r=document.createElement('i');r.className='cb-fx-board__rule';r.style.top=`${y}px`;return r;}));
         return;
       }
-      if(cell.cap){cell.cap.box=box;cell.cap.el.style.transform=`translate3d(${box.left+(cell.cap.dx||0)}px,${box.top+(cell.cap.dy||0)}px,0)`;return;}
+      if(cell.cap){
+        const cap=cell.cap,form=cell.form||cap;Object.assign(cap,form);cap.box=box;
+        cap.el.classList.toggle('is-stacked',!!cap.two&&form===cap.two);
+        cap.el.style.transform=`translate3d(${box.left+(form.dx||0)}px,${box.top+(form.dy||0)}px,0)`;return;
+      }
       const n=cell.n;n.x=(box.left+box.right)/2+n.wordDX;n.y=(box.top+box.bottom)/2+n.wordDY;n.wordBox=box;
       // Publish a group's new positions atomically, retaining each ribbon's current pop scale.
       n.el.style.transform=n.el.style.transform.replace(/^translate3d\([^)]*\)/,`translate3d(${n.x}px,${n.y}px,0)`);

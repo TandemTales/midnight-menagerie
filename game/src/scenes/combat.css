@@ -3930,6 +3930,9 @@
   text-shadow: 0 1px 0 var(--kit-void), 1px 1px 0 var(--ink-900);
 }
 /* == end round 61 repair 5 == */
+/* ROUND 61 REPAIR 8: a long owner's name on two lines, only where no one-line board fits
+   (fx/combatfx.js _ownerCaption). Same face, same size; it wraps at the space. */
+.cb-fx-owner.is-stacked { width: min-content; white-space: normal; text-align: center; }
 /* ROUND 61 REPAIR 7: HOW TO PLAY hangs on the wall just inside the right corner
    candle, not over it. Repair 4's medallion on its left end reached ~20px
    further in and sat on that candle's flame (survey 14, both judges, the boss
