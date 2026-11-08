@@ -68,7 +68,7 @@ with sync_playwright() as p:
  b=p.chromium.launch(channel='chrome',args=['--use-gl=angle','--use-angle=default','--force-color-profile=srgb'])
  c=b.new_context(viewport={'width':1280,'height':800});c.route('**/favicon.ico',lambda r:r.fulfill(status=204,body=''))
  page=c.new_page();page.on('pageerror',lambda e:errors.append(str(e)))
- page.goto(os.environ.get('R49_URL','http://localhost:9492')+'/game/index.html#scene=title&seed=42&companion=bones&kid=maya')
+ page.goto(os.environ.get('R49_URL','http://localhost:8777')+'/game/index.html#scene=title&seed=42&companion=bones&kid=maya')
  page.wait_for_function('window.MM && MM.ctx.stage.warmStage==="done"',timeout=150000)
  for width,height in ([(1280,800)] if os.environ.get('R49_QUICK') else [(1280,800),(1600,900)]):
   page.set_viewport_size({'width':width,'height':height})
@@ -92,11 +92,17 @@ with sync_playwright() as p:
    (OUT/'proof.json').write_text(json.dumps({'results':results,'errors':errors},indent=2),encoding='utf-8')
    print(kind,mode,width,'frames',result['frames'],'peak',result['peak'],'fit',result['all']['layout'] if result['all'] else None,'fail',len(result['failures']),'delivered',len(result['delivered']),'expired',len(result['expired']),'drain',round(result['drainMs']),flush=True)
  b.close()
-assert not errors,errors
-assert all(r['all'] and not r['failures'] and len(r['delivered'])==6 and len(r['expired'])==6 and r['queued']==0 for r in results),'Collision/delivery failures; inspect proof.json'
-assert all(len(r['starts'])==6 and all(e['elapsed']>=e['duration'] for e in r['expired']) and [e['serial'] for e in r['starts']]==sorted(e['serial'] for e in r['starts']) for r in results if r['mode']=='repeats'),'Repeated label conservation/FIFO/lifetime failure'
-assert all(r['peak']==6 for r in results if r['kind']=='boss'),'Boss should preserve six simultaneous labels'
+# tools/gates.py runs this in the battery (EXTRAS): one RESULT line, and exit 1 on any red
+bad=[f"{r['kind']}-{r['mode']}-{r['width']}" for r in results if not (r['all'] and not r['failures'] and len(r['delivered'])==6 and len(r['expired'])==6 and r['queued']==0)]
+try:
+ assert not errors,errors
+ assert all(r['all'] and not r['failures'] and len(r['delivered'])==6 and len(r['expired'])==6 and r['queued']==0 for r in results),'Collision/delivery failures; inspect proof.json'
+ assert all(len(r['starts'])==6 and all(e['elapsed']>=e['duration'] for e in r['expired']) and [e['serial'] for e in r['starts']]==sorted(e['serial'] for e in r['starts']) for r in results if r['mode']=='repeats'),'Repeated label conservation/FIFO/lifetime failure'
+ assert all(r['peak']==6 for r in results if r['kind']=='boss'),'Boss should preserve six simultaneous labels'
 
-assert len([r for r in results if r['mode']!='all-long' and r['kind']!='tall'])==14 and sum(len(r['delivered']) for r in results if r['mode']!='all-long' and r['kind']!='tall')==84,'Canonical Bones84-label battery must remain complete'
-assert len([r for r in results if r['mode']=='all-long'])==2,'Longer actual party name must be displayed at both sizes'
-assert len([r for r in results if r['kind']=='tall'])==2,"The tall enemy's conditions (foyer-6, Coatrack Crawler) must be delivered at both sizes"
+ assert len([r for r in results if r['mode']!='all-long' and r['kind']!='tall'])==14 and sum(len(r['delivered']) for r in results if r['mode']!='all-long' and r['kind']!='tall')==84,'Canonical Bones84-label battery must remain complete'
+ assert len([r for r in results if r['mode']=='all-long'])==2,'Longer actual party name must be displayed at both sizes'
+ assert len([r for r in results if r['kind']=='tall'])==2,"The tall enemy's conditions (foyer-6, Coatrack Crawler) must be delivered at both sizes"
+except AssertionError as e:
+ print('RESULT: FAIL',f'{len(results)-len(bad)}/{len(results)} runs clean;',e,('red: '+', '.join(bad)) if bad else '',flush=True);raise
+print('RESULT: PASS',f'{len(results)} runs clean, every condition delivered at',', '.join(sorted({str(r["width"]) for r in results})),flush=True)

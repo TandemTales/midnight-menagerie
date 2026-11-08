@@ -1390,6 +1390,32 @@ export class CombatScene extends Scene {
     }
     this.hand.setBounds({ left, right, low });
     this._syncStage();
+    this._syncHelpSpot();
+  }
+
+  /**
+   * ROUND 61 REPAIR 9: HOW TO PLAY STANDS OVER THE DISCARD SHELF. Hung under the HUD
+   * (repair 7, just inside the right corner candle) it sat in the one band a condition
+   * board has above the creatures at 1280x800, between the HUD and their intents: the
+   * Red Carpet Runner's board had no place left and its conditions waited in the queue
+   * all fight. Over the shelf it is clear of every candle (the corner pair high on the
+   * wall, the shelf's own below it), of the fan and of every plate. combat.css moves the
+   * shared bar there by translate; these two figures say where, in viewport px: its foot
+   * a gap above the tallest thing on the shelf, its right edge level with the shelf's.
+   */
+  _syncHelpSpot() {
+    const br = this.root.querySelector('.cb-br'), shelf = br?.querySelector('.cb-br__piles');
+    if (!shelf) return;
+    const edge = br.getBoundingClientRect();
+    let top = Infinity;
+    for (const el of [shelf, ...shelf.querySelectorAll('*')]) {
+      if (el.hidden) continue;
+      const b = el.getBoundingClientRect();
+      if (b.width && b.height) top = Math.min(top, b.top);
+    }
+    if (!Number.isFinite(top) || !edge.width) return;
+    this.root.style.setProperty('--cb-help-foot', `${Math.round(top - 12)}px`);
+    this.root.style.setProperty('--cb-help-rg', `${Math.round(innerWidth - edge.right)}px`);
   }
 
   /**

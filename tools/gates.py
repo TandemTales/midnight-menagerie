@@ -69,6 +69,7 @@ EXTRAS = [
     "tests/audio/cues.py",
     "tests/sprites/clips.py",
     "tests/enemies/audit.py",
+    "tests/ui-r51-spinel/probe-queue.py",
 ]
 
 # Long simulations and probes: they print RESULT but are instruments, not gates.
