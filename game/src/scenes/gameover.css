@@ -1948,3 +1948,15 @@
   .go-wrap--r60 .go-col > .go-bp--r60 .go-bp__frame { width: 50%; }
   .go-ledger[data-fold] .go-trick.go-trick .go-trick__cost { --coin: 28px; --reading-size: max(12px, calc(31px * .54)); }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND 61 REPAIR 11: THE ROUTE AT ITS SIZE AGAIN ON THE DECK. Repair 8 found
+   its 12px for the ways out partly by drawing the route's six wings at half
+   the panel, and survey 15's judge could not read them. The route is back at
+   two thirds of its panel; the 14px it needs come from the shrine's own air
+   above the card and under its line of words. The buttons keep their 12px.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 1400px) {
+  .go-wrap--r60 .go-col > .go-bp--r60 .go-bp__frame { width: 66%; }
+  .go-wrap--r60 .go-col > .go-altar.go-shrine { padding-top: 12px; padding-bottom: 6px; }
+}
