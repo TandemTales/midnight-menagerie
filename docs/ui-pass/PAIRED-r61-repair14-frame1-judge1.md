@@ -1,0 +1,13 @@
+map: A by 2 -- The top status rail is fully inside the frame, while the horizontal help plaques and intact map lettering make the decision surface easier to read at both sizes.
+rest: A by 2 -- The top status rail preserves its complete location and resource labels at both sizes instead of clipping them against the upper edge.
+clubhouse: A by 1 -- The horizontal Discoveries and How to play plaques sit naturally above the expedition action and read more comfortably than the rotated edge tabs.
+atlas: A by 1 -- The horizontal help plaques occupy the upper-right header without crowding the companion panel and avoid sideways reading at both sizes.
+atlas-house: B by 1 -- The horizontal help plaques give the upper-right header a clearer reading order while leaving the companion panel's outer edge clean.
+hud-late: A by 2 -- The brass-framed inventory labels retain recognizable gear medallions, and the blueprint's room names remain intact where the other version visibly loses lettering.
+combat-boss: A by 2 -- The status rail and Bones condition plaque retain their full lettering, with the horizontal help plaque also easier to read at the smaller size.
+combat-crowd: A by 2 -- The complete top status rail and unclipped Bones condition plaque outweigh the other version's more readable horizontal help control.
+piles: A by 1 -- The background status rail stays fully framed behind the otherwise nearly identical draw-pile cabinet, giving the screen a slightly more finished edge.
+settings: A by 1 -- The background status rail remains fully contained behind the settings cabinet, while the large controls and explanatory text are essentially equally readable.
+
+### PATTERN
+The better versions preserve complete status lettering and give navigation plaques a horizontal reading direction without reducing the reading type. The corkboard photographs, ruler-and-pencil shelf, brass sliders, and enamel medallions are convincing objects and carry more character than another outlined panel would. The pile and settings comparisons are very close in their main content, with only a slight advantage from the surrounding frame. Against the references, the repeated purple rectangular panels still feel too uniformly embossed, and the atlas's lower instruction line presses into its frame at the smaller size. The crowded combat hand also needs more space above its illustrations so long title plaques feel deliberately fitted rather than laid over the artwork.

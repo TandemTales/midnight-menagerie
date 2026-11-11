@@ -1,0 +1,32 @@
+{
+ "map": {
+  "new_is_A": false
+ },
+ "rest": {
+  "new_is_A": true
+ },
+ "clubhouse": {
+  "new_is_A": false
+ },
+ "atlas": {
+  "new_is_A": false
+ },
+ "atlas-house": {
+  "new_is_A": true
+ },
+ "hud-late": {
+  "new_is_A": true
+ },
+ "combat-boss": {
+  "new_is_A": false
+ },
+ "combat-crowd": {
+  "new_is_A": true
+ },
+ "piles": {
+  "new_is_A": false
+ },
+ "settings": {
+  "new_is_A": false
+ }
+}

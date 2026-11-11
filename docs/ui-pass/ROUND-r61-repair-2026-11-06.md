@@ -203,3 +203,19 @@ The paired check was against survey 15: **8-0.** Nursery, ballroom and study wen
 Now 13 of the 17 rooms carry the foot lamp. Next, for the rooms: contact shadows under freestanding props, something standing on the near floor band, ceilings fully in frame, and edge objects that read as fragments.
 
 Key: `PAIRED-r61-repair13-key.json`.
+
+## Repair 14: one fixed home for Discoveries and How to play (FRAME3)
+
+Survey 15's first ask. One builder made three designs; the full story is in `HELP-FRAME-2026-11-08.md`.
+
+- FRAME1 used rotated spine labels on the right rail: lost 3-15-2.
+- FRAME2 used a horizontal fitting on the bottom-right frame: lost 6-12-2.
+- FRAME3 uses two 44 px enamel medallions fixed on the left gold rail, the same spot on every screen, hidden under every dialog: **won 13-7** (`91da720e`).
+
+Every board where the plaques had sat on a candle or peeked from under a dialog went to FRAME3. The two votes it lost by 2 were its focused label, a flat outlined box.
+
+## Repair 15: the focused medallion stays enamel
+
+Focus now lights the medallion's gold rim, and the label is a full cartouche hung beside it. On the clubhouse and atlas it covers its medallion, because their buttons start right beside the rail. Paired on the focused map and fight: **4-0, all by 2** (`e5b32a7e`).
+
+Keys: `PAIRED-r61-repair14-frame{1,2,3}-key.json`, `PAIRED-r61-repair15-key.json`.
