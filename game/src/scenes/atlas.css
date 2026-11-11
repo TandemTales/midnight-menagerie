@@ -1876,23 +1876,6 @@
   .at-tally .kit-enamel__label { letter-spacing: .03em; }
 }
 
-/* DISCOVERIES AND HOW TO PLAY: the map's brass card-frames, screwed to the
-   wall in the corner under the candle, not two web buttons */
-.scene--atlas .story-tools { gap: 6px; }
-.scene--atlas .story-tools > button {
-  min-height: 40px; height: 40px; width: auto; max-width: none;
-  padding: 0 32px 2px; white-space: nowrap;
-  border: 0 solid transparent; border-radius: 0;
-  border-image: url("../../assets/ui/r58-variscite/label-b.webp") 18 36 21 36 fill / 7px 13px 8px 13px stretch;
-  background: none;
-  color: #24140a; font-weight: 600;
-  text-shadow: 0 1px 0 rgb(255 240 200 / .38);
-  box-shadow: none;
-  filter: drop-shadow(0 4px 5px rgb(2 2 6 / .7));
-}
-.scene--atlas .story-tools > button:last-child { border-image-source: url("../../assets/ui/r58-variscite/label-c.webp"); rotate: .4deg; }
-.scene--atlas .story-tools > button:hover { background: none; border-color: transparent; filter: brightness(1.14) drop-shadow(0 0 6px rgb(255 179 92 / .7)); }
-.scene--atlas .story-tools > button:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
 
 /* the wing being read is rimmed in gilt; its plan stays legible under it */
 .at-root[data-few="0"] .at-rim.is-shown { fill: rgb(255 214 150 / .07); }
@@ -1922,7 +1905,6 @@
 /* the wing being read stays a drawing under its light */
 .at-root .at-hots .at-hot.is-surveyed:hover .at-hot__hit,
 .at-root .at-hots .at-hot.is-surveyed.is-hover .at-hot__hit { background: rgb(255 236 200 / .05); }
-.scene--atlas .story-tools { align-items: flex-end; }
 /* the candle reaches the plate's foot and its far bay: the foundations and
    the east range read as drawn, not lost in the burn */
 .at-root .at-light {
@@ -1938,16 +1920,6 @@
 /* the earned wing's gilt brackets close round its plan, inside the gutters,
    never over the caption of the plan above it */
 .at-root .at-hots .at-hot .at-hot__frame { margin: calc(-5px / var(--k, 1)) calc(-9px / var(--k, 1)); }
-/* ROUND 60 GRAFT: Discoveries and How to play, stacked in the corner under
-   the candle, set their words INSIDE the brass frame's window: the shared
-   bar's padding (narrative.css) outranked the plate's own and laid the words
-   over the frame's screws. The two plates are one width, a hand clear of the
-   screen's edge and clear of the count at 1280. */
-.scene--atlas .story-tools { align-items: stretch; }
-.scene--atlas .story-tools.story-tools > button { min-height: 40px; padding: 0 26px 2px; }
-@media (max-width: 1400px) {
-  .scene--atlas .story-tools.story-tools > button { padding-inline: 22px; }
-}
 
 /* ROUND 61 REPAIR: THE HOUSE AS ONE RECOVERED PLAN. The plans are composed as
    one estate again (ui/estate-blueprint.js PLACEMENT): a tower's caption is
