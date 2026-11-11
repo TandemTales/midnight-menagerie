@@ -219,3 +219,29 @@ Every board where the plaques had sat on a candle or peeked from under a dialog 
 Focus now lights the medallion's gold rim, and the label is a full cartouche hung beside it. On the clubhouse and atlas it covers its medallion, because their buttons start right beside the rail. Paired on the focused map and fight: **4-0, all by 2** (`e5b32a7e`).
 
 Keys: `PAIRED-r61-repair14-frame{1,2,3}-key.json`, `PAIRED-r61-repair15-key.json`.
+
+## Repair 16: four more wings lit to the frame's foot (after survey 16)
+
+Survey 16 (`SURVEY-2026-11-10.md`) beat survey 15 27-0-39, and both of its judges asked first for the lit near floor in every wing. Five wings still had no `nearFloor.foot`. Repair 16 applies the recipe of repairs 6, 10 and 13 as data in `game/src/fx/atmosphere.js` (`b5469ad9`, merged `c5425b02`): `footBand: false` plus a foot lamp coloured by the light each wing already has.
+
+Corners are the mean luma of a 160x100 patch, bottom left / bottom right:
+
+| Room | Lamp | Corners before | Corners after |
+|---|---|---|---|
+| Hedge | path lanterns `#d9a66e`, k 2.0 | 36/29 | 80/71 |
+| Passages | sconces `#e8a868`, k 2.2 | 27/22 | 57/48 |
+| Pumpkin grounds | lanterns `#e8a060`, k 2.0 | 38/13 | 57/30 |
+| Graveyard | low warm `#c8945e`, k 1.5 | 0.4/22 | 1.3/35 |
+
+- **Graveyard.** A cool moon tint (`#9cb2d8`, k 2.6) was tried first and greyed the turf, so it was replaced by a low warm lamp. The bottom-left stays black because it is the tomb's own base and shadow.
+- **Greenhouse: left out.** Its foreground is planting beds and a stone ledge, not floor. The lamp moved no pixel, so it was reverted rather than kept as a no-op. Lifting those corners (11/18) needs light on the planting, not on the floor.
+
+The paired check was against survey 16's rooms, from the same capture harness: **7-1.**
+- Graveyard went 1 and 1, hedge 2 and 1, pumpkin 2 and 1.
+- Passages split. One judge preferred the evenly lit boards; the other found them "a flatter salmon-beige wash, slightly milky" beside the runner. If a later survey repeats that, lower its k toward 1.6.
+
+Tests: grounding PASS, steam-deck PASS, pumpkin-grounds 70/70. The other thirteen rooms are unchanged apart from animation-frame noise.
+
+Now 16 of the 17 rooms carry the foot lamp, all but the greenhouse.
+
+Key: `PAIRED-r61-repair16-key.json`.

@@ -1,19 +1,26 @@
-# Midnight Menagerie handoff · November 6, 2026
+# Midnight Menagerie handoff · November 11, 2026
 
-## START HERE (2026-11-06): read this first if you have never seen this project
+## START HERE (2026-11-11): read this first if you have never seen this project
 
 **What this is.** Midnight Menagerie is a co-op deckbuilder in the style of Slay the Spire. One to four Kids, each with a Companion, walk a haunted house wing by wing and play Tricks (cards) against its creatures. The game is a browser game (plain ES modules, WebGL for the rooms) wrapped in Electron for Steam. The repository is this folder. Work happens on branch `dev`; `main` lags behind. The owner is Josh, who decides design. Everything you need to know about how Josh wants things is below or in the questions file. Do not ask Josh what is already decided.
 
-**Where you are.** As of November 6:
+**Where you are — November 11, 2026.** Nothing is half-done. Dev is pushed, and every repair is either merged or written up as lost.
 
-- **The demo and the full game are ready for Josh's Steam App ID.** Nothing has ever run against real Steam. Only Josh can fill `shell/steam_appid.txt` and `shell/steam_appid_demo.txt`. Never use 480.
-- **Co-op is proven over a simulated wire in every wing.** All seventeen wings have been walked by parties of two to four, in step, to a victory (`docs/notes/2026-11-03-co-op-on-a-real-wire.md`, last section).
-- **The UI loop's last measurement is survey 15** (`docs/ui-pass/SURVEY-2026-11-07b.md`). It beat survey 14, 12-3-51. Its 3 losses all trace to where the help buttons now sit. Thirteen single-builder repairs since survey 12 each won their blind paired test, bar one change left out. The next step is a fixed home for the help buttons.
-- **Nothing of this session is still running.** All servers and processes it started are stopped, and every change is committed and pushed on `dev`.
+- **Repair 14 (FRAME3) is merged.** Discoveries and How to play now have one fixed home: two enamel medallions in the left gold frame, each with a readable plate that hangs beside it on hover or focus. It won its blind test 13-7, after FRAME1 and FRAME2 lost (`91da720e`).
+- **Repair 15 is merged.** A focused medallion keeps its enamel and lights its own gold rim, and its plate never covers the clubhouse's or the atlas's controls (4-0, `e5b32a7e`).
+- **Survey 16 beat survey 15, 27-0-39** (`docs/ui-pass/SURVEY-2026-11-10.md`, images in `D:/UILOOP/survey16/NOW/`). Every vote that chose a side chose the new build.
+- **The final battery** ran on the same build: 120 gates, 117 green.
+  - Its three reds (`seams/check.py`, `sprites/check.py`, `chrome/run.py`'s large-text HUD chips) were red before FRAME3, with the same counts.
+  - `demo/run.py` failed once on a browser timeout and passed 27/27 when rerun.
+  - 19 of the old baseline's 22 reds are green now.
+- **Repair 16 is merged.** The graveyard, hedge, passages and pumpkin grounds are lit to the frame's foot, paired 7-1 (`c5425b02`). Sixteen of the seventeen rooms now carry the foot lamp; the greenhouse's foreground is planting, not floor.
+- **The main workspace's 28 pre-existing modified capture files** (`tests/blueprint`, `tests/readability`, `tests/foyer-presentation`, `tests/tutorial-restore`) are not anyone's work in progress. They were preserved byte-for-byte and kept out of every commit. Leave them unstaged.
+- **Evidence** for repairs 14-16 and survey 16 is in `C:/Users/Josh/AppData/Local/Temp/mm-help-frame-20261108`. The help-frame checkpoint, archived and hash-verified, is under `D:/UILOOP/r61-help-frame/`. Its capture harness is copied as `docs/ui-pass/survey-2026-11-10.py`.
+- **Steam remains untested.** Only Josh supplies real App IDs, never 480. Co-op's simulated-wire evidence is unchanged.
 
 **Run nothing until you have read these, in this order:**
 1. This section.
-2. `docs/notes/2026-11-05-questions-for-josh.md`. Every open question has the default already taken, so nothing is blocked on Josh.
+2. `docs/notes/2026-11-05-questions-for-josh.md`. Every open question has the default already taken, so nothing is blocked on Josh. (`docs/notes/2026-11-09-help-frame-handoff.md` is the finished FRAME3 checkpoint, for history only.)
 3. `docs/notes/2026-11-03-co-op-on-a-real-wire.md`, if you touch multiplayer.
 4. "### A round, step by step" further down, if you run the UI loop.
 
@@ -72,16 +79,25 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
   10. the heart, foyer and sleeping quarters lit to the foot of the frame (6-0).
   11. gameover's wing strip full size again at 1280 (2-0).
   12. the clubhouse's wing count and PETS VANISH clipping whole (2-0).
-  13. the nursery, ballroom, study and kitchens lit to the foot of the frame (8-0); 13 of 17 rooms now carry the foot lamp.
+  13. the nursery, ballroom, study and kitchens lit to the foot of the frame (8-0).
+  14. FRAME3: Discoveries and How to play in one fixed home, two medallions on the left gold frame (13-7, after two designs lost).
+  15. a focused help medallion stays enamel, with its plate hung beside it (4-0).
+  16. the graveyard, hedge, passages and pumpkin grounds lit to the foot of the frame (7-1); 16 of 17 rooms now carry the foot lamp.
 
   See `docs/ui-pass/ROUND-r61-repair-2026-11-06.md`. A repair costs about 1% of a week, where a full round costs about 19%, and it is the better tool for a named defect.
-- **Survey 13** (`SURVEY-2026-11-06b.md`, taken after repairs 1-3) beat survey 12, 17-0-49. Every repaired screen was better, and nothing was worse. **Survey 14** (`SURVEY-2026-11-07.md`) then beat survey 13, 25-4-37; its four losses were one collision, fixed by repair 7. **Survey 15** (`SURVEY-2026-11-07b.md`), after repairs 7-10, beat survey 14, 12-3-51.
+- **Survey 13** (`SURVEY-2026-11-06b.md`, taken after repairs 1-3) beat survey 12, 17-0-49. Every repaired screen was better, and nothing was worse. **Survey 14** (`SURVEY-2026-11-07.md`) then beat survey 13, 25-4-37; its four losses were one collision, fixed by repair 7. **Survey 15** (`SURVEY-2026-11-07b.md`), after repairs 7-10, beat survey 14, 12-3-51. **Survey 16** (`SURVEY-2026-11-10.md`), after repairs 11-15, beat survey 15, 27-0-39.
 - **`tools/shot.py` now hides the "Standalone preview" ribbon,** which had covered real buttons in every judged capture of reward, rest, event and the shop.
 
 **Next, in order:**
 
-1. **One fixed home for the Discoveries / How to play buttons,** checked on every screen at both sizes, as a cartouche built into the gold frame. Repairs 4, 7 and 9 moved them three times, and survey 15's three losses are all them: in the draw-pile modal the fight's How to play pokes out as a cut-off "play", and in fights one judge finds it crowding the hand's corner. It must never sit on a candle (`.kit-dress__corner--r`), the hand, or out from under a modal, and the status boards' band under the HUD must stay free (`tests/ui-r51-spinel/probe-queue.py`). Settle it once, then run survey 16 against survey 15 (`D:/UILOOP/survey15/NOW/`, template `docs/ui-pass/survey-2026-11-07b.sh`).
-2. **Then repairs.** Still open:
+1. **Survey 17 is due after repair 16** (paired against survey 16, `D:/UILOOP/survey16/NOW/`). Use the harness `docs/ui-pass/survey-2026-11-10.py WORKTREE PORT OUT --rooms`, which is copied from the help-frame evidence and needs its `chrome.py` wrapper beside it. Retake any view whose log says VOID CAPTURE, and look at the event board yourself: shot.py flags pale parchment as `voidBlown`.
+2. **Then repairs.** Survey 16's judges asked for these, in order:
+   - **a near-floor light for the greenhouse's planting beds,** whose corners are 11/18;
+   - **the help medallions drawn as filigree cartouches,** so the bare medallions read as controls. Keep their home on the left frame;
+   - **the fight's status floaters and the boards' pinned notes** as framed pieces that never sit over a candle, a label or a number;
+   - **if a survey repeats it, the passages' foot lamp a little lower** (k 2.2 toward 1.6). One repair-16 judge found the boards milky.
+
+   Still open from earlier:
    - in the rooms: contact shadows under freestanding props, something standing on the empty near floor (study, ballroom), and ceilings fully in frame (ballroom, nursery, study);
    - contact shadows under near props, and props cut by the frame (the heart's right candle cluster, the foyer's left chair);
    - the HUD's Buttons / Clues / Luck plate at 1280 swallows its divider pip (repair 8's narrower plate lost 0-4: the fix must not push Luck into the scroll end);
@@ -93,7 +109,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 3. **The map's cut right edge** waits on Josh (question 9b). Don't redo it.
 4. **Wing silhouettes on the atlas** need the plan generator (`game/src/ui/estate-blueprint.js`'s source plans).
 
-**How to run a repair** (thirteen so far; twelve won outright):
+**How to run a repair** (sixteen so far):
 
 1. Cut a worktree: `git worktree add -b ui/<name> D:/UILOOP/<round>/wt/<name> HEAD`. It takes 2-3 minutes; let it.
 2. Give one general-purpose agent a brief: the defect, with the judges' words and the image paths; the rules above; its own server port; the exact capture commands; the tests that must pass; and "revert what is not clearly better".
@@ -126,7 +142,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 - `D:/UILOOP/r60`, `r61` and `survey12` to `survey15` hold this session's worktrees and evidence. Keep them.
 - `ui/r61-repair2` keeps the unmerged whole-plan map (`87630b49`, `1f445378`) for Josh's answer.
 
-### The battery on this tree (2026-11-06)
+### Historical battery (2026-11-06) — superseded by the measured baseline above
 
 **`python tools/gates.py`: 118 gates in 49 minutes, 4 red.** It needs the dev server on 8777, and nothing else should use the browser while it runs.
 
@@ -145,7 +161,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 
 **Depots:** `python tools/package_release.py --smoke` and `--demo --smoke` both build and boot to the title with no errors, with `storage=host` and `steam=no`, as expected with no App ID.
 
-**Before you change anything:** run the battery, because it is the definition of green here. After any change to rooms, the wire or a chooser, also run a walk in the background.
+**For the active repair:** the before-change battery has already run (119 gates, 22 red); preserve those results and run the final battery after acceptance. The historical rule was to run the battery before editing, because it is the definition of green here. After any change to rooms, the wire or a chooser, also run a walk in the background.
 
 
 The sections below are history. Where they disagree with this one, this one wins.
