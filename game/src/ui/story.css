@@ -1,0 +1,73 @@
+/* Direct help medallions occupy fixed slots in the gold side rail. Their
+   upright cartouches appear immediately under a pointer or keyboard/pad focus. */
+.story-tools {
+  position: fixed; left: 4px; top: calc(50% - 48px); z-index: 85;
+  width: 44px; height: 96px;
+  font: var(--fs-md)/1.2 var(--font-body);
+}
+.story-tool {
+  position: relative; min-height: 40px;
+  padding: 0 14px 2px 42px;
+  border: 0 solid transparent; border-radius: 0;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 10px 18px stretch;
+  background: none; box-shadow: none;
+  font: inherit; font-weight: 600; color: var(--kit-gold-hi);
+  white-space: nowrap; cursor: pointer;
+  text-shadow: 0 1px 0 rgb(0 0 0 / .95), 0 0 8px rgb(0 0 0 / .5);
+  filter: drop-shadow(0 2px 2px rgb(2 2 6 / .75));
+}
+/* Each occupied slot carries its own hardware; combat has no empty book mount. */
+.story-tools > .story-tool {
+  position: absolute; right: 0; width: 44px; height: 44px; min-height: 44px;
+  padding: 0; border-image: none; border-radius: 50%;
+}
+.story-tools > [data-tool="discoveries"] { top: 0; }
+.story-tools > [data-tool="help"] { top: 52px; }
+.story-tools > .story-tool > .story-tool__medal { left: 0; width: 44px; height: 44px; }
+/* The readable label expands across its own medallion, keeping its inward
+   reach inside the frame margin instead of laying a second plaque over the scene. */
+.story-tool__label {
+  position: absolute; left: 0; top: 50%; translate: 0 -50%;
+  display: flex; align-items: center; min-height: 44px; padding: 0 4px 2px;
+  border: 2px solid transparent; border-radius: 0;
+  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 10px 6px stretch;
+  background: none; box-shadow: none;
+  visibility: hidden;
+}
+.story-tool:hover > .story-tool__label,
+.story-tool:focus > .story-tool__label { visibility: inherit; }
+.story-tools > .story-tool:focus-visible { outline: none; }
+.story-tool:focus-visible > .story-tool__label { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+.story-tool:hover:not(:disabled) {
+  color: #fff1d2;
+  filter: drop-shadow(0 2px 2px rgb(2 2 6 / .75)) drop-shadow(0 0 7px color-mix(in srgb, var(--kit-candle) 55%, transparent)) brightness(1.1);
+}
+.story-tool:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+.story-tool:disabled { color: color-mix(in srgb, var(--kit-gold) 78%, var(--kit-text-mid)); cursor: default; }
+.story-tool > .story-tool__medal {
+  position: absolute; left: 2px; top: 50%; translate: 0 -50%;
+  width: 34px; height: 34px; display: grid; place-items: center;
+  border-radius: 50%; pointer-events: none;
+  background:
+    url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat,
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / .8));
+}
+.story-tool > .story-tool__medal svg { width: 50%; height: 50%; overflow: visible; }
+.story-tool > .story-tool__medal path {
+  fill: color-mix(in oklab, var(--kit-gold-hi) 72%, var(--kit-gold));
+  stroke: #24170a; stroke-width: 1.2; stroke-linejoin: round; paint-order: stroke fill;
+}
+/* The boss's optional voice is a contextual shelf action, with upright lettering.
+   Absolute attachment leaves the pile, End Turn and the hand bounds unchanged.
+   It sits above the pile count, separate from the shared help rail. */
+.story-voice {
+  position: absolute; right: 0; bottom: calc(100% + 18px);
+  font: 600 var(--fs-md)/1.2 var(--font-body);
+}
+/* Hide the whole fitting, not merely the part covered by a modal. Visibility keeps
+   the geometry and focus-return target intact across native and custom dialogs. */
+html.mm-modal-open .story-tools,
+html.mm-modal-open .story-voice,
+body:has(dialog[open]) .story-tools,
+body:has(dialog[open]) .story-voice { visibility: hidden; }

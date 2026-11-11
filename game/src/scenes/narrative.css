@@ -45,59 +45,12 @@
 .story-progress,.story-status { color:var(--text-mid); font-size:var(--fs-md); }
 .story-controls { display:flex; gap:var(--s-3); flex-wrap:wrap; margin-top:var(--s-5); }
 .story-choices { display:grid; gap:var(--s-3); margin-top:var(--s-5); }
-.story-dialog button,.story-tools button { font:inherit; color:var(--text-hi); background:var(--surface-2); border:1px solid var(--surface-line-hi); border-radius:var(--radius-md); padding:var(--s-2) var(--s-4); cursor:pointer; min-height:2.75rem; }
-.story-page button:focus-visible,.story-dialog button:focus-visible,.story-tools button:focus-visible { outline:3px solid var(--focus-ring); outline-offset:3px; }
+.story-dialog button { font:inherit; color:var(--text-hi); background:var(--surface-2); border:1px solid var(--surface-line-hi); border-radius:var(--radius-md); padding:var(--s-2) var(--s-4); cursor:pointer; min-height:2.75rem; }
+.story-page button:focus-visible,.story-dialog button:focus-visible { outline:3px solid var(--focus-ring); outline-offset:3px; }
 .story-dialog { box-sizing:border-box; width:min(48rem,94vw); max-height:90vh; overflow:auto; color:var(--text-hi); background:var(--surface-1); border:1px solid var(--surface-line-hi); border-radius:var(--radius-lg); padding:var(--s-6); font:var(--fs-lg)/1.45 var(--font-body); }
 .story-dialog::backdrop { background:var(--scrim); }
 .story-dialog section { border-top:1px solid var(--surface-line); padding-block:var(--s-4); }
 .story-dialog details { margin-block:var(--s-3); }
 .story-dialog summary { cursor:pointer; padding:var(--s-2); }
-.story-tools { position:fixed; top:var(--s-2); right:var(--s-3); z-index:85; display:flex; gap:var(--s-2); font:var(--fs-md)/1.2 var(--font-body); }
 .story-case fieldset { display:flex; gap:var(--s-2); flex-wrap:wrap; padding:var(--s-3); border:1px solid var(--surface-line); }
 .story-case button[aria-pressed=true] { border:3px solid var(--focus-ring); text-decoration:underline; }
-
-/* Larger reading sizes need room, including on a 1280px panel. */
-.story-tools { top: calc(var(--hud-h) + var(--s-2)); }
-
-/* Discoveries and How to play over the wings-crossed strip, at every size: on this
-   screen they stack in the corner under the candle, where nothing is written. */
-.scene--atlas .story-tools { flex-direction: column; align-items: stretch; gap: 5px; top: clamp(46px, 7vh, 60px); }
-.scene--atlas .story-tools > button { min-height: 34px; padding: 4px 12px; }
-
-/* ROUND 61 REPAIR 4: DISCOVERIES, HOW TO PLAY and the Guardian's voice, wherever they hang, are
-   one object in the samples' language (survey 13: "small flat chips"): the Companion tiles'
-   dark enamel nameplate in its bowed gilt rim, one of the Kid board's round enamel buttons
-   seated on its left end with the glyph struck in gold (ui/story.js toolMedal). Each scene
-   still places and sizes the bar; this only dresses what it places. */
-.story-tool { position: relative; }
-.story-tools.story-tools.story-tools > .story-tool {
-  padding: 0 18px 2px 42px;
-  border: 0 solid transparent; border-radius: 0;
-  border-image: url("../../assets/ui/kit/cartouche-dark.webp") 18 34 18 34 fill / 10px 18px stretch;
-  background: none; box-shadow: none;
-  color: var(--kit-gold-hi); font-weight: 600;
-  text-shadow: 0 1px 0 rgb(0 0 0 / .95), 0 0 8px rgb(0 0 0 / .5);
-  rotate: none;
-  filter: drop-shadow(0 4px 4px rgb(2 2 6 / .75));
-}
-.story-tools.story-tools.story-tools > .story-tool:hover:not(:disabled) {
-  color: #fff1d2;
-  filter: drop-shadow(0 4px 4px rgb(2 2 6 / .75)) drop-shadow(0 0 7px color-mix(in srgb, var(--kit-candle) 55%, transparent)) brightness(1.1);
-}
-.story-tools.story-tools.story-tools > .story-tool:disabled { color: color-mix(in srgb, var(--kit-gold) 78%, var(--kit-text-mid)); cursor: default; }
-.story-tool > .story-tool__medal {
-  position: absolute; left: 1px; top: 50%; translate: 0 -50%;
-  width: 34px; height: 34px;
-  display: grid; place-items: center;
-  border-radius: 50%;
-  background:
-    url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat,
-    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
-  filter: drop-shadow(0 2px 2px rgb(0 0 0 / .8));
-  pointer-events: none;
-}
-.story-tool > .story-tool__medal svg { width: 50%; height: 50%; overflow: visible; }
-.story-tool > .story-tool__medal path {
-  fill: color-mix(in oklab, var(--kit-gold-hi) 72%, var(--kit-gold));
-  stroke: #24170a; stroke-width: 1.2; stroke-linejoin: round; paint-order: stroke fill;
-}

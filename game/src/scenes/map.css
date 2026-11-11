@@ -2360,21 +2360,6 @@
   .map-screen .map-tools [data-tool="pan"] { border-image-width: 9px 13px; }
 }
 
-/* DISCOVERIES AND HOW TO PLAY: the same brass card-frames, screwed to the wall of the sheet. */
-.scene--map .story-tools { gap: 6px; }
-.scene--map .story-tools > button {
-  min-height: 40px; height: 40px;
-  padding: 0 20px 2px;
-  border: 0 solid transparent; border-radius: 0;
-  border-image: url("../../assets/ui/r58-variscite/label-b.webp") 18 36 21 36 fill / 7px 13px 8px 13px stretch;
-  background: none;
-  color: #24140a; font-weight: 600;
-  text-shadow: 0 1px 0 rgba(255, 240, 200, .38);
-  box-shadow: none;
-  filter: drop-shadow(0 4px 5px rgba(2, 2, 6, .7));
-}
-.scene--map .story-tools > button:last-child { border-image-source: url("../../assets/ui/r58-variscite/label-c.webp"); rotate: .4deg; }
-.scene--map .story-tools > button:hover { background: none; border-color: transparent; filter: brightness(1.14) drop-shadow(0 0 6px rgba(255, 179, 92, .7)); }
 
 /* THE BALLOT. The strip is a torn slip of the same paper, pinned at both ends, as heavy as the
    plates around it. The pins on the doors are each friend's own tag, pinned where they'd go:
