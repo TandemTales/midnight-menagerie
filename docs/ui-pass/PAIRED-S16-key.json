@@ -1,0 +1,101 @@
+{
+ "shop": {
+  "new_is_A": true
+ },
+ "map": {
+  "new_is_A": true
+ },
+ "reward": {
+  "new_is_A": false
+ },
+ "event": {
+  "new_is_A": false
+ },
+ "rest": {
+  "new_is_A": false
+ },
+ "gameover": {
+  "new_is_A": true
+ },
+ "opening": {
+  "new_is_A": true
+ },
+ "settings": {
+  "new_is_A": false
+ },
+ "piles": {
+  "new_is_A": true
+ },
+ "lobby": {
+  "new_is_A": true
+ },
+ "clubhouse": {
+  "new_is_A": false
+ },
+ "atlas": {
+  "new_is_A": false
+ },
+ "atlas-house": {
+  "new_is_A": true
+ },
+ "hud-late": {
+  "new_is_A": true
+ },
+ "combat-boss": {
+  "new_is_A": false
+ },
+ "combat-crowd": {
+  "new_is_A": true
+ },
+ "SURVEY-room-attic-attic": {
+  "new_is_A": true
+ },
+ "SURVEY-room-ballroom-ballroom": {
+  "new_is_A": true
+ },
+ "SURVEY-room-bathhouse-bathhouse": {
+  "new_is_A": false
+ },
+ "SURVEY-room-crypt-catacomb": {
+  "new_is_A": true
+ },
+ "SURVEY-room-foyer-parlor": {
+  "new_is_A": false
+ },
+ "SURVEY-room-graveyard-yard": {
+  "new_is_A": true
+ },
+ "SURVEY-room-greenhouse-conservatory": {
+  "new_is_A": false
+ },
+ "SURVEY-room-heart-heart": {
+  "new_is_A": false
+ },
+ "SURVEY-room-hedge-hedge": {
+  "new_is_A": true
+ },
+ "SURVEY-room-kennels-kennels": {
+  "new_is_A": true
+ },
+ "SURVEY-room-kitchens-kitchen": {
+  "new_is_A": true
+ },
+ "SURVEY-room-lampworks-lampworks": {
+  "new_is_A": true
+ },
+ "SURVEY-room-nursery-nursery": {
+  "new_is_A": true
+ },
+ "SURVEY-room-passages-passage": {
+  "new_is_A": true
+ },
+ "SURVEY-room-pumpkin-courtyard": {
+  "new_is_A": false
+ },
+ "SURVEY-room-sleeping-dormitory": {
+  "new_is_A": true
+ },
+ "SURVEY-room-study-library": {
+  "new_is_A": true
+ }
+}
