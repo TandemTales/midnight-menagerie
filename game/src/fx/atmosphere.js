@@ -789,7 +789,8 @@ export const REGIONS = {
     /* (round 35: and the turf's cloud laid to rest -- the wet sheen's fbm and
        the pools' break-up were the "uniform milky grey murk" lying on the
        lawn: nearFloor.clean) */
-    nearFloor: { fall: 0.92, clean: 0.85,
+    footBand: false,   // (round 61 repair 16: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 1.5, reach: 8.0, sides: 3.0, color: '#c8945e' }, fall: 0.92, clean: 0.85,
                  /* (round 35: the moon's pool laid where the eye finds the near
                     turf -- the band of lawn left of the walk, above the hand in a
                     fight -- not under the bottom of the frame) */
@@ -1484,7 +1485,8 @@ export const REGIONS = {
     /* (round 34 graft, all three judges: "the bottom third is still a
        dark empty field" -- the lanterns' pool wider, out over the lawn both
        sides of the path, and the moon's on the far side a step up) */
-    nearFloor: { fall: 0.95, calm: 0.75,
+    footBand: false,   // (round 61 repair 16: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 2.0, reach: 7.0, sides: 3.0, color: '#d9a66e' }, fall: 0.95, calm: 0.75,
                  pool: { ahead: 3.8, across: -0.3, rAlong: 3.8, rAcross: 5.2, k: 6.0, color: '#d9a66e' },
                  pool2: { ahead: 3.2, across: 2.6, rAlong: 3.0, rAcross: 3.0, k: 5.6, color: '#8ea6cc' } },
     particles: { mix: [[PTYPE.SPORE, 0.44], [PTYPE.ASH, 0.30], [PTYPE.DUST, 0.26]],
@@ -1549,7 +1551,8 @@ export const REGIONS = {
     /* (round 31 graft, all three judges: "reduce the milky, blotchy grain on
        the lit planks ... so they read as crisp inked boards over a warm
        dark" -- calm: the cloud, the grit and the wet smear laid to rest) */
-    nearFloor: { fall: 0.92, dye: 1, calm: 0.9,
+    footBand: false,   // (round 61 repair 16: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 2.2, reach: 6.0, sides: 2.0, color: '#e8a868' }, fall: 0.92, dye: 1, calm: 0.9,
                  pool: { ahead: 2.6, across: 0.6, rAlong: 2.6, rAcross: 2.4, k: 7.0, color: '#f0a65a' },
                  /* (round 31 graft, judge 3: "the near-left wall foot and floor
                     corner still fall to black; carry the light pool across to
@@ -2013,7 +2016,8 @@ export const REGIONS = {
                { shape: 27, ahead: 6.3, across: -3.9, tone: 0.95, hM: 0.56, keep: true, still: true, seed: 1.1 },
              ] },
     crispFloor: true, flagK: 4,
-    nearFloor: { fall: 0.92, calm: 0.85, clean: 1,
+    footBand: false,   // (round 61 repair 16: the floor drawn to the frame's foot -- Backdrop.applyPalette)
+    nearFloor: { foot: { k: 2.0, reach: 7.0, sides: 2.5, color: '#e8a060' }, fall: 0.92, calm: 0.85, clean: 1,
                  pool: { ahead: 4.0, across: 2.6, rAlong: 2.2, rAcross: 2.0, k: 16.0, color: '#ffa848' },
                  /* (graft, judge 2: the near-left flags kept deep blue-black --
                     the lanterns' second pool tighter round its lantern) */
