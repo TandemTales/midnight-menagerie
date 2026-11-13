@@ -2623,6 +2623,10 @@ export const ROOM_KINDS = {
         backOnly: [6], swapView: [[76, 74]], tierScale: 2.1,
         /* its warm lamp stands beside the fountain, where it lights it */
         lampsView: [{ i: 2, x: 3.3, z: 0.10, k: 0.55 },   // (round 25: no white hole in the flags)
+          /* (round 61 repair 17, survey 16: the beds under the gallery rail
+             fell to black at the right. The far right cold lamp comes
+             forward as a lantern among them, warm and low) */
+          { i: 1, x: -5.2, z: 0.04, y: 1.1, color: '#e0b266', k: 1.6, radius: 5.0 },
           /* (round 25 graft, both judges: "light the fountain and the back
              planting bed so the focal point reads". The stage-clear walks
              the fountain back to the staging, 12 m off (measured: z -12.4),
