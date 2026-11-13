@@ -3352,7 +3352,15 @@ export const ROOM_KINDS = {
      a room is a subject, a centrepiece, a pool and a place to stand. */
   hedge: {
     kinds: [
-      { subject: 'topiary' },
+      /* (round 61 repair 19, survey 17, both judges: "real objects with feet
+         and shadows on the bare near floor" -- the maze's own walk dressed at
+         your feet, either side of the gravel: a clipped spiral in its box on
+         the near-left lawn and an urn on its pedestal on the near-right
+         one. `hand`: in a fight the cards lie over them and they are not
+         drawn, so nobody stands through them) */
+      { subject: 'topiary',
+        nearPlus: [{ shape: 30, ahead: 2.65, across: 1.5, tone: 0.95, hM: 1.25, keep: true, still: true, hand: true, seed: 4.5 },
+                   { shape: 81, ahead: 2.7, across: -1.75, tone: 0.95, hM: 0.90, keep: true, still: true, hand: true, seed: 1.6 }] },
       /* the maze's heart: a dead fountain in a court of hedge, seen low
          from the mouth of the walk that reaches it */
       /* (round 22: the court is the space the yew is held back from --
@@ -3418,7 +3426,14 @@ export const ROOM_KINDS = {
   },
   passages: {
     kinds: [
-      { subject: 'timber' },
+      /* (round 61 repair 19, survey 17: "real objects with feet and shadows"
+         on the boards either side of the runner -- what was pushed into the
+         passage and left: books off the library's cases, piled on the boards
+         either side of the runner at your feet, a candle stub on one pile
+         (wfBookPile, as the library passage's). `hand`: under the cards in a fight, and not drawn there) */
+      { subject: 'timber',
+        nearPlus: [{ shape: 66, ahead: 1.85, across: 1.05, tone: 0.96, keep: true, still: true, hand: true, seed: 62.0, hM: 1.00, wM: 1.15 },
+                   { shape: 66, ahead: 1.95, across: -1.1, tone: 0.96, keep: true, still: true, hand: true, seed: 64.0, hM: 1.00, wM: 1.15 }] },
       /* behind the library: the backs of its cases line the passage */
       /* (round 22: the BACKS -- boards, uprights, the library's light
          between them -- where it drew the Study's own shelves of spines) */
@@ -3451,7 +3466,15 @@ export const ROOM_KINDS = {
   },
   pumpkin: {
     kinds: [
-      { subject: 'coping' },
+      /* (round 61 repair 19, survey 17: "real objects with feet and shadows"
+         on the courtyard's bare near flags -- a straw bale with a carved
+         pumpkin set on it at the near left, a big carved one and a small
+         one set down at the near right. `hand`: under the cards in a fight) */
+      { subject: 'coping',
+        nearPlus: [{ shape: 86, ahead: 2.45, across: -1.45, tone: 0.96, keep: true, still: true, hand: true, seed: 2.4 },
+                   { shape: 27, ahead: 2.33, across: -1.5, y: 0.43, tone: 0.97, hM: 0.55, keep: true, still: true, hand: true, seed: 1.1 },
+                   { shape: 27, ahead: 2.5, across: 1.75, tone: 0.97, hM: 0.75, keep: true, still: true, hand: true, seed: 6.7 },
+                   { shape: 27, ahead: 2.25, across: 1.1, tone: 0.97, hM: 0.45, keep: true, still: true, hand: true, seed: 2.9 }] },
       /* the moon gate, seen from in it */
       { subject: 'coping',
         vantage: { at: 'threshold', back: 1.6, lens: 0.92, dip: 0.30 } },
@@ -3490,7 +3513,13 @@ export const ROOM_KINDS = {
   },
   heart: {
     kinds: [
-      { subject: 'hearth' },
+      /* (round 61 repair 19, survey 17: "real objects with feet and shadows"
+         on the heart's bare boards either side of the runner -- a carved
+         stone bench on the left, an armchair on the right, from the room's
+         own set. `hand`: under the cards in a fight) */
+      { subject: 'hearth',
+        nearPlus: [{ shape: 83, ahead: 7.2, across: -2.1, tone: 0.95, hM: 0.95, keep: true, still: true, hand: true, seed: 2.0 },
+                   { shape: 0, ahead: 6.4, across: 2.3, tone: 0.95, keep: true, still: true, hand: true, seed: 3.0 }] },
       /* its galleries of the house's own: an arcade, seen from one end */
       { subject: 'arcade',
         vantage: { at: 'along', off: 0.26, wall: 2.4, fwd: 1.2, yaw: 24, wide: 4 },
