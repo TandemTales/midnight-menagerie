@@ -2801,8 +2801,11 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
 }
 /* set as a paper sets a headline: the condensed body face at its heaviest,
    capitals, black ink bitten into newsprint */
+/* (round 61 repair 18: z-index 1, its own layer -- Chrome 157 left the
+   headline unpainted at auto inside the cutting's rotated, filtered paper,
+   though the hit test found it on top; survey 17 caught the bare band) */
 .kit-newscutting__head {
-  position: absolute; left: 7%; right: 7%; top: 3.5%; height: 14%;
+  position: absolute; left: 7%; right: 7%; top: 3.5%; height: 14%; z-index: 1;
   display: grid; place-items: center;
   margin: 0;
   font-family: var(--font-body); font-weight: 800;
