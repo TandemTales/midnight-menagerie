@@ -280,3 +280,30 @@ Both judges noted that at 1280 the headline's H sits tight against the paper's t
 **For anyone capturing:** a pinned paper prop that loses its text after a browser update is this bug. Give the text its own layer.
 
 Key: `PAIRED-r61-repair18-key.json`.
+
+## Repair 19: objects on the four newly lit near floors
+
+Survey 17's judges asked first for "real objects with feet and shadows" on the near floors that repairs 16-17 had lit: the hedge, the passages, the pumpkin grounds and the heart. They had "gained light and nothing else".
+
+One builder gave each wing's survey kind a `nearPlus` from that wing's own prop set (`36083380`, merged `c16eaa4f`). The kinds are the hedge's `topiary`, the passages' `timber`, the courtyard's `coping` and the heart's `hearth`. Every piece stands at the sides of the floor, clear of the walk or runner:
+
+| Room | Added |
+|---|---|
+| Hedge | a spiral topiary (left), an urn on its pedestal (right) |
+| Passages | book piles with candle stubs, either side of the runner |
+| Pumpkin grounds | a straw bale under a lit jack-o'-lantern (left); a big carved pumpkin and a small grey one (right) |
+| Heart | a stone bench (left), an armchair (right) |
+
+- **Flags.** Every piece is `keep` and `still`, so the build's random stream and the rest of the room are unchanged. Every piece is also `hand`, so it is left out of a fight, where the cards cover the near floor. The heart's two stand mid-floor, so they show outside fights only. No lighting changed.
+- **Tried and reverted:**
+  - in the passages, dust-sheeted furniture and a steamer trunk: their shapes are not in that wing's prop program, so only shadows drew; and crate stacks, which read as dark slabs;
+  - in the pumpkin grounds, a basket and crates, which would have forced a new prop shader variant;
+  - in the hedge, a ball tree that read as a dark slab, and a lower foot lamp, which made no visible difference.
+
+The paired check was against survey 17's rooms: **8-0.**
+- Passages, pumpkin and heart went 2 and 2; the hedge 1 and 1.
+- Both judges called the hedge's spiral topiary faceted, "closer to a dark-green blob than a clipped yew". A better-drawn topiary is the next step there.
+
+Tests: grounding PASS, steam-deck 6/6, pumpkin-grounds 70/70, heart 44/0, hedge-maze 42/0, link-queue 104 variants, 0 failures.
+
+Key: `PAIRED-r61-repair19-key.json`.

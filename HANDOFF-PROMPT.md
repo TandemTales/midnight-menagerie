@@ -1,10 +1,10 @@
-# Midnight Menagerie handoff · November 12, 2026
+# Midnight Menagerie handoff · November 13, 2026
 
-## START HERE (2026-11-12): read this first if you have never seen this project
+## START HERE (2026-11-13): read this first if you have never seen this project
 
 **What this is.** Midnight Menagerie is a co-op deckbuilder in the style of Slay the Spire. One to four Kids, each with a Companion, walk a haunted house wing by wing and play Tricks (cards) against its creatures. The game is a browser game (plain ES modules, WebGL for the rooms) wrapped in Electron for Steam. The repository is this folder. Work happens on branch `dev`; `main` lags behind. The owner is Josh, who decides design. Everything you need to know about how Josh wants things is below or in the questions file. Do not ask Josh what is already decided.
 
-**Where you are — November 12, 2026.** Nothing is half-done. Dev is pushed, and every repair is either merged or written up as lost.
+**Where you are — November 13, 2026.** Nothing is half-done. Dev is pushed, and every repair is either merged or written up as lost.
 
 - **Repair 14 (FRAME3) is merged.** Discoveries and How to play now have one fixed home: two enamel medallions in the left gold frame, each with a readable plate that hangs beside it on hover or focus. It won its blind test 13-7, after FRAME1 and FRAME2 lost (`91da720e`).
 - **Repair 15 is merged.** A focused medallion keeps its enamel and lights its own gold rim, and its plate never covers the clubhouse's or the atlas's controls (4-0, `e5b32a7e`).
@@ -15,6 +15,7 @@
   - 19 of the old baseline's 22 reds are green now.
 - **Repair 16 is merged.** The graveyard, hedge, passages and pumpkin grounds are lit to the frame's foot, paired 7-1 (`c5425b02`). Sixteen of the seventeen rooms now carry the foot lamp. **Repair 17** (2-0) lit the greenhouse's near-right beds with a lantern instead, because its foreground is planting, not floor.
 - **Survey 17 beat survey 16, 8-2-56** (`SURVEY-2026-11-12.md`, images in `D:/UILOOP/survey17/NOW/`). Its one loss, the clubhouse cutting's missing headline, was a Chrome 157 paint bug, fixed by **repair 18** (2-0).
+- **Repair 19** (8-0) set drawn objects on the four newly lit near floors (hedge, passages, pumpkin grounds, heart).
 - **The main workspace's 28 pre-existing modified capture files** (`tests/blueprint`, `tests/readability`, `tests/foyer-presentation`, `tests/tutorial-restore`) are not anyone's work in progress. They were preserved byte-for-byte and kept out of every commit. Leave them unstaged.
 - **Evidence** for repairs 14-16 and survey 16 is in `C:/Users/Josh/AppData/Local/Temp/mm-help-frame-20261108`. The help-frame checkpoint, archived and hash-verified, is under `D:/UILOOP/r61-help-frame/`. Its capture harness is copied as `docs/ui-pass/survey-2026-11-10.py`.
 - **Steam remains untested.** Only Josh supplies real App IDs, never 480. Co-op's simulated-wire evidence is unchanged.
@@ -86,6 +87,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
   16. the graveyard, hedge, passages and pumpkin grounds lit to the foot of the frame (7-1); 16 of 17 rooms now carry the foot lamp.
   17. the greenhouse's near-right beds lit by a warm lantern brought forward in the conservatory view (2-0).
   18. the newspaper cutting's headline on its own layer, so Chrome 157 paints it (2-0).
+  19. objects on the four newly lit near floors: topiary and urn, book piles, bale and jack-o'-lanterns, bench and armchair (8-0).
 
   See `docs/ui-pass/ROUND-r61-repair-2026-11-06.md`. A repair costs about 1% of a week, where a full round costs about 19%, and it is the better tool for a named defect.
 - **Survey 13** (`SURVEY-2026-11-06b.md`, taken after repairs 1-3) beat survey 12, 17-0-49. Every repaired screen was better, and nothing was worse. **Survey 14** (`SURVEY-2026-11-07.md`) then beat survey 13, 25-4-37; its four losses were one collision, fixed by repair 7. **Survey 15** (`SURVEY-2026-11-07b.md`), after repairs 7-10, beat survey 14, 12-3-51. **Survey 16** (`SURVEY-2026-11-10.md`), after repairs 11-15, beat survey 15, 27-0-39. **Survey 17** (`SURVEY-2026-11-12.md`), after repairs 16-17, beat survey 16, 8-2-56.
@@ -93,8 +95,8 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 
 **Next, in order:**
 
-1. **The next survey (18) is not due yet.** Repair 18 changed one headline. Run survey 18 against survey 17 (`D:/UILOOP/survey17/NOW/`) after the next repairs. Use the harness `docs/ui-pass/survey-2026-11-10.py WORKTREE PORT OUT --rooms`, with `chrome.py` beside it. Retake any view whose log says VOID CAPTURE, and look at boards flagged `voidBlown` yourself: pale paper sets it off.
-2. **Then repairs.** Survey 17's judges asked first for **real objects with feet and shadows on the newly lit near floors** (the hedge path, the passages' runner, the courtyard's flags, the heart), and for lit foregrounds that keep their deep darks: one judge found the hedge's lit path milky. Survey 16's judges asked for these, in order:
+1. **Survey 18 is due now** that repairs 18-19 have landed. Run it against survey 17 (`D:/UILOOP/survey17/NOW/`) after the next repairs. Use the harness `docs/ui-pass/survey-2026-11-10.py WORKTREE PORT OUT --rooms`, with `chrome.py` beside it. Retake any view whose log says VOID CAPTURE, and look at boards flagged `voidBlown` yourself: pale paper sets it off.
+2. **Then repairs.** Repair 19 answered survey 17's first ask (objects on the lit near floors). Its judges found the hedge's spiral topiary faceted, a dark-green blob, so a better-drawn topiary is open; so is keeping lit foregrounds' darks deep (one judge found the hedge's lit path milky). Survey 16's judges asked for these, in order:
    - **the help medallions drawn as filigree cartouches,** so the bare medallions read as controls. Keep their home on the left frame;
    - **the fight's status floaters and the boards' pinned notes** as framed pieces that never sit over a candle, a label or a number;
    - **if a survey repeats it, the passages' foot lamp a little lower** (k 2.2 toward 1.6). One repair-16 judge found the boards milky.
@@ -111,7 +113,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 3. **The map's cut right edge** waits on Josh (question 9b). Don't redo it.
 4. **Wing silhouettes on the atlas** need the plan generator (`game/src/ui/estate-blueprint.js`'s source plans).
 
-**How to run a repair** (eighteen so far):
+**How to run a repair** (nineteen so far):
 
 1. Cut a worktree: `git worktree add -b ui/<name> D:/UILOOP/<round>/wt/<name> HEAD`. It takes 2-3 minutes; let it.
 2. Give one general-purpose agent a brief: the defect, with the judges' words and the image paths; the rules above; its own server port; the exact capture commands; the tests that must pass; and "revert what is not clearly better".

@@ -1,0 +1,7 @@
+SURVEY-room-hedge-hedge: A by 1 -- A stands a well-drawn ivy urn on its plinth in the near-right grass and a topiary with a cast shadow near-left, where B leaves both front corners as empty lawn, but A's topiary is a smooth, faceted, leafless spiral that reads closer to a dark-green blob than a clipped yew.
+SURVEY-room-passages-passage: A by 2 -- A sets two pairs of stacked books with candlesticks on the near floorboards either side of the runner, with soft contact shadows, giving the near floor readable objects where B's foreground is bare planking.
+SURVEY-room-pumpkin-courtyard: B by 2 -- B fills the near floor with a hay bale carrying a jack-o'-lantern at left and a large carved lantern beside a pale pumpkin at right, all with feet and shadows, where A's front third is empty flagstones.
+SURVEY-room-heart-heart: B by 2 -- B stands a stone bench at mid-left and a tufted leather armchair at mid-right on the boards, both recognisable and shadowed, filling the middle floor that A leaves as an open plane between the far furniture and the near candle clusters.
+
+### PATTERN
+In every pair the deciding difference is the presence of objects on the near or middle floor; the walls, skies, lighting and depth of the darks are identical, and neither side is hazier than the other. The added objects that won clearly (books, hay-bale lanterns, bench and armchair) are simple forms with crisp edges and contact shadows. The weakest addition is the hedge's topiary, whose untextured faceted surface keeps that win to a slight one.

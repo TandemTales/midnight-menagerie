@@ -1,0 +1,14 @@
+{
+ "SURVEY-room-hedge-hedge": {
+  "new_is_A": true
+ },
+ "SURVEY-room-passages-passage": {
+  "new_is_A": true
+ },
+ "SURVEY-room-pumpkin-courtyard": {
+  "new_is_A": false
+ },
+ "SURVEY-room-heart-heart": {
+  "new_is_A": false
+ }
+}
