@@ -264,3 +264,19 @@ The paired check was against survey 16: **2-0**, each judge by 1, naming the nea
 The bottom-left corner (9.6) is the rail's underside beside the existing lantern and stays dark. All seventeen rooms now carry light on their near ground.
 
 Key: `PAIRED-r61-repair17-key.json`.
+
+## Repair 18: the cutting's headline painted again (after survey 17)
+
+Survey 17 (`SURVEY-2026-11-12.md`) beat survey 16, 8-2-56. Its one loss was the clubhouse: the newspaper cutting showed a bare band where "PETS VANISH" belongs.
+
+No game code had changed. Survey 16's own build loses the headline today too, so the browser changed under it. In Chrome 157.0.8103.78 the headline sits at `z-index: auto` inside the cutting's rotated, drop-shadowed paper, and it was not painted. It was visible, styled, set in a loaded face, and the hit test found it on top. Toggling weight, shadow, display and wrapping live changed nothing; giving it its own layer did.
+
+The fix (`5cec5e21`, merged `50aa13d4`) is `z-index: 1` on `.kit-newscutting__head`, inside the cutting's own stacking context, so nothing outside it moves.
+
+The paired check was against survey 17's clubhouse: **2-0.** Help-frame 38/38.
+
+Both judges noted that at 1280 the headline's H sits tight against the paper's torn right edge, though it is not cut. That was true before this repair too. Tightening the letters would edge toward smaller reading type, so it is left.
+
+**For anyone capturing:** a pinned paper prop that loses its text after a browser update is this bug. Give the text its own layer.
+
+Key: `PAIRED-r61-repair18-key.json`.
