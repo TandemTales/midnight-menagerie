@@ -245,3 +245,22 @@ Tests: grounding PASS, steam-deck PASS, pumpkin-grounds 70/70. The other thirtee
 Now 16 of the 17 rooms carry the foot lamp, all but the greenhouse.
 
 Key: `PAIRED-r61-repair16-key.json`.
+
+## Repair 17: the greenhouse's near beds, lit by a lantern
+
+Repair 16 left the greenhouse out. Its foreground, seen from the conservatory's gallery, is brick planting beds under an iron rail, not floor. Two floor attempts failed:
+- **The wing's 7 m foot lamp** moved no pixel. From the gallery the near flags are farther away than that.
+- **A 16 m lamp on the conservatory view** lifted the bottom-left corner only from 10.6 to 14.0, and lit the whole lower floor, washing the fountain's pool.
+
+Both were reverted. (A first attempt also landed in the palm house's `nearFloor` by mistake. A probe of `uNearFootR` on the live page caught it: the value read 0.)
+
+What merged (`464940bb`, merged `a4d2f87c`):
+- The conservatory view's `lampsView` brings the far right cold lamp (`i: 1`) forward as a warm low lantern among the near-right beds (`x -5.2, z 0.04, y 1.1, #e0b266, k 1.6, r 5`).
+- The bottom-right corner went from 17.5 to 30.2, and saturation held at 0.49.
+- The fountain stays the room's centre. The palm house and vinery are unchanged.
+
+The paired check was against survey 16: **2-0**, each judge by 1, naming the near-right planter and ferns read as warm, drawn objects. Grounding PASS, steam-deck 6/6.
+
+The bottom-left corner (9.6) is the rail's underside beside the existing lantern and stays dark. All seventeen rooms now carry light on their near ground.
+
+Key: `PAIRED-r61-repair17-key.json`.

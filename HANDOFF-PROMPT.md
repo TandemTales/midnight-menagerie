@@ -13,7 +13,7 @@
   - Its three reds (`seams/check.py`, `sprites/check.py`, `chrome/run.py`'s large-text HUD chips) were red before FRAME3, with the same counts.
   - `demo/run.py` failed once on a browser timeout and passed 27/27 when rerun.
   - 19 of the old baseline's 22 reds are green now.
-- **Repair 16 is merged.** The graveyard, hedge, passages and pumpkin grounds are lit to the frame's foot, paired 7-1 (`c5425b02`). Sixteen of the seventeen rooms now carry the foot lamp; the greenhouse's foreground is planting, not floor.
+- **Repair 16 is merged.** The graveyard, hedge, passages and pumpkin grounds are lit to the frame's foot, paired 7-1 (`c5425b02`). Sixteen of the seventeen rooms now carry the foot lamp. **Repair 17** (2-0) lit the greenhouse's near-right beds with a lantern instead, because its foreground is planting, not floor.
 - **The main workspace's 28 pre-existing modified capture files** (`tests/blueprint`, `tests/readability`, `tests/foyer-presentation`, `tests/tutorial-restore`) are not anyone's work in progress. They were preserved byte-for-byte and kept out of every commit. Leave them unstaged.
 - **Evidence** for repairs 14-16 and survey 16 is in `C:/Users/Josh/AppData/Local/Temp/mm-help-frame-20261108`. The help-frame checkpoint, archived and hash-verified, is under `D:/UILOOP/r61-help-frame/`. Its capture harness is copied as `docs/ui-pass/survey-2026-11-10.py`.
 - **Steam remains untested.** Only Josh supplies real App IDs, never 480. Co-op's simulated-wire evidence is unchanged.
@@ -83,6 +83,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
   14. FRAME3: Discoveries and How to play in one fixed home, two medallions on the left gold frame (13-7, after two designs lost).
   15. a focused help medallion stays enamel, with its plate hung beside it (4-0).
   16. the graveyard, hedge, passages and pumpkin grounds lit to the foot of the frame (7-1); 16 of 17 rooms now carry the foot lamp.
+  17. the greenhouse's near-right beds lit by a warm lantern brought forward in the conservatory view (2-0).
 
   See `docs/ui-pass/ROUND-r61-repair-2026-11-06.md`. A repair costs about 1% of a week, where a full round costs about 19%, and it is the better tool for a named defect.
 - **Survey 13** (`SURVEY-2026-11-06b.md`, taken after repairs 1-3) beat survey 12, 17-0-49. Every repaired screen was better, and nothing was worse. **Survey 14** (`SURVEY-2026-11-07.md`) then beat survey 13, 25-4-37; its four losses were one collision, fixed by repair 7. **Survey 15** (`SURVEY-2026-11-07b.md`), after repairs 7-10, beat survey 14, 12-3-51. **Survey 16** (`SURVEY-2026-11-10.md`), after repairs 11-15, beat survey 15, 27-0-39.
@@ -90,9 +91,8 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 
 **Next, in order:**
 
-1. **Survey 17 is due after repair 16** (paired against survey 16, `D:/UILOOP/survey16/NOW/`). Use the harness `docs/ui-pass/survey-2026-11-10.py WORKTREE PORT OUT --rooms`, which is copied from the help-frame evidence and needs its `chrome.py` wrapper beside it. Retake any view whose log says VOID CAPTURE, and look at the event board yourself: shot.py flags pale parchment as `voidBlown`.
+1. **Survey 17 is due after repairs 16-17** (paired against survey 16, `D:/UILOOP/survey16/NOW/`). Use the harness `docs/ui-pass/survey-2026-11-10.py WORKTREE PORT OUT --rooms`, which is copied from the help-frame evidence and needs its `chrome.py` wrapper beside it. Retake any view whose log says VOID CAPTURE, and look at the event board yourself: shot.py flags pale parchment as `voidBlown`.
 2. **Then repairs.** Survey 16's judges asked for these, in order:
-   - **a near-floor light for the greenhouse's planting beds,** whose corners are 11/18;
    - **the help medallions drawn as filigree cartouches,** so the bare medallions read as controls. Keep their home on the left frame;
    - **the fight's status floaters and the boards' pinned notes** as framed pieces that never sit over a candle, a label or a number;
    - **if a survey repeats it, the passages' foot lamp a little lower** (k 2.2 toward 1.6). One repair-16 judge found the boards milky.
@@ -109,7 +109,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 3. **The map's cut right edge** waits on Josh (question 9b). Don't redo it.
 4. **Wing silhouettes on the atlas** need the plan generator (`game/src/ui/estate-blueprint.js`'s source plans).
 
-**How to run a repair** (sixteen so far):
+**How to run a repair** (seventeen so far):
 
 1. Cut a worktree: `git worktree add -b ui/<name> D:/UILOOP/<round>/wt/<name> HEAD`. It takes 2-3 minutes; let it.
 2. Give one general-purpose agent a brief: the defect, with the judges' words and the image paths; the rules above; its own server port; the exact capture commands; the tests that must pass; and "revert what is not clearly better".
