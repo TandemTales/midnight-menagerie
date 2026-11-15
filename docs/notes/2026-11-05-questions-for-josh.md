@@ -57,6 +57,14 @@ Each one has a default I have already taken, so nothing is waiting on you unless
    view. The framed version is on branch `ui/r61-repair2` (commits `87630b49`, `1f445378`) if you want it,
    or a middle way: open framed and zoom to 0.85x on the party's room after a moment.
 
+## Release
+
+9c. **The demo depot ships the whole game behind one flag.** `package_release.py --demo` builds the
+   same 881.6 MB, 2,927 files as the full game, with `"demo": true` in `release.json` (docs/RELEASE.md,
+   "The demo"). A player who edits that one line in the demo's folder plays the full game free. Many
+   indie demos accept this; the alternative is a demo build that leaves the other fourteen wings' art,
+   enemies and data out of the depot. I changed nothing. Default: ship as is.
+
 ## Not measured
 
 10. **Real-GPU performance with four Kids**, on the Deck or anything else. Fights of one Kid are inside
