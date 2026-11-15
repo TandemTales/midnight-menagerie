@@ -19518,6 +19518,14 @@ float wfBookPile(vec2 q, float px, float seed, float kq, bool paint){
   ink = max(ink, mmInkP(abs(oq.x) - 0.002, px, 0.8)*wfIn(open, px)*0.7);
   ink = max(ink, mmInkP(abs(fract(oq.x/0.018) - 0.5)*0.018 - 0.008, px, 0.6)*wfIn(open, px)*0.25*step(0.012, abs(oq.x)));
   col *= 1.0 - 0.30*smoothstep(0.025, 0.0, q.y);
+  /* (round 61 repair 20, survey 18, both judges: the piles read as "dark,
+     nearly flat slabs". At the lens's foot no lamp of the passage reaches
+     them, but the stub on the taller pile is burning: its light falls on
+     the books around it, strongest on the near spines and the top of the
+     shorter pile, as the hall lamp's pool does on its book above) */
+  vec2 fq = cq - vec2(0.0, 0.125);
+  float cpool = exp(-length(fq)/0.45);
+  emit += col*vec3(1.00, 0.70, 0.38)*2.60*cpool*wfIn(d, px);
   gWfEmit = emit;
   gWfCol = col; gWfInk = ink; gWfGloss = 0.25; gWfMoon = 0.0;
   return d;
