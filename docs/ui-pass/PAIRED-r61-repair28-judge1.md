@@ -1,0 +1,1 @@
+SURVEY-room-kennels-kennels: B by 1 -- B's near floor in both lower corners (the straw-strewn planks under the dish at bottom right and around the straw pad at bottom left) is lit and holds together as floor, where A lets those same corners sink toward black; everything above the troughs is identical.

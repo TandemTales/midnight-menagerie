@@ -1,0 +1,1 @@
+SURVEY-room-kennels-kennels: B by 1 -- The objects are identical, but B lights the near floor's two lower corners, so the straw scatter, the straw tuft beside the pink dog bed and the bright straw patch on the right still read as boards with straw on them, where A lets those corners sink toward black.

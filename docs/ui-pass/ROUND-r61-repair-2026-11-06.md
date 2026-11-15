@@ -439,3 +439,9 @@ The paired check was against dev's hedge: **2-0**, both "slightly". Both said th
 Tests: hedge-maze 42/0, link-queue 104/0.
 
 Key: `PAIRED-r61-repair27-key.json`.
+
+## Repair 28: repair 23's barrelled bales reverted (after survey 20)
+
+Survey 20 lost the kennels 0-2 to survey 19: the barrelled bales read as "swollen, lumpy ... pillows or felt". Repair 28 reverts the barrel, keeps repair 24's floor lamp, and beats survey 19's kennels **2-0**. Repair 23 is now undone, and only repair 24's lit floor remains in the kennels. See `SURVEY-2026-11-15b.md`.
+
+Key: `PAIRED-r61-repair28-key.json`.
