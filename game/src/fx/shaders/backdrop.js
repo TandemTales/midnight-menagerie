@@ -24928,7 +24928,13 @@ float ydTroughSD(vec2 m){
 /* (a bale is pressed, not sawn: its front a box with round shoulders, and
    the whole of it that front swept back along its depth -- searched, as the
    attic's trunk is, so its outline is one rounded form) */
-float ydBaleF(vec2 r, float L, float H){ return mmBox(r - vec2(0.0, H*0.5), vec2(L, H*0.5), 0.065); }
+/* (round 61 repair 23, survey 19, both judges: the hay bales "boxy". A
+   pressed bale BARRELS: its faces swell between the twines and its ends
+   bulge, the shoulders round over -- never a true box) */
+float ydBaleF(vec2 r, float L, float H){
+  float u = clamp(r.x/L, -1.0, 1.0), v = clamp((r.y - H*0.5)/(H*0.5), -1.0, 1.0);
+  return mmBox(r - vec2(0.0, H*0.5), vec2(L, H*0.5), 0.080) - 0.030*(1.0 - u*u) - 0.024*(1.0 - v*v);
+}
 float ydBale(vec2 p, vec2 o, float L, float H, float D, out float face){
   vec2 r = p - o;
   vec2 off = vec2(D*0.9, D);
@@ -24955,6 +24961,9 @@ float ydBalesSD(vec2 m, float seed, out float part){
   gYdB1 = b1;
   /* the stalks standing out of every edge, a stalk's scale, not a tear */
   float fz = (mmNoise(p*vec2(160.0, 70.0) + seed) - 0.5)*0.010 + (mmNoise(p*24.0 + seed) - 0.5)*0.006;
+  /* (repair 23: and tufts a few centimetres long standing out of the
+     shoulders, so the outline is straw and not a ruled line) */
+  fz -= smoothstep(0.55, 0.85, mmNoise(p*vec2(38.0, 30.0) + seed*2.3))*0.022;
   float bale = min(b0, b1) + fz;
   /* the loose heap at their foot */
   float x = p.x + 0.05;
