@@ -171,16 +171,19 @@ window.MM = {
   state: () => ({ scene: ctx.scenes.currentName, run: ctx.run ? ctx.run.snapshot() : null }),
 };
 
-// `&kids=2` stands up a two-Kid expedition before the scene opens, so every
-// screen can be deep-linked in co-op exactly the way it can in solo. Review
-// only — the real path is the Companion/Kid select emitting `run:start`.
-if (startParams.kids === '2' && startScene !== 'title') {
+// `&kids=2` (to `&kids=4`) stands up a co-op expedition before the scene
+// opens, so every screen can be deep-linked in co-op exactly the way it can in
+// solo -- and a four-Kid fight can be timed (tools/gpuprof.py --hash kids=4).
+// Review only — the real path is the Companion/Kid select emitting `run:start`.
+const DEEP_PARTY = [['marmalade', 'maya'], ['bones', 'eli'], ['taffy', 'mateo'], ['wink', 'amina']];
+const deepKids = Number(startParams.kids);
+if (deepKids >= 2 && deepKids <= 4 && startScene !== 'title') {
   bus.emit('run:start', {
     seed: Number(startParams.seed) || 20260826,
-    kids: [
-      { companion: startParams.companion || 'marmalade', kid: startParams.kid || 'maya' },
-      { companion: startParams.companion2 || 'bones', kid: startParams.kid2 || 'eli' },
-    ],
+    kids: DEEP_PARTY.slice(0, deepKids).map(([c, k], i) => {
+      const n = i ? String(i + 1) : '';
+      return { companion: startParams['companion' + n] || c, kid: startParams['kid' + n] || k };
+    }),
   });
 }
 
