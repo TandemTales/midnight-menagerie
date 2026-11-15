@@ -26,6 +26,7 @@
 - **Repair 25** (2-0) did the same for the attic (sides 1.0 -> 2.2). The ROUND doc's repair 25 section has a frame-foot table of the darkest corners left.
 - **Repair 26 LOST 0-2** (not merged): lifting the bales' dark straw read as felt. **Repair 27** (2-0) kept repair 22's finer leaf for the spiral and cone only, so the back ball and tiered topiaries are leafy again.
 - **Survey 20 beat survey 19, 3-2-61** (`SURVEY-2026-11-15b.md`): attic and hedge better, but the kennels WORSE. Repair 23's barrelled bales read as "pillows" there, though they had won their own pair. **Repair 28** reverted them (2-0 against survey 19's kennels). Lesson: one paired win is not proof against a survey.
+- **The battery on dev `0005461a` (11-15): 117 green, the same 3 baseline reds** (seams 4, sprites 7, chrome large-text). Every co-op gate and the demo run are green.
 - **The main workspace's 28 pre-existing modified capture files** (`tests/blueprint`, `tests/readability`, `tests/foyer-presentation`, `tests/tutorial-restore`) are not anyone's work in progress. They were preserved byte-for-byte and kept out of every commit. Leave them unstaged.
 - **Evidence** for repairs 14-16 and survey 16 is in `C:/Users/Josh/AppData/Local/Temp/mm-help-frame-20261108`. The help-frame checkpoint, archived and hash-verified, is under `D:/UILOOP/r61-help-frame/`. Its capture harness is copied as `docs/ui-pass/survey-2026-11-10.py`.
 - **Steam remains untested.** Only Josh supplies real App IDs, never 480. Co-op's simulated-wire evidence is unchanged.
