@@ -1058,7 +1058,10 @@ export const REGIONS = {
        cloud laid to rest so each one is a board and not a haze */
     footBand: false,   // (round 61 repair 6: the floor drawn to the frame's foot -- Backdrop.applyPalette)
     propShadow: 1.4,   // (round 61 repair 6, survey 13: "firmer contact shadows" -- Backdrop.build)
-    nearFloor: { foot: { k: 5.5, reach: 5.5, sides: 1.0, color: '#d8a070' }, fall: 0.90, calm: 0.85, clean: 1, dye: 1, rug: { ahead: 5.6, hw: 1.5, hd: 1.0 },
+    /* (round 61 repair 25: sides 1.0 -> 2.2, as repair 24 did the kennels' --
+       the pool reached the middle third only and the frame's lower right
+       corner fell to 10 of 255) */
+    nearFloor: { foot: { k: 5.5, reach: 5.5, sides: 2.2, color: '#d8a070' }, fall: 0.90, calm: 0.85, clean: 1, dye: 1, rug: { ahead: 5.6, hw: 1.5, hd: 1.0 },
                  /* (round 35 graft: the lamp's pool brought onto the near
                     boards by the trunk, ahead 9.6 -> 6.0, and a little more
                     of it, so the floor in front of you is lit by a lamp and
