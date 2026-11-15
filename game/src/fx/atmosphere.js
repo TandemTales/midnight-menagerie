@@ -1894,7 +1894,12 @@ export const REGIONS = {
        hand, the lantern's pool laid on them in front of you, and the straw
        heaped where the dogs drag it (FLOOR_FRAG, uStraw's heaps) */
     footBand: false,   // (round 61 repair 6: the floor drawn to the frame's foot -- Backdrop.applyPalette)
-    nearFloor: { foot: { k: 3.6, reach: 5.5, sides: 0.6, color: '#e2a862' }, fall: 0.86, calm: 0.5,
+    /* (round 61 repair 24, survey 19: "floors that fade to ... black at the
+       foot of the frame", the kennels' near floor named -- its foot lamp
+       reached the middle third only, at sides 0.6 where every other wing's
+       is 2 to 3, and the frame's lower-left measured 13-15 of 255. Now
+       the lantern's pool runs out to both corners at the same strength) */
+    nearFloor: { foot: { k: 4.4, reach: 6.0, sides: 2.2, color: '#e2a862' }, fall: 0.86, calm: 0.5,
                  /* (round 41: the lantern's pool a stop up and wider, so the
                     near flags and the straw on them are lit, not an empty
                     dim mottle -- survey-7 judge 2) */
