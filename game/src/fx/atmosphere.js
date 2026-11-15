@@ -3517,9 +3517,14 @@ export const ROOM_KINDS = {
          on the heart's bare boards either side of the runner -- a carved
          stone bench on the left, an armchair on the right, from the room's
          own set. `hand`: under the cards in a fight) */
+      /* (round 61 repair 21, survey 18: the armchair was "dark and drab" --
+         the house's plain generic chair, a near-black mass at that distance;
+         the painted button-back is another wing's shape. In its place the
+         stone urn on its pedestal the gallery's own near floor stands,
+         carved and lit) */
       { subject: 'hearth',
         nearPlus: [{ shape: 83, ahead: 7.2, across: -2.1, tone: 0.95, hM: 0.95, keep: true, still: true, hand: true, seed: 2.0 },
-                   { shape: 0, ahead: 6.4, across: 2.3, tone: 0.95, keep: true, still: true, hand: true, seed: 3.0 }] },
+                   { shape: 81, ahead: 5.0, across: 1.45, tone: 0.95, hM: 1.25, keep: true, still: true, hand: true, seed: 1.1 }] },
       /* its galleries of the house's own: an arcade, seen from one end */
       { subject: 'arcade',
         vantage: { at: 'along', off: 0.26, wall: 2.4, fwd: 1.2, yaw: 24, wide: 4 },
