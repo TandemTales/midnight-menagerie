@@ -1,0 +1,1 @@
+SURVEY-room-passages-passage: B by 2 -- the near-floor book stacks in B read as real books (coloured spines, lit white candle stubs, shadows under them), while in A the same stacks are near-black silhouettes that barely read as books.

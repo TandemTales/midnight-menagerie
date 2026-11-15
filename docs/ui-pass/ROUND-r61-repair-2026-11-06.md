@@ -307,3 +307,18 @@ The paired check was against survey 17's rooms: **8-0.**
 Tests: grounding PASS, steam-deck 6/6, pumpkin-grounds 70/70, heart 44/0, hedge-maze 42/0, link-queue 104 variants, 0 failures.
 
 Key: `PAIRED-r61-repair19-key.json`.
+
+## Repair 20: the passages' book piles lit by their own candle (after survey 18)
+
+Both of survey 18's judges asked first for near-floor objects that are modelled and lit, not silhouettes. The passages' book piles were their first example: "dark, nearly flat slabs".
+
+- **Why they were dark.** At the lens's foot no lamp of the passage reaches them. The room's five light slots (key, fill and three lanterns) are full, so a sixth lamp would drop one of the others.
+- **The fix.** The stub burning on the taller pile already draws its own flame. Its light now falls on the books round it (`952228b8`, merged `e09acbde`): an emitted pool in `wfBookPile` (shaders/backdrop.js), as the hall lamp lays its pool on its book. The calf and cloth now read in their colours (red, green, blue, tan), and the open book on the boards shows.
+- **First try, too weak:** strength 1.1 with a 0.26 m reach only paled the candle's wax. The merged pool is strength 2.6 with a 0.45 m reach.
+- **Scope.** The change is the shape's own paint, so the passages' `backcase` room, whose near floor uses the same piles, gets it too. No other room changed: the pixel diff against survey 18's rooms moved only the passages.
+
+The paired check was against survey 18's passages room: **2-0**, both judges "clearly". Both said the piles now "read as real books", where before they were "near-black silhouettes".
+
+Tests: link-queue 104 variants, 0 failures; secret-passages 74/0; grounding PASS; steam-deck 6/6.
+
+Key: `PAIRED-r61-repair20-key.json`. Evidence: `D:/UILOOP/R20B/`, `D:/UILOOP/pairs61y/`.

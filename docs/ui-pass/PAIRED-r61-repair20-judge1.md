@@ -1,0 +1,1 @@
+SURVEY-room-passages-passage: B by 2 -- The near-floor book stacks with candles on top read as real coloured books (red, green, blue, gold spines lit by candlelight) in B, where in A the same stacks are near-black silhouettes that barely read as books; the rest of the room is identical.
