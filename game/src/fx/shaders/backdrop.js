@@ -32407,7 +32407,11 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     /* (round 61 repair 22: a topiary's leaf at half the walls' scale --
        the walls' 0.66 m clumps are two or three per clipped form, and that
        few read as FACETS, not leaf) */
-    float lfS = topi > 0.5 ? 2.0 : 1.0;
+    /* (round 61 repair 27: the spiral and the cone only -- the ball and the
+       tiered stand round themselves (gTopTq) and read leafier at the walls'
+       scale; at half it the back ball sank into the hedge, survey 19's two
+       judges and repair 22's) */
+    float lfS = (topi > 0.5 && (gTopKind < 0.22 || gTopKind >= 0.78)) ? 2.0 : 1.0;
     float yrel = yewFaceP((m + seed*1.7)*lfS, mp*lfS, seed*3.1, ytone, ylit);
     gYewCl = mix(0.5, ytone, onLf);
     h += yrel*0.22*onLf;
