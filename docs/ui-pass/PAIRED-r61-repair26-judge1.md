@@ -1,0 +1,1 @@
+SURVEY-room-kennels-kennels: B by 1 -- the two stacked hay bales in the near-left foreground are the only difference, and in B they carry visible straw-weave texture and a deeper, candlelit tan that reads as baled hay, where A's are a paler, flatter tan that reads more like stuffed cushions.

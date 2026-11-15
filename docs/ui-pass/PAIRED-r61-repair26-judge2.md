@@ -1,0 +1,1 @@
+SURVEY-room-kennels-kennels: B by 1 -- The two images differ only in the near-floor hay bales: B's bale faces carry a crisp straw-stalk weave that reads as hay, while A's are smoother, hazier and flatter, closer to felt or cardboard blocks.

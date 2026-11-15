@@ -417,3 +417,15 @@ Tests: attic-observatory 53/0, grounding PASS, steam-deck 6/6.
 - the lampworks (15) and crypt (17) need their own foot mechanism read first.
 
 Key: `PAIRED-r61-repair25-key.json`.
+
+## Repair 26: LOST, not merged -- the bales' straw lifted
+
+I read the bale fronts' dark blotches as a camouflage mat and lifted them. The stalk noise floor went from 0.55 to 0.68, the off-stroke darkening from 0.76 to 0.88, and the pressed-layer streaks from 0.22 to 0.34. The fronts measured 46 -> 54.
+
+The paired check against dev's kennels came back **0-2**. Both judges preferred the old:
+- the old bales "carry visible straw-weave texture and a deeper, candlelit tan that reads as baled hay";
+- the lifted ones "read more like stuffed cushions" and are "closer to felt or cardboard".
+
+**Lesson:** the dark blotching IS the straw at room distance. Leave the bales' value range alone. The branch `ui/r61-repair26` (`644fdbf9`) stays unmerged as the record.
+
+Key: `PAIRED-r61-repair26-key.json`.
