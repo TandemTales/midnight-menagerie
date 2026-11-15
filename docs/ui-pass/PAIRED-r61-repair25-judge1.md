@@ -1,0 +1,1 @@
+SURVEY-room-attic-attic: A by 1 -- The near floorboards around the rolled carpet and under the left trunks stay lit out to the bottom corners in A, but sink to black in B; everything else is identical.

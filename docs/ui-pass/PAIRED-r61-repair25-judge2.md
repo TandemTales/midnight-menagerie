@@ -1,0 +1,1 @@
+SURVEY-room-attic-attic: A by 1 -- A keeps the floorboards lit in the near corners, under the teal trunk at bottom left and past the rolled rug at bottom right, where B lets them fall to black (the rooms are otherwise identical).

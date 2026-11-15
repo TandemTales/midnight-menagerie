@@ -23,6 +23,7 @@
 - **Survey 19 beat survey 18, 6-0-60** (`SURVEY-2026-11-15.md`, images in `D:/UILOOP/survey19/NOW/`). All six votes were repairs 20-22's rooms, and nothing was worse. Its judges ask next for painted surface detail on near-floor props (book piles, the urn's plinth, the kennels' hay bales), darks that hold colour, and the boards' thin panels as filigree cartouches. **Run a survey capture in the background:** a foreground run is cut off at 10 minutes.
 - **Repair 23** (2-0) barrelled the kennels' hay bales, with tufts at their shoulders (survey 19's "boxy").
 - **Repair 24** (2-0) lit the kennels' near floor out to both corners: its foot lamp's `sides` was 0.6 where every other wing's is 2-3.
+- **Repair 25** (2-0) did the same for the attic (sides 1.0 -> 2.2). The ROUND doc's repair 25 section has a frame-foot table of the darkest corners left.
 - **The main workspace's 28 pre-existing modified capture files** (`tests/blueprint`, `tests/readability`, `tests/foyer-presentation`, `tests/tutorial-restore`) are not anyone's work in progress. They were preserved byte-for-byte and kept out of every commit. Leave them unstaged.
 - **Evidence** for repairs 14-16 and survey 16 is in `C:/Users/Josh/AppData/Local/Temp/mm-help-frame-20261108`. The help-frame checkpoint, archived and hash-verified, is under `D:/UILOOP/r61-help-frame/`. Its capture harness is copied as `docs/ui-pass/survey-2026-11-10.py`.
 - **Steam remains untested.** Only Josh supplies real App IDs, never 480. Co-op's simulated-wire evidence is unchanged.

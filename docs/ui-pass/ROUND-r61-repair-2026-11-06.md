@@ -399,3 +399,21 @@ Survey 19's judge 2 asked for floors that do not "fade to ... black at the foot 
 Tests: kennels 69/0, grounding PASS, steam-deck 6/6. No shader changed.
 
 Key: `PAIRED-r61-repair24-key.json`. Evidence: `D:/UILOOP/R24B/`, `D:/UILOOP/pairs61zc/`.
+
+## Repair 25: the attic's foot lamp out to the corners
+
+This is repair 24's fix for the attic (`e8b9aeaa`, merged `09813eb7`). The attic's foot lamp had `sides: 1.0` and lit the middle third only; it is now 2.2.
+
+- **Measured:** the near-left boards 34, from 24; the lower-right 16, from 10.
+- **What stays dark** there is the trunks' and the rolled rug's own shadows.
+- **The lampworks and the crypt,** at sides 1.2 and 1.5, were tried in the same capture and did not move a pixel, so their feet are not lit by this lamp. Lampworks is in backdrop.js's `FOOT_WINGS`, a separate foot mechanism. Both were reverted.
+
+The paired check was against repair 24's attic: **2-0**, both "slightly". Both said the near floorboards "stay lit out to the bottom corners", and each measured the corners brighter.
+
+Tests: attic-observatory 53/0, grounding PASS, steam-deck 6/6.
+
+**Frame-foot table** (mean luma of the bottom 80 px in four quarters, at repair 24):
+- the darkest corners left are the greenhouse (its front railing, meant), the bathhouse right (4-7, its tub and wall; its lamp is already sides 4.0), the graveyard left (7, moonlit outdoors), the kitchens right (12) and the pumpkin grounds (13-14);
+- the lampworks (15) and crypt (17) need their own foot mechanism read first.
+
+Key: `PAIRED-r61-repair25-key.json`.
