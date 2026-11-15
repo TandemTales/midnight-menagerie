@@ -1,0 +1,1 @@
+SURVEY-room-heart-heart: B by 1 -- B's lit stone urn of greenery on its pedestal, right of the runner, is modelled and reads at once, standing firmly on the near floor; A's armchair in the same spot is a near-black mass with tube-like arms and legs that barely meet their shadow.

@@ -18,6 +18,7 @@
 - **Repair 19** (8-0) set drawn objects on the four newly lit near floors (hedge, passages, pumpkin grounds, heart).
 - **Survey 18 beat survey 17, 9-0-55** (`SURVEY-2026-11-13.md`, images in `D:/UILOOP/survey18/NOW/`). Its wins were repair 19's four rooms (by both judges) and the clubhouse's restored headline (by one judge). Nothing was worse.
 - **Repair 20** (2-0, `e09acbde`) lit the passages' book piles by their own candle: survey 18's "dark, nearly flat slabs" now read as books.
+- **Repair 21** (2-0) replaced the heart's drab generic armchair with the gallery's stone urn on its pedestal.
 - **The main workspace's 28 pre-existing modified capture files** (`tests/blueprint`, `tests/readability`, `tests/foyer-presentation`, `tests/tutorial-restore`) are not anyone's work in progress. They were preserved byte-for-byte and kept out of every commit. Leave them unstaged.
 - **Evidence** for repairs 14-16 and survey 16 is in `C:/Users/Josh/AppData/Local/Temp/mm-help-frame-20261108`. The help-frame checkpoint, archived and hash-verified, is under `D:/UILOOP/r61-help-frame/`. Its capture harness is copied as `docs/ui-pass/survey-2026-11-10.py`.
 - **Steam remains untested.** Only Josh supplies real App IDs, never 480. Co-op's simulated-wire evidence is unchanged.
@@ -98,7 +99,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 **Next, in order:**
 
 1. **Survey 19 is due after the next repairs.** Run it against survey 18 (`D:/UILOOP/survey18/NOW/`). Use the harness `docs/ui-pass/survey-2026-11-10.py WORKTREE PORT OUT --rooms`, with `chrome.py` beside it. Retake any view whose log says VOID CAPTURE, and look at boards flagged `voidBlown` yourself: pale paper sets it off.
-2. **Then repairs.** Survey 18's judges both asked first for near-floor objects that are modelled and lit, not silhouettes. Repair 20 lit the passages' book piles; still open are the hedge's faceted topiary and the heart's drab armchair. Second, painted and textured surfaces in place of smooth CG floor planes. Repair 19's judges also found the hedge's spiral topiary faceted, a dark-green blob, so a better-drawn topiary is open; so is keeping lit foregrounds' darks deep (one judge found the hedge's lit path milky). Survey 16's judges asked for these, in order:
+2. **Then repairs.** Survey 18's judges both asked first for near-floor objects that are modelled and lit, not silhouettes. Repair 20 lit the passages' book piles and repair 21 replaced the heart's drab armchair; still open is the hedge's faceted topiary (a better-drawn topiary needs shader work in the hedge's prop program). Second, painted and textured surfaces in place of smooth CG floor planes. Repair 19's judges also found the hedge's spiral topiary faceted, a dark-green blob, so a better-drawn topiary is open; so is keeping lit foregrounds' darks deep (one judge found the hedge's lit path milky). Survey 16's judges asked for these, in order:
    - **the help medallions drawn as filigree cartouches,** so the bare medallions read as controls. Keep their home on the left frame;
    - **the fight's status floaters and the boards' pinned notes** as framed pieces that never sit over a candle, a label or a number;
    - **if a survey repeats it, the passages' foot lamp a little lower** (k 2.2 toward 1.6). One repair-16 judge found the boards milky.

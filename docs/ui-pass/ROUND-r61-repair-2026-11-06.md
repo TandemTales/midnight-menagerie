@@ -322,3 +322,25 @@ The paired check was against survey 18's passages room: **2-0**, both judges "cl
 Tests: link-queue 104 variants, 0 failures; secret-passages 74/0; grounding PASS; steam-deck 6/6.
 
 Key: `PAIRED-r61-repair20-key.json`. Evidence: `D:/UILOOP/R20B/`, `D:/UILOOP/pairs61y/`.
+
+## Repair 21: the heart's armchair becomes the gallery's stone urn (after survey 18)
+
+Survey 18's judge 2 found the heart's armchair "dark and drab". It was the house's plain generic chair (shape 0), a near-black mass on the near-right boards. The painted button-back armchair belongs to another wing's prop program and would have forced a new shader variant.
+
+**The fix.** That near-right piece is now the stone urn on its pedestal (81) that the heart's own gallery stands on its near floor (`03e5e850`, merged `66bb78ce`). It is carved and lit, and it balances the bench on the left. It keeps `keep`, `still` and `hand`, so it is left out of fights.
+
+**Placement took three tries:**
+
+| Try | Placement | Result |
+|---|---|---|
+| 1 | the armchair's spot | the urn hid the far candelabrum's stem |
+| 2 | ahead 5.4, across 2.9 | cut by the right frame edge |
+| 3, merged | ahead 5.0, across 1.45, hM 1.25 | clear of both |
+
+A piece's screen position follows across ÷ ahead, so the ratio is the thing to set.
+
+The paired check was against survey 18's heart: **2-0**, both "slightly". Both judges said the urn "reads at once" as a modelled object, where the armchair was "a murky near-black mass" that also hid the candelabrum's foot.
+
+Tests: heart 44/0, link-queue 104/0, grounding PASS, steam-deck 6/6.
+
+Key: `PAIRED-r61-repair21-key.json`. Evidence: `D:/UILOOP/R21C/`, `D:/UILOOP/pairs61z/`.
