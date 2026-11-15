@@ -675,7 +675,7 @@ function assignTypes({ rng, ordered, rowsOf, byId, boss, meta, rows, lastWalk, h
   for (const n of open) if (!n.type) n.type = NodeType.SCUFFLE;
 
   // ── the spacing pass ──────────────────────────────────────────────────────
-  // `run(n)` is the longest stretch of rooms without a fight that any route can
+  // `stretch(n)` is the longest stretch of rooms without a fight that any route can
   // arrive at `n` carrying.  Three in a row is one too many: the room itself
   // becomes a Scuffle if it is only an event, otherwise the room behind it that
   // fed it the longest stretch does.  Rests, rescues and the boss's door row
@@ -686,22 +686,22 @@ function assignTypes({ rng, ordered, rowsOf, byId, boss, meta, rows, lastWalk, h
     && (n.type === NodeType.TREASURE || n.type === NodeType.SHOP)
     && ordered.filter((o) => o.type === n.type).length > 1;
   for (let guard = 0; guard < ordered.length; guard++) {
-    const run = new Map();
+    const stretch = new Map();
     let fix = null;
     for (const n of ordered) {
-      if (isFight(n.type)) { run.set(n.id, 0); continue; }
+      if (isFight(n.type)) { stretch.set(n.id, 0); continue; }
       let m = 0, worst = null;
       for (const pid of n.prev) {
-        const v = run.get(pid) ?? 0;
+        const v = stretch.get(pid) ?? 0;
         if (v > m) { m = v; worst = byId[pid]; }
       }
-      run.set(n.id, m + 1);
+      stretch.set(n.id, m + 1);
       if (m + 1 >= GAP_MAX + 1) {
         const chain = [n];
         for (let p = worst, d = 0; p && d < 2; d++) {
           chain.push(p);
           let w = null, best = -1;
-          for (const pid of p.prev || []) { const v = run.get(pid) ?? 0; if (v > best) { best = v; w = byId[pid]; } }
+          for (const pid of p.prev || []) { const v = stretch.get(pid) ?? 0; if (v > best) { best = v; w = byId[pid]; } }
           p = best > 0 ? w : null;
         }
         fix = chain.find(spendable) || chain.find(spendable2) || null;
