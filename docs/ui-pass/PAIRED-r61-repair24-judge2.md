@@ -1,0 +1,1 @@
+SURVEY-room-kennels-kennels: B by 1 -- the near floor in front of the hay bales and trough stays warm-lit with readable flagstones and straw in B, where A lets that foreground and the bottom corners sink toward black.

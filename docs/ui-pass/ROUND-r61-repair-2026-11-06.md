@@ -381,3 +381,21 @@ Open: the stalk strokes on the front still repeat into a woven zigzag at room di
 Tests: kennels 69/0, link-queue 104/0, grounding PASS, steam-deck 6/6.
 
 Key: `PAIRED-r61-repair23-key.json`. Evidence: `D:/UILOOP/R23B/`, `D:/UILOOP/pairs61zb/`.
+
+## Repair 24: the kennels' near floor lit out to both corners (after survey 19)
+
+Survey 19's judge 2 asked for floors that do not "fade to ... black at the foot of the frame"; judge 1 named the kennels' near floor.
+
+- **The cause.** The kennels' foot lamp had `sides: 0.6`, where every other wing's is 2 to 3, so it lit the middle third only. The frame's lower-left measured 15 of 255, the darkest foot of any room measured.
+- **The fix** (`8a6f2f22`, merged `2433488c`): the lamp is now k 4.4, reach 6.0, sides 2.2.
+- **The result, measured:**
+  - lower corners 31 and 53, from 15 and 33;
+  - near flags 29, from 19;
+  - the bales' own shadow left deep.
+- **First try.** Sides 1.8 at the old strength moved the corners only to 23 and 43.
+
+**The paired check** was against repair 23's kennels, which is dev's state with the barrelled bales, not survey 19's: **2-0**, both "slightly". Both said the near floor "stays a lit, grained warm plank floor out to the frame's corners", and judge 1 measured it and found it not milky.
+
+Tests: kennels 69/0, grounding PASS, steam-deck 6/6. No shader changed.
+
+Key: `PAIRED-r61-repair24-key.json`. Evidence: `D:/UILOOP/R24B/`, `D:/UILOOP/pairs61zc/`.

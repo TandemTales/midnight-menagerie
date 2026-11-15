@@ -1,0 +1,1 @@
+SURVEY-room-kennels-kennels: B by 1 -- the near floor in front of the hay bales and around the right-hand water bowl stays a lit, grained warm plank floor out to the frame's corners in B, where in A it sinks toward black at the bottom-left and right edges; every object above it is identical.
