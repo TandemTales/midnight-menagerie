@@ -373,8 +373,23 @@ async def main(a):
         await page.wait_for_timeout(500)
         large = await page.evaluate("""() => {
           const fs = parseFloat(getComputedStyle(document.querySelector('.mm-hud__t')).fontSize);
-          const clipped = [...document.querySelectorAll('.mm-hud__chip, .mm-set__label')]
-            .some(e => e.scrollWidth > e.clientWidth + 2);
+          /* CLIPPED means TEXT cut: a label's own text past its box, or one of a
+             chip's laid-out children (its figure, its word) past the chip's.
+             Not the chip's scrollWidth: its ::before is the enamel socket,
+             drawn 5.5 px past the chip on purpose (right: -5.5px), and that
+             bleed read as a clipped chip for weeks while nothing on screen was
+             cut (2026-11-15). Hidden screen-reader words and display:none
+             children are not laid out and are skipped. */
+          const shown = (c) => { const s = getComputedStyle(c); return s.display !== 'none' && s.position !== 'absolute' && s.position !== 'fixed'; };
+          const over = (e) => {
+            if (e.matches('.mm-set__label')) return e.scrollWidth > e.clientWidth + 2;
+            const R = e.getBoundingClientRect();
+            return [...e.children].filter(shown).some(c => {
+              const r = c.getBoundingClientRect();
+              return r.right > R.right + 2 || r.left < R.left - 2 || c.scrollWidth > c.clientWidth + 2;
+            });
+          };
+          const clipped = [...document.querySelectorAll('.mm-hud__chip, .mm-set__label')].some(over);
           return { fs, clipped, attr: document.documentElement.dataset.largeText };
         }""")
         (ok if large["attr"] == "1" else bad)("large text sets data-large-text on <html>")
