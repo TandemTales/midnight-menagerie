@@ -69,3 +69,8 @@ Each one has a default I have already taken, so nothing is waiting on you unless
 
 10. **Real-GPU performance with four Kids**, on the Deck or anything else. Fights of one Kid are inside
     the 15.5 ms budget. Four have not been timed on real hardware.
+    **Measured 2026-11-15 on this laptop** (RTX 3050 Ti; Unreal not running), with the Foyer boss at 1280x800
+    and `tools/gpuprof.py --settle 6`: one Kid **9.06 ms**, four Kids (`&kids=4`, a new deep link) **9.59 ms**.
+    Both are inside 15.5 ms. The same four-Kid fight captured by `tools/shot.py` ran at 62 fps on the Intel
+    integrated GPU. Each player's stage shows their own Kid, with the other three as plates, so four Kids
+    cost little more than one. Still not timed on a Deck itself.
