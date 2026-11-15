@@ -1,0 +1,1 @@
+SURVEY-room-hedge-hedge: A by 1 -- The two back topiaries (the tiered cone by the left lamp and the ball tree over the right urn) read as clipped leaves in A, with clumpy foliage and moonlit rim edges, while in B they go smooth and glossy, like rubbery lumps; nothing else in the room differs.

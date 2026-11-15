@@ -24,6 +24,8 @@
 - **Repair 23** (2-0) barrelled the kennels' hay bales, with tufts at their shoulders (survey 19's "boxy").
 - **Repair 24** (2-0) lit the kennels' near floor out to both corners: its foot lamp's `sides` was 0.6 where every other wing's is 2-3.
 - **Repair 25** (2-0) did the same for the attic (sides 1.0 -> 2.2). The ROUND doc's repair 25 section has a frame-foot table of the darkest corners left.
+- **Repair 26 LOST 0-2** (not merged): lifting the bales' dark straw read as felt. **Repair 27** (2-0) kept repair 22's finer leaf for the spiral and cone only, so the back ball and tiered topiaries are leafy again.
+- **Survey 20 is due** against survey 19 (`D:/UILOOP/survey19/NOW/`): repairs 23-25 and 27 are in.
 - **The main workspace's 28 pre-existing modified capture files** (`tests/blueprint`, `tests/readability`, `tests/foyer-presentation`, `tests/tutorial-restore`) are not anyone's work in progress. They were preserved byte-for-byte and kept out of every commit. Leave them unstaged.
 - **Evidence** for repairs 14-16 and survey 16 is in `C:/Users/Josh/AppData/Local/Temp/mm-help-frame-20261108`. The help-frame checkpoint, archived and hash-verified, is under `D:/UILOOP/r61-help-frame/`. Its capture harness is copied as `docs/ui-pass/survey-2026-11-10.py`.
 - **Steam remains untested.** Only Josh supplies real App IDs, never 480. Co-op's simulated-wire evidence is unchanged.
@@ -103,7 +105,7 @@ Judge prompts to copy and edit (folder, screen list): `docs/ui-pass/prompts/PAIR
 
 **Next, in order:**
 
-1. **Survey 20 is due after the next repairs.** Run it against survey 19 (`D:/UILOOP/survey19/NOW/`). Use the harness `docs/ui-pass/survey-2026-11-10.py WORKTREE PORT OUT --rooms`, with `chrome.py` beside it. Retake any view whose log says VOID CAPTURE, and look at boards flagged `voidBlown` yourself: pale paper sets it off.
+1. **Survey 20 is due now.** Run it against survey 19 (`D:/UILOOP/survey19/NOW/`). Use the harness `docs/ui-pass/survey-2026-11-10.py WORKTREE PORT OUT --rooms`, with `chrome.py` beside it. Retake any view whose log says VOID CAPTURE, and look at boards flagged `voidBlown` yourself: pale paper sets it off.
 2. **Then repairs.** Survey 18's judges both asked first for near-floor objects that are modelled and lit, not silhouettes. Repairs 20-22 answered them: the passages' book piles lit, the heart's armchair replaced, the hedge's topiary redrawn. Second, painted and textured surfaces in place of smooth CG floor planes. Repair 19's judges also found the hedge's spiral topiary faceted, a dark-green blob, so a better-drawn topiary is open; so is keeping lit foregrounds' darks deep (one judge found the hedge's lit path milky). Survey 16's judges asked for these, in order:
    - **the help medallions drawn as filigree cartouches,** so the bare medallions read as controls. Keep their home on the left frame;
    - **the fight's status floaters and the boards' pinned notes** as framed pieces that never sit over a candle, a label or a number;

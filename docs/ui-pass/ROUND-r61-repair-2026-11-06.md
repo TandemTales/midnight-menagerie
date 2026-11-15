@@ -429,3 +429,13 @@ The paired check against dev's kennels came back **0-2**. Both judges preferred 
 **Lesson:** the dark blotching IS the straw at room distance. Leave the bales' value range alone. The branch `ui/r61-repair26` (`644fdbf9`) stays unmerged as the record.
 
 Key: `PAIRED-r61-repair26-key.json`.
+
+## Repair 27: the finer topiary leaf for the spiral and cone only
+
+This answers repair 22's one cost, which both survey 19 judges also named: the back ball topiary had been "a touch leafier" before. Repair 22 had drawn every topiary's leaf at half the walls' scale. The ball and the tiered stand round themselves (`gTopTq`) and read as leaf at the walls' scale, so the half scale is now the spiral's and the cone's only (`b1a1a2e8`, merged `c24c8d90`). The ball and the stand are back to survey 18's look; the near spiral is unchanged.
+
+The paired check was against dev's hedge: **2-0**, both "slightly". Both said the back topiaries now "read as clipped leaves ... with moonlit rim edges" and "stand clear of the hedge wall", where repair 22's were "smooth, glossy ... rubbery lumps" that "sink into the hedge".
+
+Tests: hedge-maze 42/0, link-queue 104/0.
+
+Key: `PAIRED-r61-repair27-key.json`.

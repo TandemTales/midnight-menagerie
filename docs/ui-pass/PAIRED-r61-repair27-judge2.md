@@ -1,0 +1,1 @@
+SURVEY-room-hedge-hedge: A by 1 -- The two topiaries (the tiered one beside the left lamp post and the round one by the right gate) have leafy, rim-lit clipped foliage in A that stands clear of the hedge wall, while in B they are smooth, dark, slightly rubbery globes that sink into the hedge behind them; the rest of the room is identical.
