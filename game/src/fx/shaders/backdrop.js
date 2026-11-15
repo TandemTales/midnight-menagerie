@@ -21890,8 +21890,16 @@ vec2 topSD(vec2 m, vec2 msz, float seed){
     float hw = min(msz.x*0.44, H*0.28);
     float yy = m.y - 0.14;
     float t = clamp(yy/(H - 0.14), 0.0, 1.0);
-    float notch = abs(sin(3.14159*(yy/0.36 + 0.5*step(0.0, m.x))));
-    leaf = max(max(abs(m.x) - hw*(1.0 - t)*(0.66 + 0.34*notch), -yy)*0.92, yy - (H - 0.14));
+    /* (round 61 repair 22: survey 18 and repair 19 judges -- the near lawn's spiral
+       was "faceted", "a dark-green blob, not a clipped yew". abs(sin) bottoms
+       out in a V, and at a near piece's size that V is a hard crease the
+       light turns into flat planes. sin^2 is round at the bottom as at the
+       top: each turn of the spiral swells as a clipped mass of leaf does) */
+    float sn = sin(3.14159*(yy/0.36 + 0.5*step(0.0, m.x)));
+    float notch = sn*sn;
+    float sw = hw*(1.0 - t)*(0.66 + 0.34*notch);
+    leaf = max(max(abs(m.x) - sw, -yy)*0.92, yy - (H - 0.14));
+    gTopTq = vec2(m.x/max(sw, 0.02), 0.0);   // (repair 22: across the cone, for reliefH)
     wood = mmBox(m - vec2(0.0, 0.08), vec2(0.055, 0.08), 0.01);
   }
   /* clipped, not smooth: a few centimetres of ragged leaf round the form */
@@ -32387,7 +32395,11 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     if (topi > 0.5) { topSD(m, msz, seed); onLf = 1.0 - gTopWood; }
     float ytone, ylit;
     gYewClK = topi > 0.5 ? 1.0 : 0.30;   // (round 41: a run of yew is CLIPPED)
-    float yrel = yewFaceP(m + seed*1.7, mp, seed*3.1, ytone, ylit);
+    /* (round 61 repair 22: a topiary's leaf at half the walls' scale --
+       the walls' 0.66 m clumps are two or three per clipped form, and that
+       few read as FACETS, not leaf) */
+    float lfS = topi > 0.5 ? 2.0 : 1.0;
+    float yrel = yewFaceP((m + seed*1.7)*lfS, mp*lfS, seed*3.1, ytone, ylit);
     gYewCl = mix(0.5, ytone, onLf);
     h += yrel*0.22*onLf;
     /* (round 34 graft, VIVIANITE's: each clump a swell of relief, so the
@@ -32463,6 +32475,19 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
                 * step(0.78, gTopKind) * onLf;
       tint -= 0.55*gro;
       h -= 0.025*gro;
+      /* (round 61 repair 22: the spiral was the one clipped form with no
+         rounding of its own, so its only relief was the coverage slab's,
+         whose ridge runs up the medial axis of every notch -- the flat
+         planes and hard creases the judges called "faceted". Now it is a
+         SOLID OF REVOLUTION, round across the cone and dark toward its
+         turned-away sides, and each turn of the spiral swells between its
+         grooves as the tiers' pom-poms do) */
+      float spi = step(0.78, gTopKind)*onLf;
+      float sx = clamp(gTopTq.x, -1.0, 1.0);
+      float trn = clamp(abs(fract((m.y - 0.14 + m.x*0.62)/0.36) - 0.5)*2.0, 0.0, 1.0);
+      h += spi*(0.10*sqrt(1.0 - sx*sx) + 0.045*sqrt(trn));
+      tint -= spi*0.30*smoothstep(0.55, 1.0, abs(sx));
+      gYewTop = max(gYewTop, spi*smoothstep(0.55, 0.95, trn)*(0.5 + 0.5*ylit)*0.35);
       /* the box is PANELLED: a sunk field in each face under its rim, and
          the plinth's top edge catches the light */
       float pan = gTopWood*step(gTopPart, 1.5)*step(0.42, m.y)*step(m.y, 0.80)
