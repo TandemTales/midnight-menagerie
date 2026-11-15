@@ -362,3 +362,22 @@ Fixes 1 and 2 alone barely moved it. Fix 3 is what made it read as leaf. Only ar
 Tests: hedge-maze 42/0, link-queue 104/0, grounding PASS, steam-deck 6/6.
 
 Key: `PAIRED-r61-repair22-key.json`. Evidence: `D:/UILOOP/R22C/`, `D:/UILOOP/pairs61za/`.
+
+## Repair 23: the kennels' hay bales barrel, with straw at the shoulders (after survey 19)
+
+Both of survey 19's judges named the kennels' hay bales "boxy". Their paint was already rich: pressed flakes, stalk strokes, hairy twine, and the stubble on the cut ends. What read as boxy was the OUTLINE, a true rounded box with a ruled edge.
+
+**The fix** is in `ydBaleF` (`7e116423`, merged `c559d7b3`).
+- The rounded box now barrels: about 3 cm along and 2.4 cm up, swelling between the twines with the ends bulging. Its shoulder radius is 8 cm, up from 6.5.
+- Tufts a few centimetres long stand out of the shoulders.
+- The first try (2 cm and 1.6 cm) was too subtle.
+- The faces' brightness is unchanged: 46.1 vs 46.5 front and 85.4 vs 85.6 top, measured before judging.
+- The bales are the kennels' alone, so no other room moved.
+
+The paired check was against survey 19's kennels: **2-0**, both "slightly". Judge 1 said the new bales are "rounded and puffed at the ends ... read as real hay", where the old were "hard-edged boxes that look like strapped crates".
+
+Open: the stalk strokes on the front still repeat into a woven zigzag at room distance, and the top faces are plain.
+
+Tests: kennels 69/0, link-queue 104/0, grounding PASS, steam-deck 6/6.
+
+Key: `PAIRED-r61-repair23-key.json`. Evidence: `D:/UILOOP/R23B/`, `D:/UILOOP/pairs61zb/`.

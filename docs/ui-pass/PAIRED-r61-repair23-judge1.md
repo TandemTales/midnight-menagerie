@@ -1,0 +1,1 @@
+SURVEY-room-kennels-kennels: B by 1 -- The straw bales on the near and middle floor are rounded and puffed at the ends in B and read as real hay, while A's are hard-edged boxes that look like strapped crates; the rest of the room is identical.

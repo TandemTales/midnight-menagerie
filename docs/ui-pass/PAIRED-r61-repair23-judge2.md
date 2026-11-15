@@ -1,0 +1,1 @@
+SURVEY-room-kennels-kennels: B by 1 -- The near-floor hay bales in B have rounded, bulging, tufted straw edges that read as real packed hay, where A's are hard-cornered boxes with a straw texture on them; the rest of the room (doghouses, trough, beds, floor) is identical.
