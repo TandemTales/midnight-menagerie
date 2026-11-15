@@ -1,0 +1,1 @@
+SURVEY-room-hedge-hedge: A by 1 -- the near-left spiral topiary in A shows clipped leaf clumps and a rim-lit edge that read as boxwood, where B's is a smooth waxy green drape (B's two back topiaries separate from the hedge slightly better, which keeps the margin small).

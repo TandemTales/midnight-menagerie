@@ -1,0 +1,1 @@
+SURVEY-room-hedge-hedge: A by 1 -- the near-left spiral topiary reads in A as lit, leaf-textured clipped foliage standing on its shadow, where B's is a darker, flatter green mass (B's rear ball topiary does separate from the hedge a little better, but it is far smaller on screen).

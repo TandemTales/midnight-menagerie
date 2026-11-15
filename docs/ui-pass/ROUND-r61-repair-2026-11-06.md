@@ -344,3 +344,21 @@ The paired check was against survey 18's heart: **2-0**, both "slightly". Both j
 Tests: heart 44/0, link-queue 104/0, grounding PASS, steam-deck 6/6.
 
 Key: `PAIRED-r61-repair21-key.json`. Evidence: `D:/UILOOP/R21C/`, `D:/UILOOP/pairs61z/`.
+
+## Repair 22: the hedge's spiral topiary drawn round and in leaf (after survey 18)
+
+Both of survey 18's judges, and both of repair 19's, found the near lawn's spiral topiary "faceted", "a dark-green blob, not a clipped yew". It had three causes, each fixed in the topiary's own shader code (`61ca5836`, merged `89a37fef`):
+
+1. **The groove.** It was `abs(sin)`, which bottoms out in a V. At a near piece's size that V is a hard crease. It is now sin², round at the bottom.
+2. **No rounding of its own.** Unlike the tiered stand's pom-poms, the spiral had none, so its relief was the coverage slab's alone, ridged up the medial axis of every notch. That ridging is the flat planes and hard creases the judges saw. It is now a solid of revolution: round across the cone, darker toward its turned-away sides, and each turn swells between its grooves with its upper face catching light.
+3. **Leaf scale.** Its leaf was the maze walls' 0.66 m clumps: two or three on a clipped form, reading as facets. A topiary's leaf is now drawn at half that scale.
+
+Fixes 1 and 2 alone barely moved it. Fix 3 is what made it read as leaf. Only arithmetic was added, no noise taps, so the hedge program's link cost is unchanged.
+
+**The paired check** was against survey 18's hedge: **2-0**, both "slightly". Both said the near spiral now reads as "lit, leaf-textured clipped foliage", where the old one was a "smooth waxy green drape".
+
+**One cost, from both judges.** The finer leaf also reaches the back-right ball topiary, which in the old build "separates from the hedge slightly better". If a survey repeats this, give the ball a lighter tone or keep the walls' leaf scale on the ball kind only.
+
+Tests: hedge-maze 42/0, link-queue 104/0, grounding PASS, steam-deck 6/6.
+
+Key: `PAIRED-r61-repair22-key.json`. Evidence: `D:/UILOOP/R22C/`, `D:/UILOOP/pairs61za/`.
