@@ -19472,8 +19472,49 @@ float wfBookPile(vec2 q, float px, float seed, float kq, bool paint){
   float ink = 0.0;
   vec3 emit = vec3(0.0);
   float topY = 0.0;
+  /* (round 61 repair 34: the open one on the boards, drawn as repair 33
+     drew the study's -- wfBooks' own arithmetic, a tenth larger, and the two
+     piles moved 0.07 left to give it room on the boards. It was edge-on, two bowed leaves a thumb
+     high: "a smear rather than a book". A book lying open is seen from
+     ABOVE: the spread turned a hand off square and foreshortened as the
+     floor is, its cloth boards round the pages, the page block's edge
+     toward you, the gutter, each page bowed up from it, lines of text and a
+     plate. Laid FIRST, so the pile beside it stands in front of it.) */
+  const float OS = 1.1;
+  vec2 oq = (q - vec2(0.530, 0.016))/OS;
+  float opx = px/OS;
+  vec2 ofl = vec2(oq.x, oq.y/0.55 - 0.150);
+  vec2 bk = vec2(ofl.x*0.976 + ofl.y*0.218, ofl.y*0.976 - ofl.x*0.218);
+  float oCover = mmBox(bk, vec2(0.150, 0.105), 0.006)*0.55;
+  vec2 ofl2 = vec2(oq.x, (oq.y + 0.014)/0.55 - 0.150);
+  float oEdge = mmBox(vec2(ofl2.x*0.976 + ofl2.y*0.218, ofl2.y*0.976 - ofl2.x*0.218), vec2(0.150, 0.105), 0.006)*0.55;
+  float open = min(oCover, oEdge);
+  float oPage = mmBox(bk, vec2(0.140, 0.094), 0.003)*0.55;
+  d = min(d, open*OS);
+  if (paint) {
+    float ok = mmHash11(seed*4.7 + 1.9);
+    vec3 cloth = (ok < 0.34 ? vec3(0.46, 0.11, 0.08) : (ok < 0.67 ? vec3(0.12, 0.28, 0.17) : vec3(0.15, 0.18, 0.36)));
+    float au = abs(bk.x), sx = sign(bk.x);
+    vec2 ofl3 = vec2(oq.x, (oq.y + 0.010)/0.55 - 0.150);
+    float oBlock = mmBox(vec2(ofl3.x*0.976 + ofl3.y*0.218, ofl3.y*0.976 - ofl3.x*0.218), vec2(0.140, 0.094), 0.003)*0.55;
+    wfLay(col, ink, oEdge, cloth*0.62, opx, 0.9);
+    wfLay(col, ink, oBlock, vec3(0.70, 0.64, 0.50)*(0.78 + 0.22*sin(oq.y*1400.0)), opx, 0.5);
+    wfLay(col, ink, oCover, cloth*(0.95 + 0.25*kq*sx), opx, 0.9);
+    float crest = sin(clamp(au/0.140, 0.0, 1.0)*3.1416);
+    vec3 pgc = vec3(0.90, 0.84, 0.68)*(0.66 + 0.40*crest)*(1.0 - 0.30*smoothstep(0.020, 0.0, au))*(1.0 + 0.10*kq*sx);
+    float plate = mmBox(bk - vec2(-0.078, 0.040), vec2(0.036, 0.030), 0.002)*0.55;
+    pgc = mix(pgc, vec3(0.52, 0.36, 0.20)*(0.8 + 0.4*crest), wfIn(plate, opx));
+    float rowI = floor(bk.y/0.030);
+    float rowE = 0.124 - 0.045*step(0.72, mmHash11(rowI*3.7 + sx*1.3 + seed));
+    float txt = (1.0 - smoothstep(0.10, 0.30, abs(fract(bk.y/0.030) - 0.5)))
+              * step(0.022, au)*step(au, rowE)*step(abs(bk.y), 0.080)*step(0.004, plate);
+    pgc = mix(pgc, pgc*0.42, txt*0.75*mmLod(0.0165, opx));
+    wfLay(col, ink, oPage, pgc, opx, 0.55);
+    ink = max(ink, mmInkP(plate, opx, 1.0)*wfIn(oPage, opx)*0.6);
+    ink = max(ink, mmInkP(au - 0.0015, opx, 0.8)*wfIn(oPage, opx)*0.75);
+  }
   for (int pile = 0; pile < 2; pile++){
-    float x0 = pile == 0 ? -0.30 : 0.20;
+    float x0 = pile == 0 ? -0.37 : 0.13;
     float y = 0.0;
     int nb = pile == 0 ? 7 : 5;
     for (int i = 0; i < 7; i++){
@@ -19502,21 +19543,12 @@ float wfBookPile(vec2 q, float px, float seed, float kq, bool paint){
     if (pile == 0) topY = y;
   }
   /* the candle on the taller pile, in its saucer */
-  vec2 cq = q - vec2(-0.30, topY);
+  vec2 cq = q - vec2(-0.37, topY);
   float sau = max(wfEll(cq - vec2(0.0, 0.008), vec2(0.060, 0.012)), -cq.y);
   d = min(d, min(sau, mmBox(cq - vec2(0.0, 0.05), vec2(0.016, 0.042), 0.004)));
-  /* the open one on the boards */
-  vec2 oq = q - vec2(0.47, 0.0);
-  float leafL = max(abs(oq.x + 0.10) - 0.10, max(-oq.y, oq.y - (0.030 + 0.016*sin((oq.x + 0.20)*15.7))));
-  float leafR = max(abs(oq.x - 0.10) - 0.10, max(-oq.y, oq.y - (0.030 + 0.016*sin(oq.x*15.7 + 3.14))));
-  float open = min(leafL, leafR);
-  d = min(d, open);
   if (!paint) return d;
   wfLay(col, ink, sau, vec3(0.70, 0.68, 0.62)*(0.6 + 0.5*smoothstep(0.0, 0.02, cq.y)), px, 0.85);
   wfCandle(cq - vec2(0.0, 0.010), 0.085, 0.016, px, col, ink, emit);
-  wfLay(col, ink, open, vec3(0.74, 0.68, 0.54)*(0.75 + 0.35*smoothstep(0.0, 0.04, oq.y)), px, 0.85);
-  ink = max(ink, mmInkP(abs(oq.x) - 0.002, px, 0.8)*wfIn(open, px)*0.7);
-  ink = max(ink, mmInkP(abs(fract(oq.x/0.018) - 0.5)*0.018 - 0.008, px, 0.6)*wfIn(open, px)*0.25*step(0.012, abs(oq.x)));
   col *= 1.0 - 0.30*smoothstep(0.025, 0.0, q.y);
   /* (round 61 repair 20, survey 18, both judges: the piles read as "dark,
      nearly flat slabs". At the lens's foot no lamp of the passage reaches
@@ -19525,6 +19557,8 @@ float wfBookPile(vec2 q, float px, float seed, float kq, bool paint){
      shorter pile, as the hall lamp's pool does on its book above) */
   vec2 fq = cq - vec2(0.0, 0.125);
   float cpool = exp(-length(fq)/0.45);
+  /* (repair 34: and on the open pages beside the piles, face up to it) */
+  cpool = max(cpool, 0.40*wfIn(open, opx));
   emit += col*vec3(1.00, 0.70, 0.38)*2.60*cpool*wfIn(d, px);
   gWfEmit = emit;
   gWfCol = col; gWfInk = ink; gWfGloss = 0.25; gWfMoon = 0.0;
