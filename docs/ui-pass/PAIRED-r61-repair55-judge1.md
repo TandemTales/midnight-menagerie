@@ -1,0 +1,23 @@
+combat-boss: B by 1 -- the settings cog: A's bigger concentric rim is the better seat at 1600, but at 1280 its outer rim is a bright, open, off-centre arc that reads as a broken ring, where B's eccentric seat is dim.
+hud-late: B by 1 -- the zoom knobs and the Whole House medallion clear the ruler, rod and rules in B where A's rims touch them and each other, outweighing B's loss of the painted chalk and eraser and its broken cog rim at 1280.
+map: B by 1 -- the two zoom knobs, whose rims overlap each other and ride the ruler and rod in A but sit clear in B; A keeps the better (painted) Chalk and Eraser.
+map-focus: B by 1 -- the zoom knobs and the bar medallion no longer collide with the ruler, rod and lower rule in B; A's painted chalk stick and rubber are the better tools.
+rest: B by 1 -- the settings cog, whose enlarged outer rim in A breaks into an off-centre open arc on the 1280 Deck capture; A's is the better cog at 1600.
+shop: B by 1 -- the settings cog alone: A's triple rim is fuller at 1600 but misregistered and unclosed at 1280, B's is plain but clean.
+
+## Element by element
+
+**combat-boss, rest, shop -- the only real difference is (a) the settings cog.**
+- A: a larger cog medallion with a second and third gold rim. B: a single ringed medallion with a dim, dark pill-end "seat" poking out to its right.
+- 1600x900: A better. Its rims are concentric, it fills the rail and sits proud like a seated medallion. B's dim seat is off-centre and reads as a ghost double. A's rims are slightly busy and its top just merges into the rail's inner rule.
+- 1280x800: B better. A's outer rim is no longer a ring: it is a bright open gold arc, off-centre up and to the right, starting with a hook at the top-left and ending unclosed at the bottom. It reads as a misregistered or broken ring. B has the same eccentric seat but dim, so it is much less visible.
+
+**hud-late, map, map-focus -- the three behave identically.**
+- (a) Cog: here B is the large triple-rim version and A the small ring. B better at 1600 (concentric, seated). A better at 1280 (B has the same bright broken off-centre arc).
+- (b) Zoom knobs, ruler, rod: B better at both sizes. A's knobs are larger; at 1600 their rims nearly touch each other, the top rim runs into the ruler's shadow and the bottom sits on the rod; at 1280 A's two outer rims actually touch or overlap, and touch both ruler and rod. B's knobs are a little smaller, with clear plum between the rims and a visible gap to ruler and rod. The braided inner rim survives.
+- (c) "The Whole House" medallion: B better at both sizes. A's lower rim lands on or crosses the rule beneath the bar. B's is slightly smaller, the bar sits about 4 px higher, and the rim clears the rules above and below.
+- (d) Paired text buttons and Hand: B slightly better. A fills the cartouches near-black; B fills them deep plum, matching the Hand plate and the tray. A's black plates give the gold text a little more contrast and look like the samples' nameplates, but read as holes punched in the plum tray. Cost of B: the dimmed Undo/Clear text is a touch weaker on plum, most at 1280.
+- (e) Chalk and Eraser: A better at both sizes. A draws a painted chalk stick with a gold foil wrapper and a pink-ended rubber, each carrying its label, at the same scale as the three pencils: real objects in the tray. B shrinks each to a roughly 20 px blob inside another gold cartouche with a gold label; the object is lost and the tray gains two more identical cartouches. At 1280 in B the green pencil's tip pokes into the Chalk cartouche's left finial, and Chalk, Eraser and Undo run finial to finial with no air.
+
+### PATTERN
+The better versions win where a round control was given room: knobs and medallions that clear their neighbours' rims, the ruler, the rod and the bar rules read as seated objects, while the worse ones are the same objects scaled until rims touch. Colour-holding plum plates beat black ones for coherence with the tray, but replacing a painted object (chalk stick, rubber) with a small icon in yet another cartouche is a loss even when the label gets clearer. The enlarged cog rim is right at 1600 and wrong at 1280, so no single version is best on every element. Next, the better versions most need: (1) the cog's larger concentric rim made truly concentric and closed at 1280x800, so the Deck gets the seated medallion without the broken off-centre arc; (2) the painted chalk stick and eraser back at pencil scale in the tray, keeping the smaller knobs and plum plates, with air between the green pencil's tip, Chalk, Eraser and Undo at 1280; (3) the dimmed Undo/Clear label lifted a step on the plum fill, and the tray's plates varied (plaque, tag, tool) so the row is not six identical cartouches.

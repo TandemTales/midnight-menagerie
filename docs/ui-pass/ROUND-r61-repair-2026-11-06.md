@@ -900,3 +900,20 @@ Marked down inside the winner: the scullery dresser's wood "a little pale and sl
 Tests: link-queue 104/0, kitchens 20/0, study-library 50/0, steam-deck 6/6, grounding PASS.
 
 Key: `PAIRED-r61-repair56-key.json`. Evidence: `C:/UILOOP/s21/ev56/`.
+
+## Repair 55: room for the map knobs' rims is in, and the cog's seat on the wide rail only; the tray's plum plates and the Chalk and Eraser plates are out (2026-11-18)
+
+Repair 46's judges: the cog's arc "drawn as a firm gold rule"; the knobs' rims "nearly kiss each other and the tray rod"; the tray's text buttons and Chalk/Eraser chips "the flattest things on screen". Repair 55 built four parts in CSS. As built it LOST 3-9. The judges ruled element by element, and agreed with each other on each:
+
+- **IN: room for the rims** (`ff3126ee`, map.css). Ring to ring 1px to 6px, ring to the tray's end 2 to 6, the medallion's mount off the bar's foot rule (2px each side, the bar's lower row 4px higher). Both judges, both sizes: "clear plum between the rims and a visible gap to ruler and rod", where dev's "rims actually touch or overlap". A ring is still 1-2px from ruler and rod (the trough is 38px, the face 34).
+- **IN on the wide rail only: the cog's seat** (`5a334d3f`, hud.css, then my `min-width: 1401px` wrap). A gilt rule on the cog's own centre covering the picture's lopsided capsule end. Both judges: at 1600 "concentric ... like a seated medallion"; at 1280, where the builder had opened the seat on the count's side, "a bright open gold arc, off-centre ... reads as a misregistered or broken ring". The three cog-only screens went to dev 6-0 on the Deck capture. The open form is deleted; at 1400px and under the rail is as it was.
+- **OUT: the action plates in plum enamel** (`36cd65e5`): one judge slightly for ("hold colour and read as one enamel set"), one slightly against (dev's near-black plate "reads as an object", plum "nearly merges with the tray"). A split.
+- **OUT, both judges: Chalk and Eraser as enamel plates** (`118835cd`). Dev's are "a painted chalk stick with a gold foil wrapper and a pink-ended rubber ... real objects in the tray"; the plates "shrink each to a roughly 20 px blob inside another gold cartouche". The brief asked for it on a judge's word ("pale chips ... the flattest things"), and it was wrong: a drawn object beats a surface, and they were objects already.
+
+The merged form (rims' room, and the seat above 1400px) was not captured as such: the next survey is its check.
+
+Next, from both: the cog's ring "truly concentric and closed at 1280" (it needs room the count does not leave: the count would have to give it); the tray's plates varied (plaque, tag, tool) rather than six identical cartouches, and the Hand's glyph at 1280.
+
+Tests (on the branch with all four parts): help-frame 38, chrome 27/0, gamepad 24/0, steam-deck 6/6, map 38/0, scene-css 0, css-tokens 0, readability minFont unchanged.
+
+Key: `PAIRED-r61-repair55-key.json`. Evidence: `C:/UILOOP/s21/ev55/`.
