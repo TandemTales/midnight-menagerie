@@ -20608,6 +20608,28 @@ vec3 gyWeather(vec3 c, vec2 q, float px, float seed, float foot){
   return c;
 }
 /* tufts of the churchyard grass about a stone's foot, crisp blades */
+/* (round 61 repair 57, both judges of repair 53: "the near-foreground
+   stones still fall to near-black at their feet". Measured on the family
+   plots: the last twelve pixels of a near stone 0 to 14 of 255, its grass
+   with them. The house's dark seat (0.62 off the paint and 0.40 off the
+   light in a prop's last 45 mm) is the STONE's; the grass grown up in front
+   of it was taking it too, and was drawn dark from the root. At a NEAR
+   stone -- a metre 110 drawn pixels and more, none of it by 70, so the rows
+   behind are as they were -- the blades are given back what the seat takes
+   and stand lit from the root, and under them the SWARD: the turf grown up
+   against the stone, five to nine centimetres of it in points, so the foot
+   is a line on lit grass. It is painted over the stone's own foot and not
+   past its outline (gySward is the paint's only: a thing added to the
+   outline is paid for at every call that measures it). But for the short
+   shadow the stone lays on the grass on the side away from the key.) */
+float gySward(vec2 q, float seed, float px){
+  return max(q.y + 0.012 - (1.0 - smoothstep(0.009, 0.014, px))*(0.062 + 0.045*(1.0 - abs(sin(q.x*83.0 + seed*7.0)))), -q.y);
+}
+float gyTuftLit(vec2 q, float hw, float kq, float px){
+  float pf = 1.0 - smoothstep(0.0, max(0.045, 2.2*px), q.y);          // (the seat, as PROP_FRAG lays it)
+  float tip = smoothstep(0.0, 0.10, q.y);
+  return mix(0.55 + 0.95*tip, min((2.0 + 0.8*tip)*(1.0 + 3.4*pf*pf), 5.0)*(1.0 - 0.55*smoothstep(0.70*hw, 0.80*hw, -kq*q.x)), 1.0 - smoothstep(0.009, 0.014, px));
+}
 float gyTufts(vec2 q, float hw, float seed){
   float x = q.x/0.030;
   float i = floor(x);
@@ -20918,9 +20940,11 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   /* the grass, over the stone's foot */
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
+  float gr = max(wfIn(tuft, px), wfIn(gySward(q, seed, px), px)*wfIn(min(d, dRet), px));   // (repair 57: the sward, on the stone's foot)
+  col = mix(col, gC, gr);
   /* (the blades at their own light, dark at the roots) */
-  gWgShade = mix(shd, 0.55 + 0.95*smoothstep(0.0, 0.10, q.y), wfIn(tuft, px));   // (repair 53: the blades' tips in the moon)
-  gGyTint = mix(tnt, vec3(1.0), wfIn(tuft, px));
+  gWgShade = mix(shd, gyTuftLit(q, W*1.30, kq, px), gr);   // (repair 53: the blades' tips in the moon; repair 57: gyTuftLit)
+  gGyTint = mix(tnt, vec3(1.0), gr);
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.55*wfIn(d, px)*smoothstep(H*0.4, H, p.y) + 0.20*wfIn(d, px));
   gWfCol = col; gWfInk = ink;
@@ -21125,8 +21149,10 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
   }
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
-  gWgShade = mix(shd, 0.55 + 0.95*smoothstep(0.0, 0.10, q.y), wfIn(tuft, px));   // (repair 53: the blades' tips in the moon)
-  gGyTint = mix(tnt, vec3(1.0), wfIn(tuft, px));
+  float gr = max(wfIn(tuft, px), wfIn(gySward(q, seed, px), px)*wfIn(d, px));   // (repair 57: the sward, on the tomb's foot)
+  col = mix(col, gC, gr);
+  gWgShade = mix(shd, gyTuftLit(q, L, kq, px), gr);   // (repair 53: the blades' tips in the moon; repair 57: gyTuftLit)
+  gGyTint = mix(tnt, vec3(1.0), gr);
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.45*wfIn(min(ledger, urn), px)*(1.0 - kerbed) + 0.35*kerbed*wfIn(kHead, px) + 0.15);
   gWfCol = col; gWfInk = ink;
