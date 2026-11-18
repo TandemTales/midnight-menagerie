@@ -1372,6 +1372,12 @@
     calc(var(--u) * 26) 0 calc(var(--u) * 52) 0 stretch;
   clip-path: inset(calc(var(--u) * 10.5) 0 calc(var(--u) * 36) 0);
 }
+/* The four node rooms mount the rail in flow (hud.js `fixed: false`), where it
+   was not a stacking context: the length above, at z-index -1, fell BEHIND the
+   rail's own picture there and the curve still showed (shop, rest). The rail
+   is its own stacking context everywhere now; in the rooms it already stood
+   alone in one (reward.css .rm-hudhost), so nothing changes order. */
+.mm-hud { isolation: isolate; }
 /* == end the channel behind the cog == */
 
 /* == air round the mounts on the tight rail (repair 46) == */
