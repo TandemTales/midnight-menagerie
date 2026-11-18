@@ -20540,6 +20540,34 @@ float gyTufts(vec2 q, float hw, float seed){
   float d = max(bl*0.030, max(q.y - hgt, -q.y));
   return max(d, abs(q.x) - hw);
 }
+/* (round 61 repair 51, survey 22: the rooms' props "still read as rendered
+   rather than painted ... carry the same modelling to the objects left
+   untouched". The churchyard's stones stood AT the prop ceiling -- three
+   stones of three different rocks all 106-111 of 255 across their upper
+   faces -- so the turn, the return's shade and the cut lines laid in their
+   paint were compressed to one grey. Their form goes on the LIT colour now,
+   gWgShade, as planes and ruled lines.)
+   A BAND just inside an edge: a is metres in from it, the band two pixels
+   and a fifth wide and never under 14 mm, its inner edge crisp. */
+float gyBand(float a, float px){
+  float w = max(0.014, 2.2*px);
+  return (1.0 - smoothstep(w - px, w, a))*clamp(a/px + 0.5, 0.0, 1.0);
+}
+/* THE ROWS AS THE MASON SET THEM OUT: each row of the inscription in words,
+   every word a shallow sunk block -- x its upper wall, in the shadow of the
+   stone above it, y its lower lip, which faces the sky and is lit. Laid
+   under gyLetters' own rows (the same row lengths), these are what reads
+   at the distances where a letter is under a pixel wide. */
+vec2 gyRows(vec2 p, float hw, float lh, float n, float px, float seed){
+  float row = floor(-p.y/lh);
+  float ry = -p.y - row*lh;
+  float capH = lh*0.60;
+  float rl = row < 0.5 ? hw*0.82 : hw*(0.40 + 0.55*mmHash11(seed*7.3 + row*1.9));
+  float wl = capH*3.3;
+  float wf = fract((p.x + rl)/wl + mmHash11(row*3.1 + seed));
+  float word = clamp(0.5 + (rl - abs(p.x))/px, 0.0, 1.0)*clamp(0.5 + min(wf, 0.80 - wf)*wl/px, 0.0, 1.0)*step(0.0, row)*step(row, n - 0.5);
+  return vec2(clamp(1.0 - abs(ry - 0.5*px)/px, 0.0, 1.0), clamp(1.0 - abs(ry - capH)/px, 0.0, 1.0))*word*mmLod(lh, px);
+}
 
 float wfHsForm(vec2 p, float k, float H, float W, float seed, out float face, out float tx, out float ty, out float kind){
   float d;
@@ -20636,6 +20664,17 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   sc = gyWeather(sc, p, px, seed, 0.0);
   float bev = clamp(-d/0.016, 0.0, 1.0);
   sc *= mix(1.25 + 0.20*kq*sign(p.x), 1.0, bev);
+  /* (round 61 repair 51) THE SLAB IN PLANES, on the lit colour: its ARRIS a
+     band -- lit where it turns to the key or the sky, in shade where it
+     turns from them, the two never blended -- the face between them turning
+     a little from the key's side to the far one. Far off the two bands are
+     all there is of it: a lit side and a shaded one. */
+  float isX = step(0.5, kind)*step(kind, 1.5);
+  float sxk = kq*clamp(p.x/max(W*0.8, 0.05), -1.0, 1.0);
+  float upF = smoothstep(ty - 0.02, ty + 0.10, p.y)*(1.0 - isX);
+  float arO = clamp(sxk*0.9 + upF*1.1, -1.0, 1.0);
+  float arB = gyBand(-d, px);
+  float shd = mix(1.0 + 0.10*sxk, 1.0 + 0.70*max(arO, 0.0) - 0.44*max(-arO, 0.0), arB);
   /* the return first, under the face: its side in the shade unless the key
      is round that way, its top (where it shows above) catching the light */
   {
@@ -20644,16 +20683,33 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
     rc *= mix(0.52 + 0.22*step(0.0, kq*sgnR), 1.18, clamp(topR, 0.0, 1.0));
     wfLay(col, ink, dRet, rc, px, 0.85);
   }
+  /* (...and the return on the lit colour: the side in shade or in the key,
+     the top of it, round the head, lit by the sky) */
+  shd = mix(mix(0.52 + 0.62*step(0.0, kq*sgnR), 1.36, upF), shd, wfIn(d, px));
   wfLay(col, ink, d, sc, px, 0.95);
   /* the sunk face (the margin left proud round it) */
   ink = max(ink, mmInkP(face, px, 1.0)*0.55*wfIn(d, px));
-  col = mix(col, col*0.90, wfIn(face, px));
+  float inF = wfIn(face, px);
+  col = mix(col, col*0.90, inF);
+  /* (...SUNK: the wall of it to the key and under the head throws its
+     shadow in, the far wall and the foot of it catch the light) */
+  {
+    float fo = clamp(sxk*0.9 + 1.1*smoothstep(ty - 0.07, ty + 0.01, p.y)*(1.0 - isX) - 1.6*(1.0 - smoothstep(0.08, 0.13, p.y)), -1.0, 1.0);
+    float fB = gyBand(-face, px)*inF*mmLod(0.12, px);
+    shd *= 1.0 - 0.40*fB*max(fo, 0.0) + 0.34*fB*max(-fo, 0.0);
+  }
   /* the inscription, cut in rows */
   float rows = kind > 3.5 ? 2.0 : (kind > 0.5 && kind < 1.5 ? 2.0 : 5.0);
   float lh = kind > 0.5 && kind < 1.5 ? 0.040 : 0.052;
-  float cut = gyLetters(p - vec2(0.0, ty - (kind < 0.5 || kind > 1.5 ? 0.11 : 0.0)), tx, lh, rows, px, seed)*wfIn(face, px);
+  vec2 lp = p - vec2(0.0, ty - (kind < 0.5 || kind > 1.5 ? 0.11 : 0.0));
+  float cut = gyLetters(lp, tx, lh, rows, px, seed)*inF;
+  /* (...each word's upper wall a ruled shadow and its lower lip a ruled
+     light, fading out as the letters themselves come up) */
+  vec2 rw = gyRows(lp, tx, lh, rows, px, seed)*inF*(1.0 - 0.65*mmLod(lh*0.396, px));
+  cut = max(cut, rw.x*0.70);
   col = mix(col, st*0.22, cut*0.85);
   ink = max(ink, cut*0.35);
+  shd *= (1.0 - 0.42*cut)*(1.0 + 0.30*rw.y*(1.0 - cut));
   /* the emblem cut over it: a cross, a wreath, or a draped urn */
   float em = mmHash11(seed*9.7);
   if (kind < 0.5 || (kind > 1.5 && kind < 3.5)) {
@@ -20664,6 +20720,7 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
     else sym = min(wfEll(e + vec2(0.0, 0.006), vec2(0.024, 0.030)), mmBox(e - vec2(0.0, 0.030), vec2(0.016, 0.006), 0.0));
     col = mix(col, st*0.28, wfIn(sym, px));
     ink = max(ink, mmInkP(sym, px, 1.0)*0.5);
+    shd *= 1.0 - 0.30*wfIn(sym, px);
   }
   /* the Celtic cross's ring and arms: their own mouldings */
   if (kind > 0.5 && kind < 1.5) {
@@ -20671,9 +20728,13 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
     ink = max(ink, mmInkP(abs(length(p - vec2(0.0, hc - 0.10)) - 0.115) - 0.008, px, 1.0)*0.55*wfIn(d, px));
     col = mix(col, col*1.20, wfIn(length(p - vec2(0.0, hc - 0.10)) - 0.030, px));
   }
+  /* (where it stands in the ground: a dark line) */
+  shd *= 1.0 - 0.30*smoothstep(0.07, 0.0, p.y);
   /* the grass, over the stone's foot */
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
+  /* (the blades at their own light, dark at the roots) */
+  gWgShade = mix(shd, 0.60 + 0.40*smoothstep(0.0, 0.05, q.y), wfIn(tuft, px));
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.55*wfIn(d, px)*smoothstep(H*0.4, H, p.y) + 0.20*wfIn(d, px));
   gWfCol = col; gWfInk = ink;
