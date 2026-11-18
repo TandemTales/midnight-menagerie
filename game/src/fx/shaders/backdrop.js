@@ -19602,6 +19602,16 @@ float wfVitrine(vec2 q, float px, float seed, float kq, bool paint){
    knopped stem, and at its head the two arms sweeping UP and out in a
    curve -- the cue that says candelabrum, where a crossbar says cross --
    each to its drip pan and its candle, the middle one tallest, all lit. */
+/* (round 61 repair 47: gilt brass on a round member. u runs across it, -1 its
+   far edge, +1 the key's; lod fades the highlight where the member is too
+   thin to hold it. rgb the paint -- shade, brass, highlight, each holding its
+   colour -- and a the same form as a value for the lit colour, gWgShade) */
+vec4 wfGilt(vec3 brass, float u, float lod){
+  float sh = smoothstep(-0.55, 0.10, u);
+  float hl = smoothstep(0.20, 0.34, u)*(1.0 - smoothstep(0.62, 0.76, u))*lod;
+  return vec4(mix(mix(brass*vec3(0.58, 0.44, 0.30), brass, sh), brass*vec3(1.30, 1.28, 1.10), hl),
+              0.78 + 0.55*sh + 0.60*hl);
+}
 float wfTorchere(vec2 q, float px, float seed, float kq, bool paint){
   float ax = abs(q.x);
   float t0;
@@ -19639,12 +19649,81 @@ float wfTorchere(vec2 q, float px, float seed, float kq, bool paint){
   float ink = 0.0;
   vec3 brass = vec3(0.86, 0.62, 0.28);
   vec3 emit = vec3(0.0);
-  float rnd = 0.55 + 0.6*smoothstep(-1.0, 1.0, kq*q.x/0.04);
-  wfLay(col, ink, foot, brass*0.75*rnd, px, 0.9);
-  wfLay(col, ink, stem, brass*(0.45 + 0.7*wfRound(clamp(q.x/0.03, -1.0, 1.0)))*(1.0 + 0.3*kq*sign(q.x)), px, 0.9);
-  wfLay(col, ink, knop, brass*(0.60 + 0.55*smoothstep(-0.02, 0.03, q.y - (q.y > 0.85 ? 1.10 - HD : 0.62))), px, 0.8);
-  wfLay(col, ink, min(arm, centre), brass*0.9, px, 0.8);
-  wfLay(col, ink, min(pans, cups), brass*(0.8 + 0.4*smoothstep(1.30, 1.34, hq.y)), px, 0.8);
+  /* (round 61 repair 47, surveys 21 and 22: "the near props still read as
+     smooth models (candelabra stems ...)", the candle stands "flat stickers".
+     Turned gilt brass, each member painted as what it is: a highlight ruled
+     down the key's side of every tube and the far side in the brass's own
+     shade; the stem's beads and vase lit where the turning faces up and dark
+     where it faces down; each knop a ball with its spark and a dark line
+     under it; the arms lit along their upper edge; the pans a lit rim over a
+     shaded underside; the feet lit along their backs. Lines only -- the
+     silhouette is as it was -- and each fades out below the pixel that could
+     draw it. The values go on the LIT colour too, gWgShade.) */
+  float sx = q.x < 0.0 ? -1.0 : 1.0;
+  vec2 Ld = normalize(vec2(kq, 0.80));
+  float shd = 1.0;
+  vec4 g;
+  /* the feet: each a tapering scroll lit along its back, its belly in shade;
+     the paw a ball; the hub's top edge lit; all dark where they meet the floor */
+  float fr = mix(0.026, 0.016, t0);
+  float fu = dot(fq - vec2(0.020, 0.200), vec2(0.766, 0.643))/fr;        // +1 its back, -1 its belly
+  g = wfGilt(brass, fu*0.85 + 0.20*sx*kq, mmLod(fr*5.0, px));
+  vec2 pw = vec2(sx*(ax - 0.165), q.y - 0.030);
+  float onPaw = wfIn(length(fq - vec2(0.165, 0.030)) - 0.028, px);
+  g = mix(g, wfGilt(brass, dot(pw, Ld)/0.028, mmLod(0.11, px)), onPaw);
+  float onHub = wfIn(mmBox(q - vec2(0.0, 0.200), vec2(0.045, 0.030), 0.012), px);
+  g = mix(g, wfGilt(brass, (q.y - 0.200)/0.030*0.75 + 0.25*kq*q.x/0.045, mmLod(0.12, px)), onHub);
+  g *= 1.0 - 0.45*smoothstep(0.035, 0.0, q.y);
+  wfLay(col, ink, foot, g.rgb, px, 0.9);
+  shd = mix(shd, g.a, wfIn(foot, px));
+  /* the stem: round, and TURNED -- its profile's slope says which way each
+     shoulder of a bead faces */
+  float st = clamp((q.y - 0.20)/(0.98 - HD), 0.0, 1.0);
+  float sa = (st - 0.52)/0.15, sb = (st - 0.12)/0.035, sc = (st - 0.88)/0.035;
+  float sr = 0.018*(0.80 + 0.70*exp(-sa*sa) + 0.55*exp(-sb*sb) + 0.55*exp(-sc*sc));
+  float sl = -0.018*(0.70*exp(-sa*sa)*2.0*sa/0.15 + 0.55*exp(-sb*sb)*2.0*sb/0.035 + 0.55*exp(-sc*sc)*2.0*sc/0.035)/(0.98 - HD);
+  g = wfGilt(brass, q.x/sr*kq, mmLod(sr*5.0, px));
+  float sUp = smoothstep(0.02, 0.14, -sl), sDn = smoothstep(0.02, 0.14, sl);
+  g *= (1.0 + 0.30*sUp)*(1.0 - 0.50*sDn);
+  wfLay(col, ink, stem, g.rgb, px, 0.9);
+  shd = mix(shd, g.a, wfIn(stem, px));
+  /* the two knops: a ball each, its spark on the key's side, its underside
+     and far side in shade; a dark line on the stem under it */
+  float kY = q.y > 0.85 ? 1.10 - HD : 0.62;
+  vec2 kR = q.y > 0.85 ? vec2(0.048, 0.034) : vec2(0.040, 0.028);
+  vec2 kn = vec2(q.x, q.y - kY)/kR;
+  g = wfGilt(brass, dot(kn, Ld)*1.05, mmLod(kR.y*4.0, px));
+  float spark = (1.0 - smoothstep(0.10, 0.30, length(kn - Ld*0.45)))*mmLod(kR.y*3.0, px);
+  g = mix(g, vec4(brass*vec3(1.42, 1.36, 1.20), 1.55), spark);
+  float under = smoothstep(kR.y*1.9, kR.y*1.05, kY - q.y)*step(kR.y*0.9, kY - q.y)*wfIn(stem, px)*(1.0 - wfIn(knop, px));
+  col *= 1.0 - 0.55*under;
+  shd *= 1.0 - 0.50*under;
+  wfLay(col, ink, knop, g.rgb, px, 0.8);
+  shd = mix(shd, g.a, wfIn(knop, px));
+  /* the arms: a tube curving out and up, lit along its upper edge; and the
+     centre post between them */
+  float ae = length(vec2(ax/0.230, (q.y - (1.30 - HD))/0.170)) - 1.0;      // < 0 the upper, inner edge
+  g = wfGilt(brass, clamp(-ae*0.20/0.013, -1.0, 1.0)*0.80 + 0.15*sx*kq, mmLod(0.065, px));
+  g = mix(g, wfGilt(brass, q.x/0.016*kq, mmLod(0.08, px)), wfIn(centre, px));
+  wfLay(col, ink, min(arm, centre), g.rgb, px, 0.8);
+  shd = mix(shd, g.a, wfIn(min(arm, centre), px));
+  /* the pans: shallow dishes, the rim a lit line, the underside in shade; the
+     cups round, a highlight down each */
+  float pY = (q.x*sx > 0.12 ? 1.31 : 1.40) - HD;
+  float pX = q.x*sx > 0.12 ? sx*0.232 : 0.0;
+  float pv = (q.y - pY)/0.010;                                              // -1 its underside, +1 its rim
+  g = vec4(mix(brass*vec3(0.58, 0.44, 0.30), brass*vec3(1.30, 1.28, 1.10), smoothstep(-0.25, 0.25, pv)),
+           mix(0.70, 1.62, smoothstep(-0.25, 0.25, pv)));
+  g *= 1.0 + 0.16*kq*(q.x - pX)/0.045;
+  g = mix(g, wfGilt(brass, (q.x - pX)/0.022*kq, mmLod(0.11, px)), wfIn(cups, px)*step(pY + 0.012, q.y));
+  wfLay(col, ink, min(pans, cups), g.rgb, px, 0.8);
+  shd = mix(shd, g.a, wfIn(min(pans, cups), px));
+  /* (the arm and the post in the pan's shadow, just under it) */
+  float pSh = smoothstep(pY - 0.045, pY - 0.012, q.y)*step(q.y, pY - 0.010)*wfIn(min(arm, centre), px)*(1.0 - wfIn(pans, px));
+  col *= 1.0 - 0.40*pSh;
+  shd *= 1.0 - 0.35*pSh;
+  shd = mix(shd, 1.0, wfIn(min(cand, lit), px));
+  gWgShade = shd;
   /* the three candles, each burning */
   /* (repair 38, the judges of repair 37: "the flame currently lights
      nothing". Each flame's light on its own cup and pan and the arm under
@@ -22472,6 +22551,20 @@ float gStInk = 0.0, gStMoon = 0.0;
    1 everywhere else; written only where MM_SH85 is, the Heart's program) */
 #if MM_SH85
 float gR37Sh = 1.0;
+/* (round 61 repair 47: a fold of carved cloth as a FACET, not a cosine --
+   "soft cut-outs", surveys 21 and 22. ph counts folds (a whole number in
+   each trough), pxp is the pixel in folds. The trough a dark line a pixel
+   wide; beside it, on the wall that faces the key, a lit ridge; from the
+   ridge the cloth turns away in one plane down to the next line. Returns
+   the crest 0..1 the cosine gave, and the line.) */
+float stFacet(float ph, float kq, float pxp, out float line){
+  float e = fract(ph);
+  e = kq > 0.0 ? 1.0 - e : e;
+  float lw = clamp(0.7*pxp, 0.03, 0.22);
+  line = 1.0 - smoothstep(lw, lw + pxp, min(e, 1.0 - e));
+  float ridge = smoothstep(lw, lw + pxp, e)*(1.0 - smoothstep(lw + 0.14, lw + 0.24, e));
+  return (mix(0.66, 0.24, smoothstep(0.22, 1.0, e)) + 0.52*ridge)*(1.0 - line);
+}
 #endif
 float stEll(vec2 p, vec2 r){ return (length(p/r) - 1.0)*min(r.x, r.y); }
 float stIn(float d, float px){ return clamp(0.5 - d/max(px, 1e-5), 0.0, 1.0); }
@@ -22544,6 +22637,7 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
      changed text moved the Kitchens' tables by up to 18 levels once, a
      compiler side effect, as round 35's Hedge) */
   float veil = 1e3;
+  float vfK = 0.55, vOn = 0.0;   // (repair 47: the veil's folds, for the lit colour)
   /* (no wreath -- at the size a near figure is seen it was a hoop on a
      stick; the mantle's end falls free from the crossed arm's elbow nearly
      to the knee, a tapering hank of folds outside the body, its hem cut in
@@ -22618,6 +22712,11 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
   float crest = 0.5 + 0.5*cos(fphase*3.1416);
   float rnd = sqrt(max(1.0 - (qx*qx)/(hw*hw), 0.0));
 #if MM_SH85
+  /* (round 61 repair 47: the robe's folds as facets -- stFacet -- where a
+     fold is six pixels or more; smaller, the cosine's mean tone) */
+  float fLine;
+  float fPer = 0.77*max(hw, 0.05);
+  crest = mix(crest, stFacet(fphase*0.5 + 0.5, kq, px/fPer, fLine), mmLod(fPer, px));
   vec3 rc = mar*(0.36 + 0.62*rnd)*(0.40 + 0.86*crest)*(1.0 + kM*kq*clamp(qx/hw, -1.0, 1.0));
 #else
   vec3 rc = mar*(0.36 + 0.62*rnd)*(0.62 + 0.50*crest)*(1.0 + 0.30*kq*clamp(qx/hw, -1.0, 1.0));
@@ -22628,7 +22727,7 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
   stLay(col, ink, robe, rc, px, 0.95);
   ink *= 1.0 - stIn(torso + 0.002, px)*step(y, 0.95);
 #if MM_SH85
-  ink = max(ink, smoothstep(0.20, 0.0, crest)*smoothstep(0.92, 0.70, y)*stIn(robe, px)*0.85);
+  ink = max(ink, smoothstep(0.20, 0.0, crest)*smoothstep(0.92, 0.70, y)*stIn(robe, px)*0.50);   // (repair 47: 0.85 -- with the facet's own line, a black cord)
 #else
   ink = max(ink, smoothstep(0.12, 0.0, crest)*smoothstep(0.92, 0.70, y)*stIn(robe, px)*0.55);
 #endif
@@ -22713,6 +22812,10 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
     float vt2 = clamp((1.60 - y)/0.62, 0.0, 1.0);
     float vHW2 = mix(0.100, 0.262, smoothstep(0.0, 0.42, vt2));
     float vf = 0.5 + 0.5*cos(qx/max(vHW2, 0.05)*8.5 + 0.8*sin(y*7.0 + seed));
+    float vLine;
+    float vPer = 0.74*max(vHW2, 0.05);
+    vf = mix(vf, stFacet((qx/max(vHW2, 0.05)*8.5 + 0.8*sin(y*7.0 + seed))/6.2832 + 0.5, kq, px/vPer, vLine), mmLod(vPer, px));
+    vfK = vf;
     float vr = sqrt(max(1.0 - pow(qx/max(vHW2, 0.05), 2.0), 0.0));
     vec3 vc = mar*(0.36 + 0.60*vr)*(0.55 + 0.62*vf)*(1.0 + kM*kq*clamp(qx/max(vHW2, 0.05), -1.0, 1.0));
     ink *= 1.0 - stIn(veil + px*1.5, px);
@@ -22721,6 +22824,7 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
     float faceO = stEll(hc*vec2(1.0, 0.92) - vec2(0.004, -0.006), vec2(0.064, 0.090));
     col *= 1.0 - 0.55*stIn(faceO - 0.030, px)*(1.0 - stIn(faceO, px));
     stLay(col, ink, faceO, fc*1.22*(1.0 - 0.25*smoothstep(-0.02, 0.0, faceO + 0.012)), px, 0.80);
+    vOn = stIn(veil, px)*(1.0 - stIn(faceO - 0.030, px))*smoothstep(1.47, 1.36, y);
   }
 #endif
   /* the fingers of the hand at her breast, three cuts */
@@ -22758,6 +22862,34 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
               * smoothstep(0.06, -0.04, abs(q.x + 0.07*kq) - 0.22)*smoothstep(0.40, 0.70, q.y);
     float edgeL = (1.0 - smoothstep(0.0, 0.035, -fig))*inFig*smoothstep(0.30, 0.90, sideF);
     sh *= 1.0 + 0.45*edgeL;
+    /* (round 61 repair 47: the veil's folds on the lit colour, as the robe's
+       are; and the PLINTH drawn -- "soft cut-outs", the far floor "losing the
+       feet of ... the heart's statues": the cornice's top lit and its
+       underside shaded, its shadow ruled on the die; the die's corner to the
+       key a lit edge and its far side in shade; the sunk panel with the
+       shadow of its own upper and key-side edges and a lit line along the
+       two that face the light; the base's top edge lit; a dark line where
+       it stands on the boards) */
+    sh *= mix(1.0, 0.66 + 0.56*vfK, vOn);
+    {
+      float onPl = stIn(plinth, px)*(1.0 - inFig);
+      float pl = 1.22;
+      pl *= 1.0 + 0.40*smoothstep(0.668, 0.668 + px, q.y)*step(q.y, 0.712);
+      pl *= 1.0 - 0.32*smoothstep(0.662, 0.662 - px, q.y)*step(0.620, q.y);
+      pl *= 1.0 - 0.42*smoothstep(0.575, 0.610, q.y)*step(q.y, 0.620);
+      pl *= 1.0 + 0.42*smoothstep(0.070, 0.070 + px, q.y)*step(q.y, 0.102);
+      pl *= 1.0 - 0.60*smoothstep(0.012 + 1.5*px, 0.012, q.y);
+      float dx = kq*q.x/0.315;
+      float onDie = step(0.102, q.y)*step(q.y, 0.620);
+      pl *= 1.0 + onDie*(0.34*smoothstep(1.0 - 3.2*px/0.315, 1.0 - 2.2*px/0.315, dx) - 0.26*smoothstep(-0.55, -0.95, dx));
+      float eW = max(0.022, 1.6*px);
+      float pIn = stIn(pan, px);
+      float pSh = max(smoothstep(eW, eW - px, 0.54 - q.y), smoothstep(eW, eW - px, 0.225 - kq*q.x));
+      float pLt = max(smoothstep(eW*0.6, eW*0.6 - px, q.y - 0.20), smoothstep(eW*0.6, eW*0.6 - px, 0.225 + kq*q.x));
+      pl *= 1.0 - pIn*0.40*pSh;
+      pl *= 1.0 + pIn*0.34*pLt*(1.0 - pSh);
+      sh *= mix(1.0, pl, onPl);
+    }
     gR37Sh = sh;
     ink = max(ink, mmInkP(fig, px, 1.7));
     ink = max(ink, mmInkP(plinth, px, 1.5)*0.95);
@@ -23354,6 +23486,48 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
     wfLay(col, ink, plant, dead, qpx, 0.85);
     moon += 0.35*wfIn(plant, qpx)*smoothstep(1.36, 1.46, q.y)*ln;
     wfLay(col, ink, ivy, vec3(0.08, 0.13, 0.06)*(0.8 + 0.5*ln), qpx, 0.6);
+#if MM_SH85
+    {
+      /* (round 61 repair 47, the Heart's urn only -- MM_SH85, so the maze's
+         program keeps its text: "flat, evenly toned", "rendered rather than
+         painted". On the LIT colour, gWgShade: the vase turned -- its side
+         to the key lit, a core shadow, the hall's light back on its far
+         edge; the gadroons facets with a line between; an astragal ruled
+         round the neck; the lip's top lit and its shadow on the vase; the
+         pedestal as the statue's plinth is -- cap, die and its sunk panel,
+         base, and a dark line on the boards) */
+      float us = 1.0;
+      float onU = wfIn(urn, qpx), onP = wfIn(ped, qpx)*(1.0 - wfIn(urn, qpx));
+      float tu = kq*clamp(q.x/max(q.y > 0.92 ? gkUrnW(q.y) : (q.y > 0.82 ? 0.215 : 0.10), 0.05), -1.2, 1.2);
+      float turn = mix(0.72, 1.32, smoothstep(-0.34, 0.06, tu));
+      turn *= 1.0 - 0.14*exp(-pow((tu + 0.34)/0.13, 2.0));
+      turn *= 1.0 + 0.16*smoothstep(-0.78, -1.0, tu);
+      us = turn;
+      float gLine;
+      float gF = stFacet(asin(clamp(q.x/0.215, -1.0, 1.0))*1.9099 + 0.5, kq, qpx/0.10, gLine);
+      us *= mix(1.0, 0.74 + 0.50*gF, wfIn(bowl, qpx)*step(q.y, 0.915)*mmLod(0.10, qpx));
+      us *= 1.0 + 0.30*smoothstep(1.030, 1.030 + qpx, q.y)*step(q.y, 1.046) - 0.36*smoothstep(1.030, 1.030 - qpx, q.y)*step(1.014, q.y);
+      us *= 1.0 - 0.40*smoothstep(1.215, 1.265, q.y)*step(q.y, 1.277);
+      us *= 1.0 + step(1.277, q.y)*(0.36*smoothstep(1.302, 1.302 + qpx, q.y) - 0.14);
+      us *= 1.0 + 0.30*smoothstep(0.672, 0.672 + qpx, q.y)*step(q.y, 0.692);
+      float pl = q.y > 0.570 ? 1.0 : 1.90;
+      pl *= 1.0 + 0.14*smoothstep(0.604, 0.604 + qpx, q.y)*step(q.y, 0.632);
+      pl *= 1.0 - 0.30*smoothstep(0.598, 0.598 - qpx, q.y)*step(0.570, q.y);
+      pl *= 1.0 - 0.42*smoothstep(0.525, 0.560, q.y)*step(q.y, 0.570);
+      pl *= 1.0 + 0.42*smoothstep(0.062, 0.062 + qpx, q.y)*step(q.y, 0.092);
+      pl *= 1.0 - 0.60*smoothstep(0.010 + 1.5*qpx, 0.010, q.y);
+      float dx = kq*q.x/0.245;
+      float onDie = step(0.092, q.y)*step(q.y, 0.570);
+      pl *= 1.0 + onDie*(0.34*smoothstep(1.0 - 3.2*qpx/0.245, 1.0 - 2.2*qpx/0.245, dx) - 0.26*smoothstep(-0.55, -0.95, dx));
+      float eW = max(0.018, 1.6*qpx);
+      float pIn = wfIn(panel, qpx);
+      float pSh = max(smoothstep(eW, eW - qpx, 0.495 - q.y), smoothstep(eW, eW - qpx, 0.165 - kq*q.x));
+      float pLt = max(smoothstep(eW*0.6, eW*0.6 - qpx, q.y - 0.165), smoothstep(eW*0.6, eW*0.6 - qpx, 0.165 + kq*q.x));
+      pl *= 1.0 - pIn*0.40*pSh;
+      pl *= 1.0 + pIn*0.34*pLt*(1.0 - pSh);
+      gWgShade = mix(1.0, mix(us, pl, onP), max(onU, onP)*(1.0 - wfIn(min(plant, ivy), qpx)));
+    }
+#endif
 #endif
 #if MM_SH82
   } else if (shape < 82.5 && seed > 40.0) {
@@ -32811,8 +32985,12 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     float dg = bmf*m.x + (m.y - 1.30)*0.95;         // across the mantle's fall
     float mant = smoothstep(-0.006, 0.006, dg + 0.04);
     h += 0.014 * mant * onS;
-    h -= 0.012 * mant * onS * (pR(dg - 0.02, 0.010) + pR(dg - 0.085, 0.010) + pR(dg - 0.15, 0.010));
-    h -= 0.010 * (1.0 - mant) * onS * pR(mod(m.x*bmf + 0.02, 0.07) - 0.035, 0.009) * step(m.y, 1.36);
+    /* (round 61 repair 47: where a fold is wide enough to PAINT -- below, on
+       the lit colour -- it is not also carved: a centimetre's channel read
+       back through the quad's derivatives came out as a row of dashes) */
+    float bFoldR = 1.0 - pRes(0.065, max(mpp.x, 0.003));
+    h -= 0.012 * mant * onS * (pR(dg - 0.02, 0.010) + pR(dg - 0.085, 0.010) + pR(dg - 0.15, 0.010)) * bFoldR;
+    h -= 0.010 * (1.0 - mant) * onS * pR(mod(m.x*bmf + 0.02, 0.07) - 0.035, 0.009) * step(m.y, 1.36) * bFoldR;
     h += 0.014 * sqrt(max(1.0 - pow(m.x/0.25, 2.0), 0.0)) * onS;
     vec2 f = vec2(m.x, m.y - 1.665);
     float xc = bf*0.030;
@@ -32855,6 +33033,76 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
                 * step(abs(f.x - bf*0.030), 0.075);
     float bShd = onH*smoothstep(-0.01, 0.05, -bmf*(f.x - bf*0.030))*(1.0 - hairB);
     tint -= 0.90*bSock + 0.60*bNose + 0.75*bChin + 0.30*bShd;
+    {
+      /* (round 61 repair 47, survey 18 and repair 19's judges: the gallery's
+         bust "flat, evenly toned", to be "modelled with painted light and
+         shade". The carving above is a relief read back through the quad's
+         coarse derivatives: at this size it lights nothing. So the planes
+         are PAINTED, on the lit colour (gWgShade): the head in two planes
+         that meet down the line of the nose, the brow and the cheek facets
+         to the light, the far side of the nose and the jaw's underside in
+         shade, the neck in the chin's shadow; the mantle's folds each a
+         plane from a lit ridge down to a dark line; the socle round with a
+         highlight; the cap's top lit and its shadow on the term; the term's
+         corner to the key a lit edge, and its sunk panel with the shadow of
+         its own upper and key-side edges. Stone: no sparkle, flat planes.) */
+      float kx = uKeyDir.x >= 0.0 ? 1.0 : -1.0;
+      float bs = 1.90;
+      /* the term and its panel */
+      float twT = 0.12 + 0.05*clamp((m.y - 0.09)/0.92, 0.0, 1.0);
+      float onTm = pB(m.y, 0.09, 1.00);
+      float tdx = kx*m.x/twT;
+      bs *= 1.0 + onTm*(0.60*smoothstep(1.0 - 3.2*bpx/twT, 1.0 - 2.2*bpx/twT, tdx) - 0.28*smoothstep(-0.45, -0.95, tdx));
+      float eW = max(0.016, 1.6*bpx);
+      float tIn = smoothstep(bpx*0.5, -bpx*0.5, tp)*onTm;
+      float tSh = max(smoothstep(eW, eW - bpx, 0.91 - m.y), smoothstep(eW, eW - bpx, 0.075 - kx*m.x));
+      float tLt = max(smoothstep(eW*0.6, eW*0.6 - bpx, m.y - 0.25), smoothstep(eW*0.6, eW*0.6 - bpx, 0.075 + kx*m.x));
+      bs *= 1.0 - tIn*0.42*tSh;
+      bs *= 1.0 + tIn*0.36*tLt*(1.0 - tSh);
+      bs *= 1.0 - 0.45*smoothstep(0.945, 0.985, m.y)*step(m.y, 1.00);                       // the cap's shadow on it
+      bs *= 1.0 + 0.45*smoothstep(1.070, 1.070 + bpx, m.y)*step(m.y, 1.10)*step(1.0, m.y);   // the cap's top
+      bs *= 1.0 - 0.26*smoothstep(1.045, 1.045 - bpx, m.y)*step(1.00, m.y);                 // and its underside
+      bs *= 1.0 + 0.40*smoothstep(0.062, 0.062 + bpx, m.y)*step(m.y, 0.09);                 // the plinth's top edge
+      bs *= 1.0 - 0.55*smoothstep(0.010 + 1.5*bpx, 0.010, m.y);                             // on the floor
+      /* the socle, round */
+      float su = kx*clamp(m.x/0.075, -1.0, 1.0);
+      float onSo = pB(m.y, 1.10, 1.17);
+      bs *= 1.0 + onSo*(-0.34*smoothstep(0.0, -0.6, su) + 0.42*smoothstep(0.22, 0.34, su)*(1.0 - smoothstep(0.60, 0.74, su)));
+      /* the chest: its side to the key lit; the mantle's folds planes */
+      float cu = kx*m.x/0.245;
+      float onC = step(1.17, m.y)*step(m.y, 1.44)*step(abs(m.x), 0.25);
+      float cTone = mix(0.50, 1.90, smoothstep(-0.30, 0.0, cu));
+      float fe = fract((dg - 0.02)/0.065);
+      fe = kx*bmf > 0.0 ? 1.0 - fe : fe;
+      float fl = clamp(0.7*bpx/0.065, 0.04, 0.22);
+      float fLn = 1.0 - smoothstep(fl, fl + bpx/0.065, min(fe, 1.0 - fe));
+      float fRd = smoothstep(fl, fl + bpx/0.065, fe)*(1.0 - smoothstep(fl + 0.16, fl + 0.28, fe));
+      float fold = (mix(1.03, 0.80, smoothstep(0.25, 1.0, fe)) + 0.22*fRd)*(1.0 - 0.42*fLn);
+      cTone *= mix(1.0, fold, mant*step(-0.04, dg)*step(dg, 0.20)*pRes(0.065, bpx));
+      /* (and the tunic's, falling straight on the other breast) */
+      float fe2 = fract((m.x*bmf + 0.02)/0.07 + 0.5);
+      fe2 = kx*bmf > 0.0 ? 1.0 - fe2 : fe2;
+      float fLn2 = 1.0 - smoothstep(fl, fl + bpx/0.07, min(fe2, 1.0 - fe2));
+      float fRd2 = smoothstep(fl, fl + bpx/0.07, fe2)*(1.0 - smoothstep(fl + 0.16, fl + 0.28, fe2));
+      cTone *= mix(1.0, (mix(1.03, 0.82, smoothstep(0.25, 1.0, fe2)) + 0.20*fRd2)*(1.0 - 0.40*fLn2), (1.0 - mant)*step(m.y, 1.36)*pRes(0.07, bpx));
+      cTone *= 1.0 - 0.30*smoothstep(1.40, 1.44, m.y)*step(abs(m.x), 0.09);                  // under the neck
+      bs = mix(bs, 2.2*cTone, onC);
+      /* the neck, in the jaw's shadow, and the head */
+      float onN = step(1.44, m.y)*step(m.y, 1.575)*step(abs(m.x - bf*0.010), 0.06);
+      bs = mix(bs, 2.2*mix(0.50, 1.50, smoothstep(-0.2, 0.3, kx*(m.x - bf*0.010)/0.056))*(1.0 - 0.38*smoothstep(1.50, 1.56, m.y)), onN);
+      float nx = f.x - bf*0.034;                              // across the face, from the nose's line
+      float hTone = mix(0.50, 2.00, smoothstep(-0.012, 0.012, kx*nx + 0.018));
+      hTone *= 1.0 + 0.24*pB(f.y, 0.016, 0.044)*(1.0 - hairB);                              // the brow's plane, up to the light
+      hTone *= 1.0 + 0.18*pB(f.y, -0.046, -0.010)*smoothstep(0.0, 0.02, kx*nx);              // the cheek
+      hTone *= 1.0 - 0.30*smoothstep(-0.086, -0.104, f.y);                                   // the jaw turning under
+      hTone *= 1.0 + 0.26*pB(f.y, -0.050, 0.012)*smoothstep(bpx, 0.0, abs(kx*nx - 0.008) - 0.006);   // the nose's lit side
+      hTone *= 1.0 - 0.36*pB(f.y, -0.050, 0.012)*smoothstep(bpx, 0.0, abs(kx*nx + 0.008) - 0.006);   // and its far side
+      hTone *= 1.0 - 0.22*hairB;
+      bs = mix(bs, 2.2*hTone, onH*step(1.56, m.y));
+      /* (the niches' busts across the room stand in the moon's light already:
+         they keep their value and take the two planes only) */
+      gWgShade = mix(mix(1.0, bs/2.4, 0.6), bs, smoothstep(0.018, 0.009, bpx));
+    }
 #endif
 #endif
 #if MM_WINGS == 1
@@ -34515,6 +34763,9 @@ void main(){
   /* (round 61 repair 40: a gilt chair is GOLD -- a material fact, as the
      candelabrum's gilt is in the Heart; at 0.42 it came back putty) */
   if (vShape > 71.5 && vShape < 72.5) { satK = max(uPropSat, 0.54); satM = max(uPropSatMax, 0.76); }
+  /* (round 61 repair 47: and the torchere's brass -- measured at 0.53-0.59,
+     the cap, a putty) */
+  if (vShape > 64.5 && vShape < 65.5) { satK = max(uPropSat, 0.54); satM = max(uPropSatMax, 0.76); }
 #endif
 #endif
 #endif
