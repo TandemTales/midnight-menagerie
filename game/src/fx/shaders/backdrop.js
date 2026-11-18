@@ -19042,6 +19042,82 @@ void main(){
   gl_Position = projectionMatrix * mv;
 }`;
 
+/* ROUND 61 REPAIR 37: ONE BOOK IN A PILE, SEEN FROM ITS SIDE. Both judges
+   after repair 34: "the book stacks are still flat colour slabs with no
+   spines, page edges or candle flame". They were: the old page test
+   (smoothstep(0.30, 0.0, ...) over a book four hundredths thick) was 1
+   everywhere, so every book was its cloth and nothing else. A book lying in
+   a pile shows you one of two faces, and this draws the one it is:
+   - its SPINE: the leather round and lit from above with a sheen along it,
+     four raised bands each with its shadow on the side away from the light
+     (gilt on a tooled one), a lettering-piece of another leather between
+     the middle bands with a gilt rule round it and its gilt lettering, and
+     a gilt lozenge in each panel beside it -- or, one in four, plain cloth
+     lettered straight onto it between two gilt rules;
+   - or its FORE-EDGE: the two boards top and bottom, the page block
+     between them and set in from their ends (so the boards overhang, with
+     the dark under them), ruled by its leaves, in the top board's shadow --
+     a deep parchment, or stained red, or gilt, never a white slab.
+   And two books in three lie a little TURNED on the one below, so past a
+   corner you see the head of the pages as well, in its own light.
+   b is the pixel from the book's centre, hw and hh its half-size, S the
+   scale the pile is drawn at (1 the passages', 0.75 the study's). Pasted
+   into the passages' program and the study's (never both: the guard is for
+   the reader). Arithmetic only. */
+const WF_BOOK_FACE = /* glsl */`
+#ifndef WF_BOOK_FACE
+#define WF_BOOK_FACE
+void wfBookFace(vec2 b, float hw, float hh, float fi, float seed, float kq, float px, float S, vec3 lea, out vec3 bc, out float bink){
+  float spine = step(0.38, mmHash11(fi*2.3 + seed*1.7));
+  float tw = mmHash11(fi*4.9 + seed*2.1);
+  float sg = tw < 0.5 ? -1.0 : 1.0;
+  float turned = step(0.34, fract(tw*3.0));
+  float cx = sg*hw*(0.52 + 0.22*fract(tw*7.0));
+  float endF = turned*step(0.0, (b.x - cx)*sg);
+  float sp = spine*(1.0 - endF);
+  /* the long face: its middle and its half-width */
+  float fa = -sg*hw, fb = mix(sg*hw, cx, turned);
+  float t = b.x - 0.5*(fa + fb), sw = 0.5*abs(fb - fa);
+  vec3 gilt = vec3(0.84, 0.62, 0.24);
+  /* THE SPINE */
+  float at = abs(t)/sw;
+  float style = fract(tw*13.0);
+  float tooled = step(0.62, style), labOn = step(0.28, style);
+  float e = (at - (at > 0.61 ? 0.80 : mix(2.0, 0.42, labOn)))*sw*sign(t);
+  vec3 sc = lea*(0.70 + 0.46*smoothstep(-hh, hh*0.7, b.y));
+  sc *= 1.0 + 0.40*mmInkP(b.y - 0.52*hh, px, 0.6);
+  sc = mix(sc, mix(lea*1.60, gilt, max(tooled, 1.0 - labOn)), wfIn(abs(e) - 0.0032*S, px));
+  float lab = mmBox(vec2(t, b.y), vec2(0.27*sw, 0.62*hh), 0.001);
+  bool redBook = lea.r > 0.30 && lea.g < 0.20;
+  vec3 labC = fract(tw*17.0) > 0.55 ? vec3(0.10, 0.07, 0.05) : (redBook ? vec3(0.07, 0.15, 0.10) : vec3(0.47, 0.09, 0.07));
+  sc = mix(sc, labC*(0.75 + 0.45*smoothstep(-hh, hh, b.y)), wfIn(lab, px)*labOn);
+  /* the lettering: a line of it, two on a thick book */
+  float ly = mix(b.y, abs(b.y) - 0.26*hh, step(0.027*S, hh));
+  float word = step(fract(t/(0.017*S) + tw*5.0 + 0.4*step(0.0, b.y)), 0.62)*step(abs(t), mix(0.30, 0.20, labOn)*sw);
+  sc = mix(sc, gilt, max(mmInkP(lab, px, 0.8)*0.85*labOn, mmInkP(ly, px, 0.45)*word));
+  sc = mix(sc, gilt, wfIn(abs((at - 0.61)*sw) + abs(b.y) - min(0.0075*S, 0.55*hh), px)*tooled);
+  float sInk = mmInkP(e*kq + 0.0055*S, px, 0.7)*0.60;
+  /* THE PAGES between their boards */
+  float bt = max(0.0075*S, 2.0*px);
+  float pgH = hh - bt;
+  float isBoard = clamp(0.5 + (abs(b.y) - pgH)/px, 0.0, 1.0);
+  float gap = clamp(0.5 + (abs(b.x) - hw + 0.008*S)/px, 0.0, 1.0);
+  float per = max(0.011*S, 3.2*px);
+  float ln = mmInkP((abs(fract((b.y + pgH)/per + 0.5) - 0.5))*per, px, 0.4);
+  float pe = fract(tw*29.0);
+  vec3 pc = (pe < 0.55 ? vec3(0.58, 0.49, 0.33) : (pe < 0.80 && !redBook ? vec3(0.56, 0.24, 0.16) : vec3(0.60, 0.44, 0.18)))*(1.0 - 0.45*ln);
+  pc *= 1.0 - 0.52*smoothstep(0.012*S, 0.0, pgH - b.y);
+  pc = mix(pc, vec3(0.07, 0.045, 0.03), gap);
+  pc = mix(pc, lea*(b.y > 0.0 ? 1.18 : 0.78), isBoard);
+  bc = mix(pc, sc, sp);
+  bc *= mix(1.0, (sg*kq > 0.0 ? 1.14 : 0.60), endF);
+  bc *= 0.78 + 0.32*smoothstep(-1.0, 1.0, kq*b.x/hw);
+  bink = max(sp*sInk, (1.0 - sp)*mmInkP(abs(b.y) - pgH, px, 0.8)*0.65*(1.0 - gap));
+  bink = max(bink, turned*mmInkP(b.x - cx, px, 1.0)*0.80);
+}
+#endif
+`;
+
 /* ROUND 25 (AUREOLIN): the Foyer's, the Greenhouse's, the Graveyard's and
    the Ballroom's objects, drawn -- pasted into PROP_FRAG under MM_WINGS 4. */
 const R25_PROPS = /* glsl */`
@@ -19466,6 +19542,7 @@ float wfTorchere(vec2 q, float px, float seed, float kq, bool paint){
    cloth each its own colour and thickness, a candle stub burning on the
    taller pile in its saucer, and one lying open on the boards beside them.
    Nominal metres in the hall table's frame (the quad sized by hM / wM). */
+${WF_BOOK_FACE}
 float wfBookPile(vec2 q, float px, float seed, float kq, bool paint){
   float d = 1e3;
   vec3 col = vec3(0.1);
@@ -19513,6 +19590,12 @@ float wfBookPile(vec2 q, float px, float seed, float kq, bool paint){
     ink = max(ink, mmInkP(plate, opx, 1.0)*wfIn(oPage, opx)*0.6);
     ink = max(ink, mmInkP(au - 0.0015, opx, 0.8)*wfIn(oPage, opx)*0.75);
   }
+  /* (round 61 repair 37: each book is found here and PAINTED ONCE below, by
+     wfBookFace -- its spine or its fore-edge, where every one was a slab of
+     its cloth. The one the pixel is in is the nearest; the book above lays
+     a dark line of shadow on the one it rests on.) */
+  float bSel = 1e3, fiSel = 0.0, shd = 0.0, topX = -0.37;
+  vec4 sel = vec4(0.0, 0.0, 0.1, 0.03);
   for (int pile = 0; pile < 2; pile++){
     float x0 = pile == 0 ? -0.37 : 0.13;
     float y = 0.0;
@@ -19526,29 +19609,55 @@ float wfBookPile(vec2 q, float px, float seed, float kq, bool paint){
       vec2 c = vec2(ox, y + th*0.5);
       float b = mmBox(q - c, vec2(hw, th*0.5), 0.006);
       d = min(d, b);
-      if (paint) {
-        float k = mmHash11(fi*9.1 + seed);
-        vec3 lea = k < 0.25 ? vec3(0.42, 0.12, 0.08) : (k < 0.50 ? vec3(0.13, 0.25, 0.16) : (k < 0.75 ? vec3(0.15, 0.17, 0.30) : vec3(0.44, 0.29, 0.14)));
-        float u = (q.x - ox)/hw;
-        float spine = step(0.5, mmHash11(fi*2.3 + seed*1.7));
-        vec3 pg = vec3(0.70, 0.64, 0.50)*(0.82 + 0.18*sin((q.y - y)*700.0));
-        float board = smoothstep(0.30, 0.0, abs(q.y - c.y) - th*0.5 + 0.008);
-        vec3 bc = mix(mix(pg, lea, board), lea*(1.0 + 0.45*smoothstep(0.005, 0.0, abs(abs(u) - 0.72))), spine);
-        bc = mix(bc, vec3(0.78, 0.60, 0.26), spine*smoothstep(0.007, 0.0, abs(abs(u) - 0.72))*0.8);
-        bc *= 0.70 + 0.35*smoothstep(-1.0, 1.0, kq*u) + 0.25*smoothstep(th*0.25, th*0.5, q.y - c.y);
-        wfLay(col, ink, b, bc, px, 0.95);
-      }
+      if (i > 0) shd = max(shd, step(abs(q.x - ox), hw + 0.004)*step(q.y, y)*smoothstep(0.013, 0.0, y - q.y));
+      if (b < bSel) { bSel = b; fiSel = fi; sel = vec4(c, hw, th*0.5); }
+      if (pile == 0) topX = ox;
       y += th;
     }
     if (pile == 0) topY = y;
   }
   /* the candle on the taller pile, in its saucer */
-  vec2 cq = q - vec2(-0.37, topY);
+  /* (repair 37: "the candle stubs on top are unlit white pegs". The flame
+     was always drawn -- and always cut away: it burns above the wax, outside
+     the silhouette, and a pixel outside the silhouette is not painted. So
+     the flame and its wick are part of the silhouette now, the flame a
+     little larger with a hot core; the wax glows under it; a run of wax
+     has gone down the candle's side, pooled at its foot, and over the
+     saucer's lip onto the top book. The stub stands ON the top book, not
+     out over its end.) */
+  vec2 cq = q - vec2(topX - 0.030, topY);
   float sau = max(wfEll(cq - vec2(0.0, 0.008), vec2(0.060, 0.012)), -cq.y);
-  d = min(d, min(sau, mmBox(cq - vec2(0.0, 0.05), vec2(0.016, 0.042), 0.004)));
+  vec2 ff = cq - vec2(0.0, 0.125);
+  float fl = (length(vec2(ff.x/0.014, ff.y/(ff.y > 0.0 ? 0.042 : 0.016))) - 1.0)*0.014;
+  float wick = wfSeg(cq, vec2(0.0, 0.092), vec2(0.002, 0.114), 0.0028);
+  float drip = min(wfSeg(cq, vec2(0.0135, 0.090), vec2(0.0150, 0.052), 0.0045), length(cq - vec2(0.0150, 0.047)) - 0.0068);
+  float foot = wfEll(cq - vec2(0.004, 0.017), vec2(0.031, 0.007));
+  float run = min(wfSeg(cq, vec2(-0.047, 0.011), vec2(-0.050, -0.016), 0.0042), length(cq - vec2(-0.050, -0.020)) - 0.0062);
+  float waxen = min(min(drip, foot), run);
+  float wax = mmBox(cq - vec2(0.0, 0.0525), vec2(0.016, 0.0425), 0.005);
+  d = min(d, min(min(sau, wax), min(min(fl, wick), waxen)));
   if (!paint) return d;
-  wfLay(col, ink, sau, vec3(0.70, 0.68, 0.62)*(0.6 + 0.5*smoothstep(0.0, 0.02, cq.y)), px, 0.85);
-  wfCandle(cq - vec2(0.0, 0.010), 0.085, 0.016, px, col, ink, emit);
+  {
+    float k = mmHash11(fiSel*9.1 + seed);
+    vec3 lea = k < 0.25 ? vec3(0.42, 0.12, 0.08) : (k < 0.50 ? vec3(0.13, 0.25, 0.16) : (k < 0.75 ? vec3(0.15, 0.17, 0.30) : vec3(0.44, 0.29, 0.14)));
+    vec3 bc = vec3(0.0); float bink = 0.0;
+    wfBookFace(q - sel.xy, sel.z, sel.w, fiSel, seed, kq, px, 1.0, lea, bc, bink);
+    wfLay(col, ink, bSel, bc*(1.0 - 0.55*shd), px, 0.95);
+    ink = max(ink, bink*wfIn(bSel, px));
+  }
+  /* a brass saucer; the stub ivory and round, not a white peg; the wax
+     that has run, a shade paler; the flame orange round a hot core */
+  vec3 waxC = vec3(0.84, 0.73, 0.50);
+  wfLay(col, ink, run, waxC*0.95, px, 0.6);
+  wfLay(col, ink, sau, vec3(0.66, 0.47, 0.20)*(0.55 + 0.60*smoothstep(0.0, 0.02, cq.y)), px, 0.85);
+  wfLay(col, ink, wax, waxC*(0.58 + 0.42*wfRound(clamp(cq.x/0.017, -1.0, 1.0))), px, 0.6);
+  wfLay(col, ink, min(drip, foot), waxC*1.08, px, 0.55);
+  wfLay(col, ink, wick, vec3(0.07, 0.05, 0.04), px, 0.0);
+  float core = (length(vec2(ff.x/0.0075, (ff.y + 0.005)/(ff.y + 0.005 > 0.0 ? 0.025 : 0.010))) - 1.0)*0.0075;
+  emit += mix(vec3(1.00, 0.46, 0.10)*1.05, vec3(1.00, 0.88, 0.52)*1.9, wfIn(core, px))*wfIn(fl, px);
+  emit += vec3(1.00, 0.62, 0.26)*0.30*exp(-length(ff)/0.05);
+  emit += vec3(1.00, 0.60, 0.24)*0.30*smoothstep(0.045, 0.095, cq.y)*wfIn(min(wax, drip), px);
+  float stub = wfIn(min(min(sau, wax), waxen), px);
   col *= 1.0 - 0.30*smoothstep(0.025, 0.0, q.y);
   /* (round 61 repair 20, survey 18, both judges: the piles read as "dark,
      nearly flat slabs". At the lens's foot no lamp of the passage reaches
@@ -19559,7 +19668,9 @@ float wfBookPile(vec2 q, float px, float seed, float kq, bool paint){
   float cpool = exp(-length(fq)/0.45);
   /* (repair 34: and on the open pages beside the piles, face up to it) */
   cpool = max(cpool, 0.40*wfIn(open, opx));
-  emit += col*vec3(1.00, 0.70, 0.38)*2.60*cpool*wfIn(d, px);
+  /* (repair 37: the stub and its saucer take a third of it -- the whole of
+     it is what bleached them to a white peg) */
+  emit += col*vec3(1.00, 0.70, 0.38)*2.60*cpool*wfIn(d, px)*(1.0 - 0.66*stub);
   gWfEmit = emit;
   gWfCol = col; gWfInk = ink; gWfGloss = 0.25; gWfMoon = 0.0;
   return d;
@@ -28029,6 +28140,7 @@ float wfBlocks(vec2 q, float px, float seed, float kq, bool paint){
    own colours and thicknesses, each a little off square on the one under
    it, gilt bands on the spines, the page block pale at the fore-edge -- and
    one lying open beside them. Drawn in metres (wfNom 0.34). */
+${WF_BOOK_FACE}
 float wfBooks(vec2 q, float px, float seed, float kq, bool paint){
   float d = 1e3;
   vec3 col = vec3(0.1);
@@ -28077,6 +28189,11 @@ float wfBooks(vec2 q, float px, float seed, float kq, bool paint){
     ink = max(ink, mmInkP(plate, px, 1.0)*wfIn(oPage, px)*0.6);
     ink = max(ink, mmInkP(au - 0.0015, px, 0.8)*wfIn(oPage, px)*0.75);
   }
+  /* (round 61 repair 37: each book found here and PAINTED ONCE below by
+     wfBookFace, as the passages' are; the book above lays its line of
+     shadow on the one it rests on) */
+  float bSel = 1e3, fiSel = 0.0, shd = 0.0;
+  vec4 sel = vec4(0.0, 0.0, 0.1, 0.02);
   for (int pile = 0; pile < 2; pile++){
     float px0 = pile == 0 ? -0.22 : 0.20;
     float y = 0.0;
@@ -28090,24 +28207,22 @@ float wfBooks(vec2 q, float px, float seed, float kq, bool paint){
       vec2 c = vec2(ox, y + th*0.5);
       float b = mmBox(q - c, vec2(hw, th*0.5), 0.006);
       d = min(d, b);
-      if (paint) {
-        float k = mmHash11(fi*9.1 + seed);
-        vec3 lea = k < 0.25 ? vec3(0.42, 0.10, 0.08) : (k < 0.50 ? vec3(0.12, 0.26, 0.16) : (k < 0.75 ? vec3(0.14, 0.16, 0.30) : vec3(0.40, 0.26, 0.14)));
-        float u = (q.x - ox)/hw;
-        /* the spine faces you on one book in two; the fore-edge of the
-           pages on the rest -- pale, ruled by its leaves */
-        float spine = step(0.5, mmHash11(fi*2.3 + seed*1.7));
-        vec3 pg = vec3(0.78, 0.72, 0.58)*(0.80 + 0.20*sin((q.y - y)*900.0));
-        float board = smoothstep(0.30, 0.0, abs(q.y - c.y) - th*0.5 + 0.007);
-        vec3 bc = mix(mix(pg, lea, board), lea*(1.0 + 0.45*smoothstep(0.004, 0.0, abs(abs(u) - 0.70))), spine);
-        bc = mix(bc, vec3(0.78, 0.60, 0.26), spine*smoothstep(0.006, 0.0, abs(abs(u) - 0.70))*0.8);
-        bc *= 0.70 + 0.35*smoothstep(-1.0, 1.0, kq*u) + 0.25*smoothstep(th*0.25, th*0.5, q.y - c.y);
-        wfLay(col, ink, b, bc, px, 0.9);
-      }
+      if (i > 0) shd = max(shd, step(abs(q.x - ox), hw + 0.003)*step(q.y, y)*smoothstep(0.010, 0.0, y - q.y));
+      if (b < bSel) { bSel = b; fiSel = fi; sel = vec4(c, hw, th*0.5); }
       y += th;
     }
   }
   if (!paint) return d;
+  {
+    /* the spine faces you on one book in two; the fore-edge of the pages
+       on the rest -- pale, ruled by its leaves, between its boards */
+    float k = mmHash11(fiSel*9.1 + seed);
+    vec3 lea = k < 0.25 ? vec3(0.42, 0.10, 0.08) : (k < 0.50 ? vec3(0.12, 0.26, 0.16) : (k < 0.75 ? vec3(0.14, 0.16, 0.30) : vec3(0.40, 0.26, 0.14)));
+    vec3 bc = vec3(0.0); float bink = 0.0;
+    wfBookFace(q - sel.xy, sel.z, sel.w, fiSel, seed, kq, px, 0.75, lea, bc, bink);
+    wfLay(col, ink, bSel, bc*(1.0 - 0.55*shd), px, 0.9);
+    ink = max(ink, bink*wfIn(bSel, px));
+  }
   col *= 1.0 - 0.30*smoothstep(0.02, 0.0, q.y);
   gWfCol = col; gWfInk = ink; gWfGloss = 0.25; gWfMoon = 0.0;
   return d;
