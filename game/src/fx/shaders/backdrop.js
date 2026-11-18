@@ -29476,6 +29476,19 @@ float wfWashstand(vec2 q, float px, float seed, float kq, bool paint){
   return d;
 }
 
+/* (round 61 repair 51) A BAND just inside an edge, for joinery and
+   upholstery drawn in planes: a is metres in from the edge, the band a pixel
+   and two thirds wide and never under 8 mm, its inner edge crisp. */
+float dkBand(float a, float px){
+  float w = max(0.008, 1.7*px);
+  return (1.0 - smoothstep(w - px, w, a))*clamp(a/px + 0.5, 0.0, 1.0);
+}
+/* a drawer's brass drop handle: two round back plates and the bail hanging
+   between them */
+float dkHandle(vec2 h){
+  float bail = max(abs(mmBox(h - vec2(0.0, -0.003), vec2(0.045, 0.019), 0.010)) - 0.0042, h.y);
+  return min(length(vec2(abs(h.x) - 0.045, h.y)) - 0.011, bail);
+}
 /* ── 53 THE READING DESK ───────────────────────────────────────────────────
    A mahogany pedestal desk, its top inset with green leather and a gilt
    tooled border, two pedestals of drawers with brass handles; on it the
@@ -29512,19 +29525,81 @@ float wfDesk(vec2 q, float px, float seed, float kq, bool paint){
   float ink = 0.0;
   vec3 maho = vec3(0.42, 0.18, 0.09);
   vec3 brass = vec3(0.92, 0.68, 0.30);
-  /* the pedestals: drawers, each with its handle */
-  float dr = floor((q.y)/((TOP - 0.05)/3.0));
-  float dy = q.y - (dr + 0.5)*((TOP - 0.05)/3.0);
+  /* (round 61 repair 51, survey 22: "carry the same modelling to the objects
+     left untouched". The desk was three flat brown boxes ruled into six, a
+     pale bar on each: it stands at a tenth of the prop's ceiling, so nothing
+     was compressing it -- there was no form in its paint to show. It is
+     JOINERY now, in planes with ruled edges: each pedestal a carcass with a
+     lit edge to the key and a shaded one away from it, on a skirting; each
+     drawer a front set in it, beaded -- lit along its top and its key side,
+     in shade along its foot and its far side -- with a brass drop handle on
+     two round plates and that handle's shadow; a drawer in the kneehole's
+     apron; the top's moulded edge in three ruled bands, and its shadow
+     ruled along the pedestals under it. The values on the lit colour,
+     gWgShade; the hues in the paint.) */
+  vec3 mahoD = maho*vec3(0.80, 0.64, 0.58), mahoL = maho*vec3(1.22, 1.12, 1.00);
+  float sx = q.x < 0.0 ? -1.0 : 1.0;
+  float kx = kq*q.x;                                   // metres toward the key
+  float dh = (TOP - 0.05)/3.0;
+  float dr = floor(q.y/dh);
+  float pu = (ax - 0.52)*sx*kq;                        // across a pedestal, toward the key
+  float lowD = 1.0 - step(0.5, dr);                    // the lowest drawer stands on the skirting
+  vec2 fq = vec2(pu, q.y - (dr + 0.5)*dh - 0.020*lowD);
+  vec2 fh = vec2(0.212, dh*0.5 - 0.012 - 0.020*lowD);
+  float front = mmBox(fq, fh, 0.0);
+  float inP = wfIn(peds, px);
+  float inFr = wfIn(front, px);
+  float lodD = mmLod(0.05, px);
+  float fLit = max(dkBand(fh.y - fq.y, px), dkBand(fh.x - fq.x, px))*lodD;
+  float fShd = max(dkBand(fh.y + fq.y, px), dkBand(fh.x + fq.x, px))*(1.0 - fLit)*lodD;
+  float fv = 0.92 + 0.18*mmHash11(dr*3.7 + sx*1.3 + seed);       // each front its own board
+  float cLit = dkBand(0.24 - pu, px), cShd = dkBand(0.24 + pu, px);
   vec3 pC = maho*(0.75 + 0.20*mmNoise(vec2(q.x*20.0, q.y*3.0) + seed));
-  pC *= 1.0 + 0.25*kq*sign(q.x)*smoothstep(0.20, 0.24, abs(ax - 0.52));
-  wfLay(col, ink, peds, pC, px, 0.95);
-  ink = max(ink, mmInkP(abs(fract(q.y/((TOP - 0.05)/3.0)) - 0.5) - 0.5, px/((TOP - 0.05)/3.0), 1.0)*wfIn(peds, px)*0.8);
-  float hdl = wfIn(mmBox(vec2(ax - 0.52, dy), vec2(0.05, 0.010), 0.006), px)*wfIn(peds, px);
-  col = mix(col, brass, hdl);
-  wfLay(col, ink, knee, maho*0.55, px, 0.9);
+  vec3 pedC = mix(mix(pC*0.90, mahoL*0.90, cLit), mahoD*0.90, cShd);
+  pedC = mix(pedC, mix(mix(pC*fv, mahoD, fShd), mahoL, fLit), inFr);
+  wfLay(col, ink, peds, pedC, px, 0.95);
+  ink = max(ink, mmInkP(front, px, 1.0)*inP*0.60*lodD);
+  float pS = mix(0.94 + 0.40*cLit - 0.32*cShd, fv*(1.06 + 0.46*fLit - 0.34*fShd), inFr);
+  /* the skirting: proud of the carcass, its top edge lit; dark on the floor */
+  pS = mix(pS, 0.90 + 0.40*dkBand(0.05 - q.y, px), step(q.y, 0.05));
+  ink = max(ink, mmInkP(q.y - 0.05, px, 1.0)*inP*0.45*lodD);
+  pS *= 1.0 - 0.36*smoothstep(0.025, 0.0, q.y);
+  /* the top's shadow, ruled along the head of each pedestal */
+  pS *= 1.0 - 0.40*smoothstep(0.694 - px, 0.694 + px, q.y);
+  /* the handles: brass, the plate to the key with its spark; each one's
+     shadow down and away on the drawer */
+  float hd = dkHandle(fq);
+  float hOn = wfIn(hd, px)*inFr*inP;
+  float hSh = wfIn(dkHandle(fq + vec2(1.2, 1.5)*px), px)*inFr*inP*(1.0 - hOn)*mmLod(0.022, px);
+  float hLt = smoothstep(-0.004, 0.004, dot(vec2(fq.x - (fq.x < 0.0 ? -0.045 : 0.045), fq.y), vec2(0.60, 0.80)));
+  col = mix(col, brass*(0.60 + 0.55*hLt), hOn);
+  col = mix(col, vec3(1.00, 0.90, 0.62), hOn*(1.0 - smoothstep(0.002, 0.006, length(fq - vec2(0.048, 0.003)))));
+  pS = mix(pS*(1.0 - 0.42*hSh), 1.05, hOn);
+  float shd = mix(1.0, pS, inP);
+  /* the kneehole's apron, back under the top: one long drawer, its knob */
+  vec2 nq = q - vec2(0.0, TOP - 0.12);
+  vec2 nh = vec2(0.262, 0.040);
+  float nfr = mmBox(nq, nh, 0.0);
+  float nLit = max(dkBand(nh.y - nq.y, px), dkBand(nh.x - kq*nq.x, px))*lodD;
+  float nShd = max(dkBand(nh.y + nq.y, px), dkBand(nh.x + kq*nq.x, px))*(1.0 - nLit)*lodD;
+  float knob = length(nq) - 0.013;
+  vec3 knC = mix(maho*0.55, mix(mix(maho*0.70, mahoD*0.80, nShd), mahoL*0.80, nLit), wfIn(nfr, px));
+  knC = mix(knC, brass*(0.60 + 0.60*smoothstep(-0.004, 0.004, dot(nq, vec2(kq*0.60, 0.80)))), wfIn(knob, px));
+  wfLay(col, ink, knee, knC, px, 0.9);
+  ink = max(ink, mmInkP(nfr, px, 1.0)*wfIn(knee, px)*0.55*lodD);
+  shd = mix(shd, mix(0.78, 0.92*(1.0 + 0.40*nLit - 0.32*nShd), wfIn(nfr, px))*(1.0 - 0.38*smoothstep(0.694 - px, 0.694 + px, q.y)), wfIn(knee, px)*(1.0 - wfIn(knob, px)));
   /* the top: its leather and the tooled border, its mahogany edge lit */
-  vec3 tC = maho*(1.0 + 0.6*smoothstep(TOP - 0.03, TOP, q.y));
+  /* (...the edge a moulding in three ruled bands: the arris the lamp
+     catches, the face under it, the thumb turned under in shade; its end to
+     the key lit and its far end in shade) */
+  float tu = q.y - (TOP - 0.025);
+  float tHi = smoothstep(0.009 - px, 0.009 + px, tu), tLo = smoothstep(-0.011 + px, -0.011 - px, tu);
+  vec3 tC = mix(mix(maho*1.05, mahoL*1.25, tHi), mahoD, tLo);
   wfLay(col, ink, top, tC, px, 0.95);
+  ink = max(ink, mmInkP(tu + 0.011, px, 1.0)*wfIn(top, px)*0.45*mmLod(0.03, px));
+  shd = mix(shd, mix(mix(1.0, 1.40, tHi), 0.66, tLo)*(1.0 + 0.22*dkBand(0.78 - kx, px) - 0.28*dkBand(0.78 + kx, px)), wfIn(top, px));
+  /* (what stands on the desk keeps its own light) */
+  gWgShade = mix(shd, 1.0, wfIn(min(lamp, min(min(book, ink1), min(ink2, min(pens, pile)))), px));
   /* the pile of books */
   float pk = floor((q.y - TOP)/0.05);
   vec3 pbC = mix(vec3(0.50, 0.12, 0.08), vec3(0.14, 0.28, 0.18), mmHash11(pk + seed))*(0.7 + 0.4*smoothstep(-0.02, 0.02, fract((q.y - TOP)/0.05) - 0.5));
