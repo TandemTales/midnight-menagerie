@@ -29710,7 +29710,7 @@ float wfDesk(vec2 q, float px, float seed, float kq, bool paint){
      boards; the low drawer out of the corner shade; the floor is Backdrop's
      footNear.) */
   float skF = 1.0 - smoothstep(0.0, 0.05, q.y);
-  pS = mix(pS, (1.15 + 0.85*dkBand(0.08 - q.y, px))*(1.0 + 1.1*skF)*(1.0 - 0.55*(1.0 - smoothstep(0.8*px, 1.8*px, q.y))), step(q.y, 0.08));
+  pS = mix(pS, (1.15 + 0.85*dkBand(0.08 - q.y, px))*(1.0 + 1.1*skF)*(1.0 - 0.78*(1.0 - smoothstep(1.4*px, 2.6*px, q.y))), step(q.y, 0.08));   // (the ground line wide enough to take the fire's rim on the foot with it)
   ink = max(ink, mmInkP(q.y - 0.08, px, 1.0)*inP*0.30*lodD);
   pS *= 1.0 + 0.50*(1.0 - smoothstep(0.05, 0.34, q.y));
   /* the top's shadow, ruled along the head of each pedestal */
@@ -30011,7 +30011,7 @@ float wfChair(vec2 q, float px, float seed, float kq, bool paint){
     float lBead = smoothstep(0.124 - px, 0.124 + px, q.y)*(1.0 - smoothstep(0.140 - px, 0.140 + px, q.y))*lodL;   // the bead under the block
     float lNeck = smoothstep(0.112 - px, 0.112 + px, q.y)*(1.0 - smoothstep(0.124 - px, 0.124 + px, q.y))*lodL;   // its shadow on the taper
     float lCup = (1.0 - smoothstep(0.046 - px, 0.046 + px, q.y))*lodL;  // the castor's cup
-    float lGnd = 1.0 - smoothstep(0.7*px, 1.5*px, q.y);                 // where it stands
+    float lGnd = 1.0 - smoothstep(1.2*px, 2.4*px, q.y);                 // where it stands
     float lSeat = 1.0 - smoothstep(0.0, 0.05, q.y);                     // (the house's dark seat, undone on the brass)
     float lSpk = (1.0 - smoothstep(0.004, 0.009, length(vec2((ax - 0.34)*sk - 0.008, q.y - 0.030))))*lodL;
     vec3 lC = mix(maho*0.70, maho*1.30, lLit);
@@ -30021,7 +30021,7 @@ float wfChair(vec2 q, float px, float seed, float kq, bool paint){
     ink = max(ink, mmInkP(q.y - 0.046, px, 1.0)*0.50*wfIn(legs, px)*lodL);
     float lS = (0.64 + 0.64*lLit + 0.50*lHi*mmLod(0.030, px))*(1.0 + 0.35*lBead - 0.40*lNeck);
     lS = mix(lS, (0.62 + 0.62*lLit + 0.30*lHi)*(1.0 + 1.0*lSeat) + 0.9*lSpk, lCup);
-    shd = mix(shd, lS*(1.0 - 0.62*lGnd), wfIn(legs, px));
+    shd = mix(shd, lS*(1.0 - 0.72*lGnd), wfIn(legs, px));
     /* the back */
     vec2 tq = vec2(q.x + q.y, q.x - q.y)/0.12;
     vec2 tf = fract(tq) - 0.5;
