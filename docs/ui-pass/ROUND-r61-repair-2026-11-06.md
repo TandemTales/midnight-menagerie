@@ -861,3 +861,23 @@ Marked down inside the winner: the scullery dresser's lower back "shows a grid t
 Tests (on the branch before the apron line was restored): link-queue 104/0, kitchens 20/0, secret-passages 74/0, steam-deck 6/6, grounding PASS.
 
 Key: `PAIRED-r61-repair54-key.json`. Evidence: `C:/UILOOP/s21/ev54/`.
+
+## Repair 53: the graveyard's round forms, moss, rock colours, lanterns, angel and crosses (2026-11-18)
+
+Repair 51's judges: "fix the round forms", moss "back as painted patches", "a warm lantern side against the cold moon side", the angel "unmodelled line-work". Repair 53 (`bf4753fc` to `d84053a4`, eight commits, merged whole) is all inside the graveyard's program (`#if MM_WINGS == 5`) plus seven lines of backdrop.js for the tomb's floor pool.
+
+- **Urn and bosses:** the urn's lit bands ran at the same x down neck, belly and foot ("a post through a disc"). Belly and finial go through a ball function (a curved terminator, a far-rim light, one highlight); ring bosses are tori that lay a shadow on the panel. Both judges, all three rooms: "modelled spheres with a lit quarter", against "split down the middle".
+- **Moss and rock:** both had sat in the paint under the prop ceiling and the moon's blue; they go on the lit colour through a graveyard-only tint (`gGyTint`). Per stone by seed: a mound out of the grass, a lobed cushion on one side, cushions along a shoulder, hanks over a ledger; granite, sandstone, slate and marble keep their colour. "Warm sandstone against cool slate ones behind, which separates the rows."
+- **Lanterns (shape 23) and their warm side:** a dark iron cage, amber panes with a brighter flame core, a lit cap; stone within about two paces of each warm rig lamp takes the candle's colour. The deciding object in four of six verdicts: "amber glazed lamps warming the chest tomb", where dev's were "pale, milky boxes with a white blob".
+- **Angel and cross:** both were at the ceiling. A lit and a shaded wing with ruled feather tiers, the robe in three planes; the cross with lit and shaded arrises and a torus ring. Trimmed hard for link time: "slightly better" only.
+- **Bases:** a lit plinth line, grass tips in the moon, the tomb's floor pool 0.40 of its width (was 0.62).
+
+The paired check, three graveyard rooms against dev: **6-0** (by 2 in five of six verdicts).
+
+Link time: graveyard prop program 7.7 s to 9.2 (four later runs alone: 8.2, 9.5, 9.7, 8.4). The cost found was not the new paint but the stones' weather (seven noise taps per call, seven calls, about 4.5 s): a headstone's face and return, and a tomb's chest or kerb, now share one set of taps. The graveyard has about a second left: the next repair there must take something out.
+
+Marked down inside the winner, by BOTH judges, and the next repair's first item: the round moss cushions and shoulder caps are "flat, same-sized, hard-edged discs" that "overhang the stone's outline and read as stickers or bushes"; they want "broken edges, a light top and dark underside, and varied size, like the leafy caps already on the arch tops", inside the outline. Also: the yard's right-hand cross "close to over-saturated orange"; the lantern light carried further (a warm pool on the grass, a warm edge on neighbouring stones); the angel and crosses want carved detail; the nearest stones' feet still fall to black.
+
+Tests: link-queue 104/0, graveyard 35/0, steam-deck 6/6, grounding PASS.
+
+Key: `PAIRED-r61-repair53-key.json`. Evidence: `C:/UILOOP/s21/ev53/`.
