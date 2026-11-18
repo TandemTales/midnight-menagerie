@@ -685,3 +685,17 @@ Next, from both judges: foot shadows "shaped by the object and the light directi
 Tests (merged form): link-queue 104/0, foyer 66/0, ballroom 46/0, secret-passages 74/0, grounding PASS.
 
 Key: `PAIRED-r61-repair44-key.json`. Evidence: `C:/UILOOP/s21/ev44/`.
+
+## Repair 45: the hay bales as bound straw, lobed vine leaves, the crypt's far skull piles (2026-11-18)
+
+Repair 42's judges: "the hay bales are a camouflage blotch rather than straw, and the vine leaves are flat green smears"; "the far wall piles brought up to match". Repair 45 (`988fca28`, merged). Only shaders/backdrop.js; arithmetic only (link-queue 104; the bale uses two FEWER noise taps); no silhouette changed.
+
+- **The bale at last** (shape 86 in `gkDraw`, pumpkin grounds only; the kennels' bales are a separate painter, `ydBalesPaint`, and did not move). It had lost twice as noise-straw (repair 26) and as a rounded "pillow" (repair 23). This time the two thresholded noises and the pillow shading are GONE and three ruled faces are drawn: a long face of six pressed layers, each its own straw-gold swelling to a lit upper edge with a thin dark line between and short cut-stalk strokes; a lit top; a shaded, stippled end; two pale twines with a shadow and a pinch; a dark line at the ground. First try (five wide olive bands) "read as a plank crate"; narrower wobbling bands and a warmer gold fixed most of it.
+- **Vine leaves** (`pkLeaf`): sinuses cut into the old outline, a bowed midrib with a lit and a shaded half, side veins, the pumpkin's shadow where the leaf lies under it. About 12 px tall: what survives is the two-tone split and the notched outline. A deep sinus (0.20) made propellers; now 0.08.
+- **The far skull piles** are the same `wfCharnel` as the near stack; at 5 px per skull the detail term is 0 and repair 42's modelling fell to one flat value. Each skull now keeps a lit and a shaded side and its socket at that size (luma 16 to 21, 17 to 24). The ossuary kind shares it (captured after only).
+
+The paired check against dev: **4-0** (pumpkin 2 and 2, crypt 1 and 1). Both judges were asked to name every object that differed: the bales decide the courtyard ("lit-topped blocks with stacked straw layers and twine", where dev's were "camouflage-mottled slabs with no top face"); the leaves one judge better, one no preference. **Both still say the bales "lean toward plank crates"** and want "loose straw ends and a ragged edge rather than straight bands"; the lit tops "a little pale"; eye sockets on the far skulls; darks that keep colour on the bales' shaded sides.
+
+Tests: link-queue 104/0, pumpkin-grounds 70/0, crypt 41/0, grounding PASS, steam-deck 6/6.
+
+Key: `PAIRED-r61-repair45-key.json`. Evidence: `C:/UILOOP/s21/ev45/`.
