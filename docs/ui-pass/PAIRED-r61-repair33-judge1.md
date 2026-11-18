@@ -1,0 +1,5 @@
+SURVEY-room-ballroom-ballroom: B by 1 -- the near chairs have a soft pooled contact shadow under their feet in B, so they sit on the checker floor, where in A the legs stand on bare lit tile with only a hard cast wedge behind them; everything else is identical.
+SURVEY-room-study-library: A by 2 -- the three open books on the floor show pale readable page spreads in A, while in B they collapse to thin dark slivers that read as unidentifiable smears on the boards.
+
+### PATTERN
+The better versions give each near-floor object a readable, accurately drawn form and a contact with the ground. Needed next: (1) near-floor props modelled with painted light and edge detail rather than flat textured cut-outs (the ballroom chair backs and candle stands read as flat stickers); (2) the floor's darks holding colour rather than falling to pure black in the ballroom's checker and the study's far boards; (3) the right-edge objects (the ballroom's clustered chairs, the study's globe and book stack) pulled in or completed so none reads as a fragment.

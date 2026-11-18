@@ -487,3 +487,17 @@ The paired check was against the untouched build: **4-0** (study 2 and 2, "clear
 Tests: grounding PASS (24 rows), steam-deck 6/6, link-queue 104/0, study-library 50/0, ballroom 46/0.
 
 Key: `PAIRED-r61-repair30-key.json`. Evidence: `C:/UILOOP/s21/R30-evidence/`.
+
+## Repair 33: the study's open books drawn as books, and feet that stand (2026-11-17)
+
+Both of repair 30's judges named the study's open book ("a thin dark flat shape ... a smear rather than a book") and asked for contact shadows under the new pieces, which "float slightly" (`c8e94c15`, merged `3f7d62a3`).
+
+- **The open book** (`wfBooks`, shape 88, in shaders/backdrop.js) was drawn edge-on, two bowed leaves 3 cm high. It now lies as seen from above: the spread turned a little off square, cloth boards round pale pages, a gutter, lines of text and a small plate, laid before the pile. Every 88 pile in the study wing gets it (three in the survey room). The passages' piles are `wfBookPile`, untouched: their open book is still edge-on.
+- **The feet** (`footNear()` in backdrop.js, called where `footOf` returns nothing). The study's globe (54) and book piles (88) and the ballroom's gilt chair (72) use the shadow program's FOOT profile: a pool the size of the object's own footprint and a small dark pool under each foot, in place of the house's wide pool. The feet pools are laid AFTER the shadow loop, nearest piece first: the ballroom has 13 chairs, shadows are laid far to near, and the 64-slot cap had starved the near chairs.
+- Arithmetic only: link-queue is still 104 variants.
+
+The paired check was against dev: **4-0** (study 2 and 2, "clearly"; ballroom 1 and 1). The books "show pale readable page spreads"; the chairs' shadows are "shaped pools under the feet that leave the gold tiles lit", where the old were "broad hard-edged dark wedges". Both judges ask next for painted, candle-lit modelling on near props ("flat cut-outs", "flat stickers": the ballroom's chair backs and candle stands), floors' darks holding colour in the far third, and right-edge pieces made whole (the ballroom's clustered chairs, the study's lower-right pile).
+
+Tests: grounding PASS, steam-deck 6/6, link-queue 104/0, study-library 50/0, ballroom 46/0. **Run steam-deck and grounding under `python tools/gpu_slot.py -- ...` when anything else is capturing:** bare, steam-deck gave 10 false timeouts.
+
+Key: `PAIRED-r61-repair33-key.json`. Evidence: `C:/UILOOP/s21/ev33/`.
