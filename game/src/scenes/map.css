@@ -2499,3 +2499,37 @@
   background: var(--kit-mount-ring) 50% 50% / 100% 100% no-repeat;
 }
 /* == end the gilt mount on the map's round controls == */
+
+/* == room for the knobs' rims (repair 55) == */
+/* Repair 46's judges, of the mounts they preferred: the tray's knobs "with
+   their new outer rims now nearly kiss each other and the tray rod", and the
+   whole-house medallion "rides the bar's lower rule". Measured at 1280: 1px of
+   plum between the two zoom rings, 2px between a ring and the tray's wooden
+   end, the rings' lower rule lying ON the brass rod; the medallion's ring
+   across the frame's foot rule (and across it at 1600 too).
+   The zoom rings are seated closer on the same knobs (the mount reaches .5px
+   past the knob, where it reached 3px), and on the Deck's full tray the two
+   knobs stand 1px further from the tray's end, the pixel taken from the air
+   before them. No knob, glyph or hit area changes size and the tray's ends do
+   not move. */
+.map-screen .map-tools [data-action="out"]::after,
+.map-screen .map-tools [data-action="in"]::after { inset: -.5px; }
+.map-screen .map-tools :is([data-action="out"], [data-action="in"]):focus-visible { outline-offset: 3px; }
+@media (max-width: 1420px) {
+  .map-screen .map-tools [data-action="out"] { margin-left: 3px; }
+  .map-screen .map-tools [data-action="in"] { margin-right: 1px; }
+}
+/* The bar's lower row (the wing's conditions and THE WHOLE HOUSE) stands 4px
+   higher, in the 4px that parted it from the key above, so the medallion and
+   its mount stand between the key's rim and the frame's foot rule with dark
+   either side; the mount is seated on the medallion's own rim. The medallion,
+   its house and its plate keep their size, and the bar is as tall as it was
+   (map.js reserves the tray's place from its height). */
+.map-screen .map-bar { row-gap: 0; padding-bottom: 4px; }
+/* the frame's foot rule stands --kit-edge + 3px off the bottom, the key's rim
+   4px above the row: the mount is as wide as leaves 2px of dark at each, and
+   the medallion sits in the middle of that (1px above the middle of its
+   plate at 1280, 2px on a wide panel) */
+.map-screen .map-atlas__medal { translate: 0 calc(-50% - var(--kit-edge) / 2 + 3.45px); }
+.map-screen .map-atlas__medal::after { inset: calc((var(--plate-h) * .0723 - 12.2px + var(--kit-edge)) / 2); }
+/* == end room for the knobs' rims == */
