@@ -3223,7 +3223,14 @@ export const ROOM_KINDS = {
      its own wing's program (MM_ROOMS 6 and 7) and seen from its own place. */
   lampworks: {
     kinds: [
-      { subject: 'lampshop', layout: 'hang' },
+      /* (round 61 repair 35, both judges: "the lampworks' centre aisle is
+         bare" -- a candle-dipping rack hung with its tapers (43, the wax
+         room's, which this wing's program already draws and this room showed
+         none of) stood in the aisle right of the walk to the furnace, clear
+         of the furnace mouth's glow; its feet in footOf's lampworks profile.
+         `hand`: a fight leaves it out) */
+      { subject: 'lampshop', layout: 'hang',
+        nearPlus: [{ shape: 43, ahead: 7.5, across: -0.75, tone: 0.97, keep: true, still: true, hand: true, seed: 5.0 }] },
       /* THE WAX ROOM -- the chandlery: the vat on its furnace, the dipping
          frames hung with tapers under their hoods; its floor stood with the
          wax stoves and the candle stands, not the gas standards; seen low,
@@ -3671,7 +3678,14 @@ export const ROOM_KINDS = {
        program 20 -- the chapel's floor stood with tombs and candles, the
        ossuary's with charnel stacks) */
     kinds: [
-      { subject: 'catacombs', count: 4, swap: [[57, 59], [6, 58]] },
+      /* (round 61 repair 35, both judges: "the crypt's wide empty floor ...
+         needs something standing on it" -- a charnel stack (59), the skulls
+         a face high, stood on the near flags left of the walk to the door,
+         between the two graves; the room showed that drawing only as two
+         specks at the far wall. Its foot is footOf's crypt profile. `hand`:
+         a fight leaves it out) */
+      { subject: 'catacombs', count: 4, swap: [[57, 59], [6, 58]],
+        nearPlus: [{ shape: 59, ahead: 4.2, across: 0.55, tone: 0.97, hM: 1.1, keep: true, still: true, hand: true, seed: 3.0 }] },
       { subject: 'cryptchapel', swap: [[6, 58]], count: 3, room: { d: 0.80 }, cam: { z: -1.0, look: 0.15 },
         lamps: [{ i: 1, x: 0.0, z: 0.86, y: 1.6, color: '#e2a660', k: 0.85, fit: 'none' }],
         /* (round 43 graft: its sarcophagi forward -- the chapel's tomb a
