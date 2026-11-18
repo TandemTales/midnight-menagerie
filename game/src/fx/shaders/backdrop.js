@@ -19190,15 +19190,34 @@ float wfCabriole(vec2 q, float x0, float s, float y1, float r){
   return max(abs(q.x - cx) - w, max(-q.y, q.y - y1));
 }
 /* a candle burning: its wax, its wick, its flame, from the candle's foot */
+/* (round 61 repair 38: repair 37 found the flame was always drawn and always
+   cut away -- it burns above the wax, OUTSIDE its caller's silhouette, and a
+   pixel outside the silhouette is not painted. wfCandleLit is the flame and
+   its wick as a silhouette: every caller takes it into its own. The flame
+   is repair 37's: a teardrop, orange round a hot core, on a dark wick; the
+   wax ivory and round, glowing under the flame.) */
+float wfCandleLit(vec2 c, float h){
+  vec2 f = c - vec2(0.0, h + 0.030);
+  float fl = (length(vec2(f.x/0.014, f.y/(f.y > 0.0 ? 0.042 : 0.016))) - 1.0)*0.014;
+  return min(fl, wfSeg(c, vec2(0.0, h - 0.004), vec2(0.002, h + 0.019), 0.0028));
+}
+/* how much of the candle's light reaches a point of what it stands on */
+float wfCandleFall(vec2 c, float h, float reach){
+  return exp(-length(c - vec2(0.0, h + 0.030))/reach);
+}
 void wfCandle(vec2 c, float h, float r, float px, inout vec3 col, inout float ink, inout vec3 emit){
   float wax = mmBox(c - vec2(0.0, h*0.5), vec2(r, h*0.5), r*0.3);
-  col = mix(col, vec3(0.90, 0.86, 0.74)*(0.70 + 0.30*smoothstep(-r, r, c.x)), wfIn(wax, px));
+  col = mix(col, vec3(0.86, 0.77, 0.56)*(0.58 + 0.42*wfRound(clamp(c.x/(r*1.06), -1.0, 1.0))), wfIn(wax, px));
   ink = max(ink, mmInkP(wax, px, 1.0)*0.55);
+  wfLay(col, ink, wfSeg(c, vec2(0.0, h - 0.004), vec2(0.002, h + 0.019), 0.0028), vec3(0.07, 0.05, 0.04), px, 0.0);
   vec2 f = c - vec2(0.0, h + 0.030);
-  float fl = (length(vec2(f.x/0.011, f.y/(f.y > 0.0 ? 0.032 : 0.014))) - 1.0)*0.011;
+  float fl = (length(vec2(f.x/0.014, f.y/(f.y > 0.0 ? 0.042 : 0.016))) - 1.0)*0.014;
+  float core = (length(vec2(f.x/0.0075, (f.y + 0.005)/(f.y + 0.005 > 0.0 ? 0.025 : 0.010))) - 1.0)*0.0075;
   float on = wfIn(fl, px);
-  emit += vec3(1.00, 0.78, 0.42)*2.2*on;
+  col = mix(col, vec3(1.00, 0.62, 0.22), on);
+  emit += mix(vec3(1.00, 0.46, 0.10)*1.05, vec3(1.00, 0.88, 0.52)*1.9, wfIn(core, px))*on;
   emit += vec3(1.00, 0.62, 0.26)*0.30*exp(-length(f)/0.05);
+  emit += vec3(1.00, 0.60, 0.24)*0.30*smoothstep(h - 0.050, h, c.y)*wfIn(wax, px);
 }
 
 #if MM_WINGS == 4
@@ -19494,21 +19513,28 @@ float wfTorchere(vec2 q, float px, float seed, float kq, bool paint){
   foot = min(foot, length(fq - vec2(0.165, 0.030)) - 0.028);
   foot = min(foot, mmBox(q - vec2(0.0, 0.200), vec2(0.045, 0.030), 0.012));
   /* the stem */
-  float stem = wfTurned(q, 0.20, 1.18, 0.018);
-  float knop = min(wfEll(q - vec2(0.0, 0.62), vec2(0.040, 0.028)), wfEll(q - vec2(0.0, 1.10), vec2(0.048, 0.034)));
+  /* (repair 38: the flames stand above the candles, and the candles reached
+     the top of the quad -- so the head comes down a hand on a shorter stem,
+     and its three flames and wicks are in the silhouette) */
+  const float HD = 0.085;
+  float stem = wfTurned(q, 0.20, 1.18 - HD, 0.018);
+  float knop = min(wfEll(q - vec2(0.0, 0.62), vec2(0.040, 0.028)), wfEll(q - vec2(0.0, 1.10 - HD), vec2(0.048, 0.034)));
   /* the arms: an S out and up to each cup */
   float arm = 1e3;
   for (int i = 0; i < 4; i++){
     float a0 = float(i)/4.0, a1 = float(i + 1)/4.0;
-    vec2 p0 = vec2(0.230*sin(a0*1.5708), 1.13 + 0.17*(1.0 - cos(a0*1.5708)));
-    vec2 p1 = vec2(0.230*sin(a1*1.5708), 1.13 + 0.17*(1.0 - cos(a1*1.5708)));
+    vec2 p0 = vec2(0.230*sin(a0*1.5708), 1.13 - HD + 0.17*(1.0 - cos(a0*1.5708)));
+    vec2 p1 = vec2(0.230*sin(a1*1.5708), 1.13 - HD + 0.17*(1.0 - cos(a1*1.5708)));
     arm = min(arm, wfSeg(vec2(ax, q.y), p0, p1, 0.013));
   }
-  float pans = min(mmBox(vec2(ax - 0.232, q.y - 1.31), vec2(0.045, 0.010), 0.006), mmBox(q - vec2(0.0, 1.40), vec2(0.048, 0.010), 0.006));
-  float cups = min(mmBox(vec2(ax - 0.232, q.y - 1.33), vec2(0.022, 0.018), 0.006), mmBox(q - vec2(0.0, 1.42), vec2(0.022, 0.018), 0.006));
-  float cand = min(mmBox(vec2(ax - 0.232, q.y - 1.40), vec2(0.016, 0.055), 0.005), mmBox(q - vec2(0.0, 1.49), vec2(0.016, 0.055), 0.005));
-  float centre = mmBox(q - vec2(0.0, 1.27), vec2(0.016, 0.13), 0.006);
-  float d = min(min(min(foot, stem), min(knop, arm)), min(min(pans, cups), min(cand, centre)));
+  vec2 hq = vec2(q.x, q.y + HD);
+  float pans = min(mmBox(vec2(ax - 0.232, hq.y - 1.31), vec2(0.045, 0.010), 0.006), mmBox(hq - vec2(0.0, 1.40), vec2(0.048, 0.010), 0.006));
+  float cups = min(mmBox(vec2(ax - 0.232, hq.y - 1.33), vec2(0.022, 0.018), 0.006), mmBox(hq - vec2(0.0, 1.42), vec2(0.022, 0.018), 0.006));
+  float cand = min(mmBox(vec2(ax - 0.232, hq.y - 1.40), vec2(0.016, 0.055), 0.005), mmBox(hq - vec2(0.0, 1.49), vec2(0.016, 0.055), 0.005));
+  float centre = mmBox(hq - vec2(0.0, 1.27), vec2(0.016, 0.13), 0.006);
+  vec2 cS = vec2(ax - 0.232, hq.y - 1.345), cC = vec2(q.x, hq.y - 1.435);
+  float lit = min(wfCandleLit(cS, 0.11), wfCandleLit(cC, 0.11));
+  float d = min(min(min(foot, stem), min(knop, arm)), min(min(pans, cups), min(min(cand, centre), lit)));
   if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
@@ -19518,12 +19544,17 @@ float wfTorchere(vec2 q, float px, float seed, float kq, bool paint){
   float rnd = 0.55 + 0.6*smoothstep(-1.0, 1.0, kq*q.x/0.04);
   wfLay(col, ink, foot, brass*0.75*rnd, px, 0.9);
   wfLay(col, ink, stem, brass*(0.45 + 0.7*wfRound(clamp(q.x/0.03, -1.0, 1.0)))*(1.0 + 0.3*kq*sign(q.x)), px, 0.9);
-  wfLay(col, ink, knop, brass*(0.60 + 0.55*smoothstep(-0.02, 0.03, q.y - 0.62 + 0.0)), px, 0.8);
+  wfLay(col, ink, knop, brass*(0.60 + 0.55*smoothstep(-0.02, 0.03, q.y - (q.y > 0.85 ? 1.10 - HD : 0.62))), px, 0.8);
   wfLay(col, ink, min(arm, centre), brass*0.9, px, 0.8);
-  wfLay(col, ink, min(pans, cups), brass*(0.8 + 0.4*smoothstep(1.30, 1.34, q.y)), px, 0.8);
+  wfLay(col, ink, min(pans, cups), brass*(0.8 + 0.4*smoothstep(1.30, 1.34, hq.y)), px, 0.8);
   /* the three candles, each burning */
-  wfCandle(vec2(ax - 0.232, q.y - 1.345), 0.11, 0.016, px, col, ink, emit);
-  wfCandle(vec2(q.x, q.y - 1.435), 0.11, 0.016, px, col, ink, emit);
+  /* (repair 38, the judges of repair 37: "the flame currently lights
+     nothing". Each flame's light on its own cup and pan and the arm under
+     it, tight, in the brass's own colour so its darks stay brass) */
+  float fall = max(wfCandleFall(cS, 0.11, 0.13), wfCandleFall(cC, 0.11, 0.13));
+  emit += col*vec3(1.00, 0.70, 0.38)*2.4*fall*wfIn(d, px)*(1.0 - wfIn(min(cand, lit), px));
+  wfCandle(cS, 0.11, 0.016, px, col, ink, emit);
+  wfCandle(cC, 0.11, 0.016, px, col, ink, emit);
   gWfEmit = emit;
   gWfGloss = 0.55;
   gWfCol = col; gWfInk = ink;
@@ -19665,12 +19696,16 @@ float wfBookPile(vec2 q, float px, float seed, float kq, bool paint){
      the books around it, strongest on the near spines and the top of the
      shorter pile, as the hall lamp's pool does on its book above) */
   vec2 fq = cq - vec2(0.0, 0.125);
+  /* (repair 38: "the flame currently lights nothing" -- the pool was so
+     broad it lit every book alike. A tight one over it: the top book and
+     the upper spines take the flame's light, falling off down the pile) */
   float cpool = exp(-length(fq)/0.45);
+  float ctight = 1.5*exp(-length(fq)/0.15);
   /* (repair 34: and on the open pages beside the piles, face up to it) */
   cpool = max(cpool, 0.40*wfIn(open, opx));
   /* (repair 37: the stub and its saucer take a third of it -- the whole of
      it is what bleached them to a white peg) */
-  emit += col*vec3(1.00, 0.70, 0.38)*2.60*cpool*wfIn(d, px)*(1.0 - 0.66*stub);
+  emit += col*vec3(1.00, 0.70, 0.38)*2.60*(cpool*(1.0 - 0.66*stub) + ctight*(1.0 - stub))*wfIn(d, px);
   gWfEmit = emit;
   gWfCol = col; gWfInk = ink; gWfGloss = 0.25; gWfMoon = 0.0;
   return d;
@@ -19737,7 +19772,9 @@ float wfServTable(vec2 q, float px, float seed, float kq, bool paint){
     keys = min(keys, mmBox(k - a1 - vec2(0.008*sign(fi + 0.1), 0.0), vec2(0.010, 0.006), 0.002));
   }
   float flw = min(min(crock, bloom), min(stems, leaves));
-  float d = min(min(min(top, apron), min(legs, strt)), min(min(lant, flw), min(min(sau, stub), min(kr, keys))));
+  /* (repair 38: the stub's flame and wick in the silhouette, so they draw) */
+  vec2 cF = c - vec2(0.0, 0.010);
+  float d = min(min(min(top, apron), min(legs, strt)), min(min(lant, flw), min(min(sau, min(stub, wfCandleLit(cF, 0.070))), min(kr, keys))));
   if (!paint || d > WF_GONE) return d;
   vec3 col = vec3(0.1);
   float ink = 0.0;
@@ -19792,9 +19829,13 @@ float wfServTable(vec2 q, float px, float seed, float kq, bool paint){
   col = mix(col, hb < 0.55 ? vec3(0.62, 0.44, 0.10) : vec3(0.16, 0.08, 0.04), onB*(1.0 - smoothstep(0.26, 0.34, pr)));
   /* the saucer, the stub burning */
   wfLay(col, ink, sau, vec3(0.70, 0.68, 0.62)*(0.6 + 0.5*smoothstep(0.0, 0.02, c.y)), px, 0.85);
-  wfCandle(c - vec2(0.0, 0.010), 0.070, 0.014, px, col, ink, emit);
+  wfCandle(cF, 0.070, 0.014, px, col, ink, emit);
   /* the keys: black iron */
   wfLay(col, ink, min(kr, keys), vec3(0.16, 0.15, 0.15), px, 0.9);
+  /* (repair 38: the stub's light on what it stands on -- its saucer, the
+     table's edge under it, the drawer front and the keys, the near side of
+     the crock -- tight, in each thing's own colour) */
+  emit += col*vec3(1.00, 0.70, 0.38)*2.2*wfCandleFall(cF, 0.070, 0.20)*wfIn(d, px)*(1.0 - wfIn(min(stub, wfCandleLit(cF, 0.070)), px));
   gWfEmit = emit;
   gWfGloss = 0.25 + 0.5*wfIn(min(lant, kr), px);
   gWfMoon = 0.45*wfIn(top, px);
@@ -19829,7 +19870,9 @@ float wfHallTable(vec2 q, float px, float seed, float kq, bool paint){
   float cpan = max(wfEll(c - vec2(0.0, 0.010), vec2(0.075, 0.014)), -c.y);
   float cnoz = mmBox(c - vec2(0.0, 0.045), vec2(0.020, 0.025), 0.006);
   float cwax = mmBox(c - vec2(0.0, 0.135), vec2(0.016, 0.075), 0.004);
-  float d = min(min(min(top, apron), min(legs, under)), min(min(vase, bloom), min(min(salver, cards), min(cpan, min(cnoz, cwax)))));
+  /* (repair 38: the chamberstick's flame and wick in the silhouette) */
+  vec2 cF = c - vec2(0.0, 0.060);
+  float d = min(min(min(top, apron), min(legs, under)), min(min(vase, bloom), min(min(salver, cards), min(cpan, min(cnoz, min(cwax, wfCandleLit(cF, 0.15)))))));
   if (!paint || d > WF_GONE) return d;
 
   vec3 col = vec3(0.1);
@@ -19871,7 +19914,10 @@ float wfHallTable(vec2 q, float px, float seed, float kq, bool paint){
   wfLay(col, ink, cards, vec3(0.92, 0.88, 0.78), px, 0.6);
   /* the chamberstick, its candle burning */
   wfLay(col, ink, min(cpan, cnoz), brass*(0.7 + 0.4*smoothstep(0.0, 0.03, c.y)), px, 0.85);
-  wfCandle(c - vec2(0.0, 0.060), 0.15, 0.016, px, col, ink, emit);
+  /* (repair 38: the chamberstick's light on its own pan, the marble under
+     it and the salver beside it; the marble is pale, so less of it) */
+  emit += col*vec3(1.00, 0.70, 0.38)*1.3*wfCandleFall(cF, 0.15, 0.24)*wfIn(d, px)*(1.0 - wfIn(min(cwax, wfCandleLit(cF, 0.15)), px));
+  wfCandle(cF, 0.15, 0.016, px, col, ink, emit);
   gWfEmit = emit;
   gWfGloss = 0.30 + 0.55*wfIn(min(top, min(salver, vase)), px);
   gWfMoon = 0.5*wfIn(top, px);
