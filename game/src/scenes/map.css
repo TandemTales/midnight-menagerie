@@ -2472,3 +2472,30 @@
   .map-screen .map-tools { bottom: calc(var(--map-foot) - 9px); padding-bottom: 15px; }
   .map-screen .map-tools .map-tools__status { height: 22px; margin-bottom: 1px; }
 }
+
+/* == the gilt mount on the map's round controls (repair 46) == */
+/* Repair 43's judges: "the same rim on the remaining round controls, the zoom
+   -/+ on the map bar, the whole-house and arrow knobs, so one language holds
+   everywhere". The tray's zoom knobs and the bar's whole-house medallion wear
+   the HUD rail's mount (kit.css --kit-mount-ring: the outer gilt rule and four
+   studs) round the enamel they already are; no knob, glyph or hit area changes
+   size. The two zoom rings need 5px between the knobs to stand clear of each
+   other: on the Deck's tray, which is full, the brass upright and the tray's
+   title give up the same 6px of their air, so nothing on it wraps or shrinks. */
+.map-screen .map-tools [data-action="out"]::after,
+.map-screen .map-tools [data-action="in"]::after {
+  content: ""; position: absolute; inset: -3px; pointer-events: none;
+  background: var(--kit-mount-ring) 50% 50% / 100% 100% no-repeat;
+}
+.map-screen .map-tools [data-action="out"] { margin-left: 4px; }
+.map-screen .map-tools [data-action="in"] { margin-left: 5px; }
+.map-screen .map-tools :is([data-action="out"], [data-action="in"]):focus-visible { outline-offset: 5px; }
+@media (max-width: 1420px) {
+  .map-screen .map-tools .map-tools__divider { margin-inline: 2px; }
+  .map-screen .map-tools .map-tools__title { margin-right: 0; }
+}
+.map-atlas__medal::after {
+  content: ""; position: absolute; inset: -6%; pointer-events: none;
+  background: var(--kit-mount-ring) 50% 50% / 100% 100% no-repeat;
+}
+/* == end the gilt mount on the map's round controls == */

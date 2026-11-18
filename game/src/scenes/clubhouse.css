@@ -168,6 +168,9 @@
   padding-inline: calc(var(--h) * .5);
   gap: .34em;
 }
+/* repair 46: at 1280 the plate's left tip lay over the sign's scrollwork, the
+   "0" hard against it; it stands 10px further out, still short of the candle */
+@media (max-width: 1400px) { .cl-count { margin-right: -10px; } }
 .cl-count .kit-enamel__value { --reading-size: calc(var(--h) * .5); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); }
 .cl-count .kit-enamel__label { --reading-size: clamp(11.5px, .78vw, 12.5px); font-size: max(var(--reading-floor), var(--reading-size), calc(var(--reading-size) * var(--reading-ratio) + var(--reading-lift))); color: var(--kit-text); letter-spacing: .08em; padding-left: .08em; }
 .cl-count__dot {
