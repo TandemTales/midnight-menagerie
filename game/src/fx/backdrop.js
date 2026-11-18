@@ -3020,11 +3020,7 @@ export class Backdrop {
             const q = p.h / (CP.nominal ?? 1);
             const m = CP.mirror ? (mmHash11((p.seed || 0) * 3.71 + CP.shape * 0.13) < 0.5 ? -1 : 1) : 1;
             return { x: p.x + (CP.dx ?? 0) * q * m, z: p.z + (CP.dz ?? 0) * q, r: (CP.r ?? 0.8) * q,
-                     ax: 1, ay: 0, stretch: CP.stretch ?? 1.0, i: CP.k ?? 2.0, col, owner: p,
-                     /* (round 61 repair 44: how bright the pool may drive the
-                        floor -- CP.cap, as the grade's tone curve takes it,
-                        so here over the room's exposure; _writePools) */
-                     cap: (CP.cap ?? 0.6) / Math.max(pal.exposure ?? 1.5, 0.1) };
+                     ax: 1, ay: 0, stretch: CP.stretch ?? 1.0, i: CP.k ?? 2.0, col, owner: p };
           }) };
     }
     this._candlePools();
@@ -3261,8 +3257,7 @@ export class Backdrop {
       fu.uPool.value[i].set(p.x, -(p.z - this._floorCz), p.r, p.i);
       /* (round 61 repair 41: w 2 marks a candle's pool -- FLOOR_FRAG lays
          it tight, the floor's own colour times the flame's) */
-      /* (round 61 repair 44: and what is over 2 is the pool's ceiling) */
-      fu.uPoolAxis.value[i].set(p.ax, p.ay, p.stretch, p.col ? 2 + (p.cap ?? 0.4) : 0);
+      fu.uPoolAxis.value[i].set(p.ax, p.ay, p.stretch, p.col ? 2 : 0);
     }
     this._poolCols();
     /* ...and the same four ellipses on the ROOF, at the origin of each shaft

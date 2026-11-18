@@ -1297,10 +1297,7 @@ export const REGIONS = {
     /* (round 61 repair 41: the near and middle candelabra each throw a pool
        on the marble at their foot and stand in it on their three paws --
        Backdrop.build, candlePools / candleFoot) */
-    /* (round 61 repair 44: `cap`, how bright a pool may drive the marble, as
-       the grade takes it -- the petals in it stay crimson and the black
-       squares black; FLOOR_FRAG's pool loop) */
-    candlePools: { shape: 65, nominal: 1.56, n: 2, keep: 2, keepBy: 'centre', r: 0.70, stretch: 1.25, k: 7.0, cap: 0.68, color: '#f2b060', foot: true },
+    candlePools: { shape: 65, nominal: 1.56, n: 2, keep: 2, keepBy: 'centre', r: 0.70, stretch: 1.25, k: 7.0, color: '#f2b060', foot: true },
     particles: { mix: [[PTYPE.DUST, 0.58], [PTYPE.EMBER, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#ffe8c0', wispTint: '#d8a8ff', emberTint: '#ffc95a',
                  speed: 0.9, scale: 1.1, wind: 0.8, density: 1.0 },
@@ -1602,7 +1599,7 @@ export const REGIONS = {
        pool on the boards round the pile -- Backdrop.build, candlePools: the
        piles are wfBookPile (66, seed > 60; 1.25 m nominal), the candle on
        the taller one at -0.37, mirrored as the drawing is) */
-    candlePools: { shape: 66, seedMin: 60, nominal: 1.25, mirror: true, n: 2, dx: -0.24, dz: 0.22, r: 0.45, stretch: 1.35, k: 10.0, cap: 0.45, color: '#ffb23c' },   // (repair 44: `cap` -- the boards lit a deep amber, not driven to one tan)
+    candlePools: { shape: 66, seedMin: 60, nominal: 1.25, mirror: true, n: 2, dx: -0.24, dz: 0.22, r: 0.45, stretch: 1.35, k: 10.0, color: '#ffb23c' },
     /* (round 28 graft: its cases and lamp posts set down on the boards in a
        denser contact shadow -- Backdrop.build's pal.propShadow) */
     propShadow: 1.6,
