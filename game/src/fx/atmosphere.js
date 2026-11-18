@@ -143,6 +143,9 @@ const D = {
   /* (round 31 graft: the post grade's canvas tooth, per wing -- grade.js's
      own 0.097 everywhere a wing does not say; _applyGrade) */
   tooth: 0.097,
+  /* (round 61 repair 39: the hue a wing's DARKS hold -- grade.js's
+     uShadowHue. Off everywhere a wing does not say; _applyGrade) */
+  shadowHue: '#000000', shadowAmt: 0, shadowGain: 1,
   fogDensity: 0.014,
   room: { w: 24, d: 19, h: 6.6, side: 0.0, ceilPattern: 3, wallPad: 7.0 },
   cam: { y: 2.3, z: 9.6, look: 2.4, fov: 42 },
@@ -942,6 +945,8 @@ export const REGIONS = {
                  speed: 0.6, scale: 0.95, wind: 0.4, density: 0.45 },
     /* (graft: CARNELIAN's vignette, 1.22 -> 1.12) */
     exposure: 2.6, vignette: 1.12, contrast: 1.67,
+    /* (round 61 repair 39 tried shadowHue '#6a1420' at 0.7 here: it split
+       1-1 blind -- the oxblood turned the rug's navy border maroon. Left out) */
     key:  { glow: 0, kind: 'warm', x: -3.8, y: 3.2, z: 2.2, color: '#e2b271', intensity: 1.63, radius: 7.31 },
     /* (graft: the moon's pool on the boards a stop down -- the judges saw
        the floor's grain dither in it; round 37 graft: and 2.90 -> 2.30,
@@ -1293,6 +1298,10 @@ export const REGIONS = {
                  tint: '#ffe8c0', wispTint: '#d8a8ff', emberTint: '#ffc95a',
                  speed: 0.9, scale: 1.1, wind: 0.8, density: 1.0 },
     exposure: 3.55, contrast: 1.61,
+    /* (round 61 repair 39: the darks hold a deep VIOLET -- the far checker
+       under the gallery was a black band. Multiplied, not added: not the
+       "purple haze" of round 39, and the gain under 1 keeps it deep) */
+    shadowHue: '#4a1670', shadowAmt: 0.7, shadowGain: 0.85,
     key:  { glow: 0, kind: 'warm', x: -5.2, y: 4.0, z: 2.8, color: '#e5c07e', intensity: 1.98, radius: 9.46 },
     /* (round 39, both survey-6 judges: "under a purple haze" -- the cold
        pair a moonlit blue-violet, not a lilac, and a step down; LIGHT
@@ -1359,6 +1368,9 @@ export const REGIONS = {
                  tint: '#e6e0d2', wispTint: '#9fc8c0', emberTint: '#ffb64a',
                  speed: 0.5, scale: 1.0, wind: 0.3, density: 0.40 },
     exposure: 2.46, contrast: 1.69,
+    /* (round 61 repair 39 tried shadowHue indigo '#2a2466' at 0.6 here: it
+       split 1-1 blind -- "a cool blue-grey cast" over the warm stone niches.
+       A plum, #4c1a3c, could not be told from the brown-black. Left out) */
     key:  { glow: 0, kind: 'warm', x: -3.0, y: 2.8, z: 2.0, color: '#e0a866', intensity: 1.20, radius: 6.88 },
     /* (round 35: the fill a stop down -- at 1.94 it laid a cyan haze on the
        near flags' corner, the "haze" every judge marks down) */
@@ -2168,6 +2180,9 @@ export const REGIONS = {
                  tint: '#fff2d8', wispTint: '#ffd9a8', emberTint: '#ffcf7a',
                  speed: 0.55, scale: 1.15, wind: 0.35, density: 1.0 },
     exposure: 1.8, contrast: 1.67,
+    /* (round 61 repair 39: the darks hold OXBLOOD-PLUM -- the far floor
+       under the wainscot and both side walls were a hueless black) */
+    shadowHue: '#5c1230', shadowAmt: 0.7,
     /* (round 37 graft, item 5, all three judges on the fight: "a warm pool on
        the floor between the Kid and the hand and right of the Memory Animal;
        the runner's contrast and warmth up under the creatures" -- the
@@ -2263,11 +2278,12 @@ const COLOR_KEYS = [
   ['fog', '_fog'], ['open', '_open'], ['floorDeep', '_floorDeep'],
   ['floorMid', '_floorMid'], ['propAlb', '_propAlb'], ['propHi', '_propHi'],
   ['ambient', '_ambient'], ['rimCol', '_rim'], ['shaft', '_shaft'], ['frame', '_frame'],
+  ['shadowHue', '_shadowHue'],
 ];
 const NUM_KEYS = ['coolFill', 'grime', 'openGlow', 'wallFog', 'gloss', 'rim', 'gain',
   'frameAmount', 'ceil', 'bloom', 'bloomThreshold', 'warmTone', 'halation',
   'exposure', 'vignette', 'grain', 'fogDensity', 'propGain', 'propGloss', 'saturate',
-  'contrast', 'tooth'];
+  'contrast', 'tooth', 'shadowAmt', 'shadowGain'];
 
 /**
  * PER-ROOM VARIATION.
@@ -4926,6 +4942,15 @@ export class Atmosphere {
     if (u.uTooth) u.uTooth.value = pal.tooth ?? 0.097;    // (round 31 graft: per wing)
     u.uSaturate.value = pal.saturate ?? 1.2;
     u.uContrast.value = pal.contrast ?? 1.3;
+    /* (round 61 repair 39: the hue this wing's darks hold, at unit
+       luminance so the grade carries a dark to it without lifting it) */
+    if (u.uShadowHue) {
+      const sc = pal._shadowHue, sv = u.uShadowHue.value;
+      const sl = sc ? 0.2126 * sc.r + 0.7152 * sc.g + 0.0722 * sc.b : 0;
+      const sg = (pal.shadowAmt > 0 && sl > 1e-5) ? (pal.shadowGain ?? 1) / sl : 0;
+      sv[0] = sg ? sc.r * sg : 0; sv[1] = sg ? sc.g * sg : 0; sv[2] = sg ? sc.b * sg : 0;
+      sv[3] = sg ? pal.shadowAmt : 0;
+    }
     u.uHaloColor.value.copy(pal._rim).lerp(this._col.set(1, 1, 1), 0.25);
   }
 
