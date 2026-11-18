@@ -612,6 +612,11 @@ export const REGIONS = {
                  tint: '#ffcf9a', wispTint: '#8fd9a8', emberTint: '#ff7a28',
                  speed: 1.2, scale: 1.05, wind: 1.3, density: 0.95 },
     exposure: 1.98, vignette: 1.56, contrast: 1.55,
+    /* (round 61 repair 48: the darks hold the BRICK's own deep red -- both
+       far corners and the side walls past the dresser and the pan rail were
+       a hueless black. Multiplied, never added; the blue panes, the delft
+       and the cabbages sit above the 0.10 it reaches and keep their colour) */
+    shadowHue: '#5c1414', shadowAmt: 0.85, shadowGain: 1.1,
     key:  { glow: 0, kind: 'warm', x: -3.6, y: 2.8, z: 2.0, color: '#db8f51', intensity: 1.39, radius: 6.88 },
     /* (round 22 graft, all three judges: "the milky cyan moonlight pools on
        the flagstones at the lower left and right of both rooms wash the
