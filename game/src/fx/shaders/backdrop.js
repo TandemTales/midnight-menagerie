@@ -20578,6 +20578,34 @@ float gyTufts(vec2 q, float hw, float seed){
   float d = max(bl*0.030, max(q.y - hgt, -q.y));
   return max(d, abs(q.x) - hw);
 }
+/* (round 61 repair 51, survey 22: the rooms' props "still read as rendered
+   rather than painted ... carry the same modelling to the objects left
+   untouched". The churchyard's stones stood AT the prop ceiling -- three
+   stones of three different rocks all 106-111 of 255 across their upper
+   faces -- so the turn, the return's shade and the cut lines laid in their
+   paint were compressed to one grey. Their form goes on the LIT colour now,
+   gWgShade, as planes and ruled lines.)
+   A BAND just inside an edge: a is metres in from it, the band two pixels
+   and a fifth wide and never under 14 mm, its inner edge crisp. */
+float gyBand(float a, float px){
+  float w = max(0.014, 2.2*px);
+  return (1.0 - smoothstep(w - px, w, a))*clamp(a/px + 0.5, 0.0, 1.0);
+}
+/* THE ROWS AS THE MASON SET THEM OUT: each row of the inscription in words,
+   every word a shallow sunk block -- x its upper wall, in the shadow of the
+   stone above it, y its lower lip, which faces the sky and is lit. Laid
+   under gyLetters' own rows (the same row lengths), these are what reads
+   at the distances where a letter is under a pixel wide. */
+vec2 gyRows(vec2 p, float hw, float lh, float n, float px, float seed){
+  float row = floor(-p.y/lh);
+  float ry = -p.y - row*lh;
+  float capH = lh*0.60;
+  float rl = row < 0.5 ? hw*0.82 : hw*(0.40 + 0.55*mmHash11(seed*7.3 + row*1.9));
+  float wl = capH*3.3;
+  float wf = fract((p.x + rl)/wl + mmHash11(row*3.1 + seed));
+  float word = clamp(0.5 + (rl - abs(p.x))/px, 0.0, 1.0)*clamp(0.5 + min(wf, 0.80 - wf)*wl/px, 0.0, 1.0)*step(0.0, row)*step(row, n - 0.5);
+  return vec2(clamp(1.0 - abs(ry - 0.5*px)/px, 0.0, 1.0), clamp(1.0 - abs(ry - capH)/px, 0.0, 1.0))*word*mmLod(lh, px);
+}
 
 float wfHsForm(vec2 p, float k, float H, float W, float seed, out float face, out float tx, out float ty, out float kind){
   float d;
@@ -20674,6 +20702,17 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   sc = gyWeather(sc, p, px, seed, 0.0);
   float bev = clamp(-d/0.016, 0.0, 1.0);
   sc *= mix(1.25 + 0.20*kq*sign(p.x), 1.0, bev);
+  /* (round 61 repair 51) THE SLAB IN PLANES, on the lit colour: its ARRIS a
+     band -- lit where it turns to the key or the sky, in shade where it
+     turns from them, the two never blended -- the face between them turning
+     a little from the key's side to the far one. Far off the two bands are
+     all there is of it: a lit side and a shaded one. */
+  float isX = step(0.5, kind)*step(kind, 1.5);
+  float sxk = kq*clamp(p.x/max(W*0.8, 0.05), -1.0, 1.0);
+  float upF = smoothstep(ty - 0.02, ty + 0.10, p.y)*(1.0 - isX);
+  float arO = clamp(sxk*0.9 + upF*1.1, -1.0, 1.0);
+  float arB = gyBand(-d, px);
+  float shd = mix(1.0 + 0.10*sxk, 1.0 + 0.70*max(arO, 0.0) - 0.44*max(-arO, 0.0), arB);
   /* the return first, under the face: its side in the shade unless the key
      is round that way, its top (where it shows above) catching the light */
   {
@@ -20682,16 +20721,33 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
     rc *= mix(0.52 + 0.22*step(0.0, kq*sgnR), 1.18, clamp(topR, 0.0, 1.0));
     wfLay(col, ink, dRet, rc, px, 0.85);
   }
+  /* (...and the return on the lit colour: the side in shade or in the key,
+     the top of it, round the head, lit by the sky) */
+  shd = mix(mix(0.52 + 0.62*step(0.0, kq*sgnR), 1.36, upF), shd, wfIn(d, px));
   wfLay(col, ink, d, sc, px, 0.95);
   /* the sunk face (the margin left proud round it) */
   ink = max(ink, mmInkP(face, px, 1.0)*0.55*wfIn(d, px));
-  col = mix(col, col*0.90, wfIn(face, px));
+  float inF = wfIn(face, px);
+  col = mix(col, col*0.90, inF);
+  /* (...SUNK: the wall of it to the key and under the head throws its
+     shadow in, the far wall and the foot of it catch the light) */
+  {
+    float fo = clamp(sxk*0.9 + 1.1*smoothstep(ty - 0.07, ty + 0.01, p.y)*(1.0 - isX) - 1.6*(1.0 - smoothstep(0.08, 0.13, p.y)), -1.0, 1.0);
+    float fB = gyBand(-face, px)*inF*mmLod(0.12, px);
+    shd *= 1.0 - 0.40*fB*max(fo, 0.0) + 0.34*fB*max(-fo, 0.0);
+  }
   /* the inscription, cut in rows */
   float rows = kind > 3.5 ? 2.0 : (kind > 0.5 && kind < 1.5 ? 2.0 : 5.0);
   float lh = kind > 0.5 && kind < 1.5 ? 0.040 : 0.052;
-  float cut = gyLetters(p - vec2(0.0, ty - (kind < 0.5 || kind > 1.5 ? 0.11 : 0.0)), tx, lh, rows, px, seed)*wfIn(face, px);
+  vec2 lp = p - vec2(0.0, ty - (kind < 0.5 || kind > 1.5 ? 0.11 : 0.0));
+  float cut = gyLetters(lp, tx, lh, rows, px, seed)*inF;
+  /* (...each word's upper wall a ruled shadow and its lower lip a ruled
+     light, fading out as the letters themselves come up) */
+  vec2 rw = gyRows(lp, tx, lh, rows, px, seed)*inF*(1.0 - 0.65*mmLod(lh*0.396, px));
+  cut = max(cut, rw.x*0.70);
   col = mix(col, st*0.22, cut*0.85);
   ink = max(ink, cut*0.35);
+  shd *= (1.0 - 0.42*cut)*(1.0 + 0.30*rw.y*(1.0 - cut));
   /* the emblem cut over it: a cross, a wreath, or a draped urn */
   float em = mmHash11(seed*9.7);
   if (kind < 0.5 || (kind > 1.5 && kind < 3.5)) {
@@ -20702,6 +20758,7 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
     else sym = min(wfEll(e + vec2(0.0, 0.006), vec2(0.024, 0.030)), mmBox(e - vec2(0.0, 0.030), vec2(0.016, 0.006), 0.0));
     col = mix(col, st*0.28, wfIn(sym, px));
     ink = max(ink, mmInkP(sym, px, 1.0)*0.5);
+    shd *= 1.0 - 0.30*wfIn(sym, px);
   }
   /* the Celtic cross's ring and arms: their own mouldings */
   if (kind > 0.5 && kind < 1.5) {
@@ -20709,9 +20766,13 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
     ink = max(ink, mmInkP(abs(length(p - vec2(0.0, hc - 0.10)) - 0.115) - 0.008, px, 1.0)*0.55*wfIn(d, px));
     col = mix(col, col*1.20, wfIn(length(p - vec2(0.0, hc - 0.10)) - 0.030, px));
   }
+  /* (where it stands in the ground: a dark line) */
+  shd *= 1.0 - 0.30*smoothstep(0.07, 0.0, p.y);
   /* the grass, over the stone's foot */
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
+  /* (the blades at their own light, dark at the roots) */
+  gWgShade = mix(shd, 0.60 + 0.40*smoothstep(0.0, 0.05, q.y), wfIn(tuft, px));
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.55*wfIn(d, px)*smoothstep(H*0.4, H, p.y) + 0.20*wfIn(d, px));
   gWfCol = col; gWfInk = ink;
@@ -20754,24 +20815,50 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
   float ink = 0.0;
   vec3 st = gyStone(seed);
   float rnd = 0.85 + 0.25*kq*clamp(q.x/L, -1.0, 1.0);
+  /* (round 61 repair 51: the tomb in PLANES, on the lit colour -- gWgShade,
+     see gyBand. Every member a top the sky lights, a face, an end to the key
+     and an end away from it; what oversails throws a ruled shadow on what is
+     under it; what is sunk has a shadowed wall and a lit one.) */
+  float shd = 1.0;
+  float kx = kq*q.x;                                   // metres toward the key
   if (kerbed > 0.5) {
-    vec3 kc = gyWeather(st*rnd*0.95, q, px, seed, 0.0);
+    /* (the moss kept to the kerb's foot: grown the height of a headstone's
+       it struck the low kerb top to bottom, a row of green bars) */
+    vec3 kc = gyWeather(st*rnd*0.95, q, px, seed, -0.22);
     wfLay(col, ink, kerb, kc*(0.85 + 0.30*smoothstep(0.12, 0.22, q.y)), px, 0.95);
+    /* the kerb: its top a lit plane, its face under it, a rule between; the
+       end to the key lit, the far end in shade; dark where it lies in the
+       grass */
+    float kTop = smoothstep(0.150 - px, 0.150 + px, q.y);
+    shd = mix(0.86, 1.42, kTop)*(1.0 + 0.30*gyBand(L - 0.06 - kx, px) - 0.32*gyBand(L - 0.06 + kx, px))*(1.0 - 0.34*smoothstep(0.05, 0.0, q.y));
+    ink = max(ink, mmInkP(q.y - 0.150, px, 1.0)*0.40*wfIn(kerb, px)*mmLod(0.07, px));
     /* the gravel inside the kerb, seen over it */
     vec3 hc = gyWeather(st*rnd*(0.82 + 0.25*smoothstep(0.0, 0.78, hq.y)), hq, px, seed + 3.0, 0.0);
     wfLay(col, ink, kHead, hc, px, 0.95);
-    float cut = gyLetters(hq - vec2(0.0, 0.46), 0.18, 0.050, 4.0, px, seed)*wfIn(kHead, px);
+    float inH = wfIn(kHead, px);
+    float cut = gyLetters(hq - vec2(0.0, 0.46), 0.18, 0.050, 4.0, px, seed)*inH;
     col = mix(col, st*0.22, cut*0.85);
-    ink = max(ink, mmInkP(abs(length(hq - vec2(0.0, 0.54)) - 0.20) - 0.0, px, 1.0)*0.4*step(0.54, hq.y)*wfIn(kHead, px));
+    ink = max(ink, mmInkP(abs(length(hq - vec2(0.0, 0.54)) - 0.20) - 0.0, px, 1.0)*0.4*step(0.54, hq.y)*inH);
+    /* its headstone: the arris lit to the key and round the head, in shade
+       on the far side; its base a step with a lit top */
+    float hk = kq*clamp(hq.x/0.20, -1.0, 1.0);
+    float hO = clamp(hk*0.9 + 1.1*smoothstep(0.52, 0.64, hq.y), -1.0, 1.0);
+    float hS = mix(1.0 + 0.10*hk, 1.0 + 0.55*max(hO, 0.0) - 0.42*max(-hO, 0.0), gyBand(-kHead, px));
+    hS = mix(hS, 0.90 + 0.50*smoothstep(0.085 - px, 0.085 + px, hq.y), step(hq.y, 0.12));
+    hS *= 1.0 - 0.42*cut;
+    shd = mix(shd, hS, inH);
   } else {
     vec3 sc = gyWeather(st*rnd, q, px, seed, 0.10);
     wfLay(col, ink, plinth, sc*0.80, px, 0.95);
+    /* the plinth: a lit top, dark where it lies in the grass */
+    shd = (0.95 + 0.50*gyBand(0.10 - q.y, px))*(1.0 - 0.34*smoothstep(0.04, 0.0, q.y));
     /* the chest: its pilasters, its two sunk panels and their wreaths */
     vec3 cc = sc*(0.85 + 0.20*smoothstep(0.10, 0.66, q.y));
     wfLay(col, ink, chest, cc, px, 0.95);
+    float inC = wfIn(chest, px);
     float pil = abs(abs(q.x) - (L - 0.20)) - 0.075;
-    ink = max(ink, mmInkP(pil, px, 1.0)*0.6*wfIn(chest, px));
-    col = mix(col, col*1.12, wfIn(pil, px)*wfIn(chest, px));
+    ink = max(ink, mmInkP(pil, px, 1.0)*0.6*inC);
+    col = mix(col, col*1.12, wfIn(pil, px)*inC);
     vec2 pq = vec2(abs(q.x) - (L - 0.11)*0.48, q.y - 0.38);
     float pan = mmBox(pq, vec2((L - 0.11)*0.30, 0.19), 0.0);
     col = mix(col, col*0.80, wfIn(pan, px));
@@ -20780,12 +20867,44 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
     float wr = abs(length(pq/vec2(1.0, 1.15)) - 0.075) - 0.012;
     col = mix(col, sc*1.15, wfIn(wr, px));
     ink = max(ink, mmInkP(wr, px, 1.0)*0.55);
+    {
+      /* the chest's face turning from the key's end to the far one; each
+         pilaster a proud strip, lit down its key edge and shaded down the
+         other */
+      float cS = 1.06 + 0.10*kx/L;
+      float pu = (abs(q.x) - (L - 0.20))*sign(q.x)*kq;           // across a pilaster, toward the key
+      cS = mix(cS, 1.16 + 0.44*gyBand(0.075 - pu, px) - 0.38*gyBand(0.075 + pu, px), wfIn(pil, px));
+      /* a panel SUNK: its top wall and its wall to the key throw their
+         shadow in, its foot and its far wall are lit */
+      float lx = pq.x*sign(q.x)*kq;                               // across the panel, toward the key
+      float pw = (L - 0.11)*0.30;
+      float pSh = max(gyBand(0.19 - pq.y, px), gyBand(pw - lx, px));
+      float pLi = max(gyBand(0.19 + pq.y, px), gyBand(pw + lx, px))*(1.0 - pSh);
+      cS = mix(cS, 1.0 - 0.42*pSh + 0.44*pLi, wfIn(pan, px)*mmLod(0.10, px));
+      /* the wreath carved proud in it: lit round the side to the key and
+         the sky, in shade round the other */
+      float wl = dot(vec2(lx, pq.y/1.15), vec2(0.60, 0.80))/0.075;
+      cS = mix(cS, 1.05 + 0.45*smoothstep(0.0, 0.5, wl) - 0.42*smoothstep(0.0, -0.5, wl), wfIn(wr, px)*mmLod(0.05, px));
+      /* the ledger oversails the chest: its shadow ruled along the top */
+      cS *= 1.0 - 0.40*smoothstep(0.600 - px, 0.600 + px, q.y);
+      shd = mix(shd, cS, inC);
+    }
     /* the ledger, its moulded edge lit, the lettering cut along it */
     vec3 lc = sc*(0.92 + 0.40*smoothstep(0.72, 0.78, q.y));
     wfLay(col, ink, ledger, lc, px, 0.95);
-    ink = max(ink, mmInkP(q.y - 0.705, px, 1.0)*0.5*wfIn(ledger, px));
-    float cut = gyLetters(q - vec2(0.0, 0.700), L - 0.20, 0.050, 1.0, px, seed)*wfIn(ledger, px);
+    float inL = wfIn(ledger, px);
+    ink = max(ink, mmInkP(q.y - 0.705, px, 1.0)*0.5*inL);
+    float cut = gyLetters(q - vec2(0.0, 0.700), L - 0.20, 0.050, 1.0, px, seed)*inL;
     col = mix(col, st*0.22, cut*0.8);
+    {
+      /* the slab a lit plane over the rule, the frieze under it in the
+         slab's own shade, with its lettering; its end to the key lit and
+         the far end in shade */
+      float lS = mix(0.92, 1.42, smoothstep(0.705 - px, 0.705 + px, q.y));
+      lS *= 1.0 + 0.28*gyBand(L - 0.03 - kx, px) - 0.30*gyBand(L - 0.03 + kx, px);
+      lS *= 1.0 - 0.42*cut;
+      shd = mix(shd, lS, inL);
+    }
     if (urnOn > 0.5) {
       vec3 uc = st*(0.45 + 0.75*wfRound(clamp(q.x/0.115, -1.0, 1.0)))*(1.0 + 0.25*kq*sign(q.x));
       wfLay(col, ink, urn, uc, px, 0.9);
@@ -20793,10 +20912,18 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
       float dr = max(abs(q.y - 1.05 - 0.03*cos(q.x*40.0)) - 0.020, abs(q.x) - 0.11);
       col = mix(col, st*1.05, wfIn(dr, px)*wfIn(urn, px));
       ink = max(ink, mmInkP(dr, px, 1.0)*0.5*wfIn(urn, px));
+      /* the urn TURNED: a lit side, a core shadow with an edge to it, a
+         little light come back round the far side; its foot in the shade of
+         its own belly, its lid's rim lit */
+      float uu = kx/0.115;
+      float uS = 0.58 + 0.52*smoothstep(-0.36, -0.24, uu) + 0.34*smoothstep(0.26, 0.38, uu)*(1.0 - smoothstep(0.62, 0.74, uu)) + 0.16*smoothstep(-0.78, -0.92, uu);
+      uS *= 1.0 - 0.30*smoothstep(0.905, 0.885, q.y) + 0.20*smoothstep(1.150 - px, 1.150 + px, q.y)*step(q.y, 1.176);
+      shd = mix(shd, uS, wfIn(urn, px));
     }
   }
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
+  gWgShade = mix(shd, 0.60 + 0.40*smoothstep(0.0, 0.05, q.y), wfIn(tuft, px));
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.45*wfIn(min(ledger, urn), px)*(1.0 - kerbed) + 0.35*kerbed*wfIn(kHead, px) + 0.15);
   gWfCol = col; gWfInk = ink;
@@ -29406,6 +29533,19 @@ float wfWashstand(vec2 q, float px, float seed, float kq, bool paint){
   return d;
 }
 
+/* (round 61 repair 51) A BAND just inside an edge, for joinery and
+   upholstery drawn in planes: a is metres in from the edge, the band a pixel
+   and two thirds wide and never under 8 mm, its inner edge crisp. */
+float dkBand(float a, float px){
+  float w = max(0.008, 1.7*px);
+  return (1.0 - smoothstep(w - px, w, a))*clamp(a/px + 0.5, 0.0, 1.0);
+}
+/* a drawer's brass drop handle: two round back plates and the bail hanging
+   between them */
+float dkHandle(vec2 h){
+  float bail = max(abs(mmBox(h - vec2(0.0, -0.003), vec2(0.045, 0.019), 0.010)) - 0.0042, h.y);
+  return min(length(vec2(abs(h.x) - 0.045, h.y)) - 0.011, bail);
+}
 /* ── 53 THE READING DESK ───────────────────────────────────────────────────
    A mahogany pedestal desk, its top inset with green leather and a gilt
    tooled border, two pedestals of drawers with brass handles; on it the
@@ -29442,19 +29582,81 @@ float wfDesk(vec2 q, float px, float seed, float kq, bool paint){
   float ink = 0.0;
   vec3 maho = vec3(0.42, 0.18, 0.09);
   vec3 brass = vec3(0.92, 0.68, 0.30);
-  /* the pedestals: drawers, each with its handle */
-  float dr = floor((q.y)/((TOP - 0.05)/3.0));
-  float dy = q.y - (dr + 0.5)*((TOP - 0.05)/3.0);
+  /* (round 61 repair 51, survey 22: "carry the same modelling to the objects
+     left untouched". The desk was three flat brown boxes ruled into six, a
+     pale bar on each: it stands at a tenth of the prop's ceiling, so nothing
+     was compressing it -- there was no form in its paint to show. It is
+     JOINERY now, in planes with ruled edges: each pedestal a carcass with a
+     lit edge to the key and a shaded one away from it, on a skirting; each
+     drawer a front set in it, beaded -- lit along its top and its key side,
+     in shade along its foot and its far side -- with a brass drop handle on
+     two round plates and that handle's shadow; a drawer in the kneehole's
+     apron; the top's moulded edge in three ruled bands, and its shadow
+     ruled along the pedestals under it. The values on the lit colour,
+     gWgShade; the hues in the paint.) */
+  vec3 mahoD = maho*vec3(0.80, 0.64, 0.58), mahoL = maho*vec3(1.22, 1.12, 1.00);
+  float sx = q.x < 0.0 ? -1.0 : 1.0;
+  float kx = kq*q.x;                                   // metres toward the key
+  float dh = (TOP - 0.05)/3.0;
+  float dr = floor(q.y/dh);
+  float pu = (ax - 0.52)*sx*kq;                        // across a pedestal, toward the key
+  float lowD = 1.0 - step(0.5, dr);                    // the lowest drawer stands on the skirting
+  vec2 fq = vec2(pu, q.y - (dr + 0.5)*dh - 0.020*lowD);
+  vec2 fh = vec2(0.212, dh*0.5 - 0.012 - 0.020*lowD);
+  float front = mmBox(fq, fh, 0.0);
+  float inP = wfIn(peds, px);
+  float inFr = wfIn(front, px);
+  float lodD = mmLod(0.05, px);
+  float fLit = max(dkBand(fh.y - fq.y, px), dkBand(fh.x - fq.x, px))*lodD;
+  float fShd = max(dkBand(fh.y + fq.y, px), dkBand(fh.x + fq.x, px))*(1.0 - fLit)*lodD;
+  float fv = 0.92 + 0.18*mmHash11(dr*3.7 + sx*1.3 + seed);       // each front its own board
+  float cLit = dkBand(0.24 - pu, px), cShd = dkBand(0.24 + pu, px);
   vec3 pC = maho*(0.75 + 0.20*mmNoise(vec2(q.x*20.0, q.y*3.0) + seed));
-  pC *= 1.0 + 0.25*kq*sign(q.x)*smoothstep(0.20, 0.24, abs(ax - 0.52));
-  wfLay(col, ink, peds, pC, px, 0.95);
-  ink = max(ink, mmInkP(abs(fract(q.y/((TOP - 0.05)/3.0)) - 0.5) - 0.5, px/((TOP - 0.05)/3.0), 1.0)*wfIn(peds, px)*0.8);
-  float hdl = wfIn(mmBox(vec2(ax - 0.52, dy), vec2(0.05, 0.010), 0.006), px)*wfIn(peds, px);
-  col = mix(col, brass, hdl);
-  wfLay(col, ink, knee, maho*0.55, px, 0.9);
+  vec3 pedC = mix(mix(pC*0.90, mahoL*0.90, cLit), mahoD*0.90, cShd);
+  pedC = mix(pedC, mix(mix(pC*fv, mahoD, fShd), mahoL, fLit), inFr);
+  wfLay(col, ink, peds, pedC, px, 0.95);
+  ink = max(ink, mmInkP(front, px, 1.0)*inP*0.60*lodD);
+  float pS = mix(0.94 + 0.40*cLit - 0.32*cShd, fv*(1.06 + 0.46*fLit - 0.34*fShd), inFr);
+  /* the skirting: proud of the carcass, its top edge lit; dark on the floor */
+  pS = mix(pS, 0.90 + 0.40*dkBand(0.05 - q.y, px), step(q.y, 0.05));
+  ink = max(ink, mmInkP(q.y - 0.05, px, 1.0)*inP*0.45*lodD);
+  pS *= 1.0 - 0.36*smoothstep(0.025, 0.0, q.y);
+  /* the top's shadow, ruled along the head of each pedestal */
+  pS *= 1.0 - 0.40*smoothstep(0.694 - px, 0.694 + px, q.y);
+  /* the handles: brass, the plate to the key with its spark; each one's
+     shadow down and away on the drawer */
+  float hd = dkHandle(fq);
+  float hOn = wfIn(hd, px)*inFr*inP;
+  float hSh = wfIn(dkHandle(fq + vec2(1.2, 1.5)*px), px)*inFr*inP*(1.0 - hOn)*mmLod(0.022, px);
+  float hLt = smoothstep(-0.004, 0.004, dot(vec2(fq.x - (fq.x < 0.0 ? -0.045 : 0.045), fq.y), vec2(0.60, 0.80)));
+  col = mix(col, brass*(0.60 + 0.55*hLt), hOn);
+  col = mix(col, vec3(1.00, 0.90, 0.62), hOn*(1.0 - smoothstep(0.002, 0.006, length(fq - vec2(0.048, 0.003)))));
+  pS = mix(pS*(1.0 - 0.42*hSh), 1.05, hOn);
+  float shd = mix(1.0, pS, inP);
+  /* the kneehole's apron, back under the top: one long drawer, its knob */
+  vec2 nq = q - vec2(0.0, TOP - 0.12);
+  vec2 nh = vec2(0.262, 0.040);
+  float nfr = mmBox(nq, nh, 0.0);
+  float nLit = max(dkBand(nh.y - nq.y, px), dkBand(nh.x - kq*nq.x, px))*lodD;
+  float nShd = max(dkBand(nh.y + nq.y, px), dkBand(nh.x + kq*nq.x, px))*(1.0 - nLit)*lodD;
+  float knob = length(nq) - 0.013;
+  vec3 knC = mix(maho*0.55, mix(mix(maho*0.70, mahoD*0.80, nShd), mahoL*0.80, nLit), wfIn(nfr, px));
+  knC = mix(knC, brass*(0.60 + 0.60*smoothstep(-0.004, 0.004, dot(nq, vec2(kq*0.60, 0.80)))), wfIn(knob, px));
+  wfLay(col, ink, knee, knC, px, 0.9);
+  ink = max(ink, mmInkP(nfr, px, 1.0)*wfIn(knee, px)*0.55*lodD);
+  shd = mix(shd, mix(0.78, 0.92*(1.0 + 0.40*nLit - 0.32*nShd), wfIn(nfr, px))*(1.0 - 0.38*smoothstep(0.694 - px, 0.694 + px, q.y)), wfIn(knee, px)*(1.0 - wfIn(knob, px)));
   /* the top: its leather and the tooled border, its mahogany edge lit */
-  vec3 tC = maho*(1.0 + 0.6*smoothstep(TOP - 0.03, TOP, q.y));
+  /* (...the edge a moulding in three ruled bands: the arris the lamp
+     catches, the face under it, the thumb turned under in shade; its end to
+     the key lit and its far end in shade) */
+  float tu = q.y - (TOP - 0.025);
+  float tHi = smoothstep(0.009 - px, 0.009 + px, tu), tLo = smoothstep(-0.011 + px, -0.011 - px, tu);
+  vec3 tC = mix(mix(maho*1.05, mahoL*1.25, tHi), mahoD, tLo);
   wfLay(col, ink, top, tC, px, 0.95);
+  ink = max(ink, mmInkP(tu + 0.011, px, 1.0)*wfIn(top, px)*0.45*mmLod(0.03, px));
+  shd = mix(shd, mix(mix(1.0, 1.40, tHi), 0.66, tLo)*(1.0 + 0.22*dkBand(0.78 - kx, px) - 0.28*dkBand(0.78 + kx, px)), wfIn(top, px));
+  /* (what stands on the desk keeps its own light) */
+  gWgShade = mix(shd, 1.0, wfIn(min(lamp, min(min(book, ink1), min(ink2, min(pens, pile)))), px));
   /* the pile of books */
   float pk = floor((q.y - TOP)/0.05);
   vec3 pbC = mix(vec3(0.50, 0.12, 0.08), vec3(0.14, 0.28, 0.18), mmHash11(pk + seed))*(0.7 + 0.4*smoothstep(-0.02, 0.02, fract((q.y - TOP)/0.05) - 0.5));
@@ -29636,6 +29838,107 @@ float wfChair(vec2 q, float px, float seed, float kq, bool paint){
   vec3 lea = kc < 0.5 ? vec3(0.44, 0.13, 0.09) : vec3(0.12, 0.27, 0.17);
   vec3 maho = vec3(0.30, 0.14, 0.07);
   vec3 brass = vec3(0.90, 0.70, 0.34);
+#if MM_SH53
+  /* (round 61 repair 51, the Study's -- its program is the one that also
+     deals the desk, so the Sleeping Quarters' chair draws, and links, as it
+     did. Survey 22: "carry the same modelling to the objects left
+     untouched". The chair stood at a seventh of the prop's ceiling with its
+     roundness as soft ramps and its buttoning a grid of dots. LEATHER, IN
+     PLANES: the back deep-buttoned -- every pleat a ruled crease from button
+     to button, the tuft on one side of it turned to the key and on the other
+     away, each button sunk in its dimple with its spark -- under a rolled
+     top the lamp catches; the wing on the key's side seen from its dark
+     inner face with its roll lit, the far wing's inner face in the light;
+     each arm a front panel with a lit and a shaded edge under its scroll, a
+     welt and close brass nails; the cushion a lit top and a front with the
+     welt ruled between, the near arm's shadow across its end; the seat rail
+     under the cushion's shadow. Values on the lit colour, gWgShade.) */
+  {
+    vec2 Ld = normalize(vec2(kq, 0.80));
+    float sx = q.x < 0.0 ? -1.0 : 1.0;
+    float sk = sx*kq;                                  // +1 on the key's side of the chair
+    float kx = kq*q.x;
+    vec3 leaD = lea*vec3(0.60, 0.48, 0.46), leaL = lea*vec3(1.30, 1.20, 1.08);
+    float shd = 1.0;
+    /* the legs: turned, a highlight down the key's side */
+    float lu = clamp((ax - 0.34)/0.026, -1.0, 1.0)*sk;
+    float lHi = smoothstep(0.20, 0.36, lu)*(1.0 - smoothstep(0.62, 0.78, lu));
+    wfLay(col, ink, legs, mix(maho*0.70, maho*1.30, smoothstep(-0.45, -0.25, lu)), px, 0.85);
+    shd = mix(shd, (0.58 + 0.42*smoothstep(-0.45, -0.25, lu) + 0.40*lHi)*(1.0 - 0.36*smoothstep(0.04, 0.0, q.y)), wfIn(legs, px));
+    /* the back */
+    vec2 tq = vec2(q.x + q.y, q.x - q.y)/0.12;
+    vec2 tf = fract(tq) - 0.5;
+    float lodT = mmLod(0.12, px);
+    vec2 tL = normalize(vec2(Ld.x + Ld.y, Ld.x - Ld.y));
+    float ts = tf.x*tf.y < 0.0 ? -1.0 : 1.0;
+    float tl = -ts*(cos(3.1416*tf.x)*sin(3.1416*tf.y)*tL.x + sin(3.1416*tf.x)*cos(3.1416*tf.y)*tL.y);
+    float bUp = 0.66 + 0.42*smoothstep(0.50, 1.05, q.y);            // the seat's shade low on it
+    float bRoll = dkBand(-back, px)*smoothstep(0.98, 1.08, q.y);    // the rolled top
+    float bWing = smoothstep(0.165 - px, 0.165 + px, ax + 0.06*(q.y - 0.80))*step(0.0, sk)*step(0.60, q.y);   // the near wing's shadow
+    float dimple = (1.0 - smoothstep(0.012, 0.020, length(tf)*0.12))*lodT;
+    float button = (1.0 - smoothstep(0.004, 0.009, length(tf*0.12 - 0.004*tL)))*lodT;
+    vec3 bC = mix(mix(lea, leaL, max(tl, 0.0)*0.55*lodT), leaD, max(-tl, 0.0)*0.65*lodT)*0.74;
+    bC = mix(mix(bC, leaD*0.55, dimple), leaL, button);
+    bC = mix(bC, leaL, bRoll);
+    wfLay(col, ink, back, bC, px, 0.95);
+    ink = max(ink, mmInkP(min(abs(tf.x), abs(tf.y))*0.12, px, 1.0)*0.36*wfIn(back, px)*lodT*(1.0 - bRoll));
+    shd = mix(shd, bUp*(1.0 + 0.24*tl*lodT)*(1.0 - 0.45*dimple + 0.85*button)*(1.0 - 0.36*bWing)*(1.0 + 0.80*bRoll), wfIn(back, px));
+    /* the wings */
+    float wE = -wfEll(wq, vec2(0.13, 0.26));                         // metres in from the wing's outer edge
+    float wRoll = 1.0 - smoothstep(0.026 - px, 0.026 + px, wE);
+    float wUp = smoothstep(0.04, 0.20, wq.y);
+    float wFace = mix(1.10, 0.62, step(0.0, sk));
+    float wRim = mix(mix(0.70, 1.22, wUp), 1.42, step(0.0, sk));
+    wfLay(col, ink, wing, mix(mix(lea*0.80, leaD, 0.6*step(0.0, sk)), mix(leaD, leaL, step(0.0, sk)), wRoll), px, 0.95);
+    ink = max(ink, mmInkP(wE - 0.026, px, 1.0)*0.45*wfIn(wing, px)*mmLod(0.05, px));
+    shd = mix(shd, mix(wFace*(0.86 + 0.20*smoothstep(0.60, 1.10, q.y)), wRim, wRoll), wfIn(wing, px));
+    /* the arms: the front panel under its scroll */
+    float aw = (ax - 0.355)*sk;                                      // across the arm, toward the key
+    vec2 sq = vec2(aw, q.y - 0.62);
+    float disc = length(sq) - 0.080;
+    float inDisc = wfIn(disc, px);
+    float sl = dot(sq, Ld*vec2(kq, 1.0))/0.080;
+    float aS = 0.80 + 0.36*dkBand(0.075 - aw, px) - 0.30*dkBand(0.075 + aw, px);
+    float dRim = dkBand(-disc, px);
+    float dS = mix(mix(0.72, 1.06, smoothstep(-0.22, -0.08, sl)), mix(0.60, 1.42, smoothstep(-0.10, 0.10, sl)), dRim);
+    wfLay(col, ink, arm, mix(mix(lea*0.74, leaL, dkBand(0.075 - aw, px)), mix(mix(leaD, lea*0.86, smoothstep(-0.22, -0.08, sl)), leaL, dRim*smoothstep(-0.10, 0.10, sl)), inDisc), px, 0.95);
+    ink = max(ink, mmInkP(disc + 0.022, px, 1.0)*0.50*wfIn(arm, px)*mmLod(0.05, px));
+    ink = max(ink, mmInkP(disc, px, 1.0)*0.45*wfIn(arm, px)*step(q.y, 0.62));
+    float aBtn = 1.0 - smoothstep(0.008, 0.013, length(sq - 0.004*Ld*vec2(kq, 1.0)));
+    shd = mix(shd, mix(aS*(0.82 + 0.22*smoothstep(0.30, 0.56, q.y)), dS*(1.0 + 0.60*aBtn*mmLod(0.03, px)), inDisc), wfIn(arm, px));
+    /* the nails down the panel's two edges */
+    vec2 an = vec2(abs(aw) - 0.048, mod(q.y, 0.034) - 0.017);
+    float aNail = (1.0 - smoothstep(0.0055, 0.0055 + px, length(an)))*wfIn(arm, px)*(1.0 - inDisc)*step(q.y, 0.53)*mmLod(0.034, px);
+    col = mix(col, brass*(0.40 + 0.55*smoothstep(-0.003, 0.003, an.y)), aNail);
+    shd = mix(shd, 0.95, aNail);
+    /* the cushion: its top, its front, the welt between */
+    float cTop = smoothstep(0.468 - px, 0.468 + px, q.y);
+    float cArm = smoothstep(0.205 - px, 0.205 + px, ax)*step(0.0, sk);   // the near arm's shadow on its end
+    /* (...and the sheen a ruled stroke along the crown of its front edge,
+       dying toward the arms) */
+    float cHi = dkBand(q.y - 0.474, px)*step(0.474, q.y)*smoothstep(0.25, 0.12, ax);
+    wfLay(col, ink, cush, mix(mix(lea*0.74, leaL*0.92, cTop), leaL*1.15, cHi), px, 0.9);
+    ink = max(ink, mmInkP(q.y - 0.468, px, 1.0)*0.50*wfIn(cush, px)*mmLod(0.05, px));
+    ink = max(ink, mmInkP(q.y - 0.402, px, 1.0)*0.32*wfIn(cush, px)*mmLod(0.05, px));
+    shd = mix(shd, mix(0.90 + 0.12*kx/0.27, 1.34, cTop)*(1.0 + 0.75*cHi)*(1.0 - 0.34*cArm), wfIn(cush, px));
+    /* the seat rail, its brass nails along its foot */
+    float rHi = dkBand(0.338 - q.y, px)*step(q.y, 0.338)*smoothstep(0.38, 0.20, ax);    // its own sheen, under that shadow
+    wfLay(col, ink, rail, mix(lea*(0.66 + 0.12*smoothstep(0.19, 0.39, q.y)), leaL, rHi), px, 0.9);
+    vec2 rn = vec2(mod(q.x, 0.034) - 0.017, q.y - 0.215);
+    float nails = (1.0 - smoothstep(0.009, 0.009 + px, length(rn)))*wfIn(rail, px);
+    col = mix(col, brass*(0.55 + 0.80*smoothstep(-0.004, 0.004, dot(rn, Ld))), nails);
+    float rS = (0.88 + 0.10*kx/0.42)*(1.0 + 0.60*rHi)*(1.0 - 0.36*smoothstep(0.352 - px, 0.352 + px, q.y))*(1.0 + 0.30*dkBand(0.42 - kx, px) - 0.30*dkBand(0.42 + kx, px))*(1.0 - 0.30*dkBand(q.y - 0.19, px));
+    shd = mix(shd, mix(rS, 1.10, nails), wfIn(rail, px));
+    gWgShade = shd;
+    /* (the sheen is in the planes above: the lamps' own highlight, taken
+       off the outline's slope two pixels at a time, lay across the back,
+       the cushion and the rail as stepped pale bars) */
+    gWfGloss = 0.14;
+    gWfMoon = 0.6*wfIn(min(min(arm, wing), back), px)*smoothstep(0.5, 1.1, q.y);
+    gWfCol = col; gWfInk = ink;
+    return d;
+  }
+#endif
   wfLay(col, ink, legs, maho*(0.5 + 0.5*wfRound(clamp((ax - 0.34)/0.026, -1.0, 1.0))), px, 0.85);
   /* the back: its inner face, buttoned, darker low down where the seat
      shades it */
