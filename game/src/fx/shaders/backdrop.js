@@ -20545,6 +20545,24 @@ float gyLetters(vec2 p, float hw, float lh, float n, float px, float seed){
 /* the moss and the lichen a stone carries: a few crisp-edged patches,
    never a speckle -- grey-green lichen rosettes on the face, moss in the
    wet at its foot */
+/* (round 61 repair 53, for the link budget: the weather is seven noise taps,
+   and a stone's face and its return, a tomb's chest and its kerb, each took
+   their own seven at the SAME place. Every step of it is a mix toward a
+   colour or a multiply -- it is affine in the colour it is given -- so the
+   weather at one place is two colours, k and d, and anything through it is
+   c*k + d: one set of taps serves both. The same numbers, to rounding.) */
+void gyWeatherKD(vec2 q, float px, float seed, float foot, out vec3 k, out vec3 d){
+  float n = mmNoise(q*9.0 + seed*13.0) + 0.5*mmNoise(q*23.0 + seed*7.0);
+  float lich = smoothstep(1.02 - px*14.0, 1.02 + px*14.0, n)*0.55;
+  float moss = smoothstep(0.10, 0.0, q.y - foot - 0.04*mmNoise(vec2(q.x*30.0, seed)));
+  float tongue = mmNoise(vec2(q.x*11.0 + seed*5.0, q.y*3.0));
+  moss = max(moss, smoothstep(0.30, 0.12, q.y - foot - 0.22*tongue)*smoothstep(0.60, 0.76, tongue)*0.85)*0.75;
+  float spot = smoothstep(0.86, 0.96, mmNoise(q*14.0 + seed*9.0) + 0.35*mmNoise(q*41.0 + seed));
+  float run = smoothstep(0.55, 0.85, mmNoise(vec2(q.x*38.0 + seed*3.0, 0.5)))*smoothstep(0.0, 0.5, q.y - foot);
+  vec3 g = mix(vec3(1.0), vec3(0.62, 0.74, 0.46), spot*0.50)*(1.0 - 0.18*run);
+  k = mix(vec3(1.0), vec3(0.92, 1.02, 0.78), lich)*(1.0 - moss)*g;
+  d = (vec3(0.03, 0.04, 0.0)*lich*(1.0 - moss) + vec3(0.13, 0.20, 0.08)*moss)*g;
+}
 vec3 gyWeather(vec3 c, vec2 q, float px, float seed, float foot){
   float n = mmNoise(q*9.0 + seed*13.0) + 0.5*mmNoise(q*23.0 + seed*7.0);
   float lich = smoothstep(1.02 - px*14.0, 1.02 + px*14.0, n);
@@ -20625,8 +20643,8 @@ float gyBall(vec2 n){
    same deal as gyStone's -- and each stone a little up or down in value. */
 vec3 gyRock(float seed){
   float k = mmHash11(seed*6.13 + 0.5);
-  vec3 c = k < 0.34 ? vec3(1.0) : (k < 0.56 ? vec3(1.15, 0.98, 0.79) : (k < 0.74 ? vec3(0.80, 0.86, 0.96) : vec3(1.10, 1.08, 1.00)));
-  return c*(0.90 + 0.20*mmHash11(seed*3.3 + 7.1));
+  vec3 c = k < 0.34 ? vec3(1.0) : (k < 0.56 ? vec3(1.17, 1.00, 0.80) : (k < 0.74 ? vec3(0.86, 0.92, 1.03) : vec3(1.12, 1.10, 1.02)));
+  return c*(0.96 + 0.20*mmHash11(seed*3.3 + 7.1));
 }
 /* A CUSHION OF MOSS: three rounds grown together, by seed; p from its
    middle, r its size. Crisp, lobed, never a star and never a speckle. */
@@ -20645,7 +20663,7 @@ float gyMound(float x, float y, float hw, float h, float seed){
 /* its green, deep, a little to the olive on some stones; and lifted where
    it grows in the dark at a stone's foot, so a mound is moss and not a hole */
 vec3 gyMossC(float seed, float y){
-  return mix(vec3(0.30, 0.53, 0.20), vec3(0.42, 0.52, 0.20), mmHash11(seed*8.9 + 4.4))*(1.0 + 0.60*(1.0 - smoothstep(0.04, 0.30, y)));
+  return mix(vec3(0.30, 0.53, 0.20), vec3(0.42, 0.52, 0.20), mmHash11(seed*8.9 + 4.4))*(1.0 + 0.85*(1.0 - smoothstep(0.04, 0.30, y)));
 }
 /* ...LAID ON: m a patch's edge (metres, negative inside), g which way that
    edge faces (1 up, -1 down). acc.x how much of the pixel is moss; .y the
@@ -20752,7 +20770,9 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
      worn stone and not "a flat pale slab", both judges) */
   vec3 sc = st*rnd*(0.62 + 0.44*smoothstep(0.0, H, p.y));
   sc *= 0.80 + 0.30*mmNoise(p*6.0 + seed*3.1);
-  sc = gyWeather(sc, p, px, seed, 0.0);
+  vec3 wK, wD;
+  gyWeatherKD(p, px, seed, 0.0, wK, wD);
+  sc = sc*wK + wD;
   float bev = clamp(-d/0.016, 0.0, 1.0);
   sc *= mix(1.25 + 0.20*kq*sign(p.x), 1.0, bev);
   /* (round 61 repair 51) THE SLAB IN PLANES, on the lit colour: its ARRIS a
@@ -20769,7 +20789,7 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   /* the return first, under the face: its side in the shade unless the key
      is round that way, its top (where it shows above) catching the light */
   {
-    vec3 rc = gyWeather(st*(0.80 + 0.10*smoothstep(0.0, H, p.y)), p, px, seed, 0.0);
+    vec3 rc = st*(0.80 + 0.10*smoothstep(0.0, H, p.y))*wK + wD;
     float topR = smoothstep(0.004, 0.020, (p.y - offR.y*0.5) - (H - 0.02)) ;
     rc *= mix(0.52 + 0.22*step(0.0, kq*sgnR), 1.18, clamp(topR, 0.0, 1.0));
     wfLay(col, ink, dRet, rc, px, 0.85);
@@ -20828,13 +20848,11 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   {
     float h1 = mmHash11(seed*4.9 + 0.3), h2 = mmHash11(seed*7.7 + 1.9), h3 = mmHash11(seed*2.1 + 5.5);
     float sd = h3 < 0.5 ? -1.0 : 1.0;
-    float e = max(0.012, 1.5*px);
     vec3 ms = gyMoss(vec3(0.0, 1.0, 0.0), gyMound(p.x - W*(h1 - 0.5)*1.5, p.y, W*0.62, 0.04 + 0.11*h2, seed), 1.0, px);
     if (isX < 0.5) {
       vec2 mp = p - vec2(sd*W*0.88, ty*(0.42 + 0.36*h1));
       float mr = 0.045 + 0.035*h3;
-      float s0 = gyPatch(mp, mr, seed);
-      if (h2 > 0.30) ms = gyMoss(ms, s0, clamp((gyPatch(mp + vec2(0.0, e), mr, seed) - s0)/e, -1.0, 1.0), px);
+      if (h2 > 0.30) ms = gyMoss(ms, gyPatch(mp, mr, seed), clamp(mp.y/mr, -1.0, 1.0), px);
       /* (the cap: cushions of it side by side along the edge, deepest at
          the middle of the run and gone at its ends and down the shoulder --
          clumps, not a ribbon) */
@@ -20899,10 +20917,12 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
      under it; what is sunk has a shadowed wall and a lit one.) */
   float shd = 1.0;
   float kx = kq*q.x;                                   // metres toward the key
+  vec3 wK, wD;
+  gyWeatherKD(q, px, seed, mix(0.10, -0.22, kerbed), wK, wD);
   if (kerbed > 0.5) {
     /* (the moss kept to the kerb's foot: grown the height of a headstone's
        it struck the low kerb top to bottom, a row of green bars) */
-    vec3 kc = gyWeather(st*rnd*0.95, q, px, seed, -0.22);
+    vec3 kc = st*rnd*0.95*wK + wD;
     wfLay(col, ink, kerb, kc*(0.85 + 0.30*smoothstep(0.12, 0.22, q.y)), px, 0.95);
     /* the kerb: its top a lit plane, its face under it, a rule between; the
        end to the key lit, the far end in shade; dark where it lies in the
@@ -20911,7 +20931,9 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
     shd = mix(0.86, 1.42, kTop)*(1.0 + 0.30*gyBand(L - 0.06 - kx, px) - 0.32*gyBand(L - 0.06 + kx, px))*(1.0 - 0.34*smoothstep(0.05, 0.0, q.y));
     ink = max(ink, mmInkP(q.y - 0.150, px, 1.0)*0.40*wfIn(kerb, px)*mmLod(0.07, px));
     /* the gravel inside the kerb, seen over it */
-    vec3 hc = gyWeather(st*rnd*(0.82 + 0.25*smoothstep(0.0, 0.78, hq.y)), hq, px, seed + 3.0, 0.0);
+    /* (repair 53, the link budget: the kerb's headstone in the kerb's own
+       weather, wK and wD, and not seven more taps of its own) */
+    vec3 hc = st*rnd*(0.82 + 0.25*smoothstep(0.0, 0.78, hq.y))*wK + wD;
     wfLay(col, ink, kHead, hc, px, 0.95);
     float inH = wfIn(kHead, px);
     float cut = gyLetters(hq - vec2(0.0, 0.46), 0.18, 0.050, 4.0, px, seed)*inH;
@@ -20926,7 +20948,7 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
     hS *= 1.0 - 0.42*cut;
     shd = mix(shd, hS, inH);
   } else {
-    vec3 sc = gyWeather(st*rnd, q, px, seed, 0.10);
+    vec3 sc = st*rnd*wK + wD;
     wfLay(col, ink, plinth, sc*0.80, px, 0.95);
     /* the plinth: a lit top, dark where it lies in the grass */
     /* (round 61 repair 53: "the tombs' bases sink into a black band ... a lit
@@ -21037,10 +21059,8 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
       if (mmHash11(seed*11.3 + 0.9) > 0.40)
         ms = gyMoss(ms, max(0.78 - q.y - 0.020 - (0.05 + 0.10*h1)*max(1.0 - xr*xr, 0.0)*(0.45 + 0.55*abs(sin(q.x*23.0 + seed*4.0))), (abs(xr) - 1.0)*0.24), -1.0, px);
     } else {
-      float e = max(0.012, 1.5*px);
       vec2 mp = hq - vec2(sd*0.20, 0.30 + 0.16*h1);
-      float s0 = gyPatch(mp, 0.065, seed);
-      ms = gyMoss(ms, s0, clamp((gyPatch(mp + vec2(0.0, e), 0.065, seed) - s0)/e, -1.0, 1.0), px);
+      ms = gyMoss(ms, gyPatch(mp, 0.065, seed), clamp(mp.y/0.065, -1.0, 1.0), px);
     }
     float mk = ms.x*wfIn(d, px)*(1.0 - wfIn(urn, px));
     shd = mix(shd*(1.0 - 0.30*ms.z), ms.y, mk);
@@ -21144,54 +21164,37 @@ float wfAngel(vec2 q, float px, float seed, float kq, bool paint){
      her folds and feathers ruled crisp over those: volume AND line.) */
   {
     float kx = kq*q.x;
-    /* the pedestal: each step of the base a lit top over its riser; the
-       die a face between a lit arris and a shaded one, its panel sunk,
-       the cornice's shadow ruled across its head; the cornice a lit plane */
-    float bTop = y < 0.118 ? 0.120 : 0.220;
-    float bHw = y < 0.118 ? 0.44 : 0.37;
-    float shd = (1.10 + 0.70*gyBand(bTop - y, px))*(1.0 + 0.22*gyBand(bHw - kx, px) - 0.28*gyBand(bHw + kx, px))*(1.0 - 0.36*smoothstep(0.04, 0.0, y));
-    float dS = 1.02 + 0.08*kx/0.28 + 0.36*gyBand(0.28 - kx, px) - 0.38*gyBand(0.28 + kx, px);
-    float pSh = max(gyBand(0.72 - y, px), gyBand(0.22 - kx, px));
-    float pLi = max(gyBand(y - 0.28, px), gyBand(0.22 + kx, px))*(1.0 - pSh);
-    dS = mix(dS, 0.96 - 0.40*pSh + 0.42*pLi, wfIn(panel, px)*mmLod(0.10, px));
-    dS *= (1.0 - 0.40*cut)*(1.0 - 0.40*smoothstep(0.735 - px, 0.735 + px, y));
-    shd = mix(shd, dS, wfIn(die, px));
-    float cHw = y < 0.88 ? 0.33 : 0.25;
-    float cS = (y < 0.88 ? mix(0.90, 1.42, smoothstep(0.838 - px, 0.838 + px, y)) : 1.00 + 0.46*gyBand(0.94 - y, px));
-    shd = mix(shd, cS*(1.0 + 0.26*gyBand(cHw - kx, px) - 0.30*gyBand(cHw + kx, px)), wfIn(corn, px));
+    /* the pedestal: each step of the base a lit top over its riser, a dark
+       line at the grass; the die a face between a lit arris and a shaded
+       one, the cornice's shadow ruled across its head; the cornice a lit
+       plane over its own under-face */
+    float shd = (1.10 + 0.70*gyBand((y < 0.118 ? 0.120 : 0.220) - y, px))*(1.0 - 0.36*smoothstep(0.04, 0.0, y));
+    shd = mix(shd, (1.02 + 0.36*gyBand(0.28 - kx, px) - 0.38*gyBand(0.28 + kx, px))*(1.0 - 0.40*cut)*(1.0 - 0.40*smoothstep(0.735 - px, 0.735 + px, y)), wfIn(die, px));
+    shd = mix(shd, mix(0.90, 1.42, smoothstep(0.838 - px, 0.838 + px, y)), wfIn(corn, px));
     /* the wings: the one to the key a lit mass, the other in shade; its
        leading edge a lit band, the side against her back in her shadow;
        each tier of feathers a ruled shadow under the tier above and a lit
        lip of its own */
-    float wk = kq*sign(q.x);                       // 1 the wing to the key
     float fr = fract((wr.x*0.6 + wr.y)/0.065);
-    float wS = mix(0.76, 1.14, step(0.0, wk));
-    wS *= 1.0 + mix(0.30, 0.46, step(0.0, wk))*gyBand(-wing, px)*smoothstep(-0.04, 0.02, wr.x);
-    wS *= 1.0 - 0.26*smoothstep(0.0, -0.07, wr.x);
+    float wS = mix(0.76, 1.14, step(0.0, kx))*(1.0 + 0.40*gyBand(-wing, px)*step(0.0, wr.x))*(1.0 - 0.26*smoothstep(0.0, -0.07, wr.x));
     wS *= 1.0 + (0.18*(1.0 - smoothstep(0.12, 0.26, fr)) - 0.20*smoothstep(0.68, 0.82, fr))*mmLod(0.065, px);
     shd = mix(shd, wS, wfIn(wing, px));
     /* the robe: a column in three planes -- the light, a half-tone, the
-       core shadow with a little light come back round its far edge -- and
-       each fold a dark line with a lit flank to the key and a dim one away
-       from it, fanning from the girdle as the cloth falls */
+       core shadow -- and each fold a dark line with a lit flank to the key,
+       fanning from the girdle as the cloth falls; its shadow on the cornice */
     float rk = kq*ru;
-    float rS = 0.58 + 0.32*smoothstep(-0.52, -0.42, rk) + 0.30*smoothstep(-0.12, -0.02, rk) + 0.13*smoothstep(-0.82, -0.92, rk);
+    float rS = 0.58 + 0.32*smoothstep(-0.52, -0.42, rk) + 0.30*smoothstep(-0.12, -0.02, rk);
     float fs = kq*(fract((ru*10.0 + 0.6*sin(y*3.0) + 3.1416)/6.2832) - 0.5)*6.2832*wR/10.0;   // metres from the fold, toward the key
-    float fLod = step(y, 1.58)*mmLod(wR*0.6, px);
-    rS *= 1.0 + fLod*(0.26*smoothstep(0.5*px, 1.2*px, fs)*(1.0 - smoothstep(2.6*px, 3.4*px, fs)) - 0.14*smoothstep(-3.4*px, -1.0*px, fs)*(1.0 - smoothstep(-1.0*px, 0.0, fs)) - 0.34*(1.0 - smoothstep(0.5*px, 1.2*px, abs(fs))));
-    /* the girdle's shadow on the skirt, the skirt's on the cornice */
-    rS *= (1.0 - 0.26*smoothstep(1.535, 1.565, y)*step(y, 1.58))*(1.0 - 0.30*smoothstep(1.00, 0.955, y));
+    rS *= 1.0 + step(y, 1.58)*mmLod(wR*0.6, px)*(0.26*smoothstep(0.5*px, 1.2*px, fs)*(1.0 - smoothstep(2.6*px, 3.4*px, fs)) - 0.34*(1.0 - smoothstep(0.5*px, 1.2*px, abs(fs))));
+    rS *= 1.0 - 0.30*smoothstep(1.00, 0.955, y);
     shd = mix(shd, rS, wfIn(robe, px));
-    /* her arms and the wreath in the light, her head a ball, her hair in
-       its own shade */
+    /* her arms and the wreath in the light, her hair in its own shade, her
+       face turned to the key */
     shd = mix(shd, 1.16, wfIn(min(min(armR, armL), wreath), px));
     shd = mix(shd, 0.80, wfIn(hair, px));
-    shd = mix(shd, 0.92*gyBall(vec2(kq*(q.x - 0.030)/0.084, (q.y - 2.075)/0.100)), wfIn(head, px));
-    /* moss climbed up the base */
-    vec3 ms = gyMoss(vec3(0.0, 1.0, 0.0), gyMound(q.x + 0.20*kq, y, 0.26, 0.11 + 0.08*mmHash11(seed*7.7 + 1.9), seed), 1.0, px);
-    float mk = ms.x*wfIn(base, px);
-    gWgShade = mix(shd, ms.y, mk);
-    gGyTint = mix(vec3(1.04, 1.03, 1.0), vec3(0.34, 0.60, 0.22), mk);
+    shd = mix(shd, 0.70 + 0.52*smoothstep(-0.035, 0.025, kq*(q.x - 0.030) + 0.5*(q.y - 2.075)), wfIn(head, px));
+    gWgShade = shd;
+    gGyTint = vec3(1.04, 1.03, 1.0);
   }
   gWfGloss = 0.20;
   gWfMoon = 2.2*(0.55*wfIn(min(min(fig, wing), corn), px)*smoothstep(0.8, 2.4, q.y) + 0.15);
@@ -21243,40 +21246,27 @@ float wfCross(vec2 q, float px, float seed, float kq, bool paint){
      the shaft and the arms have a THICKNESS -- an arris lit down the key
      side and across the top of each arm, in shade down the far side and
      along each arm's underside; the arm's shadow ruled on the shaft under
-     it; the knotwork panel sunk; the ring a torus and the boss a ball;
-     each step a lit top over its riser, a dark line at the grass.) */
+     it; the ring a torus and the boss turned; each step a lit top over its
+     riser, a dark line at the grass.) */
   {
     float kx = kq*q.x;
-    float sTop = q.y < 0.118 ? 0.120 : (q.y < 0.218 ? 0.220 : 0.320);
-    float sHw = q.y < 0.118 ? 0.46 : (q.y < 0.218 ? 0.36 : 0.26);
-    float shd = (1.10 + 0.70*gyBand(sTop - q.y, px))*(1.0 + 0.22*gyBand(sHw - kx, px) - 0.28*gyBand(sHw + kx, px))*(1.0 - 0.36*smoothstep(0.04, 0.0, q.y));
-    /* the ring, under the head */
+    float shd = (1.10 + 0.70*gyBand((q.y < 0.118 ? 0.120 : (q.y < 0.218 ? 0.220 : 0.320)) - q.y, px))*(1.0 - 0.36*smoothstep(0.04, 0.0, q.y));
+    /* the ring, under the head: lit across its tube as the tombs' bosses */
     vec2 rv = vec2(kx, q.y - yC);
     float rR = length(rv);
     float rt = clamp((rR - 0.235)/0.040, -1.0, 1.0);
-    float rlam = dot(rv/max(rR, 1e-4), vec2(0.60, 0.62))*(0.35 + 0.65*rt) + sqrt(1.0 - rt*rt)*0.50;
-    shd = mix(shd, 0.54 + 0.80*smoothstep(-0.25, 0.75, rlam), wfIn(ring, px));
-    /* the shaft, and the upper limb */
-    float hS = 1.02 + 0.44*gyBand(sw - kx, px) - 0.42*gyBand(sw + kx, px);
-    float pw = sw - 0.025;
-    float inP = step(0.45, q.y)*step(q.y, yC - 0.20)*wfIn(ax - pw, px);
-    hS = mix(hS, 0.90 - 0.36*gyBand(pw - kx, px) + 0.36*gyBand(pw + kx, px)*(1.0 - gyBand(pw - kx, px)), inP*mmLod(0.10, px));
-    hS = mix(hS, 1.22, inP*wfIn(knot, px)*mmLod(0.12, px));
-    hS *= 1.0 + 0.40*gyBand(yC + 0.42 - q.y, px);
-    /* the arms: a lit top, a shaded underside, an end to the key and one
-       away from it; and the arm's shadow on the shaft below it */
+    shd = mix(shd, 0.54 + 0.80*smoothstep(-0.25, 0.75, dot(rv/max(rR, 1e-4), vec2(0.60, 0.62))*(0.35 + 0.65*rt) + 0.50*(1.0 - rt*rt)), wfIn(ring, px));
+    /* the shaft: an arris lit down the key side, in shade down the other.
+       The arms: a lit top, a shaded underside, and their shadow ruled on
+       the shaft below them */
     float onArm = step(abs(q.y - yC), 0.097);
-    float aS = 1.04 + 0.46*gyBand(yC + 0.095 - q.y, px) - 0.40*gyBand(q.y - yC + 0.095, px)*step(sw, ax);
-    aS *= 1.0 + 0.28*gyBand(0.40 - kx, px) - 0.32*gyBand(0.40 + kx, px);
-    hS = mix(hS, aS, onArm);
+    float hS = 1.10 + mix(0.44*gyBand(sw - kx, px) - 0.42*gyBand(sw + kx, px),
+                          0.46*gyBand(yC + 0.095 - q.y, px) - 0.40*gyBand(q.y - yC + 0.095, px)*step(sw, ax), onArm);
     hS *= 1.0 - 0.30*smoothstep(yC - 0.165 - px, yC - 0.165 + px, q.y)*(1.0 - onArm)*step(q.y, yC);
     shd = mix(shd, hS, wfIn(head, px));
-    shd = mix(shd, gyBall(rv/0.055), wfIn(boss, px));
-    /* its rock, and moss climbed up the steps */
-    vec3 ms = gyMoss(vec3(0.0, 1.0, 0.0), gyMound(q.x - 0.22*kq, q.y, 0.24, 0.10 + 0.10*mmHash11(seed*7.7 + 1.9), seed), 1.0, px);
-    float mk = ms.x*wfIn(steps, px);
-    gWgShade = mix(shd, ms.y, mk);
-    gGyTint = mix(gyRock(seed + 3.0), vec3(0.34, 0.60, 0.22), mk);
+    /* the boss: turned to the key and the sky */
+    shd = mix(shd, 0.78 + 0.62*smoothstep(-0.025, 0.015, rv.x + rv.y), wfIn(boss, px));
+    gWgShade = shd;
   }
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.50*wfIn(min(head, ring), px)*smoothstep(1.0, 2.6, q.y) + 0.18);
@@ -35163,7 +35153,7 @@ void main(){
        gWgShade and gGyTint: the cage's bars dark iron with the edge to the
        key lit, the panes amber between them and the flame's core brighter
        in them; the cap a lit top plane over an under-edge in the flame's
-       own warmth; its dome and its knop turned as balls; the stem lit down
+       own warmth; its dome turned to the key; the stem lit down
        the key side and in shade down the other; each step of the foot a lit
        top over its riser, a dark line at the grass.) */
     if (vShape > 22.5) {
@@ -35172,10 +35162,8 @@ void main(){
       float kxL = lk*sm.x;
       float sk = vSize.y - 0.46;
       float yg = sm.y - sk;
-      /* the stem, and the knop on it */
+      /* the stem */
       float lS = 0.62 + 0.66*smoothstep(-lpx, lpx, kxL);
-      float s1 = max(sk - 0.24, 0.22);
-      lS = mix(lS, gyBall(vec2(kxL, sm.y - (0.145 + s1)*0.5)/0.058), wfIn(length(sm - vec2(0.0, (0.145 + s1)*0.5)) - 0.058, lpx));
       /* the foot: three steps */
       float fTop = sm.y < 0.058 ? 0.060 : (sm.y < 0.108 ? 0.110 : 0.150);
       lS = mix(lS, (0.84 + 0.62*gyBand(fTop - sm.y, lpx))*(1.0 - 0.36*smoothstep(0.035, 0.0, sm.y)), step(sm.y, 0.150));
@@ -35184,12 +35172,11 @@ void main(){
       vec3 lT = vec3(1.0);
       float onCap = step(abs(yg - 0.202), 0.032);
       float capUp = smoothstep(-lpx, lpx, yg - 0.196);
-      lS = mix(lS, mix(0.92, 1.50, capUp)*(1.0 + 0.24*gyBand(0.158 - kxL, lpx) - 0.30*gyBand(0.158 + kxL, lpx)), onCap);
+      lS = mix(lS, mix(0.92, 1.50, capUp), onCap);
       lT = mix(lT, mix(vec3(1.40, 0.98, 0.56), vec3(1.0), capUp), onCap);
-      /* the dome and the finial */
+      /* the dome, turned */
       float onDome = step(0.232, yg);
-      lS = mix(lS, gyBall(vec2(kxL/0.080, (yg - 0.226)/0.074 - 0.15)), onDome);
-      lS = mix(lS, gyBall(vec2(kxL, yg - 0.334)/0.028), wfIn(length(vec2(sm.x, yg - 0.334)) - 0.028, lpx));
+      lS = mix(lS, 0.66 + 0.72*smoothstep(-0.02, 0.03, kxL + 0.8*(yg - 0.275)), onDome);
       /* the cage: its bars, and the panes between them */
       float inLanB = step(abs(yg), 0.170)*step(abs(sm.x), 0.128);
       float bw = max(0.013, 1.1*lpx);
@@ -35198,11 +35185,11 @@ void main(){
       float barV = 1.0 - smoothstep(bw - 0.5*lpx, bw + 0.5*lpx, bx);
       float barH = 1.0 - smoothstep(bw - 0.5*lpx, bw + 0.5*lpx, min(abs(yg), abs(abs(yg) - 0.158)));
       float bar = max(barV, barH);
-      float bLit = max(barV*smoothstep(0.0, 0.6*bw, bSide), barH*(1.0 - barV)*smoothstep(0.0, 0.6*bw, abs(yg) < 0.08 ? yg : (abs(yg) - 0.158)*sign(yg)));
+      float bLit = barV*smoothstep(0.0, 0.6*bw, bSide);
       /* the flame's core in the panes: an almond of it, and its heart */
       float fl = length(vec2(sm.x/0.060, (yg + 0.020)/0.105));
-      float pane = 0.80 + 0.36*(1.0 - smoothstep(0.80, 1.00, fl)) + 0.36*(1.0 - smoothstep(0.34, 0.50, fl));
-      vec3 paneT = mix(vec3(1.06, 0.74, 0.40), vec3(1.06, 0.98, 0.80), 1.0 - smoothstep(0.34, 1.00, fl));
+      float pane = 0.96 + 0.30*(1.0 - smoothstep(0.80, 1.00, fl)) + 0.40*(1.0 - smoothstep(0.34, 0.50, fl));
+      vec3 paneT = mix(vec3(1.16, 0.86, 0.48), vec3(1.08, 1.00, 0.84), 1.0 - smoothstep(0.34, 1.00, fl));
       lS = mix(lS, mix(pane, 0.26 + 0.62*bLit, bar), inLanB);
       lT = mix(lT, mix(paneT, vec3(1.0, 0.86, 0.66), bar), inLanB);
       gWgShade = lS;
