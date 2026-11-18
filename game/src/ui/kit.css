@@ -854,6 +854,23 @@ button.kit-medallion:hover, button.kit-medallion:focus-visible,
   content: ""; position: absolute; inset: calc(var(--md) * -8 / 44) calc(var(--md) * -4 / 44); pointer-events: none;
   background: var(--kit-mount-crested) 50% 50% / 100% 100% no-repeat;
 }
+/* Repair 43: the mounted medallion's enamel is the samples' plum, glazed like
+   the left frame's medallions (hw-glaze), where the bare painting read as
+   near-black on a board. The colour lies inside the painted rim only. */
+.kit-medallion--mounted {
+  background:
+    url("../../assets/ui/kit/hw-glaze.webp") 50% 50% / 100% 100% no-repeat,
+    radial-gradient(closest-side, rgb(122 84 196 / .56) 0, rgb(96 60 168 / .58) 48%, rgb(66 38 124 / .5) 70%, transparent 76%),
+    url("../../assets/ui/kit/button.webp") 50% 50% / 100% 100% no-repeat;
+}
+/* A quiet plate is filtered grey and dark (saturate .55, brightness .86), and
+   the filter took the medallion seated on it too: that, not the painting, is
+   what made its enamel black and its gilt mount a flat putty. The medallion
+   and its mount take the filter's inverse, so they keep their own colour; the
+   plate and its lettering stay quiet. */
+.kit-btn--quiet:not(:hover):not(:focus-visible) > .kit-medallion--mounted {
+  filter: saturate(1.82) brightness(1.163) drop-shadow(0 3px 4px rgba(0, 0, 0, .8));
+}
 /* == end gilt mount == */
 
 /* ── tags ──────────────────────────────────────────────────────────────────
