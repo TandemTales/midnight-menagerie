@@ -2585,7 +2585,13 @@ export const ROOM_KINDS = {
          pair of columns no longer crops the gallery to its middle third --
          both judges: "pull them back a bay so the musicians' gallery is the
          feature". This is the Ballroom's own main room. */
+      /* (round 61 repair 30, the judges' standing item: "something standing
+         on the empty near floor (study, ballroom)" -- a second gilt chair,
+         in violet velvet, drawn up beside the one at the near right, a step
+         behind it, on the bare checker between it and the petals. `still`: the room
+         round it is unchanged; `hand`: under the cards in a fight) */
       { subject: 'music', lamps: [{ i: 2, x: 0.0, z: 0.80 }], swap: [[78, 72]], solo: [],
+        nearPlus: [{ shape: 72, ahead: 4.5, across: 1.6, tone: 0.97, keep: true, still: true, hand: true, seed: 8.0 }],
         fileZ0: -6.4, fileX: 0.66,
         cam: { y: -0.30, z: -1.1, look: 0.55, fov: -1 },
         vantage: { at: 'square', dy: -0.30, dz: -1.1, dlook: 0.55, dfov: -1 } },
@@ -2883,7 +2889,15 @@ export const ROOM_KINDS = {
     kinds: [
       /* (graft: nothing dealt, not six -- the dealt cases stood under the
          fight frame's candles: the walls ARE the bookcases) */
-      { subject: 'libraryroom', count: 0 },
+      /* (round 61 repair 30, the judges' standing item: "something standing
+         on the empty near floor (study, ballroom)" -- the library's second
+         globe brought out to the carpet's near right corner on the boards,
+         and the books taken down to read by it piled at its foot, one lying
+         open (54 and 88, the room's own). `still`: the room round them is
+         unchanged; `hand`: under the cards in a fight, and not drawn there) */
+      { subject: 'libraryroom', count: 0,
+        nearPlus: [{ shape: 54, ahead: 3.4, across: 1.65, tone: 0.97, hM: 0.85, keep: true, still: true, hand: true, seed: 2.3 },
+                   { shape: 88, ahead: 3.05, across: 0.85, tone: 0.98, hM: 0.40, keep: true, still: true, hand: true, seed: 9.4 }] },
       { subject: 'studyfire', count: 1, swap: [[56, 55]], room: { d: 0.86 },
         lamps: [{ i: 0, x: 0.0, z: 0.96, y: 0.40, fit: 'none', color: '#ff9a4a', radius: 4.6, k: 1.30 }],
         near: [{ shape: 53, x: 3.0, z: -3.0, tone: 0.97, free: true },
