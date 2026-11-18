@@ -20777,24 +20777,50 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
   float ink = 0.0;
   vec3 st = gyStone(seed);
   float rnd = 0.85 + 0.25*kq*clamp(q.x/L, -1.0, 1.0);
+  /* (round 61 repair 51: the tomb in PLANES, on the lit colour -- gWgShade,
+     see gyBand. Every member a top the sky lights, a face, an end to the key
+     and an end away from it; what oversails throws a ruled shadow on what is
+     under it; what is sunk has a shadowed wall and a lit one.) */
+  float shd = 1.0;
+  float kx = kq*q.x;                                   // metres toward the key
   if (kerbed > 0.5) {
-    vec3 kc = gyWeather(st*rnd*0.95, q, px, seed, 0.0);
+    /* (the moss kept to the kerb's foot: grown the height of a headstone's
+       it struck the low kerb top to bottom, a row of green bars) */
+    vec3 kc = gyWeather(st*rnd*0.95, q, px, seed, -0.22);
     wfLay(col, ink, kerb, kc*(0.85 + 0.30*smoothstep(0.12, 0.22, q.y)), px, 0.95);
+    /* the kerb: its top a lit plane, its face under it, a rule between; the
+       end to the key lit, the far end in shade; dark where it lies in the
+       grass */
+    float kTop = smoothstep(0.150 - px, 0.150 + px, q.y);
+    shd = mix(0.86, 1.42, kTop)*(1.0 + 0.30*gyBand(L - 0.06 - kx, px) - 0.32*gyBand(L - 0.06 + kx, px))*(1.0 - 0.34*smoothstep(0.05, 0.0, q.y));
+    ink = max(ink, mmInkP(q.y - 0.150, px, 1.0)*0.40*wfIn(kerb, px)*mmLod(0.07, px));
     /* the gravel inside the kerb, seen over it */
     vec3 hc = gyWeather(st*rnd*(0.82 + 0.25*smoothstep(0.0, 0.78, hq.y)), hq, px, seed + 3.0, 0.0);
     wfLay(col, ink, kHead, hc, px, 0.95);
-    float cut = gyLetters(hq - vec2(0.0, 0.46), 0.18, 0.050, 4.0, px, seed)*wfIn(kHead, px);
+    float inH = wfIn(kHead, px);
+    float cut = gyLetters(hq - vec2(0.0, 0.46), 0.18, 0.050, 4.0, px, seed)*inH;
     col = mix(col, st*0.22, cut*0.85);
-    ink = max(ink, mmInkP(abs(length(hq - vec2(0.0, 0.54)) - 0.20) - 0.0, px, 1.0)*0.4*step(0.54, hq.y)*wfIn(kHead, px));
+    ink = max(ink, mmInkP(abs(length(hq - vec2(0.0, 0.54)) - 0.20) - 0.0, px, 1.0)*0.4*step(0.54, hq.y)*inH);
+    /* its headstone: the arris lit to the key and round the head, in shade
+       on the far side; its base a step with a lit top */
+    float hk = kq*clamp(hq.x/0.20, -1.0, 1.0);
+    float hO = clamp(hk*0.9 + 1.1*smoothstep(0.52, 0.64, hq.y), -1.0, 1.0);
+    float hS = mix(1.0 + 0.10*hk, 1.0 + 0.55*max(hO, 0.0) - 0.42*max(-hO, 0.0), gyBand(-kHead, px));
+    hS = mix(hS, 0.90 + 0.50*smoothstep(0.085 - px, 0.085 + px, hq.y), step(hq.y, 0.12));
+    hS *= 1.0 - 0.42*cut;
+    shd = mix(shd, hS, inH);
   } else {
     vec3 sc = gyWeather(st*rnd, q, px, seed, 0.10);
     wfLay(col, ink, plinth, sc*0.80, px, 0.95);
+    /* the plinth: a lit top, dark where it lies in the grass */
+    shd = (0.95 + 0.50*gyBand(0.10 - q.y, px))*(1.0 - 0.34*smoothstep(0.04, 0.0, q.y));
     /* the chest: its pilasters, its two sunk panels and their wreaths */
     vec3 cc = sc*(0.85 + 0.20*smoothstep(0.10, 0.66, q.y));
     wfLay(col, ink, chest, cc, px, 0.95);
+    float inC = wfIn(chest, px);
     float pil = abs(abs(q.x) - (L - 0.20)) - 0.075;
-    ink = max(ink, mmInkP(pil, px, 1.0)*0.6*wfIn(chest, px));
-    col = mix(col, col*1.12, wfIn(pil, px)*wfIn(chest, px));
+    ink = max(ink, mmInkP(pil, px, 1.0)*0.6*inC);
+    col = mix(col, col*1.12, wfIn(pil, px)*inC);
     vec2 pq = vec2(abs(q.x) - (L - 0.11)*0.48, q.y - 0.38);
     float pan = mmBox(pq, vec2((L - 0.11)*0.30, 0.19), 0.0);
     col = mix(col, col*0.80, wfIn(pan, px));
@@ -20803,12 +20829,44 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
     float wr = abs(length(pq/vec2(1.0, 1.15)) - 0.075) - 0.012;
     col = mix(col, sc*1.15, wfIn(wr, px));
     ink = max(ink, mmInkP(wr, px, 1.0)*0.55);
+    {
+      /* the chest's face turning from the key's end to the far one; each
+         pilaster a proud strip, lit down its key edge and shaded down the
+         other */
+      float cS = 1.06 + 0.10*kx/L;
+      float pu = (abs(q.x) - (L - 0.20))*sign(q.x)*kq;           // across a pilaster, toward the key
+      cS = mix(cS, 1.16 + 0.44*gyBand(0.075 - pu, px) - 0.38*gyBand(0.075 + pu, px), wfIn(pil, px));
+      /* a panel SUNK: its top wall and its wall to the key throw their
+         shadow in, its foot and its far wall are lit */
+      float lx = pq.x*sign(q.x)*kq;                               // across the panel, toward the key
+      float pw = (L - 0.11)*0.30;
+      float pSh = max(gyBand(0.19 - pq.y, px), gyBand(pw - lx, px));
+      float pLi = max(gyBand(0.19 + pq.y, px), gyBand(pw + lx, px))*(1.0 - pSh);
+      cS = mix(cS, 1.0 - 0.42*pSh + 0.44*pLi, wfIn(pan, px)*mmLod(0.10, px));
+      /* the wreath carved proud in it: lit round the side to the key and
+         the sky, in shade round the other */
+      float wl = dot(vec2(lx, pq.y/1.15), vec2(0.60, 0.80))/0.075;
+      cS = mix(cS, 1.05 + 0.45*smoothstep(0.0, 0.5, wl) - 0.42*smoothstep(0.0, -0.5, wl), wfIn(wr, px)*mmLod(0.05, px));
+      /* the ledger oversails the chest: its shadow ruled along the top */
+      cS *= 1.0 - 0.40*smoothstep(0.600 - px, 0.600 + px, q.y);
+      shd = mix(shd, cS, inC);
+    }
     /* the ledger, its moulded edge lit, the lettering cut along it */
     vec3 lc = sc*(0.92 + 0.40*smoothstep(0.72, 0.78, q.y));
     wfLay(col, ink, ledger, lc, px, 0.95);
-    ink = max(ink, mmInkP(q.y - 0.705, px, 1.0)*0.5*wfIn(ledger, px));
-    float cut = gyLetters(q - vec2(0.0, 0.700), L - 0.20, 0.050, 1.0, px, seed)*wfIn(ledger, px);
+    float inL = wfIn(ledger, px);
+    ink = max(ink, mmInkP(q.y - 0.705, px, 1.0)*0.5*inL);
+    float cut = gyLetters(q - vec2(0.0, 0.700), L - 0.20, 0.050, 1.0, px, seed)*inL;
     col = mix(col, st*0.22, cut*0.8);
+    {
+      /* the slab a lit plane over the rule, the frieze under it in the
+         slab's own shade, with its lettering; its end to the key lit and
+         the far end in shade */
+      float lS = mix(0.92, 1.42, smoothstep(0.705 - px, 0.705 + px, q.y));
+      lS *= 1.0 + 0.28*gyBand(L - 0.03 - kx, px) - 0.30*gyBand(L - 0.03 + kx, px);
+      lS *= 1.0 - 0.42*cut;
+      shd = mix(shd, lS, inL);
+    }
     if (urnOn > 0.5) {
       vec3 uc = st*(0.45 + 0.75*wfRound(clamp(q.x/0.115, -1.0, 1.0)))*(1.0 + 0.25*kq*sign(q.x));
       wfLay(col, ink, urn, uc, px, 0.9);
@@ -20816,10 +20874,18 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
       float dr = max(abs(q.y - 1.05 - 0.03*cos(q.x*40.0)) - 0.020, abs(q.x) - 0.11);
       col = mix(col, st*1.05, wfIn(dr, px)*wfIn(urn, px));
       ink = max(ink, mmInkP(dr, px, 1.0)*0.5*wfIn(urn, px));
+      /* the urn TURNED: a lit side, a core shadow with an edge to it, a
+         little light come back round the far side; its foot in the shade of
+         its own belly, its lid's rim lit */
+      float uu = kx/0.115;
+      float uS = 0.58 + 0.52*smoothstep(-0.36, -0.24, uu) + 0.34*smoothstep(0.26, 0.38, uu)*(1.0 - smoothstep(0.62, 0.74, uu)) + 0.16*smoothstep(-0.78, -0.92, uu);
+      uS *= 1.0 - 0.30*smoothstep(0.905, 0.885, q.y) + 0.20*smoothstep(1.150 - px, 1.150 + px, q.y)*step(q.y, 1.176);
+      shd = mix(shd, uS, wfIn(urn, px));
     }
   }
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
+  gWgShade = mix(shd, 0.60 + 0.40*smoothstep(0.0, 0.05, q.y), wfIn(tuft, px));
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.45*wfIn(min(ledger, urn), px)*(1.0 - kerbed) + 0.35*kerbed*wfIn(kHead, px) + 0.15);
   gWfCol = col; gWfInk = ink;
