@@ -2782,8 +2782,13 @@ export class Backdrop {
              survey-8 judges saw under the fence, with the lawn in it gone.
              Narrower and shallower, as dense at the foot, so each stone is
              seated and the turf shows between them) */
+          /* (round 61 repair 53, repair 51's judges: "the tombs' bases sink
+             into a black band ... need contact shadows and a lit ground edge
+             rather than a void". A chest tomb's pool was 0.62 of its two
+             metres deep: a black lake a pace and a half out from the plinth.
+             0.40, and no wider than the plinth: the turf shows in front of it) */
           const tomb = p.shape === 70;
-          ss2[i * 2 + 0] = p.w * (tomb ? 1.18 : 1.30); ss2[i * 2 + 1] = p.w * (tomb ? 0.62 : 0.46);
+          ss2[i * 2 + 0] = p.w * (tomb ? 1.10 : 1.30); ss2[i * 2 + 1] = p.w * (tomb ? 0.40 : 0.46);
           st2[i] = 0.92;
         } else if (p.grave) {
           /* (round 43: the ledger leaned at an open grave's head stands on

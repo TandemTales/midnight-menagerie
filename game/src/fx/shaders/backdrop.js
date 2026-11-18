@@ -20570,6 +20570,24 @@ float gyLetters(vec2 p, float hw, float lh, float n, float px, float seed){
 /* the moss and the lichen a stone carries: a few crisp-edged patches,
    never a speckle -- grey-green lichen rosettes on the face, moss in the
    wet at its foot */
+/* (round 61 repair 53, for the link budget: the weather is seven noise taps,
+   and a stone's face and its return, a tomb's chest and its kerb, each took
+   their own seven at the SAME place. Every step of it is a mix toward a
+   colour or a multiply -- it is affine in the colour it is given -- so the
+   weather at one place is two colours, k and d, and anything through it is
+   c*k + d: one set of taps serves both. The same numbers, to rounding.) */
+void gyWeatherKD(vec2 q, float px, float seed, float foot, out vec3 k, out vec3 d){
+  float n = mmNoise(q*9.0 + seed*13.0) + 0.5*mmNoise(q*23.0 + seed*7.0);
+  float lich = smoothstep(1.02 - px*14.0, 1.02 + px*14.0, n)*0.55;
+  float moss = smoothstep(0.10, 0.0, q.y - foot - 0.04*mmNoise(vec2(q.x*30.0, seed)));
+  float tongue = mmNoise(vec2(q.x*11.0 + seed*5.0, q.y*3.0));
+  moss = max(moss, smoothstep(0.30, 0.12, q.y - foot - 0.22*tongue)*smoothstep(0.60, 0.76, tongue)*0.85)*0.75;
+  float spot = smoothstep(0.86, 0.96, mmNoise(q*14.0 + seed*9.0) + 0.35*mmNoise(q*41.0 + seed));
+  float run = smoothstep(0.55, 0.85, mmNoise(vec2(q.x*38.0 + seed*3.0, 0.5)))*smoothstep(0.0, 0.5, q.y - foot);
+  vec3 g = mix(vec3(1.0), vec3(0.62, 0.74, 0.46), spot*0.50)*(1.0 - 0.18*run);
+  k = mix(vec3(1.0), vec3(0.92, 1.02, 0.78), lich)*(1.0 - moss)*g;
+  d = (vec3(0.03, 0.04, 0.0)*lich*(1.0 - moss) + vec3(0.13, 0.20, 0.08)*moss)*g;
+}
 vec3 gyWeather(vec3 c, vec2 q, float px, float seed, float foot){
   float n = mmNoise(q*9.0 + seed*13.0) + 0.5*mmNoise(q*23.0 + seed*7.0);
   float lich = smoothstep(1.02 - px*14.0, 1.02 + px*14.0, n);
@@ -20630,6 +20648,59 @@ vec2 gyRows(vec2 p, float hw, float lh, float n, float px, float seed){
   float wf = fract((p.x + rl)/wl + mmHash11(row*3.1 + seed));
   float word = clamp(0.5 + (rl - abs(p.x))/px, 0.0, 1.0)*clamp(0.5 + min(wf, 0.80 - wf)*wl/px, 0.0, 1.0)*step(0.0, row)*step(row, n - 0.5);
   return vec2(clamp(1.0 - abs(ry - 0.5*px)/px, 0.0, 1.0), clamp(1.0 - abs(ry - capH)/px, 0.0, 1.0))*word*mmLod(lh, px);
+}
+/* (round 61 repair 53) A BALL, as a value for the lit colour: n is across it
+   toward the key and up, 1 at its outline. The terminator curves with the
+   ball; a little light comes back round the far rim; one small highlight. */
+float gyBall(vec2 n){
+  float r2 = dot(n, n);
+  float lam = n.x*0.56 + n.y*0.48 + sqrt(max(1.0 - r2, 0.0))*0.67;
+  return 0.40 + 0.90*smoothstep(0.0, 0.40, lam) + 0.24*smoothstep(0.62, 0.95, r2)*smoothstep(0.0, -0.35, lam)
+       + 0.50*(1.0 - smoothstep(0.14, 0.26, length(n - vec2(0.36, 0.34))));
+}
+/* (round 61 repair 53, of repair 51's stones: they "have lost most of their
+   moss and now all share one cool grey; they want the moss back as painted
+   patches sitting on top of the new carving, plus some variation stone to
+   stone". The moss and the rock in the paint are under the prop's ceiling
+   and the moon's blue with everything else; these go on the LIT colour, as
+   a tint beside gWgShade -- gGyTint.)
+   THE ROCK as the moon leaves it: granite, sandstone, slate, marble -- the
+   same deal as gyStone's -- and each stone a little up or down in value. */
+vec3 gyRock(float seed){
+  float k = mmHash11(seed*6.13 + 0.5);
+  vec3 c = k < 0.34 ? vec3(1.0) : (k < 0.56 ? vec3(1.17, 1.00, 0.80) : (k < 0.74 ? vec3(0.86, 0.92, 1.03) : vec3(1.12, 1.10, 1.02)));
+  return c*(0.96 + 0.20*mmHash11(seed*3.3 + 7.1));
+}
+/* A CUSHION OF MOSS: three rounds grown together, by seed; p from its
+   middle, r its size. Crisp, lobed, never a star and never a speckle. */
+float gyPatch(vec2 p, float r, float s){
+  float h1 = mmHash11(s*3.7 + 1.1), h2 = mmHash11(s*5.3 + 2.7);
+  float d = length(p*vec2(1.0, 0.8)) - r;
+  d = min(d, length(p - r*vec2(1.8*(h1 - 0.5), 0.55)) - r*0.62);
+  return min(d, length(p - r*vec2(2.2*(h2 - 0.5), -0.40)) - r*0.70);
+}
+/* A MOUND of it climbed out of the grass: x from its middle, hw its half
+   width, h its height; a hand's depth of it along the rest of the foot */
+float gyMound(float x, float y, float hw, float h, float seed){
+  float xr = x/hw;
+  return y - 0.04 - h*max(1.0 - xr*xr, 0.0) - 0.022*abs(sin(x*41.0 + seed*9.0)) - 0.014*abs(sin(x*17.0 + seed*3.0));
+}
+/* its green, deep, a little to the olive on some stones; and lifted where
+   it grows in the dark at a stone's foot, so a mound is moss and not a hole */
+vec3 gyMossC(float seed, float y){
+  return mix(vec3(0.30, 0.53, 0.20), vec3(0.42, 0.52, 0.20), mmHash11(seed*8.9 + 4.4))*(1.0 + 0.85*(1.0 - smoothstep(0.04, 0.30, y)));
+}
+/* ...LAID ON: m a patch's edge (metres, negative inside), g which way that
+   edge faces (1 up, -1 down). acc.x how much of the pixel is moss; .y the
+   moss's own value -- flat, its upper lip catching the sky and its lower
+   edge dark, so it has a thickness and sits ON the stone; .z the shadow it
+   lays on the stone under it. */
+vec3 gyMoss(vec3 acc, float m, float g, float px){
+  float w = max(0.014, 2.0*px);
+  float on = wfIn(m, px);
+  float eb = 1.0 - smoothstep(w - px, w, -m);
+  float v = (1.0 - 0.45*eb*max(-g, 0.0))*(1.0 + 0.40*eb*max(g, 0.0));
+  return vec3(max(acc.x, on), mix(acc.y, v, on), max(acc.z, wfIn(m - w, px)*(1.0 - on)*max(-g, 0.0)));
 }
 
 float wfHsForm(vec2 p, float k, float H, float W, float seed, out float face, out float tx, out float ty, out float kind){
@@ -20724,7 +20795,9 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
      worn stone and not "a flat pale slab", both judges) */
   vec3 sc = st*rnd*(0.62 + 0.44*smoothstep(0.0, H, p.y));
   sc *= 0.80 + 0.30*mmNoise(p*6.0 + seed*3.1);
-  sc = gyWeather(sc, p, px, seed, 0.0);
+  vec3 wK, wD;
+  gyWeatherKD(p, px, seed, 0.0, wK, wD);
+  sc = sc*wK + wD;
   float bev = clamp(-d/0.016, 0.0, 1.0);
   sc *= mix(1.25 + 0.20*kq*sign(p.x), 1.0, bev);
   /* (round 61 repair 51) THE SLAB IN PLANES, on the lit colour: its ARRIS a
@@ -20741,7 +20814,7 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   /* the return first, under the face: its side in the shade unless the key
      is round that way, its top (where it shows above) catching the light */
   {
-    vec3 rc = gyWeather(st*(0.80 + 0.10*smoothstep(0.0, H, p.y)), p, px, seed, 0.0);
+    vec3 rc = st*(0.80 + 0.10*smoothstep(0.0, H, p.y))*wK + wD;
     float topR = smoothstep(0.004, 0.020, (p.y - offR.y*0.5) - (H - 0.02)) ;
     rc *= mix(0.52 + 0.22*step(0.0, kq*sgnR), 1.18, clamp(topR, 0.0, 1.0));
     wfLay(col, ink, dRet, rc, px, 0.85);
@@ -20793,11 +20866,34 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   }
   /* (where it stands in the ground: a dark line) */
   shd *= 1.0 - 0.30*smoothstep(0.07, 0.0, p.y);
+  /* (round 61 repair 53) ITS ROCK, AND THE MOSS PAINTED OVER THE CARVING: a
+     mound of it climbed out of the grass, a cushion on its weather side, a
+     cap along one shoulder -- which of them, and where, by the stone */
+  vec3 tnt = gyRock(seed);
+  {
+    float h1 = mmHash11(seed*4.9 + 0.3), h2 = mmHash11(seed*7.7 + 1.9), h3 = mmHash11(seed*2.1 + 5.5);
+    float sd = h3 < 0.5 ? -1.0 : 1.0;
+    vec3 ms = gyMoss(vec3(0.0, 1.0, 0.0), gyMound(p.x - W*(h1 - 0.5)*1.5, p.y, W*0.62, 0.04 + 0.11*h2, seed), 1.0, px);
+    if (isX < 0.5) {
+      vec2 mp = p - vec2(sd*W*0.88, ty*(0.42 + 0.36*h1));
+      float mr = 0.045 + 0.035*h3;
+      if (h2 > 0.30) ms = gyMoss(ms, gyPatch(mp, mr, seed), clamp(mp.y/mr, -1.0, 1.0), px);
+      /* (the cap: cushions of it side by side along the edge, deepest at
+         the middle of the run and gone at its ends and down the shoulder --
+         clumps, not a ribbon) */
+      float cr = (p.x + sd*W*0.35)/(W*(0.30 + 0.25*h2));
+      if (h1 > 0.35) ms = gyMoss(ms, -d - (0.008 + 0.050*abs(sin(p.x*36.0 + seed*4.0)) + 0.016*abs(sin(p.x*61.0 + seed)))*max(1.0 - cr*cr, 0.0)*smoothstep(ty + 0.11, ty + 0.20, p.y) + 0.004, -1.0, px);
+    }
+    float mk = ms.x*wfIn(d, px);
+    shd = mix(shd*(1.0 - 0.30*ms.z), ms.y, mk);
+    tnt = mix(tnt, gyMossC(seed, p.y), mk);
+  }
   /* the grass, over the stone's foot */
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
   /* (the blades at their own light, dark at the roots) */
-  gWgShade = mix(shd, 0.60 + 0.40*smoothstep(0.0, 0.05, q.y), wfIn(tuft, px));
+  gWgShade = mix(shd, 0.55 + 0.95*smoothstep(0.0, 0.10, q.y), wfIn(tuft, px));   // (repair 53: the blades' tips in the moon)
+  gGyTint = mix(tnt, vec3(1.0), wfIn(tuft, px));
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.55*wfIn(d, px)*smoothstep(H*0.4, H, p.y) + 0.20*wfIn(d, px));
   gWfCol = col; gWfInk = ink;
@@ -20846,10 +20942,12 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
      under it; what is sunk has a shadowed wall and a lit one.) */
   float shd = 1.0;
   float kx = kq*q.x;                                   // metres toward the key
+  vec3 wK, wD;
+  gyWeatherKD(q, px, seed, mix(0.10, -0.22, kerbed), wK, wD);
   if (kerbed > 0.5) {
     /* (the moss kept to the kerb's foot: grown the height of a headstone's
        it struck the low kerb top to bottom, a row of green bars) */
-    vec3 kc = gyWeather(st*rnd*0.95, q, px, seed, -0.22);
+    vec3 kc = st*rnd*0.95*wK + wD;
     wfLay(col, ink, kerb, kc*(0.85 + 0.30*smoothstep(0.12, 0.22, q.y)), px, 0.95);
     /* the kerb: its top a lit plane, its face under it, a rule between; the
        end to the key lit, the far end in shade; dark where it lies in the
@@ -20858,7 +20956,9 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
     shd = mix(0.86, 1.42, kTop)*(1.0 + 0.30*gyBand(L - 0.06 - kx, px) - 0.32*gyBand(L - 0.06 + kx, px))*(1.0 - 0.34*smoothstep(0.05, 0.0, q.y));
     ink = max(ink, mmInkP(q.y - 0.150, px, 1.0)*0.40*wfIn(kerb, px)*mmLod(0.07, px));
     /* the gravel inside the kerb, seen over it */
-    vec3 hc = gyWeather(st*rnd*(0.82 + 0.25*smoothstep(0.0, 0.78, hq.y)), hq, px, seed + 3.0, 0.0);
+    /* (repair 53, the link budget: the kerb's headstone in the kerb's own
+       weather, wK and wD, and not seven more taps of its own) */
+    vec3 hc = st*rnd*(0.82 + 0.25*smoothstep(0.0, 0.78, hq.y))*wK + wD;
     wfLay(col, ink, kHead, hc, px, 0.95);
     float inH = wfIn(kHead, px);
     float cut = gyLetters(hq - vec2(0.0, 0.46), 0.18, 0.050, 4.0, px, seed)*inH;
@@ -20873,10 +20973,13 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
     hS *= 1.0 - 0.42*cut;
     shd = mix(shd, hS, inH);
   } else {
-    vec3 sc = gyWeather(st*rnd, q, px, seed, 0.10);
+    vec3 sc = st*rnd*wK + wD;
     wfLay(col, ink, plinth, sc*0.80, px, 0.95);
     /* the plinth: a lit top, dark where it lies in the grass */
-    shd = (0.95 + 0.50*gyBand(0.10 - q.y, px))*(1.0 - 0.34*smoothstep(0.04, 0.0, q.y));
+    /* (round 61 repair 53: "the tombs' bases sink into a black band ... a lit
+       ground edge rather than a void" -- the plinth's face up out of the
+       foot's dark, 1.20 from 0.95, and its top edge a brighter line) */
+    shd = (1.20 + 0.62*gyBand(0.10 - q.y, px))*(1.0 - 0.34*smoothstep(0.04, 0.0, q.y));
     /* the chest: its pilasters, its two sunk panels and their wreaths */
     vec3 cc = sc*(0.85 + 0.20*smoothstep(0.10, 0.66, q.y));
     wfLay(col, ink, chest, cc, px, 0.95);
@@ -20908,8 +21011,19 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
       cS = mix(cS, 1.0 - 0.42*pSh + 0.44*pLi, wfIn(pan, px)*mmLod(0.10, px));
       /* the wreath carved proud in it: lit round the side to the key and
          the sky, in shade round the other */
-      float wl = dot(vec2(lx, pq.y/1.15), vec2(0.60, 0.80))/0.075;
-      cS = mix(cS, 1.05 + 0.45*smoothstep(0.0, 0.5, wl) - 0.42*smoothstep(0.0, -0.5, wl), wfIn(wr, px)*mmLod(0.05, px));
+      /* (round 61 repair 53, of repair 51's ring: "half-dark ... a banded
+         disc". A TORUS: across its tube the side turned up and to the key is
+         lit and the side turned down and away is in shade, so the upper arc
+         is lit along its outside with a dark line inside it and the lower arc
+         dark along its outside with the light come round inside it; and it
+         lays its own shadow on the panel, down and away from the key.) */
+      vec2 wv = vec2(lx, pq.y/1.15);
+      float wRd = length(wv);
+      float wt = clamp((wRd - 0.075)/0.012, -1.0, 1.0);
+      float wlam = dot(wv/max(wRd, 1e-4), vec2(0.60, 0.62))*(0.35 + 0.65*wt) + sqrt(1.0 - wt*wt)*0.50;
+      float wLd = wfIn(pan, px)*mmLod(0.05, px);
+      cS *= 1.0 - 0.34*wfIn(abs(length(wv + vec2(0.012, 0.015)) - 0.075) - 0.012, px)*wLd;
+      cS = mix(cS, 0.52 + 0.80*smoothstep(-0.25, 0.75, wlam), wfIn(wr, px)*mmLod(0.05, px));
       /* the ledger oversails the chest: its shadow ruled along the top */
       cS *= 1.0 - 0.40*smoothstep(0.600 - px, 0.600 + px, q.y);
       shd = mix(shd, cS, inC);
@@ -20931,7 +21045,7 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
       shd = mix(shd, lS, inL);
     }
     if (urnOn > 0.5) {
-      vec3 uc = st*(0.45 + 0.75*wfRound(clamp(q.x/0.115, -1.0, 1.0)))*(1.0 + 0.25*kq*sign(q.x));
+      vec3 uc = st*(0.45 + 0.75*wfRound(clamp(q.x/0.115, -1.0, 1.0)))*(1.0 + 0.25*clamp(kx/0.05, -1.0, 1.0));
       wfLay(col, ink, urn, uc, px, 0.9);
       /* the drape over its shoulder */
       float dr = max(abs(q.y - 1.05 - 0.03*cos(q.x*40.0)) - 0.020, abs(q.x) - 0.11);
@@ -20940,15 +21054,47 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
       /* the urn TURNED: a lit side, a core shadow with an edge to it, a
          little light come back round the far side; its foot in the shade of
          its own belly, its lid's rim lit */
-      float uu = kx/0.115;
-      float uS = 0.58 + 0.52*smoothstep(-0.36, -0.24, uu) + 0.34*smoothstep(0.26, 0.38, uu)*(1.0 - smoothstep(0.62, 0.74, uu)) + 0.16*smoothstep(-0.78, -0.92, uu);
-      uS *= 1.0 - 0.30*smoothstep(0.905, 0.885, q.y) + 0.20*smoothstep(1.150 - px, 1.150 + px, q.y)*step(q.y, 1.176);
+      /* (round 61 repair 53: the bands above ran straight down the neck, the
+         belly and the foot alike -- "a hard vertical split", "a post stuck
+         through a disc". Each member in its own width: the square foot a
+         face between a lit arris and a shaded one, the neck and the lid
+         turned, the belly and the finial BALLS, gyBall.) */
+      float uu = kx/(q.y < 1.150 ? 0.046 : 0.078);
+      float uS = 0.72 + 0.44*smoothstep(-0.50, 0.35, uu);
+      uS = mix(uS, 1.0 + 0.30*gyBand(0.075 - kx, px) - 0.34*gyBand(0.075 + kx, px), step(q.y, 0.885));
+      uS *= 1.0 - 0.34*smoothstep(0.850, 0.885, q.y)*step(q.y, 0.885) + 0.20*smoothstep(1.150 - px, 1.150 + px, q.y)*step(q.y, 1.176);
+      uS = mix(uS, gyBall(vec2(kx/0.115, (q.y - 1.00)/0.105)), wfIn(wfEll(q - vec2(0.0, 1.00), vec2(0.115, 0.105)), px));
+      uS = mix(uS, gyBall(vec2(kx, q.y - 1.198)/0.030), wfIn(length(q - vec2(0.0, 1.198)) - 0.030, px));
       shd = mix(shd, uS, wfIn(urn, px));
     }
   }
+  /* (round 61 repair 53) ITS ROCK, AND ITS MOSS: two mounds climbed up the
+     chest (low ones on a kerb), and a hank of it hung over the ledger's edge
+     and down the frieze; on a kerbed grave's headstone, a cushion */
+  vec3 tnt = gyRock(seed);
+  {
+    float h1 = mmHash11(seed*4.9 + 0.3), h2 = mmHash11(seed*7.7 + 1.9), h3 = mmHash11(seed*2.1 + 5.5);
+    float sd = h3 < 0.5 ? -1.0 : 1.0;
+    float kb = 1.0 - 0.60*kerbed;
+    vec3 ms = gyMoss(vec3(0.0, 1.0, 0.0), min(gyMound(q.x - sd*L*(0.30 + 0.50*h1), q.y, 0.34, (0.10 + 0.14*h2)*kb, seed),
+                                              gyMound(q.x + sd*L*(0.25 + 0.40*h2), q.y, 0.22, (0.05 + 0.09*h1)*kb, seed + 2.0)), 1.0, px);
+    if (kerbed < 0.5) {
+      float xr = (q.x + sd*L*(0.15 + 0.50*h2))/0.24;
+      /* (on some tombs and not others, and hung in tags, not one tongue) */
+      if (mmHash11(seed*11.3 + 0.9) > 0.40)
+        ms = gyMoss(ms, max(0.78 - q.y - 0.020 - (0.05 + 0.10*h1)*max(1.0 - xr*xr, 0.0)*(0.45 + 0.55*abs(sin(q.x*23.0 + seed*4.0))), (abs(xr) - 1.0)*0.24), -1.0, px);
+    } else {
+      vec2 mp = hq - vec2(sd*0.20, 0.30 + 0.16*h1);
+      ms = gyMoss(ms, gyPatch(mp, 0.065, seed), clamp(mp.y/0.065, -1.0, 1.0), px);
+    }
+    float mk = ms.x*wfIn(d, px)*(1.0 - wfIn(urn, px));
+    shd = mix(shd*(1.0 - 0.30*ms.z), ms.y, mk);
+    tnt = mix(tnt, gyMossC(seed, q.y), mk);
+  }
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
-  gWgShade = mix(shd, 0.60 + 0.40*smoothstep(0.0, 0.05, q.y), wfIn(tuft, px));
+  gWgShade = mix(shd, 0.55 + 0.95*smoothstep(0.0, 0.10, q.y), wfIn(tuft, px));   // (repair 53: the blades' tips in the moon)
+  gGyTint = mix(tnt, vec3(1.0), wfIn(tuft, px));
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.45*wfIn(min(ledger, urn), px)*(1.0 - kerbed) + 0.35*kerbed*wfIn(kHead, px) + 0.15);
   gWfCol = col; gWfInk = ink;
@@ -21035,6 +21181,46 @@ float wfAngel(vec2 q, float px, float seed, float kq, bool paint){
   wfLay(col, ink, head, mar*(0.70 + 0.40*smoothstep(-0.06, 0.06, (q.x - 0.035)*kq + 0.02)), px, 0.85);
   float eyeL = max(abs(q.y - 2.066) - 0.004, abs(q.x - 0.060) - 0.016);
   col = mix(col, mar*0.35, wfIn(eyeL, px)*wfIn(head, px));
+  /* (round 61 repair 53, of repair 51's churchyard: "the angel statue is
+     unmodelled line-work in both versions". Her marble stood at the prop's
+     ceiling, so the round and the folds in her paint came back one pale
+     value inside a pen line. THE FIGURE IN MASSES, on the lit colour --
+     gWgShade -- each with a side to the key and a side away from it, and
+     her folds and feathers ruled crisp over those: volume AND line.) */
+  {
+    float kx = kq*q.x;
+    /* the pedestal: each step of the base a lit top over its riser, a dark
+       line at the grass; the die a face between a lit arris and a shaded
+       one, the cornice's shadow ruled across its head; the cornice a lit
+       plane over its own under-face */
+    float shd = (1.10 + 0.70*gyBand((y < 0.118 ? 0.120 : 0.220) - y, px))*(1.0 - 0.36*smoothstep(0.04, 0.0, y));
+    shd = mix(shd, (1.02 + 0.36*gyBand(0.28 - kx, px) - 0.38*gyBand(0.28 + kx, px))*(1.0 - 0.40*cut)*(1.0 - 0.40*smoothstep(0.735 - px, 0.735 + px, y)), wfIn(die, px));
+    shd = mix(shd, mix(0.90, 1.42, smoothstep(0.838 - px, 0.838 + px, y)), wfIn(corn, px));
+    /* the wings: the one to the key a lit mass, the other in shade; its
+       leading edge a lit band, the side against her back in her shadow;
+       each tier of feathers a ruled shadow under the tier above and a lit
+       lip of its own */
+    float fr = fract((wr.x*0.6 + wr.y)/0.065);
+    float wS = mix(0.76, 1.14, step(0.0, kx))*(1.0 + 0.40*gyBand(-wing, px)*step(0.0, wr.x))*(1.0 - 0.26*smoothstep(0.0, -0.07, wr.x));
+    wS *= 1.0 + (0.18*(1.0 - smoothstep(0.12, 0.26, fr)) - 0.20*smoothstep(0.68, 0.82, fr))*mmLod(0.065, px);
+    shd = mix(shd, wS, wfIn(wing, px));
+    /* the robe: a column in three planes -- the light, a half-tone, the
+       core shadow -- and each fold a dark line with a lit flank to the key,
+       fanning from the girdle as the cloth falls; its shadow on the cornice */
+    float rk = kq*ru;
+    float rS = 0.58 + 0.32*smoothstep(-0.52, -0.42, rk) + 0.30*smoothstep(-0.12, -0.02, rk);
+    float fs = kq*(fract((ru*10.0 + 0.6*sin(y*3.0) + 3.1416)/6.2832) - 0.5)*6.2832*wR/10.0;   // metres from the fold, toward the key
+    rS *= 1.0 + step(y, 1.58)*mmLod(wR*0.6, px)*(0.26*smoothstep(0.5*px, 1.2*px, fs)*(1.0 - smoothstep(2.6*px, 3.4*px, fs)) - 0.34*(1.0 - smoothstep(0.5*px, 1.2*px, abs(fs))));
+    rS *= 1.0 - 0.30*smoothstep(1.00, 0.955, y);
+    shd = mix(shd, rS, wfIn(robe, px));
+    /* her arms and the wreath in the light, her hair in its own shade, her
+       face turned to the key */
+    shd = mix(shd, 1.16, wfIn(min(min(armR, armL), wreath), px));
+    shd = mix(shd, 0.80, wfIn(hair, px));
+    shd = mix(shd, 0.70 + 0.52*smoothstep(-0.035, 0.025, kq*(q.x - 0.030) + 0.5*(q.y - 2.075)), wfIn(head, px));
+    gWgShade = shd;
+    gGyTint = vec3(1.04, 1.03, 1.0);
+  }
   gWfGloss = 0.20;
   gWfMoon = 2.2*(0.55*wfIn(min(min(fig, wing), corn), px)*smoothstep(0.8, 2.4, q.y) + 0.15);
   gWfCol = col; gWfInk = ink;
@@ -21080,6 +21266,33 @@ float wfCross(vec2 q, float px, float seed, float kq, bool paint){
   float boss = length(q - vec2(0.0, yC)) - 0.055;
   col = mix(col, sc*1.25, wfIn(boss, px));
   ink = max(ink, mmInkP(boss, px, 1.0)*0.6);
+  /* (round 61 repair 53: "the crosses now look flatter beside the improved
+     pieces". THE CROSS IN PLANES, on the lit colour, as repair 51's stones:
+     the shaft and the arms have a THICKNESS -- an arris lit down the key
+     side and across the top of each arm, in shade down the far side and
+     along each arm's underside; the arm's shadow ruled on the shaft under
+     it; the ring a torus and the boss turned; each step a lit top over its
+     riser, a dark line at the grass.) */
+  {
+    float kx = kq*q.x;
+    float shd = (1.10 + 0.70*gyBand((q.y < 0.118 ? 0.120 : (q.y < 0.218 ? 0.220 : 0.320)) - q.y, px))*(1.0 - 0.36*smoothstep(0.04, 0.0, q.y));
+    /* the ring, under the head: lit across its tube as the tombs' bosses */
+    vec2 rv = vec2(kx, q.y - yC);
+    float rR = length(rv);
+    float rt = clamp((rR - 0.235)/0.040, -1.0, 1.0);
+    shd = mix(shd, 0.54 + 0.80*smoothstep(-0.25, 0.75, dot(rv/max(rR, 1e-4), vec2(0.60, 0.62))*(0.35 + 0.65*rt) + 0.50*(1.0 - rt*rt)), wfIn(ring, px));
+    /* the shaft: an arris lit down the key side, in shade down the other.
+       The arms: a lit top, a shaded underside, and their shadow ruled on
+       the shaft below them */
+    float onArm = step(abs(q.y - yC), 0.097);
+    float hS = 1.10 + mix(0.44*gyBand(sw - kx, px) - 0.42*gyBand(sw + kx, px),
+                          0.46*gyBand(yC + 0.095 - q.y, px) - 0.40*gyBand(q.y - yC + 0.095, px)*step(sw, ax), onArm);
+    hS *= 1.0 - 0.30*smoothstep(yC - 0.165 - px, yC - 0.165 + px, q.y)*(1.0 - onArm)*step(q.y, yC);
+    shd = mix(shd, hS, wfIn(head, px));
+    /* the boss: turned to the key and the sky */
+    shd = mix(shd, 0.78 + 0.62*smoothstep(-0.025, 0.015, rv.x + rv.y), wfIn(boss, px));
+    gWgShade = shd;
+  }
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.50*wfIn(min(head, ring), px)*smoothstep(1.0, 2.6, q.y) + 0.18);
   gWfCol = col; gWfInk = ink;
@@ -21923,6 +22136,12 @@ varying float vShape, vSeed, vTone, vFog;
    was compressed flat under the knee, "flat colour fills" both survey-9
    judges. 1 everywhere it is not written) */
 float gWgShade = 1.0;
+#if MM_WINGS == 5
+/* (round 61 repair 53: and a COLOUR for the lit one, the churchyard's own --
+   a stone's rock, the moss on it, the lantern's side of it. Laid after both
+   ceilings; 1 everywhere it is not written) */
+vec3 gGyTint = vec3(1.0);
+#endif
 
 /* Soft coverage field in local uv space; > 0 is inside the silhouette. */
 /* A STROKE ON A SEGMENT, vertical and then between two arbitrary points. The
@@ -34985,6 +35204,56 @@ void main(){
        chandeliers were "blown white blobs": pale globes in their own glow) */
     fitEmit *= uFitK;
     albedo *= mix(1.0, uFitK, 0.45 + 0.55*clamp(glass, 0.0, 1.0));
+#if MM_WINGS == 5
+    /* (round 61 repair 53, of repair 51's churchyard: "the lanterns ... now
+       look flatter beside the improved pieces". Its glass and its iron were
+       one pale lozenge on a stick. On the LIT colour, as the stones are --
+       gWgShade and gGyTint: the cage's bars dark iron with the edge to the
+       key lit, the panes amber between them and the flame's core brighter
+       in them; the cap a lit top plane over an under-edge in the flame's
+       own warmth; its dome turned to the key; the stem lit down
+       the key side and in shade down the other; each step of the foot a lit
+       top over its riser, a dark line at the grass.) */
+    if (vShape > 22.5) {
+      float lk = uKeyDir.x >= 0.0 ? 1.0 : -1.0;
+      float lpx = max(max(mpp.x, mpp.y), 1e-5);
+      float kxL = lk*sm.x;
+      float sk = vSize.y - 0.46;
+      float yg = sm.y - sk;
+      /* the stem */
+      float lS = 0.62 + 0.66*smoothstep(-lpx, lpx, kxL);
+      /* the foot: three steps */
+      float fTop = sm.y < 0.058 ? 0.060 : (sm.y < 0.108 ? 0.110 : 0.150);
+      lS = mix(lS, (0.84 + 0.62*gyBand(fTop - sm.y, lpx))*(1.0 - 0.36*smoothstep(0.035, 0.0, sm.y)), step(sm.y, 0.150));
+      /* the plate under the glass and the cap over it: a lit top plane */
+      lS = mix(lS, 0.78 + 0.70*smoothstep(-lpx, lpx, yg + 0.208), step(abs(yg + 0.208), 0.026));
+      vec3 lT = vec3(1.0);
+      float onCap = step(abs(yg - 0.202), 0.032);
+      float capUp = smoothstep(-lpx, lpx, yg - 0.196);
+      lS = mix(lS, mix(0.92, 1.50, capUp), onCap);
+      lT = mix(lT, mix(vec3(1.40, 0.98, 0.56), vec3(1.0), capUp), onCap);
+      /* the dome, turned */
+      float onDome = step(0.232, yg);
+      lS = mix(lS, 0.66 + 0.72*smoothstep(-0.02, 0.03, kxL + 0.8*(yg - 0.275)), onDome);
+      /* the cage: its bars, and the panes between them */
+      float inLanB = step(abs(yg), 0.170)*step(abs(sm.x), 0.128);
+      float bw = max(0.013, 1.1*lpx);
+      float bx = min(abs(kxL), abs(abs(kxL) - 0.112));
+      float bSide = abs(kxL) < 0.056 ? kxL : (abs(kxL) - 0.112)*sign(kxL);
+      float barV = 1.0 - smoothstep(bw - 0.5*lpx, bw + 0.5*lpx, bx);
+      float barH = 1.0 - smoothstep(bw - 0.5*lpx, bw + 0.5*lpx, min(abs(yg), abs(abs(yg) - 0.158)));
+      float bar = max(barV, barH);
+      float bLit = barV*smoothstep(0.0, 0.6*bw, bSide);
+      /* the flame's core in the panes: an almond of it, and its heart */
+      float fl = length(vec2(sm.x/0.060, (yg + 0.020)/0.105));
+      float pane = 0.96 + 0.30*(1.0 - smoothstep(0.80, 1.00, fl)) + 0.40*(1.0 - smoothstep(0.34, 0.50, fl));
+      vec3 paneT = mix(vec3(1.16, 0.86, 0.48), vec3(1.08, 1.00, 0.84), 1.0 - smoothstep(0.34, 1.00, fl));
+      lS = mix(lS, mix(pane, 0.26 + 0.62*bLit, bar), inLanB);
+      lT = mix(lT, mix(paneT, vec3(1.0, 0.86, 0.66), bar), inLanB);
+      gWgShade = lS;
+      gGyTint = lT;
+    }
+#endif
   }
 #endif
 
@@ -35120,6 +35389,9 @@ void main(){
   vec3 V = normalize(uCamera - vWorld);
   vec3 diff = vec3(0.0), spec = vec3(0.0), raw = vec3(0.0);
   float lsS = 0.0, lsU = 0.0, lsW = 1e-4;     // the finish's turn (round 28)
+#if MM_WINGS == 5
+  float gyLan = 0.0;                          // (round 61 repair 53: the lantern's side)
+#endif
   /* a lamp on a clipped yew lights its sprays, not a smooth disc of it
      (graft: the orange and purple blotches on the maze's runs) */
   float leafK = 1.0;
@@ -35148,6 +35420,13 @@ void main(){
     lsU += aw * ldir.y;
     lsW += aw;
     spec += mmSpec(N, ldir, V, uLightCol[i], att, glossP, 34.0);
+#if MM_WINGS == 5
+    /* (round 61 repair 53: "the stonework lacks a warm lantern side against
+       the cold moon side, which is the candle-versus-moonlight contrast the
+       samples have". A candle's reach round each warm lamp -- two paces, no
+       more, so the yard stays the moon's) */
+    gyLan = max(gyLan, (1.0 - smoothstep(0.7, 2.6, dist))*step(uLightCol[i].b*1.25, uLightCol[i].r));
+#endif
   }
 
   /* Round 2 shipped "diff * 1.45" on top of a 2.6x authored gain — a lift no
@@ -35395,6 +35674,10 @@ void main(){
     float want = satK + span * over / (over + span);
     col = mix(vec3(Lc), col, want / max(sat, 1e-4));
   }
+#if MM_WINGS == 5
+  col *= gGyTint;   // (round 61 repair 53: see gGyTint)
+  col *= mix(vec3(1.0), vec3(1.46, 1.04, 0.58), 0.85*gyLan*(1.0 - isFit));
+#endif
 #if MM_PEN > 0
   /* ROUND 41 GRAFT: THE PEN -- LABRADORITE's, lightly (J1, J3). Survey 7's
      family defect, both judges: the props have "soft edges and no line, so
