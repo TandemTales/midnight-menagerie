@@ -624,3 +624,18 @@ The paired check, five rooms against dev: **10-0** (ballroom 2 and 2, lampworks 
 Tests: link-queue 104/0, ballroom 46/0, lampworks 45/0, secret-passages 74/0, pumpkin-grounds 70/0, grounding PASS, steam-deck 6/6. Built before repair 39 merged; the two touch different files.
 
 Key: `PAIRED-r61-repair40-key.json`. Evidence: `C:/UILOOP/s21/ev40/`.
+
+## Repair 41: the lit candles throw a pool on the floor (2026-11-18)
+
+Repair 38's judges, first on both lists: "the flames ... throw light, a pool on the floor"; "the stands still float slightly". Repair 41 (`42d0f748`, merged `1143dfdc`) does it for the passages' two near book piles, the ballroom's two near candelabra and the foyer parlour's two nearest torcheres.
+
+- **How:** a room's own near pools (`foot`, `pool`, `pool2`) are a fixed set and cannot follow a prop. The floor's four SHAFT-pool slots can, the way the kennels' doghouse glow does. A room names which candle props throw a pool (`pal.candlePools` in atmosphere.js; a room kind may carry its own); `_candlePools()` / `_poolCols()` in backdrop.js put each at the placed prop's position; a slot flagged `uPoolAxis.w = 2` is laid as floor albedo x flame colour with a tight falloff (10 lines in the floor's shaft-pool loop of shaders/backdrop.js; the stock formula's constant haze term is not used). `candleFoot()` gives the torchere's tripod a contact shadow. No new uniform, variant or noise tap (link-queue 104).
+- **Slots are shared with the room's shafts.** The ballroom has six shaft pools for four slots: giving candles three or four dimmed the far checker (20.1 to 15.4), so only the two near candelabra get one. The foyer loses one of three faint moon pools (at most 2 luma on the far boards). In a fight a candle hidden under the hand or struck from under a fighter hands its slot back.
+- Pool luma: passages 44 to 63 and 42 to 56; ballroom 41 to 57 and 47 to 61; foyer 24 to 39; darks (p5) and the far floor unchanged; the attic 0 pixels.
+- Not done: candles warming the wall panel behind them (nothing follows a prop onto a wall). The ballroom's other kinds and the passages' library inherit the config and were captured after only.
+
+The paired check, three rooms against dev: **6-0** (foyer 2 and 2, ballroom 1 and 1, passages 1 and 1). "A warm pool round the foot plus a dark contact shadow plants the object." **What both held against it:** the ballroom's pool "spills wide enough to lift the near-left black tiles toward brown" and "the rose petals lying in that pool bleach from red to pale pink"; the passages' boards "flatten toward a plain tan". Next: the pools tight and not bleaching what lies in them; the same grounding for the foyer's far chairs and the ballroom's right-hand chairs.
+
+Tests: link-queue 104/0, secret-passages 74/0, ballroom 46/0, foyer 66/0, grounding PASS, steam-deck 6/6. Built before repair 40 merged (shaders/backdrop.js auto-merged); the battery is the merged state's check.
+
+Key: `PAIRED-r61-repair41-key.json`. Evidence: `C:/UILOOP/s21/ev41/`.
