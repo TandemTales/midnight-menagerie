@@ -131,6 +131,48 @@ export const DEFAULT_ROOM = {
   w: 24, d: 19, h: 6.6, side: 0.0, ceilPattern: 3, wallPad: 7.0,
 };
 
+/* ROUND 61 REPAIR 33: THE FEET OF WHAT STANDS IN THE STUDY AND THE BALLROOM
+   (both judges, 2026-11-17: "the added chair and globe stand on the floor
+   without a clear cast shadow and float slightly"; "firmer contact shadows
+   ... the globe's legs and the near book stacks sit on the boards with only
+   a faint shadow"). The house's pool is 1.6 x 1.0 of the QUAD's width: under
+   a globe on three thin legs or a gilt chair on two that is a wide soft grey
+   with nothing at the feet themselves. Here, as footOf does for its four
+   wings and in the same profile (the shadow program's FOOT, strength + 10),
+   the pool is the thing's own footprint -- the shade under a chair's seat
+   or between a stand's legs -- and each foot or base gets a small black one
+   of its own where it touches. Every number is the drawing's own, in its
+   nominal metres times the quad's scale: wfGlobe's three feet at 0 and
+   +-0.30 (1.15 m nominal), wfArmchair's cabriole feet at +-0.29 (1.04),
+   wfBooks' piles at -0.22 and 0.20 and the open book at 0.465 (0.34),
+   mirrored as wfMirror mirrors them. Its own function, and called after
+   footOf, so the two never meet. */
+function footNear(region, p) {
+  if (p.hang || (region !== 'study' && region !== 'ballroom')) return null;
+  const s = p.shape, h = p.h;
+  if (region === 'study' && s === 54) {
+    const q = h / 1.15;
+    return { dz: -0.10 * q, w: 0.70 * q, d: 0.34 * q, k: 0.90,
+      extra: [{ dx: -0.30 * q, dz: 0.02, w: 0.19 * q, d: 0.11 * q, k: 1.35 },
+              { dx: 0.30 * q, dz: 0.02, w: 0.19 * q, d: 0.11 * q, k: 1.35 },
+              { dx: 0, dz: 0.02, w: 0.17 * q, d: 0.10 * q, k: 1.35 }] };
+  }
+  if (region === 'study' && s === 88) {
+    const q = h / 0.34;
+    const m = mmHash11((p.seed || 0) * 3.71 + 88 * 0.13) < 0.5 ? -1 : 1;
+    return { dx: -0.22 * q * m, dz: -0.03 * q, w: 0.34 * q, d: 0.20 * q, k: 1.30,
+      extra: [{ dx: 0.20 * q * m, dz: -0.03 * q, w: 0.32 * q, d: 0.20 * q, k: 1.30 },
+              { dx: 0.465 * q * m, dz: -0.10 * q, w: 0.40 * q, d: 0.24 * q, k: 1.00 }] };
+  }
+  if (region === 'ballroom' && s === 72) {
+    const q = h / 1.04;
+    return { dz: -0.14 * q, w: 0.70 * q, d: 0.52 * q, k: 0.90,
+      extra: [{ dx: -0.28 * q, dz: 0.02, w: 0.17 * q, d: 0.10 * q, k: 1.35 },
+              { dx: 0.28 * q, dz: 0.02, w: 0.17 * q, d: 0.10 * q, k: 1.35 }] };
+  }
+  return null;
+}
+
 /* THE REAL HEIGHT OF EACH PROP, IN METRES.
  *
  * This used to be `SHAPE_H`, a unitless multiplier on the region's authored
@@ -2522,6 +2564,7 @@ export class Backdrop {
     let shadowN = 0;
     let extraHand = null;   // (round 45: SHADOW_EXTRA pools under a piece the hand covers)
     let extraAside = null;  // (round 59: and under one a fighter may have struck)
+    let nearFeet = null;    // (round 61 repair 33: footNear's feet, laid nearest first after the loop)
     const castOf = this._castOf = [];
     for (let k = 0; k < placed.length; k++) {
       const p = placed[k];
@@ -2631,7 +2674,13 @@ export class Backdrop {
            beside it -- dense to its edge and letting go in a hand (the
            shadow program's FOOT profile, strength + 10), and what stands
            beside a thing in one drawing gets its own (SHADOW_EXTRA). */
-        const ft = footOf(pal.regionKey, p);
+        const ft0 = footOf(pal.regionKey, p);
+        /* (round 61 repair 33: the study's and the ballroom's. Their feet's
+           own pools are laid AFTER the loop, nearest piece first: the
+           Ballroom stands thirteen chairs and the slots ran out at the far
+           ones, the near pair -- the ones you see -- left with none) */
+        const ft = ft0 || footNear(pal.regionKey, p);
+        if (ft && !ft0 && ft.extra) { (nearFeet || (nearFeet = [])).push({ p, extra: ft.extra }); ft.extra = null; }
         if (ft) {
           so2[i * 3 + 0] = p.x + (ft.dx || 0); so2[i * 3 + 2] = p.z + (ft.dz || 0);
           ss2[i * 2 + 0] = ft.w / 0.8; ss2[i * 2 + 1] = ft.d / 0.8;
@@ -2648,6 +2697,20 @@ export class Backdrop {
             else (extraAside || (extraAside = [])).push({ p, j });
           }
         }
+      }
+    }
+    for (let n = (nearFeet ? nearFeet.length : 0) - 1; n >= 0; n--) {
+      const { p, extra } = nearFeet[n];
+      for (const e of extra) {
+        if (shadowN >= MAX_PROPS - 8) break;   // (the actors' slots stay free)
+        const j = shadowN++;
+        castOf[j] = null;                       // (no throw of its own: _castShadows)
+        this._shdCast.array[j * 2] = 0; this._shdCast.array[j * 2 + 1] = 0;
+        so2[j * 3 + 0] = p.x + e.dx; so2[j * 3 + 1] = p.y + 0.016; so2[j * 3 + 2] = p.z + (e.dz || 0);
+        ss2[j * 2 + 0] = e.w / 0.8; ss2[j * 2 + 1] = e.d / 0.8;
+        st2[j] = 10 + e.k;
+        if (p.hand) (extraHand || (extraHand = [])).push({ p, j });
+        else (extraAside || (extraAside = [])).push({ p, j });
       }
     }
     this._propOffset.needsUpdate = this._propScale.needsUpdate = true;
