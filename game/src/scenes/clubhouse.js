@@ -200,7 +200,7 @@ export class ClubhouseScene extends Scene {
     const back = el('button', 'cl-back kit-btn kit-btn--quiet');
     back.type = 'button';
     back.innerHTML = '<span class="cl-back__arrow" aria-hidden="true">&#8592;</span> Title'
-      + `<i class="kit-medallion kit-btn__medal cl-back__medal" aria-hidden="true">${GLYPH.back}</i>`;
+      + `<i class="kit-medallion kit-medallion--mounted kit-btn__medal cl-back__medal" aria-hidden="true">${GLYPH.back}</i>`;
     back.addEventListener('click', () => this.ctx.scenes?.go?.('title', {}));
     h.appendChild(back);
 

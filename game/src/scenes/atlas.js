@@ -448,7 +448,7 @@ export class AtlasScene extends Scene {
     const back = el('button', 'at-back kit-btn kit-btn--quiet');
     back.type = 'button';
     back.innerHTML = '<span class="at-back__arrow" aria-hidden="true">&#8592;</span> Back'
-      + `<i class="kit-medallion kit-btn__medal at-back__medal" aria-hidden="true">${GLYPH.back}</i>`;
+      + `<i class="kit-medallion kit-medallion--mounted kit-btn__medal at-back__medal" aria-hidden="true">${GLYPH.back}</i>`;
     back.addEventListener('click', () => this._leave());
     /* No way out of a fork except through it. The party has cleared a wing and
        the house is holding a door open; leaving would mean a run with nowhere
@@ -670,7 +670,7 @@ export class AtlasScene extends Scene {
     back.type = 'button';
     back.hidden = true;
     back.innerHTML = '<span class="at-wide__arrow" aria-hidden="true">&#8598;</span> The whole house'
-      + `<i class="kit-medallion kit-btn__medal at-wide__medal" aria-hidden="true">${GLYPH.house}</i>`;
+      + `<i class="kit-medallion kit-medallion--mounted kit-btn__medal at-wide__medal" aria-hidden="true">${GLYPH.house}</i>`;
     back.addEventListener('click', () => this._select(null));
     sheet.appendChild(back);
 

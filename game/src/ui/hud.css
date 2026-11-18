@@ -210,6 +210,15 @@
 .mm-hud__settings::before { content: none; }
 .mm-hud__settings > .mm-icon:first-child { background: none; filter: none; width: 1.05em; height: 1.05em; }
 .mm-hud__settings > .mm-icon:first-child svg { width: 100%; height: 100%; }
+/* == gilt mount (repair 36) == */
+/* The settings cog wears the same mount as the help medallions and the back
+   buttons (kit.css): the outer rule and four studs, round the enamel it is. */
+.mm-hud__group--meta > .mm-hud__settings.mm-hud__settings::after {
+  content: ""; position: absolute; inset: -7.5%; left: -7.5%; top: -7.5%; width: auto; height: auto;
+  translate: none; filter: none; pointer-events: none; z-index: 0;
+  background: var(--kit-mount-ring) 50% 50% / 100% 100% no-repeat;
+}
+/* == end gilt mount == */
 
 /* ── Courage: a crimson enamel gauge let into a lettered plate ────────────────
    Round 4's judges saw a flat red capsule. The readout is a PLATE now: the
