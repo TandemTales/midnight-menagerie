@@ -1,0 +1,26 @@
+{
+ "map": {
+  "new_is_A": false
+ },
+ "map-focus": {
+  "new_is_A": true
+ },
+ "combat-boss": {
+  "new_is_A": false
+ },
+ "hud-late": {
+  "new_is_A": false
+ },
+ "rest": {
+  "new_is_A": true
+ },
+ "shop": {
+  "new_is_A": true
+ },
+ "clubhouse": {
+  "new_is_A": false
+ },
+ "atlas": {
+  "new_is_A": false
+ }
+}

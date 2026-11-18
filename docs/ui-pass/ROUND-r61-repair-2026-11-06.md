@@ -699,3 +699,20 @@ The paired check against dev: **4-0** (pumpkin 2 and 2, crypt 1 and 1). Both jud
 Tests: link-queue 104/0, pumpkin-grounds 70/0, crypt 41/0, grounding PASS, steam-deck 6/6.
 
 Key: `PAIRED-r61-repair45-key.json`. Evidence: `C:/UILOOP/s21/ev45/`.
+
+## Repair 43: one family of mounted buttons on the HUD rail, rims modelled, plum enamel (2026-11-18)
+
+Repair 36's judges: "the cog now outranks its neighbours and the strip looks uneven"; the rims "flat single-tone gold shapes"; the back button's enamel "nearly black rather than purple". Repair 43 is four commits, each cut-able alone (`fc7f43e5` rail, `47b452ad` modelling, `88abfdd1` enamel, `d7ceef52` crest; merged). CSS only: hud.css, kit.css, story.css.
+
+- **The rail:** the wing ("n"), Courage heart, Haunt and deck medallions, and the purse's coin, magnifier and star on the tight rail, wear the cog's ring and studs, all one size (1.19 chip heights; 1.24 touched the channel's rules). **The cog's enamel FACE is drawn at 90.3%** so its ring fits inside the rules and matches its neighbours; its button box, glyph and hit area are unchanged. Beyond the brief: on the tight rail (1280) the purse and Haunt glyphs sat against the LEFT EDGE of their medallions (a flex box with no centring); they are centred now. Both judges read the old state as "a layout bug".
+- **Modelling:** in the mount tokens (`--kit-mount-ring`, `--kit-mount-crested`, `--st-ring`, `--st-finial`, `--st-knot`, `--st-yoke`), a heavier bronze band with a light arc upper-left and a dark arc lower-right, studs with a specular dot, leaves with a lit half and a vein. Flat tones in arcs, no gradients; holds at 1280.
+- **Why the back buttons were near-black:** `.kit-btn--quiet` filters the WHOLE button `saturate(.55) brightness(.86)`, greying the medallion and its mount too. The mounted medallion now takes the inverse filter, plus a plum glaze. Gameover's Title and "Go straight back in" medallions are greyed by the same filter and were left.
+- **Crest:** longer leaves and a taller lozenge in the same box; clears the clubhouse's string-light wire.
+- Dropped: a 4px margin on the cog (cost the Gear belt a socket on hud-late at 1280), glyph centring on every chip icon (shrank the grid-box glyphs).
+- Skipped: the gameover stat strip (already plaques from repair 11), the map's pencil tray.
+
+The paired check, eight screens at both sizes against dev: **16-0**; the six screens showing the rail "clearly", atlas and clubhouse "slightly". **What both held against it:** at 1280 the rims sit "tight around the purse figures" (137, 246, 2, 4) and on hud-late "hard against the Courage bar's end cap", no overlap; "the gear loses its outer ring and leaves a faint ghost arc on its right". Next: the ghost arc removed; a pixel or two of air between rims and counts at 1280 without shrinking type; the same rim on the map bar's zoom -/+ and the arrow knobs; the How to play plate clear of "THE WAY IN"; the header plates that butt the title cartouche at 1280 on clubhouse and atlas (in both versions).
+
+Tests: scene-css 0, css-tokens 0, chrome 27/0, gamepad 24/0, steam-deck 6/6, readability every floor unchanged. **help-frame failed for the builder three times, identically on the untouched build** ("Unable to capture screenshot" at the first hand capture): machine state under three builders; re-run on the merged build with the GPU quiet.
+
+Key: `PAIRED-r61-repair43-key.json`. Evidence: `C:/UILOOP/s21/ev43/`.
