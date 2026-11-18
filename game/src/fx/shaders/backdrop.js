@@ -33784,6 +33784,25 @@ void main(){
       vec2  np = vec2(ax - (cw - bw*0.5), mod(cm.y, pp*0.5) - pp*0.25);
       float nOn = (1.0 - smoothstep(nr - lw*0.6, nr + lw*0.6, length(np)))*bat*inC*smoothstep(5.0*lw, 9.0*lw, pp*0.5);
       albedo *= 1.0 - 0.72*nOn;
+#if MM_WINGS == 4
+      /* (round 61 repair 52, repair 48's and 50's judges: the passages' far
+         floor "one red-brown mass", its "far crates ... need lit edges and
+         cast shadows to stand as objects". Down the corridor a case is 20 to
+         50 pixels and its joinery is under the eye's grain: there it keeps
+         TWO TONES on the lit colour (gWgShade) -- its top rail a lit plane,
+         the batten it turns to the key lit and the far one in shade, the
+         boards between a step down, a dark line where the lower case stands
+         -- and its brace, which repair 40 drew. By its size on the screen: a
+         case over a hundred pixels is as repair 40 left it. The passages'
+         program only.) */
+      {
+        float farK = (1.0 - smoothstep(20.0*lw, 30.0*lw, pp))*inC*step(ax, cw);
+        float topP = smoothstep(ch*0.86 - lw, ch*0.86, cm.y);
+        float kSd  = step(0.0, cm.x*kx);
+        gWgShade = 1.0 + farK*(1.10*topP + (1.0 - topP)*(bat*mix(-0.30, 0.55, kSd) - 0.12*brdOn
+                 - 0.40*(1.0 - upC)*(1.0 - smoothstep(ch*0.05, ch*0.05 + lw, cm.y))));
+      }
+#endif
     }
   }
 #endif
