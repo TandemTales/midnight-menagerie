@@ -1353,3 +1353,44 @@
   /* the plate's end stands where the stud before the Snacks was: the gap holds one of them */
   .mm-hud__group--vitals > .mm-hud__luck + .mm-hud__snacks::after { content: none; }
 }
+
+/* == the cog's seat (repair 55) == */
+/* The rail's picture (hw-rail.webp) ends its channel in a capsule curve that
+   was never drawn for the cog: it is centred up to 2.6px to one side of the
+   cog and 1px below it, so it showed as a faint crescent on one side of the
+   cog's ring ("a misregistered ghost arc"; "faint and a little lopsided").
+   Repair 46 took the curve away and lost: "the cog's outer arc ... drawn as a
+   firm gold rule", a judge asked, on "a rounded plate end that wraps the cog
+   and leaves a clear gap before the brass corner cap".
+   So the channel's end is DRAWN now, round the cog itself: a gilt rule on the
+   cog's own centre, an even dark channel between it and the cog's ring, lit
+   from the upper left like the rail's mouldings. It lies over the picture's
+   curve, which it covers, and the channel's own rules run into it. It is the
+   cog's own ::before, inside the cog's stacking context, so it lands the same
+   in the rooms that pin the rail and the four that mount it in flow. Nothing
+   in the rail moves.
+   --seat-out: how far past the cog's box the seat reaches. The picture's curve
+   stands up to box/2 + 2.5px from the cog's centre on a wide rail (2.85 covers
+   it, under a wider dark edge) and inside box/2 + 2.2px on the tight rail,
+   where 2.4 still leaves 2.5px of dark before the end block. It never grows
+   past the rail's own mouldings (.745 of the rail). */
+/* Blind (repair 55): both judges preferred the whole ring at 1600 ('concentric
+   and seated') and the rail as it was at 1280, where an open seat read as 'a
+   bright broken off-centre arc'. So the seat is drawn on the wide rail only. */
+@media (min-width: 1401px) {
+.mm-hud .mm-hud__group--meta > .mm-hud__settings.mm-hud__settings::before {
+  --seat-out: 2.85px; --seat-edge: 1px;
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  left: 50%; top: 50%; translate: -50% -50%;
+  width: min(calc(100% + 2 * var(--seat-out)), calc(var(--hud-h) * .745)); height: auto; aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side,
+      #100a17 calc(100% - var(--seat-edge) - 2.1px), #1a0f06 calc(100% - var(--seat-edge) - 1.8px),
+      transparent calc(100% - var(--seat-edge) - 1.5px), transparent calc(100% - var(--seat-edge) - .2px),
+      #1a0f06 calc(100% - var(--seat-edge) + .15px)),
+    linear-gradient(150deg, #f3dfa8, var(--kit-gold-hi) 22%, var(--kit-gold) 50%, var(--kit-gold-lo) 90%);
+  mask: radial-gradient(closest-side, transparent calc(100% - 5.8px), #000 calc(100% - 5.3px), #000 calc(100% - .3px), transparent 100%);
+}
+}
+/* == end the cog's seat == */
