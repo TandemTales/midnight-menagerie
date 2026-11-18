@@ -655,3 +655,17 @@ The paired check, seven screens at both sizes against dev: **14-0**, all "slight
 Tests: help-frame PASS (38), chrome 27/0, gamepad 24/0, steam-deck 6/6, scene-css 0, css-tokens 0, readability no floor moved. Not captured: the Discoveries plate's yoke, and `hud-late` with a full keepsake row.
 
 Key: `PAIRED-r61-repair36-key.json`. Evidence: `C:/UILOOP/s21/ev36/`.
+
+## Repair 42: the pumpkins ribbed, the crypt's skull stack a heap of skulls (2026-11-18)
+
+Survey 21 named the pumpkins among the "smooth 3D models"; repair 35's judges asked for the skull stack "modelled (side planes, candle-lit skulls, varied shapes)". Repair 42 (`ac9ed202`, merged) repaints both. Only shaders/backdrop.js; arithmetic only (link-queue 104); no silhouette grew.
+
+- **Pumpkins** (shape 27, pumpkin grounds only): each lobe a shaded flank, a turn and a crisp lit crown on the key side, its own value by seed; grooves a deeper, redder orange; a lit and a shaded side of the body; a dark line at the ground; a twisted stem with a pale cut end. Values through `gWgShade`, hues in the paint. They were not at the luminance ceiling (luma about 35): the shading was soft, not compressed. Faces, glow, leaves untouched. Dropped: a flank of 0.64 (near-black far side; now 0.72), a full-strength groove through the nose ("a scar").
+- **Skull stack** (shape 59, `wfCharnel`, crypt only): the outline follows the skulls, cut INTO the old triangle; a second rank of shaded skulls in the gaps and a warm dark behind; each skull varied in size, tip and turn, one in five jawless, end skulls turned outward, with a lit side, a crescent of warm shade, brow, teeth and cheek line (`crSkullV` / `crSkullLit`; `crSkullP` unchanged for its other users); warm ivory bone; the plinth with a lit top edge. Dropped: a straight terminator ("a two-tone ball"), a steep brow ("sunglasses"), centred skulls (flat-clipped crowns).
+- The headstones were left: their painter is shared with the graveyard and already has thickness, lettering and weathering. The graveyard is pixel-identical.
+
+The paired check against dev: **4-0** (crypt 2 and 2, pumpkin 1 and 2). The old stack was "flat identical skull icons on a solid black triangle that reads as a cut-out sign". Next, from both: pumpkin ribs as rounded lobes narrowing to stem and base, not "even pale/dark vertical stripes", and their stair-stepped edges cleaned; the crypt's FAR wall skull piles brought up to match; the hay bales "a camouflage blotch rather than straw" and vine leaves "flat green smears"; firmer contact shadows under the pumpkins.
+
+Tests: link-queue 104/0, pumpkin-grounds 70/0, crypt 41/0, grounding PASS, steam-deck 6/6.
+
+Key: `PAIRED-r61-repair42-key.json`. Evidence: `C:/UILOOP/s21/ev42/`.
