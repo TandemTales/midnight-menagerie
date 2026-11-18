@@ -19682,10 +19682,21 @@ float wfTorchere(vec2 q, float px, float seed, float kq, bool paint){
   float sa = (st - 0.52)/0.15, sb = (st - 0.12)/0.035, sc = (st - 0.88)/0.035;
   float sr = 0.018*(0.80 + 0.70*exp(-sa*sa) + 0.55*exp(-sb*sb) + 0.55*exp(-sc*sc));
   float sl = -0.018*(0.70*exp(-sa*sa)*2.0*sa/0.15 + 0.55*exp(-sb*sb)*2.0*sb/0.035 + 0.55*exp(-sc*sc)*2.0*sc/0.035)/(0.98 - HD);
-  g = wfGilt(brass, q.x/sr*kq, mmLod(sr*5.0, px));
+  /* (round 61 repair 49, repair 47's judges: the stems "show a short dark
+     break just above the tripod" and "lose a little weight low down against
+     dark floor". The break was the lowest bead's under shoulder -- half its
+     paint and half its light, so a quarter, on four pixels of stem -- over
+     the hub's own outline ruled across the stem's foot. Below that bead's
+     crown the stem is lit across its whole width, the highlight carried
+     down unbroken into the hub; the shoulder keeps a tenth of its shade;
+     and the hub's line stops at the stem.) */
+  float sLow = smoothstep(0.14, 0.10, st);
+  g = wfGilt(brass, mix(q.x/sr*kq, 0.30 + 0.25*q.x/sr*kq, sLow), mix(mmLod(sr*5.0, px), 1.0, sLow));
   float sUp = smoothstep(0.02, 0.14, -sl), sDn = smoothstep(0.02, 0.14, sl);
-  g *= (1.0 + 0.30*sUp)*(1.0 - 0.50*sDn);
-  wfLay(col, ink, stem, g.rgb, px, 0.9);
+  g *= (1.0 + 0.30*sUp)*(1.0 - 0.50*sDn*(1.0 - 0.8*sLow));
+  ink *= 1.0 - wfIn(stem + px, px)*step(q.y, 0.30);
+  col = mix(col, g.rgb, wfIn(stem, px));
+  ink = max(ink, mmInkP(stem, px, 1.0)*0.9*smoothstep(0.215, 0.235, q.y));
   shd = mix(shd, g.a, wfIn(stem, px));
   /* the two knops: a ball each, its spark on the key's side, its underside
      and far side in shade; a dark line on the stem under it */
