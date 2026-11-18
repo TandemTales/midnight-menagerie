@@ -917,3 +917,21 @@ Next, from both: the cog's ring "truly concentric and closed at 1280" (it needs 
 Tests (on the branch with all four parts): help-frame 38, chrome 27/0, gamepad 24/0, steam-deck 6/6, map 38/0, scene-css 0, css-tokens 0, readability minFont unchanged.
 
 Key: `PAIRED-r61-repair55-key.json`. Evidence: `C:/UILOOP/s21/ev55/`.
+
+## Repair 57: the graveyard's moss grown in from the stones' edges, the candle's warm side capped, grass at the nearest stones' feet (2026-11-18)
+
+Both of repair 53's judges, first: the moss cushions "flat hard-edged dark-green discs ... stickers". Repair 57 (`8565d09a`, `b515a9a7`, `95e48406`, `e3dfcd78`, merged whole; `8565d09a` must not be taken without `b515a9a7`, which fixes a green bar across round-headed stones) is all inside `#if MM_WINGS == 5`.
+
+- **Moss:** the caps the judges liked and the "draped cloth" they did not were the same code, leafy when small and far, a flat wedge when near; the disc (`gyPatch`) was a half-disc cut by the silhouette. `gyPatch` is deleted for `gyFringe`: moss creeping in from the stone's own edge in clumps of hash-varied size, notched, bare stone between; about 3 stones in 10 have none on the side. Two greens (a lighter crown, a deep body). No new noise taps and one fewer `gyMoss` call per headstone.
+- **The warm side's ceiling:** the yard's right cross shaft measured 166/102/50, saturation 0.70 (the liked tomb ledger beside the same lantern, 0.36). A saturation knee after the warm multiply (toward 0.48, at constant luma), only on pixels the candle turned warm. The shaft is 146/106/77, 0.47. "A warm buff with its lattice carving still legible", where dev's "reads as terracotta or wood".
+- **Feet:** the shared prop "seat" was crushing the grass in front of the stone as well as the stone. For near stones only, the blades are lit from the root and a sward 5-9 cm high is painted over the stone's own foot. Feet from luma 7-17 to 18-31. The black on the grass in front is the floor's contact pool (another program) and was left.
+
+The paired check, three graveyard rooms against dev: **6-0** (by 2 in four of six verdicts). All three items won with both judges in all three rooms, except the tomb lids.
+
+Marked down inside the winner, by both: the grass fringe is "an even comb of spikes" in "a green more saturated than the ground it grows from", "a green band at 1x" in the plots; the tomb lids' moss is now "a dotted line" or "nearly gone" (dev's amount was "closer to right but its shape is a flat slab"): a readable, irregular cushion draped over the lip is wanted back; "the ground in front of the largest stones" is still "a black shadow band". These three are the next graveyard repair.
+
+Link time, NOT settled: on a quiet machine the graveyard's prop program read 9.0 s before and 8.7-9.0 after items 1 and 2; then the machine slowed about 1.5x for every build. In rotation the final build read 12.5 against base 10.5 in one round and 10.8 against 11.3 (the build before it) in another. Re-time it on a quiet machine before the next graveyard repair, and take something out first.
+
+Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, graveyard 35/0.
+
+Key: `PAIRED-r61-repair57-key.json`. Evidence: `C:/UILOOP/s21/ev57/`.
