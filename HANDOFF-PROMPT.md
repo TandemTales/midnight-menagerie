@@ -1,10 +1,31 @@
-# Midnight Menagerie handoff · November 13, 2026
+# Midnight Menagerie handoff · November 18, 2026
 
-## START HERE (2026-11-13): read this first if you have never seen this project
+## START HERE (2026-11-18): read this first if you have never seen this project
 
 **What this is.** Midnight Menagerie is a co-op deckbuilder in the style of Slay the Spire. One to four Kids, each with a Companion, walk a haunted house wing by wing and play Tricks (cards) against its creatures. The game is a browser game (plain ES modules, WebGL for the rooms) wrapped in Electron for Steam. The repository is this folder. Work happens on branch `dev`; `main` lags behind. The owner is Josh, who decides design. Everything you need to know about how Josh wants things is below or in the questions file. Do not ask Josh what is already decided.
 
-**Where you are — November 13, 2026.** Nothing is half-done. Dev is pushed, and every repair is either merged or written up as lost.
+**Where you are — November 18, 2026.** Nothing is half-merged. Dev's tip is `356c5bbd` or later and is **NOT pushed** (about 60 commits ahead of origin: ask Josh, question 11). One builder, repair 46, may still be running; see "Next" below.
+
+- **The D: drive was not attached for this whole session.** Every `D:/UILOOP/...` worktree and survey 16-20's images were unreadable; git lists those worktrees as "prunable". **Never run `git worktree prune`.** All of this session's work is under `C:/UILOOP/s21/` (about 5 GB): worktrees `base` (detached, the survey and battery server), `r29`, `r30`, `r31` (builders); briefs `BRIEF-29..46.md`; the builder rules `COMMON.md`; the blind judge prompt `JUDGE-rooms.md`; evidence `ev33..ev46` and `R29ev`, `R30-evidence`, `R31ev`, `R32ev`; pairs `P29..P45`; surveys `S20B` (a fresh capture of survey 20's build, used as the baseline), `S21`, `S22`; the battery's logs `battery/`. **Windows paths are case-insensitive: an evidence folder named `BASE` or `R29` IS the worktree `base` or `r29`.**
+- **Eighteen repairs were judged in two days; sixteen merged in whole or in part.** Each has a section in `docs/ui-pass/ROUND-r61-repair-2026-11-06.md` and its key and judges in `docs/ui-pass/PAIRED-r61-repairNN-*`.
+  - 29 (6-0) foot lamps for lampworks, crypt, pumpkin. 30 (4-0) a globe and book pile on the study's floor, a violet chair on the ballroom's. 31 (12-0) the help medallions in gilt filigree cartouches. 32 (6-0) edge-cut props brought whole into frame. 33 (4-0) the study's open book, footprint shadows. 34 (3-1) passages open book, heart bench. 35 (2-0) the crypt's charnel stack; its lampworks rack lost 0-2 and is out. 37 (4-0) book piles painted as books.
+  - **Survey 21 beat survey 20's build 30-0 with 36 the same** (`SURVEY-2026-11-18.md`).
+  - 36 (14-0) the help plate's yoke, mounts on Title, Back and the cog. 38 (8-0) every candle's flame drawn, its light on its support. 39 (4-0 for the heart and ballroom) a per-wing shadow hue in the grade; the study and crypt split 1-1 and are out. 40 (10-0) ballroom chairs and crates painted. 41 (6-0) candles throw a pool on the floor. 42 (4-0) pumpkins ribbed, the crypt's skull stack a heap of skulls. 43 (16-0) one family of mounted buttons on the HUD rail. 44 (2-0) the foyer's furniture on footprint shadows; its tightened candle pools lost 0-4 and are out. 45 (4-0) hay bales as bound straw, vine leaves, the crypt's far skull piles.
+  - **Survey 22 beat survey 21 39-0 with 27 the same** (`SURVEY-2026-11-18b.md`): 13 of 16 screens, 7 rooms, nothing worse, no fighter through furniture.
+- **The battery on dev `04e29865` (11-18): 120 gates, 116 green, 4 red.** Logs: `C:/UILOOP/s21/battery/{check,run,extra}.log`. It was served on 8777 from the `base` worktree and run as three detached jobs (`battery/run.sh`), because a background Bash job dies at 10 minutes.
+  - `sprites/check.py` (7 HALO): the one standing red.
+  - `coop/lobby.py` (1 failed) and `sprites/clips.py` (no RESULT line): **both pass when run alone** (39/0 and 28/0). Load flakes.
+  - **`enemy-clips/check.py`: 5 failed in the battery, 5 alone, and 3 on the session-start build `ae6c5bbc`** ("attack hands back to idle", "has no cast, so a buff plays nothing - hurt" for door-greeter, dust-bunny, butler). It was green on 11-15 and nothing since touches enemy clips, so it is not this session's work; it looks like timing on a slow machine but **nobody has proved that. Open.**
+- **The machine was slow on 11-18.** `tools/linkprof.py` found 8 prop programs over the 12 s link budget on dev (worst 14.0 s) and 6 on the session-start build (worst 18.2 s), so today's shader paint did not cause it; `C:/UILOOP/s21/linkprof-{base,dev}.log`. `tests/help-frame/run.py` timed out under three builders and passed in the quiet battery. Re-run linkprof on a rested machine before trusting either number.
+- **What wins and loses on a prop, learned ten times over:** structure a real one has, drawn crisp, a lit edge and a shaded edge, varied by seed, wins (books, crates, skulls, bales). Noise, rounding, pale washes and black dashes lose. If detail is drawn and does not show, the prop luminance ceiling is flattening it: put the form on the lit colour after the ceiling (`gWgShade`). **A judge who names a flaw in a winner is not asking for less of the winner** (repair 44's pools).
+- **Next.**
+  1. **Repair 46** (brief `C:/UILOOP/s21/BRIEF-46.md`, worktree `r31`, branch `ui/r61-repair46`, port 8733): air round the Deck strip's mounted buttons without shrinking type, the cog's ghost arc, the mount on the map bar's zoom and arrow knobs. If a branch `ui/r61-repair46` has commits and no section in the ROUND doc, it is unjudged: pair its `ev46/before` and `ev46/after` blind (`tools/make_pairs.py`, two fresh judges in opposite orders given `C:/UILOOP/s21/JUDGE-rooms.md`, then `tools/tally_pairs.py`; see "Pairing tools" below) and merge what wins.
+  2. The judges' other open asks, most repeated first: near props still "rendered rather than painted" (lampworks crates, the bales' ragged straw ends, ballroom candle stands, the heart's statues); far corners and side walls falling to black in the kitchens, passages, lampworks; the far floor band under the far wall; the boards' plain panels and banners given the gilt finish the round controls now have; cast shadows thrown away from a candle; the ballroom's far-right chairs (they need a third candle pool, which costs a shaft slot).
+  3. Then survey 23 against `C:/UILOOP/s21/S22/`, and the battery.
+
+**The older state, kept for history (November 13-15):**
+
+As of November 13: every repair was either merged or written up as lost.
 
 - **Repair 14 (FRAME3) is merged.** Discoveries and How to play now have one fixed home: two enamel medallions in the left gold frame, each with a readable plate that hangs beside it on hover or focus. It won its blind test 13-7, after FRAME1 and FRAME2 lost (`91da720e`).
 - **Repair 15 is merged.** A focused medallion keeps its enamel and lights its own gold rim, and its plate never covers the clubhouse's or the atlas's controls (4-0, `e5b32a7e`).
@@ -50,7 +71,7 @@
 - **A drawn object beats an empty or dimmed surface.** A change that removes or dims something has lost blind tests every time; brief it as a richer replacement.
 - **Line endings are mixed** (some files CRLF, some LF). Count bytes before editing, patch with Python `newline=''`, and run `python tools/endings_guard.py --base HEAD` before committing. `sed -i` on a CRLF file flips the whole file.
 - **One GPU browser job at a time** (captures, readability, the battery). Two at once make both fail in ways that look like bugs.
-- **Worktrees go on `D:/UILOOP/<round>/`**, never C: (it fills) and never the scratchpad (paths exceed 260 characters). Never delete anything on D: without asking Josh.
+- **Worktrees go on `D:/UILOOP/<round>/`**, never C: (it fills) and never the scratchpad (paths exceed 260 characters). Never delete anything on D: without asking Josh. If D: is not attached, use the small root `C:/UILOOP/s21/` and reuse its four worktrees; never `git worktree prune`.
 - **Stop only processes you started, by PID.** Josh runs Unreal Editor on this machine. GPU work beside it is fine, but timing numbers taken beside it are not.
 - **Close any Browser-pane tab you open;** a hidden pane with the game loaded once trapped Josh's cursor. Test headless.
 - **Commit messages end with** `Co-Authored-By: <your model> <noreply@anthropic.com>`, or your own attribution.

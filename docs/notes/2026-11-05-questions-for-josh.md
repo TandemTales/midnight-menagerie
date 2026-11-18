@@ -74,3 +74,26 @@ Each one has a default I have already taken, so nothing is waiting on you unless
     Both are inside 15.5 ms. The same four-Kid fight captured by `tools/shot.py` ran at 62 fps on the Intel
     integrated GPU. Each player's stage shows their own Kid, with the other three as plates, so four Kids
     cost little more than one. Still not timed on a Deck itself.
+
+## Asked 2026-11-18
+
+11. **Dev is about 60 commits ahead of origin and not pushed.** Eighteen repairs and surveys 21 and 22
+    are on it. Nothing was pushed because nobody asked. Default: leave it until you say push.
+
+12. **The D: drive was not attached on 11-17 and 11-18.** Survey 16-20's images and every older round's
+    worktree are on it. This session worked in `C:/UILOOP/s21/` (about 5 GB) and paired survey 21 against
+    a fresh capture of survey 20's build in place of survey 20's own images. When D: is back, should
+    `C:/UILOOP/s21/` move to `D:/UILOOP/s21/`? Default: leave it on C: until you say; nothing on D: was
+    touched or pruned.
+
+13. **`tests/enemy-clips/check.py` is red (3 to 5 of 981) and was green on 11-15.** It fails the same
+    way on the build this session started from, so the repairs did not cause it, and nothing since 11-15
+    touches enemy clips. The machine was compiling shaders slowly on 11-18 (8 programs over the 12 s link
+    budget, 6 on the old build too). Did anything change on this machine between 11-15 and 11-17 (a
+    Windows or driver update, as on 10-13)? Default: re-run it and `tools/linkprof.py` after a reboot
+    before treating either as a fault in the game.
+
+14. **The settings cog's enamel face is drawn at 90.3% of its old size** (repair 43) so its gilt ring
+    fits inside the HUD rail and matches its neighbours. Its glyph, button box and hit area are unchanged
+    and no text shrank. Both judges preferred it. If "never shrink" covers a control's face too, say so
+    and it goes back (`git revert fc7f43e5` restores repair 36's larger ring).
