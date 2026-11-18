@@ -1,0 +1,5 @@
+SURVEY-room-study-library: B by 2 -- the standing globe and the two book stacks on the near-right boards give the near floor a modelled, footed object where A leaves a bare empty quarter of planks.
+SURVEY-room-ballroom-ballroom: B by 1 -- the extra purple-backed chair beside the cream one on the near-right tiles adds a second footed, fully in-frame object, though it is a repeat of a chair already in the room and the rest of the frame is identical.
+
+### PATTERN
+The better version puts a whole, uncut object with legs on the near floor instead of leaving it empty. The study gains more because its globe is a new, readable, detailed thing; the ballroom's addition is a duplicate chair that slightly crowds its neighbour. Needed next: (1) firmer contact shadows under the new near objects (the globe's legs and the near book stacks have only a faint shadow, and the flat dark shape on the floor left of the stacks reads as an unidentified smear); (2) painted candle-lit modelling and richer surface detail on the near furniture (the ballroom's cream chair especially); (3) variety rather than repetition in near props, and a far/upper room that is less soft.

@@ -1,0 +1,5 @@
+SURVEY-room-ballroom-ballroom: B by 1 -- B stands a second, purple-seated armchair on the near right floor beside the tan one, with drawn legs and feet, where A leaves that stretch of chequer bare; it slightly crowds the tan chair and casts no clear shadow, so the gain is small.
+SURVEY-room-study-library: B by 2 -- B puts a modelled globe on its stand at the near right plus two book piles at the foot of the rug, filling the near floor that A leaves as empty boards; the only flaw is a thin dark flat shape lying on the boards at bottom centre that reads as a smear rather than a book.
+
+### PATTERN
+The better version stands a readable, crisply drawn object on the near floor instead of leaving an empty expanse. Needed next: (1) contact shadows under the near objects' feet, since the added chair and globe float slightly; (2) painted, candle-lit detail on those near props and a fix for the flat dark sliver on the study's boards; (3) a ceiling and stronger side walls in frame, with the mid-floor dark band behind the furniture holding colour rather than dropping toward black.

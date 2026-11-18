@@ -469,3 +469,21 @@ The paired check was against the untouched build: **6-0**, all "slightly". Both 
 Tests: lampworks 45/0, crypt 41/0, pumpkin-grounds 70/0, link-queue 104/0, steam-deck 6/6, grounding PASS.
 
 Key: `PAIRED-r61-repair29-key.json`. Evidence: `C:/UILOOP/s21/R29ev/` (D: was not attached on 11-17, so this session's worktrees and evidence are on `C:/UILOOP/s21/`).
+
+## Repair 30: a globe and books on the study's near floor, a velvet chair in the ballroom (2026-11-17)
+
+The standing open item "something standing on the empty near floor (study, ballroom)" (`c10902f8`, merged `ad9ea642`). Two `nearPlus` lists in `atmosphere.js`'s `ROOM_KINDS`; every piece is a shape the wing's own program already draws, flagged `keep`, `still`, `hand`, so no shader changed and fights leave them out.
+
+| Room | Piece | Placement |
+|---|---|---|
+| study (`libraryroom`) | the library globe on its stand (54) | ahead 3.4, across 1.65, hM 0.85 |
+| study | a book pile with one lying open (88) | ahead 3.05, across 0.85, hM 0.40 |
+| ballroom (`music`) | a gilt chair in violet velvet (72, seed 8) | ahead 4.5, across 1.6, staggered behind the gold chair |
+
+Tried and reverted: the globe at hM 1.25 (hid the desk's pedestal), a gold chair at the ballroom's near left (covered the pink chair's legs), and the violet chair level with the gold one (a cloned pair).
+
+The paired check was against the untouched build: **4-0** (study 2 and 2, "clearly"; ballroom 1 and 1). Both judges: the globe is "a new, readable, detailed thing"; the ballroom's chair is "a repeat of a chair already in the room" and "slightly crowds" it. Both ask next for contact shadows under the new pieces' feet (they "float slightly"), and both name the study's open book: "a thin dark flat shape ... reads as a smear rather than a book".
+
+Tests: grounding PASS (24 rows), steam-deck 6/6, link-queue 104/0, study-library 50/0, ballroom 46/0.
+
+Key: `PAIRED-r61-repair30-key.json`. Evidence: `C:/UILOOP/s21/R30-evidence/`.
