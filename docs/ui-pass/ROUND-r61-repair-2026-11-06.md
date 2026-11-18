@@ -730,3 +730,21 @@ The paired check, four rooms against dev: **8-0** (heart 2 and 2, gallery 2 and 
 Tests: link-queue 104/0, foyer 66/0, ballroom 46/0, heart 44/0, grounding PASS, steam-deck 6/6.
 
 Key: `PAIRED-r61-repair47-key.json`. Evidence: `C:/UILOOP/s21/ev47/`.
+
+## Repair 48: the kitchens' and the passages' darks hold the room's own colour; the lampworks left out (2026-11-18)
+
+Survey 22: "the far corners and side walls of several rooms (kitchens, passages, lampworks) still fall close to black". Repair 48 (`1ad20d6a`, `3f0079d8`, `32439781`, merged) sets repair 39's `shadowHue` for two wings, each hue sampled from the room's own lit walls. Values in atmosphere.js only.
+
+- **Kitchens:** `#5c1414` (the lit brick measures hue 5-8 degrees), amount 0.85, gain 1.1. Far-left corner value 5.0 to 7.6 of 100, saturation 74 to 95; pixels under 6% value 86% to 66%. The outermost 8% of the left edge is still black: the grade's vignette (1.56) crushes it after this knob runs.
+- **Passages:** `#4e161c` (panelling hue 12-14 degrees), amount 0.6, gain 0.75 (0.85 raised the ceiling 3.2, over the +3 limit). The ceiling "reads as dark mahogany boards with its beams, where it was a black lid": value 4.3 to 6.8, saturation 53 to 91.
+- **Lampworks: tried, not committed.** Its darks hold both blue window light and brown brick, so either hue crosses the other (the window-lit corner went from hue 228 to 318, magenta), and at full frame the change was invisible.
+
+The paired check, both kinds of both wings against dev: **8-0** (passage 1 and 2; kitchen, scullery, library 1 and 1). "The coloured-dark version is the better room each time because the walls and ceiling stay in frame as surfaces"; dev's passage ceiling was "a neutral grey-green slab that reads as milky".
+
+**The cost, named by both judges in three of the four rooms, and the next repair:** the cold light pools lying in those darks lose to the warm hue. The passage's far pool went "a faint purple" (measured hue 296 to 334), the library's moonlight "dull purple" against dev's "clean saturated blue", the scullery's "muddier violet"; and in the kitchens "a red wash over near objects (jugs, sacks, plates lose their local colour)". Both ask for "both at once, warm saturated darks AND a clean cold blue pool, which no version here manages". The knob mixes every dark pixel toward one hue; it needs to spare pixels whose own hue is far from the room's (weight the mix by hue distance, or by the pixel's own saturation), which is a small change in `shaders/grade.js`.
+
+Controls: the attic pixel-identical. The nursery and the foyer could NOT be shown identical: the first capture after a server start differs from every later one by up to 6 levels on a few thousand pixels, changed build or not. Take a throwaway batch first.
+
+Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, kitchens 20/0, secret-passages 74/0.
+
+Key: `PAIRED-r61-repair48-key.json`. Evidence: `C:/UILOOP/s21/ev48/`.
