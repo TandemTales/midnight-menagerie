@@ -20089,13 +20089,11 @@ float wfServTable(vec2 q, float px, float seed, float kq, bool paint){
   shd = mix(shd, g.a*(1.60 + 0.25*side), wfIn(legs, px));
   float drw = mmBox(q - vec2(0.0, TOP - 0.080), vec2(0.20, 0.030), 0.003);
   float onDr = wfIn(drw, px);
-  /* (repair 54, the same judges: the apron "still reads as slightly
-     see-through". Not an alpha: wfWoodM lit the fifth of it next the key as
-     an EDGE, a pale upright band a hand wide that read as the batten of the
-     crate behind showing through the board. An apron is one flat board: one
-     value its whole length. (Ruled grain lines along it and the drawer were
-     tried and did not read at this size: out.) */
-  g = vec4(dealC*0.74, 1.0);
+  /* (repair 54 tried the apron as one flat value, because its key-side
+     edge "reads as slightly see-through"; blind, each judge preferred the
+     lit corner and bead on one table and the flat board on the other
+     ("a wash"), so the apron is repair 52's again.) */
+  g = wfWoodM(dealC*0.74, kq*q.x/0.50, wfEw(1.00, px));
   g *= 1.0 - 0.40*smoothstep(TOP - 0.070, TOP - 0.040, q.y)*(1.0 - onDr);
   g *= 1.0 + 0.40*smoothstep(TOP - 0.125, TOP - 0.125 + px, q.y)*(1.0 - smoothstep(TOP - 0.125 + bw, TOP - 0.125 + bw + px, q.y));
   /* the drawer front: lit along its upper edge, its shadow under it */
