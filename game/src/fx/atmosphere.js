@@ -1294,6 +1294,10 @@ export const REGIONS = {
                  pool: { ahead: 5.6, across: 0.4, rAlong: 3.4, rAcross: 3.6, k: 1.55, color: '#e9c88c' },   // (round 39 graft: the candelabrum's warm pool, J2 J3)
                  pool2: { ahead: 4.6, across: -3.6, abs: true, rAlong: 2.4, rAcross: 2.4, k: 1.10, color: '#eac27e' } },
     cineFloor: 0.30,
+    /* (round 61 repair 41: the near and middle candelabra each throw a pool
+       on the marble at their foot and stand in it on their three paws --
+       Backdrop.build, candlePools / candleFoot) */
+    candlePools: { shape: 65, nominal: 1.56, n: 2, keep: 2, keepBy: 'centre', r: 0.70, stretch: 1.25, k: 7.0, color: '#f2b060', foot: true },
     particles: { mix: [[PTYPE.DUST, 0.58], [PTYPE.EMBER, 0.26], [PTYPE.WISP, 0.16]],
                  tint: '#ffe8c0', wispTint: '#d8a8ff', emberTint: '#ffc95a',
                  speed: 0.9, scale: 1.1, wind: 0.8, density: 1.0 },
@@ -1591,6 +1595,11 @@ export const REGIONS = {
                     corner still fall to black; carry the light pool across to
                     that side" -- the other lantern's spill, on the left) */
                  pool2: { ahead: 2.8, across: -1.0, rAlong: 2.4, rAcross: 1.9, k: 4.5, color: '#f0a65a' } },
+    /* (round 61 repair 41: each near book pile's candle throws its own small
+       pool on the boards round the pile -- Backdrop.build, candlePools: the
+       piles are wfBookPile (66, seed > 60; 1.25 m nominal), the candle on
+       the taller one at -0.37, mirrored as the drawing is) */
+    candlePools: { shape: 66, seedMin: 60, nominal: 1.25, mirror: true, n: 2, dx: -0.24, dz: 0.22, r: 0.45, stretch: 1.35, k: 10.0, color: '#ffb23c' },
     /* (round 28 graft: its cases and lamp posts set down on the boards in a
        denser contact shadow -- Backdrop.build's pal.propShadow) */
     propShadow: 1.6,
@@ -2568,6 +2577,9 @@ export const ROOM_KINDS = {
            fighters and the chairs stand on lit boards and not a dark band) */
         nearFloor: { pool: { ahead: 4.6, across: 0.0, rAlong: 3.8, rAcross: 3.0, k: 2.1, color: '#f0a65a' },
                      pool2: { ahead: 16.5, across: 0.0, rAlong: 4.6, rAcross: 7.0, k: 4.4, color: '#eaa860' } },
+        /* (round 61 repair 41: the near torchere and the next throw a pool
+           on the boards at their foot -- Backdrop.build, candlePools) */
+        candlePools: { shape: 65, nominal: 1.56, n: 2, keep: 2, r: 0.70, stretch: 1.25, k: 7.5, color: '#f4a450', foot: true },
         door: 'case', vantage: { at: 'threshold', back: 2.4, lens: 0.88, dip: 0.30, dy: -0.20 } },
       /* a gallery is long and narrow, so its arcade runs away down both
          sides; it is paved in flags and vaulted bay by bay */
@@ -4716,6 +4728,9 @@ export class Atmosphere {
       /* (round 31: a room may dress its near floor its own way -- the
          wing's nearFloor with this kind's keys over it) */
       if (kind.nearFloor) pal.nearFloor = Object.assign({}, pal.nearFloor || {}, kind.nearFloor);
+      /* (round 61 repair 41: and which of its candles throw a pool on the
+         floor -- Backdrop.build) */
+      if (kind.candlePools) pal.candlePools = kind.candlePools;
       /* a kind may say which one-offs it has (none: `solo: []`), where a
          colonnade's first pair stands, and a piece that stands ON the stage
          at the back wall rather than on the floor (round 14: the suite's
