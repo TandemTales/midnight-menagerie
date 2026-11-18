@@ -35701,7 +35701,23 @@ void main(){
   }
 #if MM_WINGS == 5
   col *= gGyTint;   // (round 61 repair 53: see gGyTint)
-  col *= mix(vec3(1.0), vec3(1.46, 1.04, 0.58), 0.85*gyLan*(1.0 - isFit));
+  {
+    float gw = 0.85*gyLan*(1.0 - isFit);
+    col *= mix(vec3(1.0), vec3(1.46, 1.04, 0.58), gw);
+    /* (round 61 repair 57, both judges of repair 53: the cross by the gate
+       lantern "close to over-saturated orange". The lamp's own colour and
+       this side's are two warm turns on one stone, and where the moon gives
+       nothing back -- a shaft, a sandstone -- it came out 0.70 saturated.
+       THE WARM SIDE HAS A CEILING: over 0.34 its saturation is eased toward
+       0.48 and never past it, at the value it had -- stone lit by a candle,
+       a warm cream. Only where the candle reaches and only on what it has
+       turned warm: the moss beside a lantern keeps its green.) */
+    float wMx = max(col.r, max(col.g, col.b));
+    float wSt = (wMx - min(col.r, min(col.g, col.b)))/max(wMx, 1e-4);
+    float wOv = max(wSt - 0.34, 0.0);
+    col = mix(vec3(dot(col, vec3(0.2126, 0.7152, 0.0722))), col,
+              mix(1.0, (0.34 + 0.14*wOv/(wOv + 0.14))/max(wSt, 1e-4), min(3.0*gw, 1.0)*step(col.g, col.r)));
+  }
 #endif
 #if MM_PEN > 0
   /* ROUND 41 GRAFT: THE PEN -- LABRADORITE's, lightly (J1, J3). Survey 7's
