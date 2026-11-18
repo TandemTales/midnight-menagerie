@@ -2580,6 +2580,9 @@ export const ROOM_KINDS = {
         /* (round 61 repair 41: the near torchere and the next throw a pool
            on the boards at their foot -- Backdrop.build, candlePools) */
         candlePools: { shape: 65, nominal: 1.56, n: 2, keep: 2, r: 0.70, stretch: 1.25, k: 7.5, color: '#f4a450', foot: true },
+        /* (round 61 repair 44: the chairs, the vitrines, the pier table and
+           the clock each on their own feet's shadow -- footNear) */
+        feet: true,
         door: 'case', vantage: { at: 'threshold', back: 2.4, lens: 0.88, dip: 0.30, dy: -0.20 } },
       /* a gallery is long and narrow, so its arcade runs away down both
          sides; it is paved in flags and vaulted bay by bay */
@@ -4731,6 +4734,9 @@ export class Atmosphere {
       /* (round 61 repair 41: and which of its candles throw a pool on the
          floor -- Backdrop.build) */
       if (kind.candlePools) pal.candlePools = kind.candlePools;
+      /* (round 61 repair 44: and whether its furniture stands on its own
+         feet's shadows -- Backdrop's footNear) */
+      if (kind.feet) pal.feet = kind.feet;
       /* a kind may say which one-offs it has (none: `solo: []`), where a
          colonnade's first pair stands, and a piece that stands ON the stage
          at the back wall rather than on the floor (round 14: the suite's

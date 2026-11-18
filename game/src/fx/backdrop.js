@@ -177,9 +177,48 @@ export const DEFAULT_ROOM = {
    wfBooks' piles at -0.22 and 0.20 and the open book at 0.465 (0.34),
    mirrored as wfMirror mirrors them. Its own function, and called after
    footOf, so the two never meet. */
-function footNear(region, p) {
-  if (p.hang || (region !== 'study' && region !== 'ballroom' && region !== 'passages' && region !== 'heart')) return null;
+function footNear(region, p, feet) {
+  if (p.hang || (region !== 'study' && region !== 'ballroom' && region !== 'passages' && region !== 'heart'
+      && !(region === 'foyer' && feet))) return null;
   const s = p.shape, h = p.h;
+  /* (round 61 repair 44, both of repair 41's judges: "the same grounding for
+     the objects that still have none, the foyer's far chairs and right-hand
+     furniture ... whose feet still fade into the dark". The parlour only
+     (pal.feet: its camera is square to the room; the stair hall's is turned,
+     and a pool laid square runs out from under a chair seen from the side).
+     The house's pool under a hall chair was a round grey a hand in FRONT of
+     its feet, under the vitrine a lake the width of its cornice. Each its own
+     footprint: wfArmchair's cabriole feet at +-0.28 (1.04 m nominal) and a
+     thin shade under the seat rail between them; wfVitrine's at +-0.40
+     (2.02) and the shade under its apron; wfHallTable's at +-0.52 (1.25);
+     wfClock's skirt +-0.275 (2.12), a plinth, so one dark line and no feet.
+     Nothing on the floor; the torcheres keep candleFoot.) */
+  if (region === 'foyer') {
+    if (p.y > 0.2) return null;
+    if (s === 63) {
+      const q = h / 1.04;
+      return { dz: -0.10 * q, w: 0.62 * q, d: 0.30 * q, k: 0.80,
+        extra: [{ dx: -0.28 * q, dz: 0.02, w: 0.15 * q, d: 0.09 * q, k: 1.35 },
+                { dx: 0.28 * q, dz: 0.02, w: 0.15 * q, d: 0.09 * q, k: 1.35 }] };
+    }
+    if (s === 64) {
+      const q = h / 2.02;
+      return { dz: -0.08 * q, w: 0.86 * q, d: 0.26 * q, k: 0.90,
+        extra: [{ dx: -0.40 * q, dz: 0.02, w: 0.13 * q, d: 0.08 * q, k: 1.35 },
+                { dx: 0.40 * q, dz: 0.02, w: 0.13 * q, d: 0.08 * q, k: 1.35 }] };
+    }
+    if (s === 66 && (p.seed || 0) <= 40) {
+      const q = h / 1.25;
+      return { dz: -0.08 * q, w: 1.06 * q, d: 0.24 * q, k: 0.70,
+        extra: [{ dx: -0.52 * q, dz: 0.02, w: 0.13 * q, d: 0.08 * q, k: 1.35 },
+                { dx: 0.52 * q, dz: 0.02, w: 0.13 * q, d: 0.08 * q, k: 1.35 }] };
+    }
+    if (s === 62) {
+      const q = h / 2.12;
+      return { dz: 0.03 * q, w: 0.58 * q, d: 0.20 * q, k: 1.25 };
+    }
+    return null;
+  }
   /* (round 61 repair 34: the same carried to the Passages' book piles and
      the Heart's urn and bench, which stood on the house's wide pool -- one
      black blob spanning both piles, a slab wider than the bench. wfBookPile
@@ -2754,7 +2793,7 @@ export class Backdrop {
            ones, the near pair -- the ones you see -- left with none) */
         /* (round 61 repair 41: and a torchere that throws a pool stands in
            it on its own three paws -- candleFoot) */
-        const ft = ft0 || footNear(pal.regionKey, p) || candleFoot(pal.candlePools, p);
+        const ft = ft0 || footNear(pal.regionKey, p, pal.feet) || candleFoot(pal.candlePools, p);
         if (ft && !ft0 && ft.extra) { (nearFeet || (nearFeet = [])).push({ p, extra: ft.extra }); ft.extra = null; }
         if (ft) {
           so2[i * 3 + 0] = p.x + (ft.dx || 0); so2[i * 3 + 2] = p.z + (ft.dz || 0);

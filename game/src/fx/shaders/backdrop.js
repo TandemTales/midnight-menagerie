@@ -18164,6 +18164,8 @@ void main(){
        The floor's own albedo times the flame's colour, as the near lamp's
        below, so the boards' lines run on through it; tight, and gone in two
        radii, so the dark round it stays dark. Arithmetic only.) */
+    /* (round 61 repair 44 TRIED a tighter, value-weighted, capped pool here
+       and it LOST 0-4 blind: "the same room a shade dimmer". Leave it bright.) */
     if (uIsCeiling < 0.5 && uPoolAxis[i].w > 1.5) {
       col += alb * uPoolCol[i] * P.w * (exp(-r*r*1.7)*0.85 + exp(-r*1.9)*0.22) * (0.62 + 0.38*smear);
       continue;
