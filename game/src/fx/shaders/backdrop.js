@@ -29802,7 +29802,41 @@ float wfGlobe(vec2 q, float px, float seed, float kq, bool paint){
   float ink = 0.0;
   vec3 maho = vec3(0.40, 0.18, 0.09);
   vec3 brass = vec3(0.92, 0.68, 0.30);
-  wfLay(col, ink, min(legs, stretch), maho*0.85, px, 0.9);
+  /* (round 61 repair 56, repair 51's judges: "the floor globes' stands ...
+     still read as flat cut-outs beside the chairs". The stand was one brown,
+     maho*0.85, legs and stretcher alike, at 6-18 of 255 beside boards at 24:
+     unlit and unmodelled, nothing compressing it. TURNED MAHOGANY AND BRASS,
+     in the same silhouette: each leg in two faces -- the key's side lit, the
+     far side in shade, a highlight ruled down the lit one -- with a bead and
+     its shadow under the horizon ring, over the stretcher and over the foot;
+     the stretcher a lit top face over its front, its boss turned; the
+     horizon ring's top arris lit and its underside in shade; the meridian a
+     round brass bar, its edge toward the key bright and the other dark.
+     Values on the lit colour, gWgShade; the sphere is as it was.) */
+  float gax = abs(q.x);
+  float gsk = (q.x < 0.0 ? -1.0 : 1.0)*kq;
+  float gty = clamp((0.78 - q.y)/0.76, 0.0, 1.0);
+  float gtc = clamp((0.52 - q.y)/0.50, 0.0, 1.0);
+  float glu = clamp(gax < 0.13 ? q.x*kq/mix(0.026, 0.020, gtc) : (gax - 0.26 - 0.04*gty)*gsk/mix(0.030, 0.020, gty), -1.0, 1.0);
+  float gLit = smoothstep(-0.30, -0.10, glu);
+  float gHi = smoothstep(0.22, 0.38, glu)*(1.0 - smoothstep(0.62, 0.78, glu));
+  float lodG = mmLod(0.035, px);
+  float gby = min(min(abs(q.y - 0.655), abs(q.y - 0.265)), abs(q.y - 0.070));
+  float gBead = (1.0 - smoothstep(0.009 - px, 0.009, gby))*lodG;
+  float gNeck = (1.0 - smoothstep(0.009 - px, 0.009, min(min(abs(q.y - 0.637), abs(q.y - 0.247)), abs(q.y - 0.052))))*lodG*(1.0 - gBead);
+  float gGnd = 1.0 - smoothstep(0.7*px, 1.5*px, q.y);
+  float gSeat = 1.0 - smoothstep(0.0, 0.05, q.y);
+  wfLay(col, ink, legs, mix(maho*0.62, maho*1.25, gLit)*(1.0 + 0.25*gBead), px, 0.9);
+  float gS = (0.62 + 0.56*gLit + 0.46*gHi*mmLod(0.030, px))*(1.0 + 0.40*gBead - 0.42*gNeck)*(1.0 + 1.0*gSeat)*(1.0 - 0.50*gGnd);
+  /* the stretcher: its top face lit, its front a stop down; the boss turned */
+  vec2 gbq = q - vec2(0.0, 0.18);
+  float gTop = smoothstep(0.004 - px, 0.004 + px, gbq.y);
+  float gBoss = wfIn(length(gbq) - 0.040, px);
+  float gbl = dot(gbq, normalize(vec2(kq, 0.80)))/0.040;
+  wfLay(col, ink, stretch, mix(mix(maho*0.66, maho*1.25, gTop), mix(maho*0.60, maho*1.30, smoothstep(-0.25, 0.15, gbl)), gBoss), px, 0.9);
+  ink = max(ink, mmInkP(gbq.y - 0.004, px, 1.0)*0.40*wfIn(stretch, px)*(1.0 - gBoss)*mmLod(0.03, px));
+  float gSS = mix(mix(0.70, 1.30, gTop)*(1.0 + 0.16*kq*q.x/0.27), mix(0.62, 1.35, smoothstep(-0.25, 0.15, gbl)) + 0.6*(1.0 - smoothstep(0.006, 0.012, length(gbq - 0.016*normalize(vec2(kq, 0.80))))), gBoss);
+  float gShd = mix(mix(1.0, gS, wfIn(legs, px)), gSS, wfIn(stretch, px));
   /* the sphere: shaded round, the lands seen on it, the graticule */
   vec2 n2 = c/R;
   float z = sqrt(max(1.0 - dot(n2, n2), 0.0));
@@ -29826,7 +29860,14 @@ float wfGlobe(vec2 q, float px, float seed, float kq, bool paint){
   hC = mix(hC, maho, step(abs(c.y), 0.008));
   wfLay(col, ink, hor, hC, px, 0.95);
   ink = max(ink, mmInkP(abs(fract(c.x/0.03) - 0.5) - 0.45, px/0.03, 1.0)*wfIn(hor, px)*0.4*mmLod(0.03, px));
-  wfLay(col, ink, mer, brass*(0.6 + 0.6*smoothstep(-0.1, 0.2, c.y)), px, 0.8);
+  /* (repair 56: the meridian's bar turned -- across it, the edge toward the
+     key lit and the other in shade, round the whole half circle) */
+  float gmu = (length(c) - R - 0.035)/0.010*dot(c/max(length(c), 1e-4), normalize(vec2(kq, 0.80)));
+  float gmL = smoothstep(-0.25, 0.10, gmu);
+  wfLay(col, ink, mer, brass*(0.6 + 0.6*smoothstep(-0.1, 0.2, c.y))*(0.72 + 0.40*gmL), px, 0.8);
+  gShd = mix(gShd, 1.0, wfIn(sph, px));
+  gShd = mix(gShd, (1.0 + 0.55*dkBand(0.022 - c.y, px) - 0.30*dkBand(0.022 + c.y, px))*(1.0 + 0.14*kq*c.x/0.34), wfIn(hor, px));
+  gWgShade = mix(gShd, 0.78 + 0.62*gmL, wfIn(mer, px));
   gWfGloss = 0.40 + 0.6*wfIn(min(mer, sph), px);
   gWfMoon = 0.5*wfIn(sph, px)*smoothstep(0.0, R, c.y);
   gWfCol = col; gWfInk = ink;
