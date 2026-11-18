@@ -1,0 +1,17 @@
+{
+ "SURVEY-room-ballroom-ballroom": {
+  "new_is_A": true
+ },
+ "SURVEY-room-lampworks-lampworks": {
+  "new_is_A": true
+ },
+ "SURVEY-room-passages-passage": {
+  "new_is_A": false
+ },
+ "SURVEY-room-foyer-parlor": {
+  "new_is_A": false
+ },
+ "SURVEY-room-kitchens-kitchen": {
+  "new_is_A": true
+ }
+}

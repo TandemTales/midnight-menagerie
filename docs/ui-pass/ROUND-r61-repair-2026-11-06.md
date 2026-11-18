@@ -608,3 +608,19 @@ Both judges ask next for the far floor band under the far wall carried "by drawn
 Tests (all four hues in): link-queue 104/0, study-library 50/0, heart 44/0, crypt 41/0, ballroom 46/0, steam-deck 6/6, grounding PASS, shader-literals 0. The merged state (two hues) was not re-run; the battery is its check.
 
 Key: `PAIRED-r61-repair39-key.json`. Evidence: `C:/UILOOP/s21/ev39/`.
+
+## Repair 40: the ballroom chairs and the crates painted, not smooth models (2026-11-18)
+
+Survey 21's judges: the near props "still read as smooth 3D models rather than brushwork (the lampworks crates, the ballroom chairs, the pumpkins)". Repair 40 (`827b4511`, merged) repaints three of them. Only shaders/backdrop.js changed; no silhouette, size, variant or noise tap (link-queue 104).
+
+- **Why the detail was not reaching the screen:** the chair's and the lampworks crate's painters already drew much of it, but the prop luminance ceiling compressed their lit surfaces to one value. The form now goes on the lit colour AFTER the ceiling, through the existing `gWgShade` hook. The passages' crates were simply unlit (luma 4-7 beside a floor at 90).
+- **The chair** (`wfArmchair`, shape 72; the foyer's hall chair, 63, shares it): frame as a moulding with a lit and a shaded edge, upholstery set in under the frame's shadow, a seat top and front with a welt, a reeded rail, a highlight down each leg, scroll arms. In the ballroom program a higher saturation cap so the gilt reads gold, not "pale, chalky stone-grey". Dropped: hard per-tuft facets (corrugated stripes; now a 16% swell), a dark seat front on the hall chair (a black slab).
+- **The passages' crate** (shape 8; also at the kitchens' walls): each board its own value with a lit upper edge, battens and brace with lit and shaded edges and a ruled shadow, nails, grain; a share of the room's warm rim light (`albedo * rim * 0.14`) and a raised saturation cap. Luma 4 to 14 and 7 to 22; the floor unchanged.
+- **The lampworks' crates:** the same board, gap and batten drawing on the lit colour, the label and packed lamps excluded. Seams are continuous where they were dashes that "cut through the lettering".
+- **The pumpkins were not touched.**
+
+The paired check, five rooms against dev: **10-0** (ballroom 2 and 2, lampworks 2 and 1, passages 1 and 2, foyer 1 and 1, kitchens 1 and 1). Next, from both: far and corner props (kitchen crates, the passage crates behind the tables) given a rim of candlelight so they read without zoom; ink contours and painted highlights on near props; plank ends, nail heads and carved rails "in place of noise grain".
+
+Tests: link-queue 104/0, ballroom 46/0, lampworks 45/0, secret-passages 74/0, pumpkin-grounds 70/0, grounding PASS, steam-deck 6/6. Built before repair 39 merged; the two touch different files.
+
+Key: `PAIRED-r61-repair40-key.json`. Evidence: `C:/UILOOP/s21/ev40/`.
