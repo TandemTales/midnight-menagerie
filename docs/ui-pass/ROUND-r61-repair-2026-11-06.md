@@ -445,3 +445,27 @@ Key: `PAIRED-r61-repair27-key.json`.
 Survey 20 lost the kennels 0-2 to survey 19: the barrelled bales read as "swollen, lumpy ... pillows or felt". Repair 28 reverts the barrel, keeps repair 24's floor lamp, and beats survey 19's kennels **2-0**. Repair 23 is now undone, and only repair 24's lit floor remains in the kennels. See `SURVEY-2026-11-15b.md`.
 
 Key: `PAIRED-r61-repair28-key.json`.
+
+## Repair 29: the lampworks, crypt and pumpkin grounds lit to the frame's corners (2026-11-17)
+
+Survey 20's judges asked first for "near-floor corners lit in every wing". Three of the four rooms left on repair 25's frame-foot table are done (`494f1f32`, merged `d2d9ecbd`); only `atmosphere.js`'s numbers changed.
+
+Mean luma of the bottom 80 px at 1280x800, four quarters left to right:
+
+| Room | Before | After | Change |
+|---|---|---|---|
+| lampworks | 15 / 34 / 31 / 61 | 24 / 40 / 33 / 73 | foot `sides` 1.2 -> 3.0; `pool2` moved to the near left, k 1.30 -> 2.50 |
+| crypt | 15 / 27 / 58 / 71 | 28 / 34 / 63 / 79 | foot `sides` 1.5 -> 2.5; `pool2` nearer, wider, k 1.8 -> 3.2 |
+| pumpkin grounds | 14 / 22 / 24 / 12 | 21 / 29 / 32 / 21 | foot k 2.0 -> 3.2, `sides` 2.5 -> 4.0 |
+
+- **Repair 25's note was wrong:** the foot lamp DOES light the lampworks and the crypt. `FOOT_WINGS` in backdrop.js is the props' contact-shadow profiles, not a second floor lamp. The lamp lights both edges alike and one side was already bright, so a moderate `sides` plus the wing's second pool (`nearFloor.pool2`) lights the dark side without overheating the other.
+- **The kitchens were left alone.** Their dark right quarter is the near crate and its own shadow; the floor beside it is already lit.
+- **Wing-level values:** the wings' other room kinds inherit them. Only the survey kinds were captured.
+- **A capture trap:** the FIRST room of a `room_batch` can come out with its camera misplaced. Never put a judged room first.
+- **`tests/grounding/run.py` does not take the GPU slot** and times out beside another capture. Run it with the slot free.
+
+The paired check was against the untouched build: **6-0**, all "slightly". Both judges: the near flagstones "stay lit and readable as stone", "not milky". They ask next for firm contact shadows under near props ("the pumpkins' black blob shadows"), and edge-cut fragments made whole (the pumpkin at the courtyard's far left, the candle stand at the crypt's right edge, the lampworks' benches).
+
+Tests: lampworks 45/0, crypt 41/0, pumpkin-grounds 70/0, link-queue 104/0, steam-deck 6/6, grounding PASS.
+
+Key: `PAIRED-r61-repair29-key.json`. Evidence: `C:/UILOOP/s21/R29ev/` (D: was not attached on 11-17, so this session's worktrees and evidence are on `C:/UILOOP/s21/`).
