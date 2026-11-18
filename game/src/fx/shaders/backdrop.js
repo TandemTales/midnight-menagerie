@@ -35053,6 +35053,59 @@ void main(){
        chandeliers were "blown white blobs": pale globes in their own glow) */
     fitEmit *= uFitK;
     albedo *= mix(1.0, uFitK, 0.45 + 0.55*clamp(glass, 0.0, 1.0));
+#if MM_WINGS == 5
+    /* (round 61 repair 53, of repair 51's churchyard: "the lanterns ... now
+       look flatter beside the improved pieces". Its glass and its iron were
+       one pale lozenge on a stick. On the LIT colour, as the stones are --
+       gWgShade and gGyTint: the cage's bars dark iron with the edge to the
+       key lit, the panes amber between them and the flame's core brighter
+       in them; the cap a lit top plane over an under-edge in the flame's
+       own warmth; its dome and its knop turned as balls; the stem lit down
+       the key side and in shade down the other; each step of the foot a lit
+       top over its riser, a dark line at the grass.) */
+    if (vShape > 22.5) {
+      float lk = uKeyDir.x >= 0.0 ? 1.0 : -1.0;
+      float lpx = max(max(mpp.x, mpp.y), 1e-5);
+      float kxL = lk*sm.x;
+      float sk = vSize.y - 0.46;
+      float yg = sm.y - sk;
+      /* the stem, and the knop on it */
+      float lS = 0.62 + 0.66*smoothstep(-lpx, lpx, kxL);
+      float s1 = max(sk - 0.24, 0.22);
+      lS = mix(lS, gyBall(vec2(kxL, sm.y - (0.145 + s1)*0.5)/0.058), wfIn(length(sm - vec2(0.0, (0.145 + s1)*0.5)) - 0.058, lpx));
+      /* the foot: three steps */
+      float fTop = sm.y < 0.058 ? 0.060 : (sm.y < 0.108 ? 0.110 : 0.150);
+      lS = mix(lS, (0.84 + 0.62*gyBand(fTop - sm.y, lpx))*(1.0 - 0.36*smoothstep(0.035, 0.0, sm.y)), step(sm.y, 0.150));
+      /* the plate under the glass and the cap over it: a lit top plane */
+      lS = mix(lS, 0.78 + 0.70*smoothstep(-lpx, lpx, yg + 0.208), step(abs(yg + 0.208), 0.026));
+      vec3 lT = vec3(1.0);
+      float onCap = step(abs(yg - 0.202), 0.032);
+      float capUp = smoothstep(-lpx, lpx, yg - 0.196);
+      lS = mix(lS, mix(0.92, 1.50, capUp)*(1.0 + 0.24*gyBand(0.158 - kxL, lpx) - 0.30*gyBand(0.158 + kxL, lpx)), onCap);
+      lT = mix(lT, mix(vec3(1.40, 0.98, 0.56), vec3(1.0), capUp), onCap);
+      /* the dome and the finial */
+      float onDome = step(0.232, yg);
+      lS = mix(lS, gyBall(vec2(kxL/0.080, (yg - 0.226)/0.074 - 0.15)), onDome);
+      lS = mix(lS, gyBall(vec2(kxL, yg - 0.334)/0.028), wfIn(length(vec2(sm.x, yg - 0.334)) - 0.028, lpx));
+      /* the cage: its bars, and the panes between them */
+      float inLanB = step(abs(yg), 0.170)*step(abs(sm.x), 0.128);
+      float bw = max(0.013, 1.1*lpx);
+      float bx = min(abs(kxL), abs(abs(kxL) - 0.112));
+      float bSide = abs(kxL) < 0.056 ? kxL : (abs(kxL) - 0.112)*sign(kxL);
+      float barV = 1.0 - smoothstep(bw - 0.5*lpx, bw + 0.5*lpx, bx);
+      float barH = 1.0 - smoothstep(bw - 0.5*lpx, bw + 0.5*lpx, min(abs(yg), abs(abs(yg) - 0.158)));
+      float bar = max(barV, barH);
+      float bLit = max(barV*smoothstep(0.0, 0.6*bw, bSide), barH*(1.0 - barV)*smoothstep(0.0, 0.6*bw, abs(yg) < 0.08 ? yg : (abs(yg) - 0.158)*sign(yg)));
+      /* the flame's core in the panes: an almond of it, and its heart */
+      float fl = length(vec2(sm.x/0.060, (yg + 0.020)/0.105));
+      float pane = 0.80 + 0.36*(1.0 - smoothstep(0.80, 1.00, fl)) + 0.36*(1.0 - smoothstep(0.34, 0.50, fl));
+      vec3 paneT = mix(vec3(1.06, 0.74, 0.40), vec3(1.06, 0.98, 0.80), 1.0 - smoothstep(0.34, 1.00, fl));
+      lS = mix(lS, mix(pane, 0.26 + 0.62*bLit, bar), inLanB);
+      lT = mix(lT, mix(paneT, vec3(1.0, 0.86, 0.66), bar), inLanB);
+      gWgShade = lS;
+      gGyTint = lT;
+    }
+#endif
   }
 #endif
 
@@ -35188,6 +35241,9 @@ void main(){
   vec3 V = normalize(uCamera - vWorld);
   vec3 diff = vec3(0.0), spec = vec3(0.0), raw = vec3(0.0);
   float lsS = 0.0, lsU = 0.0, lsW = 1e-4;     // the finish's turn (round 28)
+#if MM_WINGS == 5
+  float gyLan = 0.0;                          // (round 61 repair 53: the lantern's side)
+#endif
   /* a lamp on a clipped yew lights its sprays, not a smooth disc of it
      (graft: the orange and purple blotches on the maze's runs) */
   float leafK = 1.0;
@@ -35216,6 +35272,13 @@ void main(){
     lsU += aw * ldir.y;
     lsW += aw;
     spec += mmSpec(N, ldir, V, uLightCol[i], att, glossP, 34.0);
+#if MM_WINGS == 5
+    /* (round 61 repair 53: "the stonework lacks a warm lantern side against
+       the cold moon side, which is the candle-versus-moonlight contrast the
+       samples have". A candle's reach round each warm lamp -- two paces, no
+       more, so the yard stays the moon's) */
+    gyLan = max(gyLan, (1.0 - smoothstep(0.7, 2.6, dist))*step(uLightCol[i].b*1.25, uLightCol[i].r));
+#endif
   }
 
   /* Round 2 shipped "diff * 1.45" on top of a 2.6x authored gain — a lift no
@@ -35465,6 +35528,7 @@ void main(){
   }
 #if MM_WINGS == 5
   col *= gGyTint;   // (round 61 repair 53: see gGyTint)
+  col *= mix(vec3(1.0), vec3(1.46, 1.04, 0.58), 0.85*gyLan*(1.0 - isFit));
 #endif
 #if MM_PEN > 0
   /* ROUND 41 GRAFT: THE PEN -- LABRADORITE's, lightly (J1, J3). Survey 7's
