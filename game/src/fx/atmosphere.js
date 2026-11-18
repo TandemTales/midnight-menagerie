@@ -146,6 +146,11 @@ const D = {
   /* (round 61 repair 39: the hue a wing's DARKS hold -- grade.js's
      uShadowHue. Off everywhere a wing does not say; _applyGrade) */
   shadowHue: '#000000', shadowAmt: 0, shadowGain: 1,
+  /* (round 61 repair 50: how far a dark with a clear hue of its OWN, far
+     from shadowHue, is SPARED it -- a cold pool, a green jug, delft. 1 where
+     the hue is the room's own wall colour; 0 where the hue is meant to lie
+     over everything, as repair 39 judged the heart and the ballroom) */
+  shadowKeep: 1,
   fogDensity: 0.014,
   room: { w: 24, d: 19, h: 6.6, side: 0.0, ceilPattern: 3, wallPad: 7.0 },
   cam: { y: 2.3, z: 9.6, look: 2.4, fov: 42 },
@@ -616,7 +621,10 @@ export const REGIONS = {
        far corners and the side walls past the dresser and the pan rail were
        a hueless black. Multiplied, never added; the blue panes, the delft
        and the cabbages sit above the 0.10 it reaches and keep their colour) */
-    shadowHue: '#5c1414', shadowAmt: 0.85, shadowGain: 1.1,
+    /* (repair 50: shadowKeep 0 here. Sparing the props' own colours split 1-1
+       blind in both kitchens: one judge wanted the jug's green glaze back, the
+       other the red-brown jug "modelled in the room's light". Left as repair 48.) */
+    shadowHue: '#5c1414', shadowAmt: 0.85, shadowGain: 1.1, shadowKeep: 0,
     key:  { glow: 0, kind: 'warm', x: -3.6, y: 2.8, z: 2.0, color: '#db8f51', intensity: 1.39, radius: 6.88 },
     /* (round 22 graft, all three judges: "the milky cyan moonlight pools on
        the flagstones at the lower left and right of both rooms wash the
@@ -951,7 +959,10 @@ export const REGIONS = {
     /* (graft: CARNELIAN's vignette, 1.22 -> 1.12) */
     exposure: 2.6, vignette: 1.12, contrast: 1.67,
     /* (round 61 repair 39 tried shadowHue '#6a1420' at 0.7 here: it split
-       1-1 blind -- the oxblood turned the rug's navy border maroon. Left out) */
+       1-1 blind -- the oxblood turned the rug's navy border maroon. Left out.
+       Repair 50 tried it again with the grade sparing a dark's own hue: the
+       border is so near black that very little of it has a blue of its own to
+       keep, and the rest went maroon again. Still out) */
     key:  { glow: 0, kind: 'warm', x: -3.8, y: 3.2, z: 2.2, color: '#e2b271', intensity: 1.63, radius: 7.31 },
     /* (graft: the moon's pool on the boards a stop down -- the judges saw
        the floor's grain dither in it; round 37 graft: and 2.90 -> 2.30,
@@ -1217,6 +1228,10 @@ export const REGIONS = {
                  pool2: { ahead: 3.1, across: -2.8, abs: true, rAlong: 2.8, rAcross: 3.6, k: 2.50, color: '#e8a45c' } },
     cineFloor: 0.35, grain: 0.012, tooth: 0.045,
     exposure: 1.42, vignette: 1.06, contrast: 1.41,
+    /* (round 61 repair 50: the darks hold the brick's UMBER. Repair 48 tried
+       it and the window-lit corners went magenta; the grade now spares a
+       dark with a hue of its own, so the blue keeps) */
+    shadowHue: '#4a2412', shadowAmt: 0.7,
     key:  { glow: 0, kind: 'warm', x: -4.2, y: 3.2, z: 2.2, color: '#df9f63', intensity: 4.51, radius: 7.74 },
     fill: { glow: 0, kind: 'cold', x: 6.2, y: 3.2, z: 1.4, color: '#86bad8', intensity: 2.1, radius: 9.5, flicker: false },
     lights: [
@@ -1310,7 +1325,7 @@ export const REGIONS = {
     /* (round 61 repair 39: the darks hold a deep VIOLET -- the far checker
        under the gallery was a black band. Multiplied, not added: not the
        "purple haze" of round 39, and the gain under 1 keeps it deep) */
-    shadowHue: '#4a1670', shadowAmt: 0.7, shadowGain: 0.85,
+    shadowHue: '#4a1670', shadowAmt: 0.7, shadowGain: 0.85, shadowKeep: 0,
     key:  { glow: 0, kind: 'warm', x: -5.2, y: 4.0, z: 2.8, color: '#e5c07e', intensity: 1.98, radius: 9.46 },
     /* (round 39, both survey-6 judges: "under a purple haze" -- the cold
        pair a moonlit blue-violet, not a lilac, and a step down; LIGHT
@@ -1379,7 +1394,10 @@ export const REGIONS = {
     exposure: 2.46, contrast: 1.69,
     /* (round 61 repair 39 tried shadowHue indigo '#2a2466' at 0.6 here: it
        split 1-1 blind -- "a cool blue-grey cast" over the warm stone niches.
-       A plum, #4c1a3c, could not be told from the brown-black. Left out) */
+       A plum, #4c1a3c, could not be told from the brown-black. Left out.
+       Repair 50 tried a deep umber from the stone's own hue, '#4a2a10' at
+       0.7 x 1.1: the darks are that colour already, sides 6.6 -> 7.3 of 100,
+       invisible at full frame. Still out) */
     key:  { glow: 0, kind: 'warm', x: -3.0, y: 2.8, z: 2.0, color: '#e0a866', intensity: 1.20, radius: 6.88 },
     /* (round 35: the fill a stop down -- at 1.94 it laid a cyan haze on the
        near flags' corner, the "haze" every judge marks down) */
@@ -2202,7 +2220,7 @@ export const REGIONS = {
     exposure: 1.8, contrast: 1.67,
     /* (round 61 repair 39: the darks hold OXBLOOD-PLUM -- the far floor
        under the wainscot and both side walls were a hueless black) */
-    shadowHue: '#5c1230', shadowAmt: 0.7,
+    shadowHue: '#5c1230', shadowAmt: 0.7, shadowKeep: 0,
     /* (round 37 graft, item 5, all three judges on the fight: "a warm pool on
        the floor between the Kid and the hand and right of the Memory Animal;
        the runner's contrast and warmth up under the creatures" -- the
@@ -2303,7 +2321,7 @@ const COLOR_KEYS = [
 const NUM_KEYS = ['coolFill', 'grime', 'openGlow', 'wallFog', 'gloss', 'rim', 'gain',
   'frameAmount', 'ceil', 'bloom', 'bloomThreshold', 'warmTone', 'halation',
   'exposure', 'vignette', 'grain', 'fogDensity', 'propGain', 'propGloss', 'saturate',
-  'contrast', 'tooth', 'shadowAmt', 'shadowGain'];
+  'contrast', 'tooth', 'shadowAmt', 'shadowGain', 'shadowKeep'];
 
 /**
  * PER-ROOM VARIATION.
@@ -4982,6 +5000,7 @@ export class Atmosphere {
       const sg = (pal.shadowAmt > 0 && sl > 1e-5) ? (pal.shadowGain ?? 1) / sl : 0;
       sv[0] = sg ? sc.r * sg : 0; sv[1] = sg ? sc.g * sg : 0; sv[2] = sg ? sc.b * sg : 0;
       sv[3] = sg ? pal.shadowAmt : 0;
+      if (u.uShadowKeep) u.uShadowKeep.value = pal.shadowKeep ?? 1;   // (repair 50)
     }
     u.uHaloColor.value.copy(pal._rim).lerp(this._col.set(1, 1, 1), 0.25);
   }
