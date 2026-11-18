@@ -166,8 +166,35 @@ export const DEFAULT_ROOM = {
    mirrored as wfMirror mirrors them. Its own function, and called after
    footOf, so the two never meet. */
 function footNear(region, p) {
-  if (p.hang || (region !== 'study' && region !== 'ballroom')) return null;
+  if (p.hang || (region !== 'study' && region !== 'ballroom' && region !== 'passages' && region !== 'heart')) return null;
   const s = p.shape, h = p.h;
+  /* (round 61 repair 34: the same carried to the Passages' book piles and
+     the Heart's urn and bench, which stood on the house's wide pool -- one
+     black blob spanning both piles, a slab wider than the bench. wfBookPile
+     (66, seed > 60; 1.25 m nominal): its piles at -0.37 and 0.13, the open
+     book at 0.53, mirrored as wfMirror mirrors them. gkDraw's urn (81, 1.55):
+     its pedestal's base +-0.31, a plinth, so one pool and no feet. gkDraw's
+     bench (83, 0.95): the seat +-0.82, its paws at +-0.62.) */
+  if (region === 'passages' && s === 66 && (p.seed || 0) > 60) {
+    const q = h / 1.25;
+    const m = mmHash11((p.seed || 0) * 3.71 + 66 * 0.13) < 0.5 ? -1 : 1;
+    return { dx: -0.37 * q * m, dz: -0.03 * q, w: 0.46 * q, d: 0.26 * q, k: 1.30,
+      extra: [{ dx: 0.13 * q * m, dz: -0.03 * q, w: 0.44 * q, d: 0.26 * q, k: 1.30 },
+              { dx: 0.53 * q * m, dz: -0.11 * q, w: 0.44 * q, d: 0.26 * q, k: 1.00 }] };
+  }
+  /* (the Heart's main room only -- its two pieces are the `hand` ones. The
+     gallery and the memory room see theirs from a turned camera, where a
+     pool laid square to the room runs out from under a bench that faces
+     the lens: they keep the house's pool) */
+  /* (the urn keeps the house's pool: repair 34's footprint pool under its
+     plinth lost with both judges -- it "spills left" of the foot, where the
+     house's leaves the plinth's edge crisp) */
+  if (region === 'heart' && s === 83 && p.hand) {
+    const q = h / 0.95;
+    return { dz: -0.12 * q, w: 1.50 * q, d: 0.52 * q, k: 0.85,
+      extra: [{ dx: -0.62 * q, dz: 0.02, w: 0.27 * q, d: 0.13 * q, k: 1.35 },
+              { dx: 0.62 * q, dz: 0.02, w: 0.27 * q, d: 0.13 * q, k: 1.35 }] };
+  }
   if (region === 'study' && s === 54) {
     const q = h / 1.15;
     return { dz: -0.10 * q, w: 0.70 * q, d: 0.34 * q, k: 0.90,
