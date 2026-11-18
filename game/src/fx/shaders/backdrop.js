@@ -29781,6 +29781,107 @@ float wfChair(vec2 q, float px, float seed, float kq, bool paint){
   vec3 lea = kc < 0.5 ? vec3(0.44, 0.13, 0.09) : vec3(0.12, 0.27, 0.17);
   vec3 maho = vec3(0.30, 0.14, 0.07);
   vec3 brass = vec3(0.90, 0.70, 0.34);
+#if MM_SH53
+  /* (round 61 repair 51, the Study's -- its program is the one that also
+     deals the desk, so the Sleeping Quarters' chair draws, and links, as it
+     did. Survey 22: "carry the same modelling to the objects left
+     untouched". The chair stood at a seventh of the prop's ceiling with its
+     roundness as soft ramps and its buttoning a grid of dots. LEATHER, IN
+     PLANES: the back deep-buttoned -- every pleat a ruled crease from button
+     to button, the tuft on one side of it turned to the key and on the other
+     away, each button sunk in its dimple with its spark -- under a rolled
+     top the lamp catches; the wing on the key's side seen from its dark
+     inner face with its roll lit, the far wing's inner face in the light;
+     each arm a front panel with a lit and a shaded edge under its scroll, a
+     welt and close brass nails; the cushion a lit top and a front with the
+     welt ruled between, the near arm's shadow across its end; the seat rail
+     under the cushion's shadow. Values on the lit colour, gWgShade.) */
+  {
+    vec2 Ld = normalize(vec2(kq, 0.80));
+    float sx = q.x < 0.0 ? -1.0 : 1.0;
+    float sk = sx*kq;                                  // +1 on the key's side of the chair
+    float kx = kq*q.x;
+    vec3 leaD = lea*vec3(0.60, 0.48, 0.46), leaL = lea*vec3(1.30, 1.20, 1.08);
+    float shd = 1.0;
+    /* the legs: turned, a highlight down the key's side */
+    float lu = clamp((ax - 0.34)/0.026, -1.0, 1.0)*sk;
+    float lHi = smoothstep(0.20, 0.36, lu)*(1.0 - smoothstep(0.62, 0.78, lu));
+    wfLay(col, ink, legs, mix(maho*0.70, maho*1.30, smoothstep(-0.45, -0.25, lu)), px, 0.85);
+    shd = mix(shd, (0.58 + 0.42*smoothstep(-0.45, -0.25, lu) + 0.40*lHi)*(1.0 - 0.36*smoothstep(0.04, 0.0, q.y)), wfIn(legs, px));
+    /* the back */
+    vec2 tq = vec2(q.x + q.y, q.x - q.y)/0.12;
+    vec2 tf = fract(tq) - 0.5;
+    float lodT = mmLod(0.12, px);
+    vec2 tL = normalize(vec2(Ld.x + Ld.y, Ld.x - Ld.y));
+    float ts = tf.x*tf.y < 0.0 ? -1.0 : 1.0;
+    float tl = -ts*(cos(3.1416*tf.x)*sin(3.1416*tf.y)*tL.x + sin(3.1416*tf.x)*cos(3.1416*tf.y)*tL.y);
+    float bUp = 0.66 + 0.42*smoothstep(0.50, 1.05, q.y);            // the seat's shade low on it
+    float bRoll = dkBand(-back, px)*smoothstep(0.98, 1.08, q.y);    // the rolled top
+    float bWing = smoothstep(0.165 - px, 0.165 + px, ax + 0.06*(q.y - 0.80))*step(0.0, sk)*step(0.60, q.y);   // the near wing's shadow
+    float dimple = (1.0 - smoothstep(0.012, 0.020, length(tf)*0.12))*lodT;
+    float button = (1.0 - smoothstep(0.004, 0.009, length(tf*0.12 - 0.004*tL)))*lodT;
+    vec3 bC = mix(mix(lea, leaL, max(tl, 0.0)*0.55*lodT), leaD, max(-tl, 0.0)*0.65*lodT)*0.74;
+    bC = mix(mix(bC, leaD*0.55, dimple), leaL, button);
+    bC = mix(bC, leaL, bRoll);
+    wfLay(col, ink, back, bC, px, 0.95);
+    ink = max(ink, mmInkP(min(abs(tf.x), abs(tf.y))*0.12, px, 1.0)*0.36*wfIn(back, px)*lodT*(1.0 - bRoll));
+    shd = mix(shd, bUp*(1.0 + 0.24*tl*lodT)*(1.0 - 0.45*dimple + 0.85*button)*(1.0 - 0.36*bWing)*(1.0 + 0.80*bRoll), wfIn(back, px));
+    /* the wings */
+    float wE = -wfEll(wq, vec2(0.13, 0.26));                         // metres in from the wing's outer edge
+    float wRoll = 1.0 - smoothstep(0.026 - px, 0.026 + px, wE);
+    float wUp = smoothstep(0.04, 0.20, wq.y);
+    float wFace = mix(1.10, 0.62, step(0.0, sk));
+    float wRim = mix(mix(0.70, 1.22, wUp), 1.42, step(0.0, sk));
+    wfLay(col, ink, wing, mix(mix(lea*0.80, leaD, 0.6*step(0.0, sk)), mix(leaD, leaL, step(0.0, sk)), wRoll), px, 0.95);
+    ink = max(ink, mmInkP(wE - 0.026, px, 1.0)*0.45*wfIn(wing, px)*mmLod(0.05, px));
+    shd = mix(shd, mix(wFace*(0.86 + 0.20*smoothstep(0.60, 1.10, q.y)), wRim, wRoll), wfIn(wing, px));
+    /* the arms: the front panel under its scroll */
+    float aw = (ax - 0.355)*sk;                                      // across the arm, toward the key
+    vec2 sq = vec2(aw, q.y - 0.62);
+    float disc = length(sq) - 0.080;
+    float inDisc = wfIn(disc, px);
+    float sl = dot(sq, Ld*vec2(kq, 1.0))/0.080;
+    float aS = 0.80 + 0.36*dkBand(0.075 - aw, px) - 0.30*dkBand(0.075 + aw, px);
+    float dRim = dkBand(-disc, px);
+    float dS = mix(mix(0.72, 1.06, smoothstep(-0.22, -0.08, sl)), mix(0.60, 1.42, smoothstep(-0.10, 0.10, sl)), dRim);
+    wfLay(col, ink, arm, mix(mix(lea*0.74, leaL, dkBand(0.075 - aw, px)), mix(mix(leaD, lea*0.86, smoothstep(-0.22, -0.08, sl)), leaL, dRim*smoothstep(-0.10, 0.10, sl)), inDisc), px, 0.95);
+    ink = max(ink, mmInkP(disc + 0.022, px, 1.0)*0.50*wfIn(arm, px)*mmLod(0.05, px));
+    ink = max(ink, mmInkP(disc, px, 1.0)*0.45*wfIn(arm, px)*step(q.y, 0.62));
+    float aBtn = 1.0 - smoothstep(0.008, 0.013, length(sq - 0.004*Ld*vec2(kq, 1.0)));
+    shd = mix(shd, mix(aS*(0.82 + 0.22*smoothstep(0.30, 0.56, q.y)), dS*(1.0 + 0.60*aBtn*mmLod(0.03, px)), inDisc), wfIn(arm, px));
+    /* the nails down the panel's two edges */
+    vec2 an = vec2(abs(aw) - 0.048, mod(q.y, 0.034) - 0.017);
+    float aNail = (1.0 - smoothstep(0.0055, 0.0055 + px, length(an)))*wfIn(arm, px)*(1.0 - inDisc)*step(q.y, 0.53)*mmLod(0.034, px);
+    col = mix(col, brass*(0.40 + 0.55*smoothstep(-0.003, 0.003, an.y)), aNail);
+    shd = mix(shd, 0.95, aNail);
+    /* the cushion: its top, its front, the welt between */
+    float cTop = smoothstep(0.468 - px, 0.468 + px, q.y);
+    float cArm = smoothstep(0.205 - px, 0.205 + px, ax)*step(0.0, sk);   // the near arm's shadow on its end
+    /* (...and the sheen a ruled stroke along the crown of its front edge,
+       dying toward the arms) */
+    float cHi = dkBand(q.y - 0.474, px)*step(0.474, q.y)*smoothstep(0.25, 0.12, ax);
+    wfLay(col, ink, cush, mix(mix(lea*0.74, leaL*0.92, cTop), leaL*1.15, cHi), px, 0.9);
+    ink = max(ink, mmInkP(q.y - 0.468, px, 1.0)*0.50*wfIn(cush, px)*mmLod(0.05, px));
+    ink = max(ink, mmInkP(q.y - 0.402, px, 1.0)*0.32*wfIn(cush, px)*mmLod(0.05, px));
+    shd = mix(shd, mix(0.90 + 0.12*kx/0.27, 1.34, cTop)*(1.0 + 0.75*cHi)*(1.0 - 0.34*cArm), wfIn(cush, px));
+    /* the seat rail, its brass nails along its foot */
+    float rHi = dkBand(0.338 - q.y, px)*step(q.y, 0.338)*smoothstep(0.38, 0.20, ax);    // its own sheen, under that shadow
+    wfLay(col, ink, rail, mix(lea*(0.66 + 0.12*smoothstep(0.19, 0.39, q.y)), leaL, rHi), px, 0.9);
+    vec2 rn = vec2(mod(q.x, 0.034) - 0.017, q.y - 0.215);
+    float nails = (1.0 - smoothstep(0.009, 0.009 + px, length(rn)))*wfIn(rail, px);
+    col = mix(col, brass*(0.55 + 0.80*smoothstep(-0.004, 0.004, dot(rn, Ld))), nails);
+    float rS = (0.88 + 0.10*kx/0.42)*(1.0 + 0.60*rHi)*(1.0 - 0.36*smoothstep(0.352 - px, 0.352 + px, q.y))*(1.0 + 0.30*dkBand(0.42 - kx, px) - 0.30*dkBand(0.42 + kx, px))*(1.0 - 0.30*dkBand(q.y - 0.19, px));
+    shd = mix(shd, mix(rS, 1.10, nails), wfIn(rail, px));
+    gWgShade = shd;
+    /* (the sheen is in the planes above: the lamps' own highlight, taken
+       off the outline's slope two pixels at a time, lay across the back,
+       the cushion and the rail as stepped pale bars) */
+    gWfGloss = 0.14;
+    gWfMoon = 0.6*wfIn(min(min(arm, wing), back), px)*smoothstep(0.5, 1.1, q.y);
+    gWfCol = col; gWfInk = ink;
+    return d;
+  }
+#endif
   wfLay(col, ink, legs, maho*(0.5 + 0.5*wfRound(clamp((ax - 0.34)/0.026, -1.0, 1.0))), px, 0.85);
   /* the back: its inner face, buttoned, darker low down where the seat
      shades it */
