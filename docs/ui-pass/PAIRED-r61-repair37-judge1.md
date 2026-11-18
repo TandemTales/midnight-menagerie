@@ -1,0 +1,5 @@
+SURVEY-room-study-library: A by 2 -- the book piles on the rug and near floor carry banded spines, title labels and pale page edges in A, where B's are plain flat-coloured slabs; everything else in the room is identical.
+SURVEY-room-passages-passage: B by 2 -- the four near-floor book stacks in B have gilt-banded spines, labels and page-edge blocks and their candles stand in holders with a lit flame, where A's are blank coloured blocks under an unlit white stub.
+
+### PATTERN
+The better version draws its books as books. Needed next: (1) the lit candles to actually cast warm light and a pool of glow on the stacks and floorboards beside them, since the flame currently lights nothing; (2) the same painted detail carried to the remaining plain near and middle objects (the passages' dark crates and side tables, near-silhouettes, and the open books' pages); (3) deeper, coloured darks in the passages' ceiling and the library's far floor, plus the big left-hand objects in the passages (table and vase) pulled fully into frame.

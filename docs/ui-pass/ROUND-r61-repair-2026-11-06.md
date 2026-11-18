@@ -562,3 +562,19 @@ Next, from both judges: the skull stack modelled (side planes, candle-lit skulls
 Tests (with both pieces in): link-queue 104/0, crypt 41/0, lampworks 45/0, grounding PASS, steam-deck 6/6. The merged state, crypt piece only, was not re-run; the battery is its check.
 
 Key: `PAIRED-r61-repair35-key.json`. Evidence: `C:/UILOOP/s21/ev35/`.
+
+## Repair 37: the book piles painted as books, and the candle lit (2026-11-18)
+
+Repair 34's judges, first on both lists: "the book stacks are still flat colour slabs with no spines, page edges or candle flame, and the candle stubs on top are unlit white pegs" (`f5a1577a`, merged `e6e672c3`). Only shaders/backdrop.js changed; arithmetic only, link-queue still 104.
+
+- **Why they were slabs:** the old page test came out about 1 everywhere, so every book was painted as its cloth alone.
+- **Why the candle was a peg:** the flame was always drawn, but ABOVE the wax and outside the shape's silhouette, where pixels are discarded; repair 20's light pool then multiplied the stub to white. **The same clipped-flame bug is still in every other `wfCandle` user** (the passage table's stub in `wfServTable`, the torchere, the hall table's chamberstick): their flames never draw. Open.
+- **One shared painter, `wfBookFace`,** in both `wfBookPile` (passages) and `wfBooks` (study, at 0.75 scale). About six books in ten show a spine (leather with a sheen line, raised bands, and by seed gilt bands with a lettering-piece and lozenges, plain bands with a lettering-piece, or cloth lettered between two gilt rules); the rest show a fore-edge (boards overhanging an inset, ruled page block, stained red or gilt). Two in three lie turned; each lays a dark line on the one beneath.
+- **The passages' candle:** flame and wick inside the silhouette, an ivory stub on a brass saucer with a drip, standing on the top book. The study's piles get no candle.
+- Dropped along the way: pale page blocks (washed the piles lighter), all-black lettering-pieces ("cassettes").
+
+The paired check was against dev at repair 34: **4-0, all four "clearly"** (the passages 2 and 2, the study 2 and 2). The old piles "read as placeholder geometry"; the new are "drawn as books". Both judges ask next for the lit candles to throw a warm pool on the books and boards ("the flame currently lights nothing"), the same paint on the passages' crates and side tables ("near-silhouettes", and cut by the frame edges), and the study's far piles lifted so their spines survive.
+
+Tests: link-queue 104/0, secret-passages 74/0, study-library 50/0, grounding PASS (24 views), steam-deck 6/6; 192 programs linked with live uniforms.
+
+Key: `PAIRED-r61-repair37-key.json`. Evidence: `C:/UILOOP/s21/ev37/`.
