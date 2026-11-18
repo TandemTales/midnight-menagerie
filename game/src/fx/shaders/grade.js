@@ -61,6 +61,11 @@ export const GradeShaderDef = {
     uDirt:       { value: 0.65 },
     uExposure:   { value: 1.0 },
     uLift:       { value: 0.0 },       // black point — stays 0 unless a scene wants haze
+    /* (round 61 repair 39) THE HUE A WING'S DARKS HOLD: rgb is that hue at
+       unit luminance (times the wing's shadowGain), a how far a dark is
+       carried to it. All zero wherever a wing does not ask: mix(col, x, 0.0)
+       is col, so every other room is as it was. Atmosphere._applyGrade. */
+    uShadowHue:  { value: [0, 0, 0, 0] },
     uImpact:     { value: null },      // THREE.Vector4 (x, y, age 0..1, strength)
     /* Mirrors renderer.toneMappingExposure. Only used when MM_TONEMAP is on —
        i.e. when this pass has absorbed the OutputPass. */
@@ -107,7 +112,7 @@ export const GradeShaderDef = {
     uniform sampler2D tDiffuse;
     uniform vec2  uTexel, uShake;
     uniform vec3  uFlashColor, uPulseColor, uWarmTint, uCoolTint, uHaloColor;
-    uniform vec4  uImpact;
+    uniform vec4  uImpact, uShadowHue;
     uniform float uTime, uGrain, uVignette, uAberration, uFlash, uPulse, uDesat,
                   uDread, uToneAmt, uHalation, uDirt, uExposure, uLift, uAspect,
                   uSaturate, uContrast, uToneExposure,
@@ -255,6 +260,23 @@ export const GradeShaderDef = {
         float w  = smoothstep(0.012, 0.10, sl);
         col = mix(col, vec3(sl) + (col - vec3(sl)) * uSaturate, w);
         col = max(col, 0.0);
+      }
+
+      /* ---- the hue the darks hold (round 61 repair 39) -----------------------
+         Three surveys running: "darks that hold colour instead of falling to
+         black along the room sides and far floor". MEASURED, and it is not
+         the ambient (a saturated ambient twice as strong moved those regions
+         0.1 of 100) and not the vignette (0.62 at the mid-edge): it is the
+         power curve on the next line, which takes a wall the lamps barely
+         reach from 0.05 of linear to 0.006 and its hue with it. So a DARK is
+         carried toward the wing's own deep hue AT ITS OWN LUMINANCE, here,
+         before the curve: multiplied, never added, so a black pixel stays
+         exactly black, a drawn line inside the dark keeps its ratio to the
+         ground beside it, and nothing above 0.10 -- the lit room -- is
+         touched at all. Not a lift, not a fog: the value barely moves. */
+      if (uShadowHue.a > 0.0) {
+        float hl = mmLum(col);
+        col = mix(col, uShadowHue.rgb * hl, (1.0 - smoothstep(0.0, 0.10, hl)) * uShadowHue.a);
       }
 
       /* ---- shadow contrast: a pivotless power curve in linear light --------- */
