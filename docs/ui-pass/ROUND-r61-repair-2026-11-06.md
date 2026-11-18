@@ -822,3 +822,22 @@ Marked down inside the winner, for a later repair: the judges disagree on the ur
 Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, graveyard 35/0, study-library 50/0, crypt 41/0 (on the branch, before the merge with repair 52's paint in the same file; the merge was clean).
 
 Key: `PAIRED-r61-repair51-key.json`. Evidence: `C:/UILOOP/s21/ev51/`.
+
+## Repair 46: mounts on the map's round controls and header plates clear of the signs are in; the rail's air and the cog's arc split and are out (2026-11-18)
+
+Survey 22's asks: air on the HUD strip at 1280, the "ghost arc" round the cog, mounts on the map's knobs. Repair 46 built four parts in CSS; two are merged (`90fb1da5`, `2e158671`, `c5e84292`), two were reverted on the branch before merging (`42526731`, `4d5472e0`, `8e289e04`).
+
+- **In: mounts on the map's round controls** (map.css). The pencil tray's zoom knobs and the map bar's whole-house medallion wear `--kit-mount-ring` (an outer gilt rule and four studs). Both judges, by 2, on map, map-focus and hud-late: "double-rimmed studded zoom knobs, and a properly rimmed gold home medallion", where dev's was "a dull brown ring that sinks into the bar". At 1420px and under the tray's upright and title give up 6px for the rings; the tray's ends do not move.
+- **In: header plates at 1400px and under** (atlas.css, clubhouse.css). The clubhouse's FREED plate moves 10px out and the atlas's tally 16px, off the title sign's scroll. Both judges, by 1, on all three screens.
+- **OUT, split 1-1 on every rail-only screen (combat-boss, rest, shop): the cog's arc and the rail's air.** The arc turned out to be the rail picture's own capsule end (`hw-rail.webp`), a few pixels outside the cog's smaller ring; the repair laid the straight channel over it. One judge: "a clean single cog rim", against "an off-centre ghost arc". The other preferred the arc: "a rounded plate end that wraps the cog and leaves a clear gap before the brass corner cap", though "faint and a little lopsided", against rules that "run flat into the cap"; and preferred the tighter purse because each number sits "after its own icon", where the +1px gaps left them "floating midway between two icons". A removal again: the arc wants to be DRAWN as "a firm gold rule" concentric with the cog, not taken away, and air must not cost a number its icon.
+- Left by the builder: the How to play plate over THE WAY IN (hung lower it lands on the same lettering).
+
+The paired check, nine screens at both sizes against dev: **15-3** as built; the three losses are one judge on the three rail-only screens, and those parts are not in the merge. The merged form (mounts and plates without the rail change) was not captured: the next survey is its check.
+
+Marked down inside the winner: the knobs' new rims "nearly kiss each other and the tray rod", and the medallion "rides the bar's lower rule" at 1280. Next, from both: header plates joined to the sign on purpose (a ribbon tail, matched height); the tray's text buttons and the pale Chalk/Eraser chips given enamel and a rim.
+
+The builder also noted, unverified: `.kit-medallion--mounted`'s plum glaze (repair 43) may be overridden by the two-layer `background-image` rule near `kit.css:3327`.
+
+Tests (on the branch with all four parts): help-frame 38, chrome 27/0, gamepad 24/0, steam-deck 6/6, map 38/0, scene-css 0, css-tokens 0, readability minFont unchanged.
+
+Key: `PAIRED-r61-repair46-key.json`. Evidence: `C:/UILOOP/s21/ev46/`.
