@@ -1374,6 +1374,10 @@
    it, under a wider dark edge) and inside box/2 + 2.2px on the tight rail,
    where 2.4 still leaves 2.5px of dark before the end block. It never grows
    past the rail's own mouldings (.745 of the rail). */
+/* Blind (repair 55): both judges preferred the whole ring at 1600 ('concentric
+   and seated') and the rail as it was at 1280, where an open seat read as 'a
+   bright broken off-centre arc'. So the seat is drawn on the wide rail only. */
+@media (min-width: 1401px) {
 .mm-hud .mm-hud__group--meta > .mm-hud__settings.mm-hud__settings::before {
   --seat-out: 2.85px; --seat-edge: 1px;
   content: ""; position: absolute; z-index: -1; pointer-events: none;
@@ -1388,19 +1392,5 @@
     linear-gradient(150deg, #f3dfa8, var(--kit-gold-hi) 22%, var(--kit-gold) 50%, var(--kit-gold-lo) 90%);
   mask: radial-gradient(closest-side, transparent calc(100% - 5.8px), #000 calc(100% - 5.3px), #000 calc(100% - .3px), transparent 100%);
 }
-/* On the tight rail the count stands 7px from the cog, so there the seat is
-   open on the channel's side: the channel's own rules run into the curve and
-   the count keeps its air. The channel's rules are measured from the middle
-   of the rail's box. */
-@media (max-width: 1400px) {
-  .mm-hud .mm-hud__group--meta > .mm-hud__settings.mm-hud__settings::before {
-    --seat-out: 2.4px; --seat-edge: .5px;
-    --seat-top: calc(var(--hud-h) * .3125 - .5px); --seat-bot: calc(var(--hud-h) * .328 + .5px);
-    mask:
-      radial-gradient(closest-side, transparent calc(100% - 5.8px), #000 calc(100% - 5.3px), #000 calc(100% - .3px), transparent 100%),
-      linear-gradient(#000, #000) 100% 0 / 50% 100% no-repeat,
-      linear-gradient(180deg, #000 calc(50% - var(--seat-top)), transparent calc(50% - var(--seat-top)), transparent calc(50% + var(--seat-bot)), #000 calc(50% + var(--seat-bot))) 0 0 / 50% 100% no-repeat;
-    mask-composite: intersect, add;
-  }
 }
 /* == end the cog's seat == */
