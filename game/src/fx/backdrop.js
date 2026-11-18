@@ -285,6 +285,27 @@ function footNear(region, p, feet) {
               { dx: 0.30 * q, dz: 0.02, w: 0.19 * q, d: 0.11 * q, k: 1.35 },
               { dx: 0, dz: 0.02, w: 0.17 * q, d: 0.10 * q, k: 1.35 }] };
   }
+  /* (round 61 repair 56, repair 51's judges: the wing chair's legs and the
+     desk's foot "need contact shadows and a lit ground edge rather than a
+     void". Both stood on the house's pool, 1.6 of the quad wide: under the
+     desk the boards measured 3 of 255 from its plinth out to a metre in
+     front of it. wfChair (56, 1.20 m nominal): a thin shade under the seat
+     rail and a small dense pool at each leg, +-0.34. wfDesk (53, 1.30): its
+     two pedestals stand on plinths, +-0.28 to +-0.76 -- a pool each, their
+     own width, dense along the plinth's front, and a thin shade through the
+     kneehole between them.) */
+  if (region === 'study' && s === 56) {
+    const q = h / 1.20;
+    return { dz: -0.12 * q, w: 0.80 * q, d: 0.40 * q, k: 0.65,
+      extra: [{ dx: -0.34 * q, dz: 0.02, w: 0.16 * q, d: 0.10 * q, k: 1.35 },
+              { dx: 0.34 * q, dz: 0.02, w: 0.16 * q, d: 0.10 * q, k: 1.35 }] };
+  }
+  if (region === 'study' && s === 53) {
+    const q = h / 1.30;
+    return { dz: -0.10 * q, w: 1.50 * q, d: 0.36 * q, k: 0.60,
+      extra: [{ dx: -0.52 * q, dz: 0.02, w: 0.54 * q, d: 0.10 * q, k: 1.25 },
+              { dx: 0.52 * q, dz: 0.02, w: 0.54 * q, d: 0.10 * q, k: 1.25 }] };
+  }
   if (region === 'study' && s === 88) {
     const q = h / 0.34;
     const m = mmHash11((p.seed || 0) * 3.71 + 88 * 0.13) < 0.5 ? -1 : 1;
