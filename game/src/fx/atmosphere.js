@@ -612,6 +612,11 @@ export const REGIONS = {
                  tint: '#ffcf9a', wispTint: '#8fd9a8', emberTint: '#ff7a28',
                  speed: 1.2, scale: 1.05, wind: 1.3, density: 0.95 },
     exposure: 1.98, vignette: 1.56, contrast: 1.55,
+    /* (round 61 repair 48: the darks hold the BRICK's own deep red -- both
+       far corners and the side walls past the dresser and the pan rail were
+       a hueless black. Multiplied, never added; the blue panes, the delft
+       and the cabbages sit above the 0.10 it reaches and keep their colour) */
+    shadowHue: '#5c1414', shadowAmt: 0.85, shadowGain: 1.1,
     key:  { glow: 0, kind: 'warm', x: -3.6, y: 2.8, z: 2.0, color: '#db8f51', intensity: 1.39, radius: 6.88 },
     /* (round 22 graft, all three judges: "the milky cyan moonlight pools on
        the flagstones at the lower left and right of both rooms wash the
@@ -1643,6 +1648,12 @@ export const REGIONS = {
                  tint: '#ffe0b8', wispTint: '#a87fd8', emberTint: '#ffb64a',
                  speed: 0.8, scale: 0.9, wind: 0.5, density: 0.45 },
     exposure: 1.72, contrast: 1.28,
+    /* (round 61 repair 48: the darks hold a deep OXBLOOD MAHOGANY, one cool
+       step from the panelling's red-brown -- the ceiling and its beams and
+       the recesses between the pilasters were black. 0.6 and a gain of 0.75,
+       and not the browner '#4e1c10': the violet pool at the far door lives
+       in these darks and a warmer or stronger hue turned it maroon) */
+    shadowHue: '#4e161c', shadowAmt: 0.6, shadowGain: 0.75,
     /* (graft, all three judges: "the violet and amber floor pools are soft
        smears -- sharpen them"; and "pull the lit panel mid-tones from mauve
        toward deep brown-aubergine". The key and the fill were two great soft
