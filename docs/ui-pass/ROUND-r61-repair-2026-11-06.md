@@ -716,3 +716,17 @@ The paired check, eight screens at both sizes against dev: **16-0**; the six scr
 Tests: scene-css 0, css-tokens 0, chrome 27/0, gamepad 24/0, steam-deck 6/6, readability every floor unchanged. **help-frame failed for the builder three times, identically on the untouched build** ("Unable to capture screenshot" at the first hand capture): machine state under three builders; re-run on the merged build with the GPU quiet.
 
 Key: `PAIRED-r61-repair43-key.json`. Evidence: `C:/UILOOP/s21/ev43/`.
+
+## Repair 47: the candle stands, the heart's statues and urn, the gallery's bust modelled (2026-11-18)
+
+Surveys 21 and 22: prop surfaces "still read as rendered rather than painted ... not just on the repaired props"; candle stands "flat stickers"; the gallery bust "a flat, evenly toned cutout". Repair 47 is three commits, one per object (`fa198750` torchere, `a6e0196a` heart, `a60b1f87` bust; merged). Only shaders/backdrop.js; arithmetic only (link-queue 104); no silhouette moved.
+
+- **Torchere** (shape 65; foyer parlour, ballroom): a helper `wfGilt` gives every tube a highlight down the key side and the brass's own shade on the far side; knops as balls with a spark and a dark line beneath; arms lit along the upper edge; pans with a lit rim; feet lit along their backs. **The saturation cap was the measured problem** (the stem sat exactly at the 0.42/0.62 cap's limit); shape 65 now gets 0.54/0.76 in the wing-4 program, as the gilt chair does.
+- **The heart's veiled figures** (`stDrawG`): folds as facets through a new `stFacet` (a dark line in the trough, a lit ridge on the wall facing the key), only where a fold is 6 px or more; the trough ink came DOWN 0.85 to 0.50, since with the facet line it read as a black cord. **Plinth and urn** (shape 81): cornice lit above and shaded below, a sunk panel with a shadow and lit inner edges, the vase turned with a core shadow and a reflected far edge. The hedge shares statue and urn and is pixel-identical (the new paint is gated inside `MM_SH85`).
+- **The gallery's bust** (shape 26): it was a slab because it stood at luma 26-44 and its carving was relief read through coarse derivatives. Now head, brow, nose and jaw planes, mantle folds as planes, a lit cap and an inset panel on the term, on the lit colour (chest 44 to 84). A uniform lift turned the far niche busts pale white; they keep their value and take two tones, scaled by pixel size.
+
+The paired check, four rooms against dev: **8-0** (heart 2 and 2, gallery 2 and 1, parlour 1 and 1, ballroom 1 and 1). Both judges were asked to rule on every object: the urn and plinth decide the heart, the bust the gallery, the stands the other two; no object was better in dev's version, with three small pulls against: **the bust's shoulders "carry bold diagonal light bands that read as stripes rather than modelling"**; the statues' fold lines "slightly hard and stair-stepped"; the stands' thinner stems "show a short dark break just above the tripod" and lose a little weight low down. Next: those three; "the same lit-edge treatment carried to the chairs, cabinets and tables, which are now flatter than the objects beside them"; chased ornament on brass, chips and veining on stone, warm candle bounce.
+
+Tests: link-queue 104/0, foyer 66/0, ballroom 46/0, heart 44/0, grounding PASS, steam-deck 6/6.
+
+Key: `PAIRED-r61-repair47-key.json`. Evidence: `C:/UILOOP/s21/ev47/`.
