@@ -547,3 +547,18 @@ Both judges ask next for painted detail on the book piles ("flat colour slabs wi
 Tests (before the urn was dropped): grounding PASS, steam-deck 6/6, link-queue 104/0, secret-passages 74/0, heart 44/0.
 
 Key: `PAIRED-r61-repair34-key.json`. Evidence: `C:/UILOOP/s21/ev34/`.
+
+## Repair 35: a charnel stack on the crypt's near flags; the lampworks' rack LOST (2026-11-18)
+
+Repair 32's judges: "the crypt's wide empty floor and the lampworks' centre aisle are bare" (`11d34339` and `a9ffe209`, merged `5f0ee9db`).
+
+- **Crypt, kept (2-0, both "slightly").** A charnel stack (shape 59, hM 1.1, ahead 4.2, across 0.55) on the `catacombs` kind's `nearPlus`, flagged `keep`, `still`, `hand`, with its plinth's footprint in `footOf` (`crypt` is now in `FOOT_WINGS`; everything else in the wing returns null). Judges: "a readable object that has a base and a contact shadow", but "its black triangular face reads as a flat cutout" of "stamped, identical skulls".
+- **Lampworks, LOST 0-2, left out.** A candle-dipping rack (43) beside the aisle: "a see-through lattice laid over the room's focal point", its rods "tangle with the benches and kiln mouth behind it". The rule both judges drew: a mid-floor piece helps when it is "a solid, grounded mass in an otherwise empty stretch of floor" and hurts when it is "a thin lattice in front of detail that was already reading well". A comment at the `lampshop` kind records it.
+- Also tried and dropped by the builder: a statue in the crypt (a murky near-black figure) and a gas standard in the lampworks (no lamp reaches it: a black pole).
+- **In these two rooms `across` positive lands screen-LEFT** (the rooms draw mirrored).
+
+Next, from both judges: the skull stack modelled (side planes, candle-lit skulls, varied shapes), and darks that hold colour in the side aisles.
+
+Tests (with both pieces in): link-queue 104/0, crypt 41/0, lampworks 45/0, grounding PASS, steam-deck 6/6. The merged state, crypt piece only, was not re-run; the battery is its check.
+
+Key: `PAIRED-r61-repair35-key.json`. Evidence: `C:/UILOOP/s21/ev35/`.

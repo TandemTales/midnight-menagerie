@@ -1,0 +1,5 @@
+SURVEY-room-crypt-catacomb: B by 1 -- the skull pyramid on its plinth fills the empty middle floor with a readable object that has a base and a contact shadow, though its black triangular face reads as a flat cutout rather than a modelled heap.
+SURVEY-room-lampworks-lampworks: B by 1 -- the drying rack in A stands on stick-thin posts with almost no shadow and its pale rods tangle with the benches and kiln mouth behind it, whereas B leaves the kiln arch and the two far benches crisp and legible as the room's focal point.
+
+### PATTERN
+A middle-floor object helps when it is a solid, grounded mass in an otherwise empty stretch of floor, and hurts when it is a thin lattice in front of detail that was already reading well. Needed next: (1) modelled form on the added props -- the skull pyramid needs side planes, candle-lit skulls and varied skull shapes instead of a black triangle of identical stamps; (2) stronger contact shadows and candle-warm light on middle-floor objects; (3) the near floor's darkest corners holding colour and tile detail.
