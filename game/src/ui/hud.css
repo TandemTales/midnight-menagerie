@@ -219,6 +219,27 @@
   background: var(--kit-mount-ring) 50% 50% / 100% 100% no-repeat;
 }
 /* == end gilt mount == */
+/* == one family on the rail (repair 43) == */
+/* Repair 36's judges: "the cog now outranks its neighbours and the strip looks
+   uneven", and its ring "fills the strip from rail to rail and crowds the count
+   beside it". Every round enamel on the rail now wears the cog's mount, and all
+   the mounts are ONE size: the outer rule is 1.19 chip heights across on each,
+   which stands inside the channel's own rules. The cog's button, its glyph and
+   its hit area keep their size; its enamel face is drawn at its neighbours'
+   size inside the mount, which leaves the count beside it 3px more air
+   without the rail's layout moving (a wider cog cost the belt a socket). */
+.mm-hud__chip > .mm-icon:first-child { position: relative; }
+.mm-hud__chip:not(.mm-hud__settings) > .mm-icon:first-child::after,
+.mm-hud__courage > .mm-icon:first-child::after {
+  content: ""; position: absolute; inset: -3.2%; pointer-events: none;
+  background: var(--kit-mount-ring) 50% 50% / 100% 100% no-repeat;
+}
+/* on the tight rail the icon is a flex box (line 1272), which stood its glyph
+   against the medallion's left edge: in a ring it has to sit in the middle */
+.mm-hud[data-terse="1"] :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck, .mm-hud__haunt) > .mm-icon:first-child { justify-content: center; align-items: center; }
+.mm-hud .mm-hud__settings { background-size: 90.3% 90.3%, 90.3% 90.3%; }
+.mm-hud .mm-hud__group--meta > .mm-hud__settings.mm-hud__settings::after { inset: 1.94%; left: 1.94%; top: 1.94%; }
+/* == end one family on the rail == */
 
 /* ── Courage: a crimson enamel gauge let into a lettered plate ────────────────
    Round 4's judges saw a flat red capsule. The readout is a PLATE now: the
