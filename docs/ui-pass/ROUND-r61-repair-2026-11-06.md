@@ -669,3 +669,19 @@ The paired check against dev: **4-0** (crypt 2 and 2, pumpkin 1 and 2). The old 
 Tests: link-queue 104/0, pumpkin-grounds 70/0, crypt 41/0, grounding PASS, steam-deck 6/6.
 
 Key: `PAIRED-r61-repair42-key.json`. Evidence: `C:/UILOOP/s21/ev42/`.
+
+## Repair 44: the foyer's furniture on its own footprint shadows; the tightened pools lost (2026-11-18)
+
+Repair 41's judges held two things against its candle pools (black tiles lifting to brown, petals bleaching to pink) and asked for the far furniture's feet grounded. Repair 44 (`beb57ee1` + `2243fd73`, merged) tried both.
+
+- **The pools, tightened: LOST 0-4.** The builder found the cause of the bleach (the grade's ACES shoulder mixes channels when a near-maximum crimson is driven 7x) and made the pool tighter, weighted by the floor's own value, and capped per room so nothing over the ceiling takes light. It measured as asked (petals H 9.9/S 0.76 back to H 3.7/S 0.83; black tiles 4.2 back to 2.9). **Both blind judges preferred repair 41's pool** in the ballroom and the passages: "the same room a shade dimmer". Reverted before the merge; a comment at the candle branch says so. **The lesson: a judge who names a flaw in a winner is not asking for less of the winner.** The complaint was real in a crop and the cure cost the light that won. If this is tried again, keep the pool's brightness on pale tiles and boards and treat only the petals (their own albedo term).
+- **Feet on the floor: WON 2-0, both "clearly".** A kind flag (`feet: true`, the foyer's parlour only) gives footprint shadows through `footNear`: a thin shade under the rail and a small dark pool at each foot, for the hall chairs (63), vitrines (64), pier table (66) and the clock's plinth (62). "The near green chairs' feet carry dark contact shadows joined to the legs", where dev's was "a detached blob below the feet so both chairs float". The stair hall and gallery are left: their cameras are turned and a square-laid pool would run out from under the furniture.
+- **Skipped:** the ballroom's far-right chairs. They stand on black floor with unlit legs, so a contact shadow cannot show; the real fix is a third candle pool from the candelabrum among them, which costs a shaft slot.
+
+The merged state (feet with repair 41's pools) was captured (`ev44/final-*.png`): the passages are pixel-identical to dev, the ballroom within 1 level on 193 pixels, the foyer keeps the feet. It was not paired on its own; survey 22 is its check.
+
+Next, from both judges: foot shadows "shaped by the object and the light direction rather than flat black ellipses"; the candle pools "shaped by the objects, with a cast shadow thrown away from the flame"; the ballroom's left pool "ending in a straight vertical edge".
+
+Tests (merged form): link-queue 104/0, foyer 66/0, ballroom 46/0, secret-passages 74/0, grounding PASS.
+
+Key: `PAIRED-r61-repair44-key.json`. Evidence: `C:/UILOOP/s21/ev44/`.
