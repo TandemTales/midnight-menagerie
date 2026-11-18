@@ -20835,10 +20835,11 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
       float mr = 0.045 + 0.035*h3;
       float s0 = gyPatch(mp, mr, seed);
       if (h2 > 0.30) ms = gyMoss(ms, s0, clamp((gyPatch(mp + vec2(0.0, e), mr, seed) - s0)/e, -1.0, 1.0), px);
-      /* (the cap: thickest at its middle and run out to nothing at its ends
-         and down the shoulder -- a clump, not a ribbon) */
+      /* (the cap: cushions of it side by side along the edge, deepest at
+         the middle of the run and gone at its ends and down the shoulder --
+         clumps, not a ribbon) */
       float cr = (p.x + sd*W*0.35)/(W*(0.30 + 0.25*h2));
-      if (h1 > 0.35) ms = gyMoss(ms, -d - (0.010 + 0.046*abs(sin(p.x*15.0 + seed*4.0)))*max(1.0 - cr*cr, 0.0)*smoothstep(ty + 0.11, ty + 0.20, p.y) + 0.004, -1.0, px);
+      if (h1 > 0.35) ms = gyMoss(ms, -d - (0.008 + 0.050*abs(sin(p.x*36.0 + seed*4.0)) + 0.016*abs(sin(p.x*61.0 + seed)))*max(1.0 - cr*cr, 0.0)*smoothstep(ty + 0.11, ty + 0.20, p.y) + 0.004, -1.0, px);
     }
     float mk = ms.x*wfIn(d, px);
     shd = mix(shd*(1.0 - 0.30*ms.z), ms.y, mk);
