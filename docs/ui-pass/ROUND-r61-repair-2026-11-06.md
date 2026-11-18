@@ -639,3 +639,19 @@ The paired check, three rooms against dev: **6-0** (foyer 2 and 2, ballroom 1 an
 Tests: link-queue 104/0, secret-passages 74/0, ballroom 46/0, foyer 66/0, grounding PASS, steam-deck 6/6. Built before repair 40 merged (shaders/backdrop.js auto-merged); the battery is the merged state's check.
 
 Key: `PAIRED-r61-repair41-key.json`. Evidence: `C:/UILOOP/s21/ev41/`.
+
+## Repair 36: the plate grown from its mount, the other round controls mounted (2026-11-18)
+
+Repair 31's judges asked for the help plate grown from its mount, the rim lifted to antique gold at 1280, the mount clear of the left edge, and the same mount on the other bare round controls. Repair 36 (`2e6f4670`, merged) does all four in CSS (kit.css, hud.css, story.css; one class added in clubhouse.js and atlas.js).
+
+- **Mounts:** new tokens `--kit-mount-ring` and `--kit-mount-crested` (inline SVG reusing repair 31's gradient, studs and knots) and `.kit-medallion--mounted`. The clubhouse's Title and the atlas's Back button wear the outer gold rule, four studs and a small leafed crest above and below; the settings cog wears ring and studs only (7.5% overhang: 9.1% ran over the rail's rules). The atlas's "The whole house" button has the class but is hidden in the survey view and was never seen rendered. Gameover's Title (one of a row of three) and the lobby's painted medallion are unchanged.
+- **The plate:** the pin is gone; a gilt collar on the ring's right side sends a leaf along the plate's top and bottom edges (`--st-yoke`).
+- **Rims:** a masked gold glaze at 58% over the bronze rim; ochre at rest, lit on focus as before.
+- **1280:** the rail at `left: 6px` (was 4) up to 1400px wide.
+- Dropped: a lozenge boss on the yoke (overlapped the "H"), a crestless ring on the back buttons (a faint second rule), a full fleur finial on Title (would cross the string-light wire at 1280).
+
+The paired check, seven screens at both sizes against dev: **14-0**, all "slightly". "The worse version leaves the cog's ring off-centre inside the strip's end cap, so two arcs collide, and its back button rim is too dark to read as gold." Next, from both: the strip's other buttons (fire, deck) and the left "n" button given the cog's rim, since "the cog now outranks its neighbours"; the cog ring "crowds the 16/0 beside it"; rims and bracket modelled with a bevel highlight, not "flat single-tone gold"; the back button's enamel "nearly black rather than purple"; bolder finials for the Deck; the How to play plate covering "THE WAY IN" on the map (in both versions).
+
+Tests: help-frame PASS (38), chrome 27/0, gamepad 24/0, steam-deck 6/6, scene-css 0, css-tokens 0, readability no floor moved. Not captured: the Discoveries plate's yoke, and `hud-late` with a full keepsake row.
+
+Key: `PAIRED-r61-repair36-key.json`. Evidence: `C:/UILOOP/s21/ev36/`.
