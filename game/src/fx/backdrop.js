@@ -59,7 +59,7 @@ const FLOOR_FRONT = 15;      // how far the floor reaches toward/behind the came
    +-0.90 q between its rolled ends (wgBtBody); a bench +-1.18 q (wgBnSD);
    the sacks as gkDraw lays them in true metres. Null leaves the house's
    pool as it was, and every other wing has none. */
-const FOOT_WINGS = { lampworks: 1, kitchens: 1, bathhouse: 1, hedge: 1 };
+const FOOT_WINGS = { lampworks: 1, kitchens: 1, bathhouse: 1, hedge: 1, pumpkin: 1 };
 /* gkDraw's mirror, as the shader takes it: mmHash11(seed*3.71 + 1.3) < 0.5 */
 function mmHash11(p) { p = (p * 0.1031) % 1; if (p < 0) p += 1; p *= p + 33.33; p *= p + p; return p % 1; }
 function gkMir(seed) { return mmHash11(seed * 3.71 + 1.3) < 0.5 ? -1 : 1; }
@@ -121,6 +121,24 @@ function footOf(region, p) {
     if (s === 30) return { w: w * 0.70, d: w * 0.48, k: 1.10 };
     if (s === 31) return { w: h * 0.40, d: h * 0.30, k: 1.15 };
     if (s === 23) return { w: 0.44, d: 0.32, k: 1.0 };
+    return null;
+  }
+  if (region === 'pumpkin') {
+    /* (round 61 repair 32, both judges: "firm contact shadows rather than
+       soft dark smears ... most visibly the pumpkins". A pumpkin sits on the
+       flags on the foot of its own body -- pkFrame's half-width, the
+       shader's own number, and not the quad's, which is its leaves' -- so
+       the pool is that foot, dense, a third of it deep and brought forward
+       of the drawing to show as a dark line under the rind; a bale's is its
+       own length and half a metre deep. What is set ON a bale keeps the
+       house's pool, which the bale hides.) */
+    if (p.y > 0.2) return null;
+    if (s === 27) {
+      const sq = 0.86 + 0.26 * mmHash11(sd * 7.31 + 0.5);
+      const rx = Math.min(0.45 * h * sq, w * 0.5 - 0.04 * h);
+      return { dz: 0.20 * rx, w: 1.70 * rx, d: 0.72 * rx, k: 1.25 };
+    }
+    if (s === 86) return { dz: 0.10, w: w * 0.66, d: 0.50, k: 1.25 };
     return null;
   }
   return null;
