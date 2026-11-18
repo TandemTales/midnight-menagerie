@@ -27999,6 +27999,50 @@ float wfBooks(vec2 q, float px, float seed, float kq, bool paint){
   float d = 1e3;
   vec3 col = vec3(0.1);
   float ink = 0.0;
+  /* (round 61 repair 33, both judges on the study, 2026-11-17: "the flat
+     dark shape on the floor left of the stacks reads as an unidentified
+     smear"; "reads as a smear rather than a book". The open one was drawn
+     edge-on, as the piles are -- two bowed leaves a thumb high, which at
+     this height is a sliver of ink. A book lying open on the boards is
+     seen from ABOVE: so it is drawn as it lies, its spread turned a hand
+     off square and foreshortened as the floor is (0.55), the cloth of its
+     boards showing round the pages, the page block's edge toward you, the
+     gutter, each page bowed up from it, its lines of text and a plate.
+     Laid FIRST, so the pile beside it stands in front of it.) */
+  vec2 oq = q - vec2(0.465, 0.016);
+  vec2 ofl = vec2(oq.x, oq.y/0.55 - 0.150);
+  vec2 bk = vec2(ofl.x*0.976 + ofl.y*0.218, ofl.y*0.976 - ofl.x*0.218);
+  float oCover = mmBox(bk, vec2(0.150, 0.105), 0.006)*0.55;
+  vec2 ofl2 = vec2(oq.x, (oq.y + 0.014)/0.55 - 0.150);
+  float oEdge = mmBox(vec2(ofl2.x*0.976 + ofl2.y*0.218, ofl2.y*0.976 - ofl2.x*0.218), vec2(0.150, 0.105), 0.006)*0.55;
+  float open = min(oCover, oEdge);
+  d = min(d, open);
+  if (paint) {
+    float ok = mmHash11(seed*4.7 + 1.9);
+    vec3 cloth = (ok < 0.34 ? vec3(0.46, 0.11, 0.08) : (ok < 0.67 ? vec3(0.12, 0.28, 0.17) : vec3(0.15, 0.18, 0.36)));
+    float au = abs(bk.x), sx = sign(bk.x);
+    /* the page block's edge toward you, ruled by its leaves, on its board */
+    vec2 ofl3 = vec2(oq.x, (oq.y + 0.010)/0.55 - 0.150);
+    float oBlock = mmBox(vec2(ofl3.x*0.976 + ofl3.y*0.218, ofl3.y*0.976 - ofl3.x*0.218), vec2(0.140, 0.094), 0.003)*0.55;
+    wfLay(col, ink, oEdge, cloth*0.62, px, 0.9);
+    wfLay(col, ink, oBlock, vec3(0.70, 0.64, 0.50)*(0.78 + 0.22*sin(oq.y*1400.0)), px, 0.5);
+    wfLay(col, ink, oCover, cloth*(0.95 + 0.25*kq*sx), px, 0.9);
+    /* the two pages, each bowed up from the gutter and lit on its crest */
+    float oPage = mmBox(bk, vec2(0.140, 0.094), 0.003)*0.55;
+    float crest = sin(clamp(au/0.140, 0.0, 1.0)*3.1416);
+    vec3 pgc = vec3(0.90, 0.84, 0.68)*(0.66 + 0.40*crest)*(1.0 - 0.30*smoothstep(0.020, 0.0, au))*(1.0 + 0.10*kq*sx);
+    /* a plate on one page, its lines of text on both */
+    float plate = mmBox(bk - vec2(-0.078, 0.040), vec2(0.036, 0.030), 0.002)*0.55;
+    pgc = mix(pgc, vec3(0.52, 0.36, 0.20)*(0.8 + 0.4*crest), wfIn(plate, px));
+    float rowI = floor(bk.y/0.030);
+    float rowE = 0.124 - 0.045*step(0.72, mmHash11(rowI*3.7 + sx*1.3 + seed));
+    float txt = (1.0 - smoothstep(0.10, 0.30, abs(fract(bk.y/0.030) - 0.5)))
+              * step(0.022, au)*step(au, rowE)*step(abs(bk.y), 0.080)*step(0.004, plate);
+    pgc = mix(pgc, pgc*0.42, txt*0.75*mmLod(0.0165, px));
+    wfLay(col, ink, oPage, pgc, px, 0.55);
+    ink = max(ink, mmInkP(plate, px, 1.0)*wfIn(oPage, px)*0.6);
+    ink = max(ink, mmInkP(au - 0.0015, px, 0.8)*wfIn(oPage, px)*0.75);
+  }
   for (int pile = 0; pile < 2; pile++){
     float px0 = pile == 0 ? -0.22 : 0.20;
     float y = 0.0;
@@ -28029,15 +28073,7 @@ float wfBooks(vec2 q, float px, float seed, float kq, bool paint){
       y += th;
     }
   }
-  /* the open one, lying beside the right pile, its two pages bowed */
-  vec2 oq = q - vec2(0.48, 0.0);
-  float leafL = max(abs(oq.x + 0.075) - 0.075, max(-oq.y, oq.y - (0.026 + 0.012*sin((oq.x + 0.15)*20.9))));
-  float leafR = max(abs(oq.x - 0.075) - 0.075, max(-oq.y, oq.y - (0.026 + 0.012*sin((oq.x)*20.9 + 3.14))));
-  float open = min(leafL, leafR);
-  d = min(d, open);
   if (!paint) return d;
-  wfLay(col, ink, open, vec3(0.82, 0.76, 0.62)*(0.75 + 0.35*smoothstep(0.0, 0.03, oq.y)), px, 0.8);
-  ink = max(ink, mmInkP(abs(oq.x) - 0.002, px, 0.8)*wfIn(open, px)*0.6);
   col *= 1.0 - 0.30*smoothstep(0.02, 0.0, q.y);
   gWfCol = col; gWfInk = ink; gWfGloss = 0.25; gWfMoon = 0.0;
   return d;
