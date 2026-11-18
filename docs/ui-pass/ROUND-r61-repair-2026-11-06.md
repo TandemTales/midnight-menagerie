@@ -765,3 +765,22 @@ Next, from both: the cabinets' glass deep again with one crisp highlight; the bu
 Tests (all four items in): link-queue 104/0, foyer 66/0, ballroom 46/0, heart 44/0, steam-deck 6/6, grounding PASS. The merged form (three items) was not re-run; the next battery is its check.
 
 Key: `PAIRED-r61-repair49-key.json`. Evidence: `C:/UILOOP/s21/ev49/`.
+
+## Repair 50: the shadow hue spares the passages' cold pools; a hue for the lampworks; the kitchens left as they were (2026-11-18)
+
+Repair 48's judges: the warm darks cost "the cold light pool", and "a red wash over near objects"; "both at once ... which no version here manages". Repair 50 (`894c98ab`, `1095e8d8`, `fa920d62`, merged) changes how the hue is mixed (shaders/grade.js) and adds one per-wing value.
+
+- **The weighting.** The mix's weight is multiplied by `(1 - keep)`, where `keep = smoothstep(0.10, 0.28, sat) * (1 - smoothstep(0.84, 0.96, kin)) * smoothstep(0.0002, 0.0015, luminance) * uShadowKeep`. `kin` is the cosine between the pixel's chroma and the hue's, both taken on `sqrt(rgb)` with the channel mean removed (in linear light the jug and the brick sit only 10 degrees apart; the square root gives the angles a capture measures). A dark within about 16 degrees of the wing's hue takes it whole; past about 33 degrees it keeps its own colour; a dark with almost no chroma or light takes the hue fully. Arithmetic only (link-queue 104).
+- **`shadowKeep`** (per wing, default 1; uniform `uShadowKeep`): the first trial spared everywhere and undid the heart and the ballroom, whose hues are deliberately laid over warm darks. Both set `shadowKeep: 0` and are pixel-identical to before.
+- **Passages (won 4-0):** the far pool measured hue 296 before repair 48, 334 after it, 303 now, and its cold pixels 2020, 114, 1983; the library's moonlight 310, 341, 317. The ceiling and walls hold (5.4 to 5.4). "A clear cold blue that reads as moonlight against the warm room", where dev's was "a wine-purple smudge". Both judges note the cost: the half-dark mid-floor boards "drift slightly olive-khaki".
+- **Lampworks (won 4-0, the main room "clearly" twice):** umber `#4a2412` at 0.7, which repair 48 could not use because the window-lit darks went magenta (hue 318). With the sparing the windows stay blue (220 to 225). "Deep red brick across the whole upper half", where dev's was "a neutral grey-brown with a cold milky haze".
+- **Kitchens: SPLIT 1-1 in both kinds, on one object, and left as repair 48.** The sparing gave the jug by the crock its own green glaze back. One judge: it "stands apart from the red crock and floor". The other: "a flat green-black cut-out that is the deadest thing on the floor", against the red-brown jug "modelled in the room's light". The kitchens set `shadowKeep: 0`. What both want is the jug's own colour AND a lit edge: a prop repair, not a grade one.
+- **Study and crypt tried again, still out:** the study's rug border is so near black that only its bluest pixels were spared; the crypt's darks are umber already and nothing shows.
+
+The paired check, six rooms against dev: passages **4-0**, lampworks **4-0**, kitchens **2-2**. The merged state has the kitchens exactly as dev had them (uncaptured in that form: the next survey is its check).
+
+Next, from both: far crates, dressers and tables in the kitchens and passages given lit edges and cast shadows; dark props modelled (a lit side, a core shadow, a rim), the kitchen jug first; the cold light carried further against the warm.
+
+Tests: link-queue 104/0, shader-literals 0, grounding PASS, steam-deck 6/6, kitchens 20/0, secret-passages 74/0, heart 44/0, ballroom 46/0, lampworks 45/0 (before the kitchens' one-value change).
+
+Key: `PAIRED-r61-repair50-key.json`. Evidence: `C:/UILOOP/s21/ev50/`.
