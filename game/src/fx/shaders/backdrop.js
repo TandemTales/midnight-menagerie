@@ -32985,8 +32985,12 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
     float dg = bmf*m.x + (m.y - 1.30)*0.95;         // across the mantle's fall
     float mant = smoothstep(-0.006, 0.006, dg + 0.04);
     h += 0.014 * mant * onS;
-    h -= 0.012 * mant * onS * (pR(dg - 0.02, 0.010) + pR(dg - 0.085, 0.010) + pR(dg - 0.15, 0.010));
-    h -= 0.010 * (1.0 - mant) * onS * pR(mod(m.x*bmf + 0.02, 0.07) - 0.035, 0.009) * step(m.y, 1.36);
+    /* (round 61 repair 47: where a fold is wide enough to PAINT -- below, on
+       the lit colour -- it is not also carved: a centimetre's channel read
+       back through the quad's derivatives came out as a row of dashes) */
+    float bFoldR = 1.0 - pRes(0.065, max(mpp.x, 0.003));
+    h -= 0.012 * mant * onS * (pR(dg - 0.02, 0.010) + pR(dg - 0.085, 0.010) + pR(dg - 0.15, 0.010)) * bFoldR;
+    h -= 0.010 * (1.0 - mant) * onS * pR(mod(m.x*bmf + 0.02, 0.07) - 0.035, 0.009) * step(m.y, 1.36) * bFoldR;
     h += 0.014 * sqrt(max(1.0 - pow(m.x/0.25, 2.0), 0.0)) * onS;
     vec2 f = vec2(m.x, m.y - 1.665);
     float xc = bf*0.030;
@@ -33029,6 +33033,76 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
                 * step(abs(f.x - bf*0.030), 0.075);
     float bShd = onH*smoothstep(-0.01, 0.05, -bmf*(f.x - bf*0.030))*(1.0 - hairB);
     tint -= 0.90*bSock + 0.60*bNose + 0.75*bChin + 0.30*bShd;
+    {
+      /* (round 61 repair 47, survey 18 and repair 19's judges: the gallery's
+         bust "flat, evenly toned", to be "modelled with painted light and
+         shade". The carving above is a relief read back through the quad's
+         coarse derivatives: at this size it lights nothing. So the planes
+         are PAINTED, on the lit colour (gWgShade): the head in two planes
+         that meet down the line of the nose, the brow and the cheek facets
+         to the light, the far side of the nose and the jaw's underside in
+         shade, the neck in the chin's shadow; the mantle's folds each a
+         plane from a lit ridge down to a dark line; the socle round with a
+         highlight; the cap's top lit and its shadow on the term; the term's
+         corner to the key a lit edge, and its sunk panel with the shadow of
+         its own upper and key-side edges. Stone: no sparkle, flat planes.) */
+      float kx = uKeyDir.x >= 0.0 ? 1.0 : -1.0;
+      float bs = 1.90;
+      /* the term and its panel */
+      float twT = 0.12 + 0.05*clamp((m.y - 0.09)/0.92, 0.0, 1.0);
+      float onTm = pB(m.y, 0.09, 1.00);
+      float tdx = kx*m.x/twT;
+      bs *= 1.0 + onTm*(0.60*smoothstep(1.0 - 3.2*bpx/twT, 1.0 - 2.2*bpx/twT, tdx) - 0.28*smoothstep(-0.45, -0.95, tdx));
+      float eW = max(0.016, 1.6*bpx);
+      float tIn = smoothstep(bpx*0.5, -bpx*0.5, tp)*onTm;
+      float tSh = max(smoothstep(eW, eW - bpx, 0.91 - m.y), smoothstep(eW, eW - bpx, 0.075 - kx*m.x));
+      float tLt = max(smoothstep(eW*0.6, eW*0.6 - bpx, m.y - 0.25), smoothstep(eW*0.6, eW*0.6 - bpx, 0.075 + kx*m.x));
+      bs *= 1.0 - tIn*0.42*tSh;
+      bs *= 1.0 + tIn*0.36*tLt*(1.0 - tSh);
+      bs *= 1.0 - 0.45*smoothstep(0.945, 0.985, m.y)*step(m.y, 1.00);                       // the cap's shadow on it
+      bs *= 1.0 + 0.45*smoothstep(1.070, 1.070 + bpx, m.y)*step(m.y, 1.10)*step(1.0, m.y);   // the cap's top
+      bs *= 1.0 - 0.26*smoothstep(1.045, 1.045 - bpx, m.y)*step(1.00, m.y);                 // and its underside
+      bs *= 1.0 + 0.40*smoothstep(0.062, 0.062 + bpx, m.y)*step(m.y, 0.09);                 // the plinth's top edge
+      bs *= 1.0 - 0.55*smoothstep(0.010 + 1.5*bpx, 0.010, m.y);                             // on the floor
+      /* the socle, round */
+      float su = kx*clamp(m.x/0.075, -1.0, 1.0);
+      float onSo = pB(m.y, 1.10, 1.17);
+      bs *= 1.0 + onSo*(-0.34*smoothstep(0.0, -0.6, su) + 0.42*smoothstep(0.22, 0.34, su)*(1.0 - smoothstep(0.60, 0.74, su)));
+      /* the chest: its side to the key lit; the mantle's folds planes */
+      float cu = kx*m.x/0.245;
+      float onC = step(1.17, m.y)*step(m.y, 1.44)*step(abs(m.x), 0.25);
+      float cTone = mix(0.50, 1.90, smoothstep(-0.30, 0.0, cu));
+      float fe = fract((dg - 0.02)/0.065);
+      fe = kx*bmf > 0.0 ? 1.0 - fe : fe;
+      float fl = clamp(0.7*bpx/0.065, 0.04, 0.22);
+      float fLn = 1.0 - smoothstep(fl, fl + bpx/0.065, min(fe, 1.0 - fe));
+      float fRd = smoothstep(fl, fl + bpx/0.065, fe)*(1.0 - smoothstep(fl + 0.16, fl + 0.28, fe));
+      float fold = (mix(1.03, 0.80, smoothstep(0.25, 1.0, fe)) + 0.22*fRd)*(1.0 - 0.42*fLn);
+      cTone *= mix(1.0, fold, mant*step(-0.04, dg)*step(dg, 0.20)*pRes(0.065, bpx));
+      /* (and the tunic's, falling straight on the other breast) */
+      float fe2 = fract((m.x*bmf + 0.02)/0.07 + 0.5);
+      fe2 = kx*bmf > 0.0 ? 1.0 - fe2 : fe2;
+      float fLn2 = 1.0 - smoothstep(fl, fl + bpx/0.07, min(fe2, 1.0 - fe2));
+      float fRd2 = smoothstep(fl, fl + bpx/0.07, fe2)*(1.0 - smoothstep(fl + 0.16, fl + 0.28, fe2));
+      cTone *= mix(1.0, (mix(1.03, 0.82, smoothstep(0.25, 1.0, fe2)) + 0.20*fRd2)*(1.0 - 0.40*fLn2), (1.0 - mant)*step(m.y, 1.36)*pRes(0.07, bpx));
+      cTone *= 1.0 - 0.30*smoothstep(1.40, 1.44, m.y)*step(abs(m.x), 0.09);                  // under the neck
+      bs = mix(bs, 2.2*cTone, onC);
+      /* the neck, in the jaw's shadow, and the head */
+      float onN = step(1.44, m.y)*step(m.y, 1.575)*step(abs(m.x - bf*0.010), 0.06);
+      bs = mix(bs, 2.2*mix(0.50, 1.50, smoothstep(-0.2, 0.3, kx*(m.x - bf*0.010)/0.056))*(1.0 - 0.38*smoothstep(1.50, 1.56, m.y)), onN);
+      float nx = f.x - bf*0.034;                              // across the face, from the nose's line
+      float hTone = mix(0.50, 2.00, smoothstep(-0.012, 0.012, kx*nx + 0.018));
+      hTone *= 1.0 + 0.24*pB(f.y, 0.016, 0.044)*(1.0 - hairB);                              // the brow's plane, up to the light
+      hTone *= 1.0 + 0.18*pB(f.y, -0.046, -0.010)*smoothstep(0.0, 0.02, kx*nx);              // the cheek
+      hTone *= 1.0 - 0.30*smoothstep(-0.086, -0.104, f.y);                                   // the jaw turning under
+      hTone *= 1.0 + 0.26*pB(f.y, -0.050, 0.012)*smoothstep(bpx, 0.0, abs(kx*nx - 0.008) - 0.006);   // the nose's lit side
+      hTone *= 1.0 - 0.36*pB(f.y, -0.050, 0.012)*smoothstep(bpx, 0.0, abs(kx*nx + 0.008) - 0.006);   // and its far side
+      hTone *= 1.0 - 0.22*hairB;
+      bs = mix(bs, 2.2*hTone, onH*step(1.56, m.y));
+      /* (the niches' busts across the room stand in the moon's light already:
+         they keep their value and take the two planes only) */
+      gWgShade = mix(mix(1.0, bs/2.4, 0.6), bs, smoothstep(0.018, 0.009, bpx));
+    }
 #endif
 #endif
 #if MM_WINGS == 1
