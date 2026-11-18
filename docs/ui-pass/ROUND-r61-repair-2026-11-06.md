@@ -881,3 +881,22 @@ Marked down inside the winner, by BOTH judges, and the next repair's first item:
 Tests: link-queue 104/0, graveyard 35/0, steam-deck 6/6, grounding PASS.
 
 Key: `PAIRED-r61-repair53-key.json`. Evidence: `C:/UILOOP/s21/ev53/`.
+
+## Repair 56: the kitchens' dresser a boarded piece of furniture; the study's chair, desk and globes on their feet (2026-11-18)
+
+Repair 54's judges: the dresser's back "a grid that reads as brick or tile"; "the kitchen's upper dresser needs the same lighting as its base". Repair 51's: "the wing chair's legs and the desk's foot fall to near black"; "the floor globes' stands ... flat cut-outs". Repair 56 (`562fec70`, `7d6a1ef3`, `0d4ea765`, `13e22396`, `b5254d6f`, `36335f06`, merged whole).
+
+- **The dresser's back (kitchens' wall program):** the grid was the wall's own. `kDresser` replaced the colour but kept the tile joints' ink and ADDED its relief to the wall's, so the brick courses ran across cupboard and rack in both rooms. Wall ink cleared under the dresser, relief replaced; the back is upright boards by seed with a darker joint and a lit arris, shade under each shelf and the cornice. Deal went from (0.46, 0.28, 0.14) to (0.38, 0.34, 0.24): the scullery's lit planes from hue 10-12 / sat 0.87-0.90 to 15-17.5 / 0.71-0.80 (the tables' tops are 18-22 / 0.60). Both judges by 2 in both rooms: "a solid boarded piece of furniture", where dev's was "see-through to the brick", "a hot orange found nowhere else in the room's wood".
+- **The kitchen's upper dresser:** unlit (repair 54's gain went only to the scullery). Cornice 48 to 84, right stile 30 to 65, back 10 to 25. A gain of 1.9 was tried and came back lilac-grey under the window's cold pool.
+- **The study's chair and desk feet:** unlit, for three reasons: the house's corner shade on the lowest part of every quad, its wide floor pool ("a black lake under both"), and a 50 mm plinth that was six pixels, three of them ink. Chair legs as a block, a bead, a two-faced taper, a brass castor with a spark; the desk's plinth 80 mm inside the same pedestal with a lit top edge; small pools per leg in place of the lake (`footNear`). Chair paint stays inside `#if MM_SH53`.
+- **The globe stands:** one flat brown at luma 6-18. Two-faced legs with beads, a stretcher with a lit top face and a turned boss, a horizon ring and brass meridian. Near leg 18 to 31.
+
+The paired check, four rooms against dev: **8-0** (kitchens by 2 from both judges in both kinds; study by 1 and by 2).
+
+Link time: study prop 5.7 s to 6.0-6.3; the kitchens' wall programs 1.3/1.2 to 1.4/1.3; the kitchens' prop program was not edited.
+
+Marked down inside the winner: the scullery dresser's wood "a little pale and slightly flat, with some haze over the upper rack", its plates slightly dimmer against the lighter boards ("just short of milky" on the kitchen's lower back: watch this, pale washes have lost before); the chair feet's contact patches are "hard black ovals", "a hard black puck that sticks out to the right" in the fireplace room, and want softening into the seat shadow; the near globe's legs "a little thin and pale for a globe that size". Next, from both: the same feet and contact shadows on the tables, chopping block, green chairs and bookcases; painted detail (grain, worn edges, brass glints) on the now-solid surfaces.
+
+Tests: link-queue 104/0, kitchens 20/0, study-library 50/0, steam-deck 6/6, grounding PASS.
+
+Key: `PAIRED-r61-repair56-key.json`. Evidence: `C:/UILOOP/s21/ev56/`.

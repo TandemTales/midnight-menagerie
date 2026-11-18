@@ -1,0 +1,14 @@
+{
+ "SURVEY-room-kitchens-kitchen": {
+  "new_is_A": false
+ },
+ "SURVEY-room-kitchens-scullery": {
+  "new_is_A": true
+ },
+ "SURVEY-room-study-library": {
+  "new_is_A": false
+ },
+ "SURVEY-room-study-fireplace": {
+  "new_is_A": false
+ }
+}
