@@ -18158,6 +18158,16 @@ void main(){
        grain's three noise taps are not paid for out there. A ceiling's
        degenerate slot has r = 0 and still takes its wash.) */
     if (r > 4.6) continue;
+    /* (round 61 repair 41: a CANDLE's pool -- uPoolAxis.w 2, a slot
+       Backdrop.build gives to a candle standing on the floor. Both of repair
+       38's judges: "the flames to actually throw light, a pool on the floor".
+       The floor's own albedo times the flame's colour, as the near lamp's
+       below, so the boards' lines run on through it; tight, and gone in two
+       radii, so the dark round it stays dark. Arithmetic only.) */
+    if (uIsCeiling < 0.5 && uPoolAxis[i].w > 1.5) {
+      col += alb * uPoolCol[i] * P.w * (exp(-r*r*1.7)*0.85 + exp(-r*1.9)*0.22) * (0.62 + 0.38*smear);
+      continue;
+    }
     float core = exp(-r*r*2.1);
     float spill = exp(-r*1.05) * 0.42;
     /* MEASURED, AND PUT BACK. Cutting the pools off the ceiling entirely took

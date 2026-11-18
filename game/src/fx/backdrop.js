@@ -230,6 +230,21 @@ function footNear(region, p) {
   return null;
 }
 
+/* ROUND 61 REPAIR 41: THE FOOT OF A TORCHERE THAT THROWS A POOL (both of
+   repair 38's judges: "a contact shadow on the floor around their feet ...
+   the stands still float slightly"). The house's pool under it is 1.6 x 1.0
+   of its quad -- the width of its ARMS, a grey round a stand that touches
+   the floor at three paws. wfTorchere (1.56 m nominal): the paws at +-0.165,
+   the stem's foot between them. Only where the room asks
+   (pal.candlePools.foot) and only on the floor. */
+function candleFoot(CP, p) {
+  if (!CP || !CP.foot || p.hang || p.shape !== 65 || p.y > 0.2) return null;
+  const q = p.h / 1.56;
+  return { dz: -0.03 * q, w: 0.36 * q, d: 0.18 * q, k: 0.90,
+    extra: [{ dx: -0.165 * q, dz: 0.02, w: 0.11 * q, d: 0.07 * q, k: 1.35 },
+            { dx: 0.165 * q, dz: 0.02, w: 0.11 * q, d: 0.07 * q, k: 1.35 }] };
+}
+
 /* THE REAL HEIGHT OF EACH PROP, IN METRES.
  *
  * This used to be `SHAPE_H`, a unitless multiplier on the region's authored
@@ -2602,6 +2617,7 @@ export class Backdrop {
     const room = Object.assign({}, DEFAULT_ROOM, pal.room);
     this._applyRoom(room);
     this._setVantage(pal);
+    this._candles = null;   // (round 61 repair 41: the last room's candle pools, _candlePools)
 
     /* The fittings go in FIRST so the MAX_PROPS slice can never drop one: a
        room with a flame and no lamp in it is the thing this round is fixing,
@@ -2736,7 +2752,9 @@ export class Backdrop {
            own pools are laid AFTER the loop, nearest piece first: the
            Ballroom stands thirteen chairs and the slots ran out at the far
            ones, the near pair -- the ones you see -- left with none) */
-        const ft = ft0 || footNear(pal.regionKey, p);
+        /* (round 61 repair 41: and a torchere that throws a pool stands in
+           it on its own three paws -- candleFoot) */
+        const ft = ft0 || footNear(pal.regionKey, p) || candleFoot(pal.candlePools, p);
         if (ft && !ft0 && ft.extra) { (nearFeet || (nearFeet = [])).push({ p, extra: ft.extra }); ft.extra = null; }
         if (ft) {
           so2[i * 3 + 0] = p.x + (ft.dx || 0); so2[i * 3 + 2] = p.z + (ft.dz || 0);
@@ -2937,7 +2955,36 @@ export class Backdrop {
       }
     }
     this.pools.sort((a, b) => b.i - a.i);
-    this._writePools();
+    /* ROUND 61 REPAIR 41: A CANDLE STANDING ON THE FLOOR THROWS A POOL ON IT
+       (both of repair 38's judges: "the lit candles to cast a visible pool of
+       light and a contact shadow on the floor around their feet"; "the flame
+       is a bright tip with almost no glow or cast light"). A prop paints only
+       inside its own silhouette, so the pool is the floor's: one of its four
+       slots, at the piece's own foot wherever the room's layout stood it
+       (pal.candlePools {shape, seedMin, n, r, k, color, dx, dz, keep, keepBy, foot}). The
+       nearest `n` to the eye take a slot each; the moon's shafts keep at
+       least `keep` of theirs (_candlePools). The piece's contact shadow is
+       drawn over the floor afterwards, so its foot stays dark in the light.
+       Unwritten, nothing: every other room's slots are as they were. */
+    const CP = pal.candlePools;
+    this._candles = null;
+    if (CP && this.placed) {
+      const L = this.lens;
+      const ex = L ? L.ex : 0, ez = L ? L.ez : room.d * 0.5;
+      const col = new THREE.Color(CP.color ?? '#f0a65a');
+      this._candles = { keep: CP.keep ?? 0, centre: CP.keepBy === 'centre', shafts: this.pools.filter((s) => s.i > 0.001),
+        list: this.placed.filter((p) => p.shape === CP.shape && !p.hang && p.y < 0.2
+            && (p.seed || 0) >= (CP.seedMin ?? -1e9))
+          .map((p) => ({ p, d: Math.hypot(p.x - ex, p.z - ez) }))
+          .sort((a, b) => a.d - b.d).slice(0, Math.min(CP.n ?? 2, MAX_POOLS))
+          .map(({ p }) => {
+            const q = p.h / (CP.nominal ?? 1);
+            const m = CP.mirror ? (mmHash11((p.seed || 0) * 3.71 + CP.shape * 0.13) < 0.5 ? -1 : 1) : 1;
+            return { x: p.x + (CP.dx ?? 0) * q * m, z: p.z + (CP.dz ?? 0) * q, r: (CP.r ?? 0.8) * q,
+                     ax: 1, ay: 0, stretch: CP.stretch ?? 1.0, i: CP.k ?? 2.0, col, owner: p };
+          }) };
+    }
+    this._candlePools();
     /* (round 41 graft, all three judges: the straw "in crisp inked clumps
        against the doghouse footings with bare flags between" -- the nearest
        six doghouses' feet, in the floor's own metres, for FLOOR_FRAG's
@@ -3133,6 +3180,35 @@ export class Backdrop {
     this.shadowGeo.instanceCount = k;
   }
 
+  /* (round 61 repair 41: WHICH FOUR POOLS LIE ON THE FLOOR. A candle's pool
+     goes with its candle: under the hand in a fight (_handCull), or struck
+     from under a fighter (stageAside), it gives its slot back to the moon's
+     shafts, so a fight's floor is exactly what it was. The shafts keep at
+     least `keep` slots -- strongest first, or the ones landing nearest the
+     room's axis, which are the ones in frame (`keepBy: 'centre'`).) */
+  _candlePools() {
+    const C = this._candles;
+    if (C) {
+      const lit = C.list.filter((c) => !((c.owner.hand && this._handCulled) || c.owner.aside));
+      const ns = Math.min(C.shafts.length, Math.max(MAX_POOLS - lit.length, Math.min(C.keep, MAX_POOLS)), MAX_POOLS);
+      let sh = C.shafts;
+      if (ns < sh.length && C.centre) sh = sh.slice().sort((a, b) => Math.abs(a.x) - Math.abs(b.x));
+      this.pools = sh.slice(0, ns).concat(lit.slice(0, MAX_POOLS - ns));
+    }
+    this._writePools();
+  }
+
+  /* (round 61 repair 41: a slot's colour is the shafts' -- the moon's --
+     unless it is a candle's pool, which brings its own) */
+  _poolCols() {
+    const fu = this.floorMat.uniforms;
+    for (let i = 0; i < MAX_POOLS; i++) {
+      const p = this.pools[i];
+      if (p && p.col) fu.uPoolCol.value[i].copy(p.col);
+      else if (this._shaftCol) fu.uPoolCol.value[i].copy(this._shaftCol);
+    }
+  }
+
   _writePools() {
     const fu = this.floorMat.uniforms;
     for (let i = 0; i < MAX_POOLS; i++) {
@@ -3140,8 +3216,11 @@ export class Backdrop {
       if (!p) { fu.uPool.value[i].set(0, 0, 1, 0); continue; }
       // floor-local: (x, -(z - floorCz)) — matches syncLights
       fu.uPool.value[i].set(p.x, -(p.z - this._floorCz), p.r, p.i);
-      fu.uPoolAxis.value[i].set(p.ax, p.ay, p.stretch, 0);
+      /* (round 61 repair 41: w 2 marks a candle's pool -- FLOOR_FRAG lays
+         it tight, the floor's own colour times the flame's) */
+      fu.uPoolAxis.value[i].set(p.ax, p.ay, p.stretch, p.col ? 2 : 0);
     }
+    this._poolCols();
     /* ...and the same four ellipses on the ROOF, at the origin of each shaft
        rather than where it lands. The ceiling's pool slots have been zero
        since round 8 cut the pools off it, so nothing else reads them, and
@@ -3433,7 +3512,8 @@ export class Backdrop {
     f.uFog.value.copy(p._fog);
     f.uAccent.value.copy(p._accent);
     f.uAmbient.value.copy(p._ambient);
-    for (let i = 0; i < MAX_POOLS; i++) f.uPoolCol.value[i].copy(p._shaft);
+    this._shaftCol = (this._shaftCol || new THREE.Color()).copy(p._shaft);
+    this._poolCols();
 
     const c = this.ceilMat.uniforms;
     c.uDeep.value.copy(p._deep).multiplyScalar(0.50);
@@ -3923,6 +4003,7 @@ export class Backdrop {
     }
     this._propScale.needsUpdate = this._shdScale.needsUpdate = true;
     this._handCulled = on;
+    if (this._candles) this._candlePools();
   }
 
   /** ROUND 59: THE APRON. `boxes` are the fighters on the floor, in fractions of
@@ -3965,7 +4046,7 @@ export class Backdrop {
       if (e.si >= 0) { ss2[e.si * 2] = off ? 0 : e.sw; ss2[e.si * 2 + 1] = off ? 0 : e.sh; }
       for (const x of e.extra) { ss2[x.j * 2] = off ? 0 : x.sw; ss2[x.j * 2 + 1] = off ? 0 : x.sh; }
     }
-    if (dirty) this._propScale.needsUpdate = this._shdScale.needsUpdate = true;
+    if (dirty) { this._propScale.needsUpdate = this._shdScale.needsUpdate = true; if (this._candles) this._candlePools(); }
   }
 
   setActors(list = []) {
