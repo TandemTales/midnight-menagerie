@@ -748,3 +748,20 @@ Controls: the attic pixel-identical. The nursery and the foyer could NOT be show
 Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, kitchens 20/0, secret-passages 74/0.
 
 Key: `PAIRED-r61-repair48-key.json`. Evidence: `C:/UILOOP/s21/ev48/`.
+
+## Repair 49: the stand's stem unbroken, the bust draped, the foyer's cabinets and tables lit; the statues' softened folds out (2026-11-18)
+
+Repair 47's judges named three flaws and one next step. Repair 49 is four commits, one per item (`b6b19350` stem, `78b6b3a3` bust, `1c0a25ce` statue folds, `eec1f706` cabinets; merged with the third reverted by `b0330b16`). Only shaders/backdrop.js; arithmetic only (link-queue 104).
+
+- **The stem's break (won 2-0 in the ballroom, where it is the only change):** the lowest bead's under-shoulder was darkened to a quarter on four pixels of stem, and the hub's outline ruled across the stem's foot. The stem is now lit across its full width into the hub. "The stem runs unbroken into the tripod", where dev's "reads as snapped".
+- **The bust's shoulders (both judges, in the gallery's 2-0, both "clearly"):** two causes, not one. Besides the bands, the "pixel-stepped" look was the outline's coverage normal flipping across the chest's medial axis in 2x2 quads (the defect round 21 fixed on the columns). Folds now run round the barrel and close toward the silhouette at two thirds of the old contrast. The outline-normal fix is kept to the chest: on the whole bust it flattened the head and term. The head is "still blocky and split down the middle".
+- **The foyer's vitrines, pier table and clock (both judges in both foyer rooms):** the saturation cap again (cornice 0.50 off a paint of 0.79, under the wing's 0.42/0.62); raised to 0.50/0.72 for shapes 62, 64 and the hall's 66. A helper `wfWoodM` gives a lit key-side edge and a shaded far edge; glazing bars as a lit half and a shaded half. **One judge found the glass now "a pale milky veil" / "slightly paler"** while preferring the cabinets overall for their drawn bars: "keep their drawn bars while holding the darker, richer glass".
+- **The statues' fold lines: SPLIT 1-1 and reverted.** The line was ramped over 1.5 px and its weight varied along the fold. One judge: "broad light-and-shadow folds give the stone real volume". The other: "blends the drapery into a softer, greyer, flatter mass" against dev's "firm fold lines, bright rims and dark hollows". Another flaw named in a winner whose cure cost what won (see repair 44). Both want "the volume and the crisp fold lines together".
+
+The paired check, four rooms against dev: ballroom **2-0**, gallery **2-0**, parlour **2-0**, heart **1-1**. The merged state has the heart exactly as dev had it.
+
+Next, from both: the cabinets' glass deep again with one crisp highlight; the bust's head modelled like its chest; far and mid-distance objects (clock, far busts, back cabinets, far statues) given a lit edge and a foot shadow; faces and hands on the heart's statues.
+
+Tests (all four items in): link-queue 104/0, foyer 66/0, ballroom 46/0, heart 44/0, steam-deck 6/6, grounding PASS. The merged form (three items) was not re-run; the next battery is its check.
+
+Key: `PAIRED-r61-repair49-key.json`. Evidence: `C:/UILOOP/s21/ev49/`.

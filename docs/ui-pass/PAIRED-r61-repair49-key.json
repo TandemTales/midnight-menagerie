@@ -1,0 +1,14 @@
+{
+ "SURVEY-room-foyer-parlor": {
+  "new_is_A": true
+ },
+ "SURVEY-room-ballroom-ballroom": {
+  "new_is_A": false
+ },
+ "SURVEY-room-heart-heart": {
+  "new_is_A": false
+ },
+ "SURVEY-room-foyer-gallery": {
+  "new_is_A": true
+ }
+}
