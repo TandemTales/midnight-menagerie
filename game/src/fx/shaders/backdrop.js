@@ -19602,6 +19602,16 @@ float wfVitrine(vec2 q, float px, float seed, float kq, bool paint){
    knopped stem, and at its head the two arms sweeping UP and out in a
    curve -- the cue that says candelabrum, where a crossbar says cross --
    each to its drip pan and its candle, the middle one tallest, all lit. */
+/* (round 61 repair 47: gilt brass on a round member. u runs across it, -1 its
+   far edge, +1 the key's; lod fades the highlight where the member is too
+   thin to hold it. rgb the paint -- shade, brass, highlight, each holding its
+   colour -- and a the same form as a value for the lit colour, gWgShade) */
+vec4 wfGilt(vec3 brass, float u, float lod){
+  float sh = smoothstep(-0.55, 0.10, u);
+  float hl = smoothstep(0.20, 0.34, u)*(1.0 - smoothstep(0.62, 0.76, u))*lod;
+  return vec4(mix(mix(brass*vec3(0.58, 0.44, 0.30), brass, sh), brass*vec3(1.30, 1.28, 1.10), hl),
+              0.78 + 0.55*sh + 0.60*hl);
+}
 float wfTorchere(vec2 q, float px, float seed, float kq, bool paint){
   float ax = abs(q.x);
   float t0;
@@ -19639,12 +19649,81 @@ float wfTorchere(vec2 q, float px, float seed, float kq, bool paint){
   float ink = 0.0;
   vec3 brass = vec3(0.86, 0.62, 0.28);
   vec3 emit = vec3(0.0);
-  float rnd = 0.55 + 0.6*smoothstep(-1.0, 1.0, kq*q.x/0.04);
-  wfLay(col, ink, foot, brass*0.75*rnd, px, 0.9);
-  wfLay(col, ink, stem, brass*(0.45 + 0.7*wfRound(clamp(q.x/0.03, -1.0, 1.0)))*(1.0 + 0.3*kq*sign(q.x)), px, 0.9);
-  wfLay(col, ink, knop, brass*(0.60 + 0.55*smoothstep(-0.02, 0.03, q.y - (q.y > 0.85 ? 1.10 - HD : 0.62))), px, 0.8);
-  wfLay(col, ink, min(arm, centre), brass*0.9, px, 0.8);
-  wfLay(col, ink, min(pans, cups), brass*(0.8 + 0.4*smoothstep(1.30, 1.34, hq.y)), px, 0.8);
+  /* (round 61 repair 47, surveys 21 and 22: "the near props still read as
+     smooth models (candelabra stems ...)", the candle stands "flat stickers".
+     Turned gilt brass, each member painted as what it is: a highlight ruled
+     down the key's side of every tube and the far side in the brass's own
+     shade; the stem's beads and vase lit where the turning faces up and dark
+     where it faces down; each knop a ball with its spark and a dark line
+     under it; the arms lit along their upper edge; the pans a lit rim over a
+     shaded underside; the feet lit along their backs. Lines only -- the
+     silhouette is as it was -- and each fades out below the pixel that could
+     draw it. The values go on the LIT colour too, gWgShade.) */
+  float sx = q.x < 0.0 ? -1.0 : 1.0;
+  vec2 Ld = normalize(vec2(kq, 0.80));
+  float shd = 1.0;
+  vec4 g;
+  /* the feet: each a tapering scroll lit along its back, its belly in shade;
+     the paw a ball; the hub's top edge lit; all dark where they meet the floor */
+  float fr = mix(0.026, 0.016, t0);
+  float fu = dot(fq - vec2(0.020, 0.200), vec2(0.766, 0.643))/fr;        // +1 its back, -1 its belly
+  g = wfGilt(brass, fu*0.85 + 0.20*sx*kq, mmLod(fr*5.0, px));
+  vec2 pw = vec2(sx*(ax - 0.165), q.y - 0.030);
+  float onPaw = wfIn(length(fq - vec2(0.165, 0.030)) - 0.028, px);
+  g = mix(g, wfGilt(brass, dot(pw, Ld)/0.028, mmLod(0.11, px)), onPaw);
+  float onHub = wfIn(mmBox(q - vec2(0.0, 0.200), vec2(0.045, 0.030), 0.012), px);
+  g = mix(g, wfGilt(brass, (q.y - 0.200)/0.030*0.75 + 0.25*kq*q.x/0.045, mmLod(0.12, px)), onHub);
+  g *= 1.0 - 0.45*smoothstep(0.035, 0.0, q.y);
+  wfLay(col, ink, foot, g.rgb, px, 0.9);
+  shd = mix(shd, g.a, wfIn(foot, px));
+  /* the stem: round, and TURNED -- its profile's slope says which way each
+     shoulder of a bead faces */
+  float st = clamp((q.y - 0.20)/(0.98 - HD), 0.0, 1.0);
+  float sa = (st - 0.52)/0.15, sb = (st - 0.12)/0.035, sc = (st - 0.88)/0.035;
+  float sr = 0.018*(0.80 + 0.70*exp(-sa*sa) + 0.55*exp(-sb*sb) + 0.55*exp(-sc*sc));
+  float sl = -0.018*(0.70*exp(-sa*sa)*2.0*sa/0.15 + 0.55*exp(-sb*sb)*2.0*sb/0.035 + 0.55*exp(-sc*sc)*2.0*sc/0.035)/(0.98 - HD);
+  g = wfGilt(brass, q.x/sr*kq, mmLod(sr*5.0, px));
+  float sUp = smoothstep(0.02, 0.14, -sl), sDn = smoothstep(0.02, 0.14, sl);
+  g *= (1.0 + 0.30*sUp)*(1.0 - 0.50*sDn);
+  wfLay(col, ink, stem, g.rgb, px, 0.9);
+  shd = mix(shd, g.a, wfIn(stem, px));
+  /* the two knops: a ball each, its spark on the key's side, its underside
+     and far side in shade; a dark line on the stem under it */
+  float kY = q.y > 0.85 ? 1.10 - HD : 0.62;
+  vec2 kR = q.y > 0.85 ? vec2(0.048, 0.034) : vec2(0.040, 0.028);
+  vec2 kn = vec2(q.x, q.y - kY)/kR;
+  g = wfGilt(brass, dot(kn, Ld)*1.05, mmLod(kR.y*4.0, px));
+  float spark = (1.0 - smoothstep(0.10, 0.30, length(kn - Ld*0.45)))*mmLod(kR.y*3.0, px);
+  g = mix(g, vec4(brass*vec3(1.42, 1.36, 1.20), 1.55), spark);
+  float under = smoothstep(kR.y*1.9, kR.y*1.05, kY - q.y)*step(kR.y*0.9, kY - q.y)*wfIn(stem, px)*(1.0 - wfIn(knop, px));
+  col *= 1.0 - 0.55*under;
+  shd *= 1.0 - 0.50*under;
+  wfLay(col, ink, knop, g.rgb, px, 0.8);
+  shd = mix(shd, g.a, wfIn(knop, px));
+  /* the arms: a tube curving out and up, lit along its upper edge; and the
+     centre post between them */
+  float ae = length(vec2(ax/0.230, (q.y - (1.30 - HD))/0.170)) - 1.0;      // < 0 the upper, inner edge
+  g = wfGilt(brass, clamp(-ae*0.20/0.013, -1.0, 1.0)*0.80 + 0.15*sx*kq, mmLod(0.065, px));
+  g = mix(g, wfGilt(brass, q.x/0.016*kq, mmLod(0.08, px)), wfIn(centre, px));
+  wfLay(col, ink, min(arm, centre), g.rgb, px, 0.8);
+  shd = mix(shd, g.a, wfIn(min(arm, centre), px));
+  /* the pans: shallow dishes, the rim a lit line, the underside in shade; the
+     cups round, a highlight down each */
+  float pY = (q.x*sx > 0.12 ? 1.31 : 1.40) - HD;
+  float pX = q.x*sx > 0.12 ? sx*0.232 : 0.0;
+  float pv = (q.y - pY)/0.010;                                              // -1 its underside, +1 its rim
+  g = vec4(mix(brass*vec3(0.58, 0.44, 0.30), brass*vec3(1.30, 1.28, 1.10), smoothstep(-0.25, 0.25, pv)),
+           mix(0.70, 1.62, smoothstep(-0.25, 0.25, pv)));
+  g *= 1.0 + 0.16*kq*(q.x - pX)/0.045;
+  g = mix(g, wfGilt(brass, (q.x - pX)/0.022*kq, mmLod(0.11, px)), wfIn(cups, px)*step(pY + 0.012, q.y));
+  wfLay(col, ink, min(pans, cups), g.rgb, px, 0.8);
+  shd = mix(shd, g.a, wfIn(min(pans, cups), px));
+  /* (the arm and the post in the pan's shadow, just under it) */
+  float pSh = smoothstep(pY - 0.045, pY - 0.012, q.y)*step(q.y, pY - 0.010)*wfIn(min(arm, centre), px)*(1.0 - wfIn(pans, px));
+  col *= 1.0 - 0.40*pSh;
+  shd *= 1.0 - 0.35*pSh;
+  shd = mix(shd, 1.0, wfIn(min(cand, lit), px));
+  gWgShade = shd;
   /* the three candles, each burning */
   /* (repair 38, the judges of repair 37: "the flame currently lights
      nothing". Each flame's light on its own cup and pan and the arm under
@@ -34515,6 +34594,9 @@ void main(){
   /* (round 61 repair 40: a gilt chair is GOLD -- a material fact, as the
      candelabrum's gilt is in the Heart; at 0.42 it came back putty) */
   if (vShape > 71.5 && vShape < 72.5) { satK = max(uPropSat, 0.54); satM = max(uPropSatMax, 0.76); }
+  /* (round 61 repair 47: and the torchere's brass -- measured at 0.53-0.59,
+     the cap, a putty) */
+  if (vShape > 64.5 && vShape < 65.5) { satK = max(uPropSat, 0.54); satM = max(uPropSatMax, 0.76); }
 #endif
 #endif
 #endif
