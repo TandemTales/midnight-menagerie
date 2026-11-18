@@ -578,3 +578,17 @@ The paired check was against dev at repair 34: **4-0, all four "clearly"** (the 
 Tests: link-queue 104/0, secret-passages 74/0, study-library 50/0, grounding PASS (24 views), steam-deck 6/6; 192 programs linked with live uniforms.
 
 Key: `PAIRED-r61-repair37-key.json`. Evidence: `C:/UILOOP/s21/ev37/`.
+
+## Repair 38: every candle lit, and its light on what it stands on (2026-11-18)
+
+Repair 37 left open that "the same clipped-flame bug is still in every other `wfCandle` user", and its judges asked for the candles to light something. Repair 38 (`bdf359bf`, merged `df8b2c3a`) closes the first and half of the second. Only shaders/backdrop.js changed; arithmetic only, link-queue still 104.
+
+- **The flames.** A new `wfCandleLit(c, h)` returns flame and wick as a silhouette, and each caller adds it to its own: the torchere (shape 65: foyer, ballroom), the passage table's stub (`wfServTable`), the hall table's chamberstick (`wfHallTable`: the gallery's pier tables). The torchere's head was lowered 0.085 on a shorter stem, because its candles reached the top of the quad and left no room for a flame. `wfCandles` (shape 58) already drew its flames.
+- **The light on the support.** Each support's own colour times a warm tint with exponential falloff, wax and flame masked out: the passage table's edge (luma 16 to 35), the pier table top (34 to 58), the torchere's pan (44 to 54), the top book of each pile (56 to 79, 90 to 111). On the piles a tight pool (1.5 at reach 0.15) sits over repair 20's broad one; 0.9 was invisible at survey distance and 2.0 paled the blue top book.
+- **Not done: a pool on the boards.** A prop paints only inside its own silhouette, so it cannot light the floor; that needs the room's `nearFloor` pools in atmosphere.js. Both judges ask for it next ("the flame is a bright tip with almost no glow or cast light").
+
+The paired check was against dev at survey 21: **8-0** (ballroom 2 and 2, foyer parlor 2 and 2, foyer gallery 1 and 1, passages 1 and 1). The old candelabra were "bare unlit sticks that read as empty forks". Next, from both: the flames throwing a pool on the floor and a spill on neighbouring chairs and tables; near objects modelled with painted light and shade; the dark thirds (gallery mid-floor and left corner, parlor left wall, passages ceiling and recesses) holding colour.
+
+Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, secret-passages 74/0, foyer 66/0, ballroom 46/0.
+
+Key: `PAIRED-r61-repair38-key.json`. Evidence: `C:/UILOOP/s21/ev38/`.
