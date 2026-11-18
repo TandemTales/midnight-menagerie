@@ -197,7 +197,11 @@ const D = {
 const CRYPT_NEAR = [
   { shape: 59.25, x: 2.72, z: 0.2, tone: 0.95, hM: 1.0, wM: 2.16, seed: 2.7, free: true, keep: true, still: true, grave: [0.42, 0.95, 0.32] },
   { shape: 59.25, x: -1.47, z: 1.3, tone: 0.95, hM: 1.0, wM: 2.16, seed: 6.1, free: true, keep: true, still: true, grave: [0.40, 0.92, 0.32], slab: 1 },
-  { shape: 58, x: -3.0, z: 2.0, tone: 0.96, free: true, keep: true, still: true },
+  /* (round 61 repair 32, both judges: "the candle stand at the crypt's
+     right edge brought fully in" -- the frame cut it down its stem at
+     x -3.0, z 2.0; a stride back and in beside the grave it lights, the
+     whole stand is in the picture) */
+  { shape: 58, x: -3.3, z: 0.9, tone: 0.96, free: true, keep: true, still: true },
 ];
 const FAMILY_NEAR = [
   { shape: 59.25, x: 2.72, z: 0.2, tone: 0.95, hM: 1.0, wM: 2.16, seed: 2.7, free: true, keep: true, still: true, grave: [0.42, 0.95, 0.32] },
@@ -209,7 +213,7 @@ const FAMILY_NEAR = [
 const OSSUARY_NEAR = [
   { shape: 59.25, x: 2.72, z: 0.2, tone: 0.95, hM: 1.0, wM: 2.16, seed: 2.7, free: true, keep: true, still: true, grave: [0.42, 0.95, 0.32] },
   { shape: 59.25, x: -1.47, z: 1.3, tone: 0.95, hM: 1.0, wM: 2.16, seed: 6.1, free: true, keep: true, still: true, grave: [0.40, 0.92, 0.32] },
-  { shape: 58, x: -3.0, z: 2.0, tone: 0.96, free: true, keep: true, still: true },
+  { shape: 58, x: -3.3, z: 0.9, tone: 0.96, free: true, keep: true, still: true },   // (repair 32: as CRYPT_NEAR's)
 ];
 
 export const REGIONS = {
@@ -1146,7 +1150,13 @@ export const REGIONS = {
                   FORWARD onto the near floor at the right, in the pool of
                   its own working lamp (nearFloor.pool), and the bench
                   itself is joinery now -- wgBnSD. */
-               { shape: 34, edge: 0.70, z: 3.4, tone: 0.97, scale: 1.00, free: true, keep: true, seed: 2.0 },
+               /* (round 61 repair 32, both judges: "lampworks' benches are cut
+                  by both frame edges" -- each finishes INSIDE the frame now,
+                  its end pedestal and the end of its shelf drawn: this one a
+                  bench's own size, scale 1.00 -> 0.88, its near end at 0.63
+                  of the frame from 0.70; the left-hand one, below, a stride
+                  in, across 2.7 -> 1.9; the far one behind this from 0.80) */
+               { shape: 34, edge: 0.63, z: 3.4, tone: 0.97, scale: 0.88, free: true, keep: true, seed: 2.0 },
                /* ...and crates of lamps, a lantern burning on the flags, an
                   oil can and a coil of wick at the near left (a bench with
                   seed > 40: wgLcSD) */
@@ -1159,14 +1169,14 @@ export const REGIONS = {
                   second bench brought out at the near left, its lamps lit,
                   and a crate of lamps by it; in a fight the Kid stands
                   there, so both lie under the hand -- _handCull) */
-               { shape: 34, ahead: 5.3, across: 2.7, tone: 0.97, keep: true, hand: true, seed: 6.0 },
+               { shape: 34, ahead: 5.3, across: 1.9, tone: 0.97, keep: true, hand: true, seed: 6.0 },
                /* (round 61 repair 6, survey 13's "LAMPS crates cut into
                   fragments": both near crates whole in the frame -- this one
                   a stride in, 1.5 -> 1.2; the right-hand one in from the
                   edge, 2.4 -> 1.45, and a step back, so its crates, lantern
                   and oil can all stand in the frame) */
                { shape: 34, ahead: 3.6, across: 1.2, tone: 0.97, keep: true, hand: true, seed: 47.0, wM: 2.30 },
-               { shape: 34, edge: 0.80, z: -0.8, tone: 0.95 },
+               { shape: 34, edge: 0.78, z: -0.8, tone: 0.95 },
                { shape: 34, edge: 0.22, z: -4.6, tone: 0.92 },
                { shape: 33, x: -6.0, z: -3.0, y: 3.2, tone: 0.95 },
                { shape: 33, x: -2.6, z: -1.6, y: 3.0, tone: 0.95 },
@@ -1994,16 +2004,27 @@ export const REGIONS = {
                   over their own warm pool (nearFloor below), and a second
                   pair on the other side. `still`, so the patch behind is
                   dealt as it was. */
-               { shape: 86, ahead: 4.8, across: 3.5, tone: 0.96, keep: true, still: true, seed: 3.3 },
-               { shape: 27, ahead: 4.62, across: 3.40, y: 0.43, tone: 0.97, hM: 0.55, keep: true, still: true, seed: 0.7 },
+               /* (round 61 repair 32, both judges: "edge-cut fragments ... brought
+                  fully in" -- the right-hand bale and its lantern a step in
+                  from the frame's edge, 3.5 -> 3.2; the pumpkin behind it,
+                  a sliver at the edge, set down whole a stride further off:
+                  was ahead 5.6, across 4.7) */
+               { shape: 86, ahead: 4.8, across: 3.2, tone: 0.96, keep: true, still: true, seed: 3.3 },
+               { shape: 27, ahead: 4.62, across: 3.10, y: 0.43, tone: 0.97, hM: 0.55, keep: true, still: true, seed: 0.7 },
                { shape: 27, ahead: 4.2, across: 2.4, tone: 0.97, hM: 0.74, keep: true, still: true, seed: 1.1 },
-               { shape: 27, ahead: 5.6, across: 4.7, tone: 0.97, hM: 0.70, keep: true, still: true, seed: 2.3 },
+               { shape: 27, ahead: 6.6, across: 4.55, tone: 0.97, hM: 0.70, keep: true, still: true, seed: 2.3 },
                { shape: 27, ahead: 3.6, across: 3.9, tone: 0.97, hM: 0.50, keep: true, still: true, seed: 4.1 },
                /* (round 37 graft, CARNELIAN's repoussoir: one big carved
                   lantern cropped by the frame's left edge, in place of the
                   two small ones there -- the nearest, largest, darkest
                   thing in the court, that the eye goes past into it) */
-               { shape: 27, ahead: 3.7, across: -3.05, tone: 0.97, hM: 1.10, keep: true, still: true, seed: 2.3 },
+               /* (round 61 repair 32, both judges: "the pumpkin at far left of
+                  the courtyard ... brought fully in" -- cropped, it read as a
+                  fragment and not a repoussoir. The same big lantern, whole,
+                  its rind at the frame's edge: was across -3.05, hM 1.10;
+                  and the two it would have stood across a stride to the
+                  right, below) */
+               { shape: 27, ahead: 3.7, across: -2.25, tone: 0.97, hM: 1.00, keep: true, still: true, seed: 2.3 },
                /* ...and one at your feet, the nearest lit thing in the court
                   (round 37 graft, the frame budget: a step further off and a
                   little smaller, and the pair at your left gone -- the big
@@ -2018,8 +2039,8 @@ export const REGIONS = {
                   between the patch and the hand were bare paving. The nearest
                   are under the hand in a fight (`hand`); the rest are struck
                   only while a fighter stands across them (stageAside). */
-               { shape: 27, ahead: 3.4, across: -0.9, tone: 0.97, hM: 0.62, keep: true, still: true, seed: 5.2, hand: true },
-               { shape: 27, ahead: 4.5, across: -1.9, tone: 0.97, hM: 0.80, keep: true, still: true, seed: 6.7, hand: true },
+               { shape: 27, ahead: 3.4, across: -0.35, tone: 0.97, hM: 0.62, keep: true, still: true, seed: 5.2, hand: true },
+               { shape: 27, ahead: 4.5, across: -1.35, tone: 0.97, hM: 0.80, keep: true, still: true, seed: 6.7, hand: true },
                { shape: 27, ahead: 4.9, across: 0.6, tone: 0.97, hM: 0.66, keep: true, still: true, seed: 2.9, hand: true },
                { shape: 27, ahead: 2.9, across: 0.3, tone: 0.97, hM: 0.40, keep: true, still: true, seed: 7.7, hand: true },
                { shape: 27, ahead: 7.4, across: -1.3, tone: 0.96, hM: 0.64, keep: true, still: true, seed: 6.9 },
@@ -2039,7 +2060,7 @@ export const REGIONS = {
                  pool: { ahead: 4.0, across: 2.6, rAlong: 2.2, rAcross: 2.0, k: 16.0, color: '#ffa848' },
                  /* (graft, judge 2: the near-left flags kept deep blue-black --
                     the lanterns' second pool tighter round its lantern) */
-                 pool2: { ahead: 3.4, across: -2.6, rAlong: 1.3, rAcross: 1.2, k: 9.0, color: '#ffa848' } },
+                 pool2: { ahead: 3.4, across: -2.0, rAlong: 1.3, rAcross: 1.2, k: 9.0, color: '#ffa848' } },   // (repair 32: with its lantern, was across -2.6)
     particles: { mix: [[PTYPE.DUST, 0.40], [PTYPE.SPORE, 0.30], [PTYPE.EMBER, 0.30]],
                  tint: '#cfe0e8', wispTint: '#8fe8c0', emberTint: '#ff8a28',
                  speed: 0.9, scale: 1.25, wind: 1.1, density: 1.0 },
@@ -3502,11 +3523,14 @@ export const ROOM_KINDS = {
          on the courtyard's bare near flags -- a straw bale with a carved
          pumpkin set on it at the near left, a big carved one and a small
          one set down at the near right. `hand`: under the cards in a fight) */
+      /* (round 61 repair 32: the bale half a metre in, clear of the big
+         lantern brought whole into the frame's left, and the pair at the
+         right a hand in from the edge: were -1.45 / -1.5, 1.75 / 1.1) */
       { subject: 'coping',
-        nearPlus: [{ shape: 86, ahead: 2.45, across: -1.45, tone: 0.96, keep: true, still: true, hand: true, seed: 2.4 },
-                   { shape: 27, ahead: 2.33, across: -1.5, y: 0.43, tone: 0.97, hM: 0.55, keep: true, still: true, hand: true, seed: 1.1 },
-                   { shape: 27, ahead: 2.5, across: 1.75, tone: 0.97, hM: 0.75, keep: true, still: true, hand: true, seed: 6.7 },
-                   { shape: 27, ahead: 2.25, across: 1.1, tone: 0.97, hM: 0.45, keep: true, still: true, hand: true, seed: 2.9 }] },
+        nearPlus: [{ shape: 86, ahead: 2.45, across: -0.95, tone: 0.96, keep: true, still: true, hand: true, seed: 2.4 },
+                   { shape: 27, ahead: 2.33, across: -1.0, y: 0.43, tone: 0.97, hM: 0.55, keep: true, still: true, hand: true, seed: 1.1 },
+                   { shape: 27, ahead: 2.5, across: 1.6, tone: 0.97, hM: 0.75, keep: true, still: true, hand: true, seed: 6.7 },
+                   { shape: 27, ahead: 2.25, across: 1.0, tone: 0.97, hM: 0.45, keep: true, still: true, hand: true, seed: 2.9 }] },
       /* the moon gate, seen from in it */
       { subject: 'coping',
         vantage: { at: 'threshold', back: 1.6, lens: 0.92, dip: 0.30 } },
