@@ -1184,12 +1184,17 @@ export const REGIONS = {
        smear at the foot of the frame) and the canvas tooth down, as the
        Kitchens' */
     footBand: false,   // (round 61 repair 6: the floor drawn to the frame's foot -- Backdrop.applyPalette)
-    nearFloor: { foot: { k: 3.0, reach: 6.5, sides: 1.2, color: '#eaa260' }, fall: 0.95, calm: 0.92, clean: 1,
+    nearFloor: { foot: { k: 3.0, reach: 6.5, sides: 3.0, color: '#eaa260' }, fall: 0.95, calm: 0.92, clean: 1,
                  /* (round 39 graft, all three: CHALCEDONY's bench "its lamplight
                     on the floor" -- the forward bench's lamps laid on the flags
                     under it twice as strong, and a little longer) */
                  pool: { ahead: 6.4, across: 2.8, abs: true, rAlong: 3.4, rAcross: 2.8, k: 2.70, color: '#f0a65a' },
-                 pool2: { ahead: 4.2, across: -1.0, abs: true, rAlong: 2.4, rAcross: 3.4, k: 1.30, color: '#e8a45c' } },
+                 /* (round 61 repair 29, survey 20: "near-floor corners lit in
+                    every wing" -- the foot lamp out to the corners, sides 1.2
+                    -> 3.0, and the hanging lanterns' pool brought to the near
+                    left flags, which the bench's lamp never reached: was
+                    ahead 4.2, across -1.0, 2.4 x 3.4, k 1.30) */
+                 pool2: { ahead: 3.1, across: -2.8, abs: true, rAlong: 2.8, rAcross: 3.6, k: 2.50, color: '#e8a45c' } },
     cineFloor: 0.35, grain: 0.012, tooth: 0.045,
     exposure: 1.42, vignette: 1.06, contrast: 1.41,
     key:  { glow: 0, kind: 'warm', x: -4.2, y: 3.2, z: 2.2, color: '#df9f63', intensity: 4.51, radius: 7.74 },
@@ -1378,12 +1383,15 @@ export const REGIONS = {
        down, 1.61 -> 1.20: it laid the warm wash across the whole near floor) */
     footBand: false,   // (round 61 repair 6: the floor drawn to the frame's foot -- Backdrop.applyPalette)
     propShadow: 1.5,   // (round 61 repair 6, survey 13: "firmer contact shadows" -- Backdrop.build)
-    nearFloor: { foot: { k: 1.2, reach: 5.5, sides: 1.5, color: '#e8a462' }, fall: 0.84, calm: 0.90, clean: 1,
+    nearFloor: { foot: { k: 1.2, reach: 5.5, sides: 2.5, color: '#e8a462' }, fall: 0.84, calm: 0.90, clean: 1,
                  pool: { ahead: 4.8, across: -1.9, rAlong: 2.6, rAcross: 2.2, k: 1.6, color: '#f0a55a' },
                  /* (round 43: and the graves' candles' spill on the near flags
                     across from the stand, so the corner it never reached is
                     lit stone and not a black quarter) */
-                 pool2: { ahead: 3.6, across: 2.3, rAlong: 2.8, rAcross: 2.4, k: 1.8, color: '#f0a55a' } },
+                 /* (round 61 repair 29: that corner to the frame's foot -- the
+                    spill nearer, wider and stronger, was ahead 3.6, across 2.3,
+                    2.8 x 2.4, k 1.8; and the foot lamp's sides 1.5 -> 2.5) */
+                 pool2: { ahead: 2.9, across: 3.0, rAlong: 2.8, rAcross: 3.2, k: 3.2, color: '#f0a55a' } },
     grain: 0.012,
     ceilGain: 2.3,
   },
@@ -2025,7 +2033,9 @@ export const REGIONS = {
              ] },
     crispFloor: true, flagK: 4,
     footBand: false,   // (round 61 repair 16: the floor drawn to the frame's foot -- Backdrop.applyPalette)
-    nearFloor: { foot: { k: 2.0, reach: 7.0, sides: 2.5, color: '#e8a060' }, fall: 0.92, calm: 0.85, clean: 1,
+    /* (round 61 repair 29: the court's near flags lit out to both corners --
+       the foot lamp k 2.0 -> 3.2, sides 2.5 -> 4.0) */
+    nearFloor: { foot: { k: 3.2, reach: 7.0, sides: 4.0, color: '#e8a060' }, fall: 0.92, calm: 0.85, clean: 1,
                  pool: { ahead: 4.0, across: 2.6, rAlong: 2.2, rAcross: 2.0, k: 16.0, color: '#ffa848' },
                  /* (graft, judge 2: the near-left flags kept deep blue-black --
                     the lanterns' second pool tighter round its lantern) */
