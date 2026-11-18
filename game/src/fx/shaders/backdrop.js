@@ -20606,6 +20606,15 @@ vec2 gyRows(vec2 p, float hw, float lh, float n, float px, float seed){
   float word = clamp(0.5 + (rl - abs(p.x))/px, 0.0, 1.0)*clamp(0.5 + min(wf, 0.80 - wf)*wl/px, 0.0, 1.0)*step(0.0, row)*step(row, n - 0.5);
   return vec2(clamp(1.0 - abs(ry - 0.5*px)/px, 0.0, 1.0), clamp(1.0 - abs(ry - capH)/px, 0.0, 1.0))*word*mmLod(lh, px);
 }
+/* (round 61 repair 53) A BALL, as a value for the lit colour: n is across it
+   toward the key and up, 1 at its outline. The terminator curves with the
+   ball; a little light comes back round the far rim; one small highlight. */
+float gyBall(vec2 n){
+  float r2 = dot(n, n);
+  float lam = n.x*0.56 + n.y*0.48 + sqrt(max(1.0 - r2, 0.0))*0.67;
+  return 0.40 + 0.90*smoothstep(0.0, 0.40, lam) + 0.24*smoothstep(0.62, 0.95, r2)*smoothstep(0.0, -0.35, lam)
+       + 0.50*(1.0 - smoothstep(0.14, 0.26, length(n - vec2(0.36, 0.34))));
+}
 
 float wfHsForm(vec2 p, float k, float H, float W, float seed, out float face, out float tx, out float ty, out float kind){
   float d;
@@ -20883,8 +20892,19 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
       cS = mix(cS, 1.0 - 0.42*pSh + 0.44*pLi, wfIn(pan, px)*mmLod(0.10, px));
       /* the wreath carved proud in it: lit round the side to the key and
          the sky, in shade round the other */
-      float wl = dot(vec2(lx, pq.y/1.15), vec2(0.60, 0.80))/0.075;
-      cS = mix(cS, 1.05 + 0.45*smoothstep(0.0, 0.5, wl) - 0.42*smoothstep(0.0, -0.5, wl), wfIn(wr, px)*mmLod(0.05, px));
+      /* (round 61 repair 53, of repair 51's ring: "half-dark ... a banded
+         disc". A TORUS: across its tube the side turned up and to the key is
+         lit and the side turned down and away is in shade, so the upper arc
+         is lit along its outside with a dark line inside it and the lower arc
+         dark along its outside with the light come round inside it; and it
+         lays its own shadow on the panel, down and away from the key.) */
+      vec2 wv = vec2(lx, pq.y/1.15);
+      float wRd = length(wv);
+      float wt = clamp((wRd - 0.075)/0.012, -1.0, 1.0);
+      float wlam = dot(wv/max(wRd, 1e-4), vec2(0.60, 0.62))*(0.35 + 0.65*wt) + sqrt(1.0 - wt*wt)*0.50;
+      float wLd = wfIn(pan, px)*mmLod(0.05, px);
+      cS *= 1.0 - 0.34*wfIn(abs(length(wv + vec2(0.012, 0.015)) - 0.075) - 0.012, px)*wLd;
+      cS = mix(cS, 0.52 + 0.80*smoothstep(-0.25, 0.75, wlam), wfIn(wr, px)*mmLod(0.05, px));
       /* the ledger oversails the chest: its shadow ruled along the top */
       cS *= 1.0 - 0.40*smoothstep(0.600 - px, 0.600 + px, q.y);
       shd = mix(shd, cS, inC);
@@ -20906,7 +20926,7 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
       shd = mix(shd, lS, inL);
     }
     if (urnOn > 0.5) {
-      vec3 uc = st*(0.45 + 0.75*wfRound(clamp(q.x/0.115, -1.0, 1.0)))*(1.0 + 0.25*kq*sign(q.x));
+      vec3 uc = st*(0.45 + 0.75*wfRound(clamp(q.x/0.115, -1.0, 1.0)))*(1.0 + 0.25*clamp(kx/0.05, -1.0, 1.0));
       wfLay(col, ink, urn, uc, px, 0.9);
       /* the drape over its shoulder */
       float dr = max(abs(q.y - 1.05 - 0.03*cos(q.x*40.0)) - 0.020, abs(q.x) - 0.11);
@@ -20915,9 +20935,17 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
       /* the urn TURNED: a lit side, a core shadow with an edge to it, a
          little light come back round the far side; its foot in the shade of
          its own belly, its lid's rim lit */
-      float uu = kx/0.115;
-      float uS = 0.58 + 0.52*smoothstep(-0.36, -0.24, uu) + 0.34*smoothstep(0.26, 0.38, uu)*(1.0 - smoothstep(0.62, 0.74, uu)) + 0.16*smoothstep(-0.78, -0.92, uu);
-      uS *= 1.0 - 0.30*smoothstep(0.905, 0.885, q.y) + 0.20*smoothstep(1.150 - px, 1.150 + px, q.y)*step(q.y, 1.176);
+      /* (round 61 repair 53: the bands above ran straight down the neck, the
+         belly and the foot alike -- "a hard vertical split", "a post stuck
+         through a disc". Each member in its own width: the square foot a
+         face between a lit arris and a shaded one, the neck and the lid
+         turned, the belly and the finial BALLS, gyBall.) */
+      float uu = kx/(q.y < 1.150 ? 0.046 : 0.078);
+      float uS = 0.72 + 0.44*smoothstep(-0.50, 0.35, uu);
+      uS = mix(uS, 1.0 + 0.30*gyBand(0.075 - kx, px) - 0.34*gyBand(0.075 + kx, px), step(q.y, 0.885));
+      uS *= 1.0 - 0.34*smoothstep(0.850, 0.885, q.y)*step(q.y, 0.885) + 0.20*smoothstep(1.150 - px, 1.150 + px, q.y)*step(q.y, 1.176);
+      uS = mix(uS, gyBall(vec2(kx/0.115, (q.y - 1.00)/0.105)), wfIn(wfEll(q - vec2(0.0, 1.00), vec2(0.115, 0.105)), px));
+      uS = mix(uS, gyBall(vec2(kx, q.y - 1.198)/0.030), wfIn(length(q - vec2(0.0, 1.198)) - 0.030, px));
       shd = mix(shd, uS, wfIn(urn, px));
     }
   }
