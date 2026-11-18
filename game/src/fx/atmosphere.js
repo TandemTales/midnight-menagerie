@@ -3223,6 +3223,10 @@ export const ROOM_KINDS = {
      its own wing's program (MM_ROOMS 6 and 7) and seen from its own place. */
   lampworks: {
     kinds: [
+      /* (round 61 repair 35 stood a candle-dipping rack (43) in the aisle
+         here and LOST 0-2: "a see-through lattice laid over the room's focal
+         point" -- its rods tangled with the benches and the furnace mouth.
+         A piece for this aisle must be a solid mass clear of the kiln arch.) */
       { subject: 'lampshop', layout: 'hang' },
       /* THE WAX ROOM -- the chandlery: the vat on its furnace, the dipping
          frames hung with tapers under their hoods; its floor stood with the
@@ -3671,7 +3675,14 @@ export const ROOM_KINDS = {
        program 20 -- the chapel's floor stood with tombs and candles, the
        ossuary's with charnel stacks) */
     kinds: [
-      { subject: 'catacombs', count: 4, swap: [[57, 59], [6, 58]] },
+      /* (round 61 repair 35, both judges: "the crypt's wide empty floor ...
+         needs something standing on it" -- a charnel stack (59), the skulls
+         a face high, stood on the near flags left of the walk to the door,
+         between the two graves; the room showed that drawing only as two
+         specks at the far wall. Its foot is footOf's crypt profile. `hand`:
+         a fight leaves it out) */
+      { subject: 'catacombs', count: 4, swap: [[57, 59], [6, 58]],
+        nearPlus: [{ shape: 59, ahead: 4.2, across: 0.55, tone: 0.97, hM: 1.1, keep: true, still: true, hand: true, seed: 3.0 }] },
       { subject: 'cryptchapel', swap: [[6, 58]], count: 3, room: { d: 0.80 }, cam: { z: -1.0, look: 0.15 },
         lamps: [{ i: 1, x: 0.0, z: 0.86, y: 1.6, color: '#e2a660', k: 0.85, fit: 'none' }],
         /* (round 43 graft: its sarcophagi forward -- the chapel's tomb a
