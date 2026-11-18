@@ -21131,6 +21131,63 @@ float wfAngel(vec2 q, float px, float seed, float kq, bool paint){
   wfLay(col, ink, head, mar*(0.70 + 0.40*smoothstep(-0.06, 0.06, (q.x - 0.035)*kq + 0.02)), px, 0.85);
   float eyeL = max(abs(q.y - 2.066) - 0.004, abs(q.x - 0.060) - 0.016);
   col = mix(col, mar*0.35, wfIn(eyeL, px)*wfIn(head, px));
+  /* (round 61 repair 53, of repair 51's churchyard: "the angel statue is
+     unmodelled line-work in both versions". Her marble stood at the prop's
+     ceiling, so the round and the folds in her paint came back one pale
+     value inside a pen line. THE FIGURE IN MASSES, on the lit colour --
+     gWgShade -- each with a side to the key and a side away from it, and
+     her folds and feathers ruled crisp over those: volume AND line.) */
+  {
+    float kx = kq*q.x;
+    /* the pedestal: each step of the base a lit top over its riser; the
+       die a face between a lit arris and a shaded one, its panel sunk,
+       the cornice's shadow ruled across its head; the cornice a lit plane */
+    float bTop = y < 0.118 ? 0.120 : 0.220;
+    float bHw = y < 0.118 ? 0.44 : 0.37;
+    float shd = (1.10 + 0.70*gyBand(bTop - y, px))*(1.0 + 0.22*gyBand(bHw - kx, px) - 0.28*gyBand(bHw + kx, px))*(1.0 - 0.36*smoothstep(0.04, 0.0, y));
+    float dS = 1.02 + 0.08*kx/0.28 + 0.36*gyBand(0.28 - kx, px) - 0.38*gyBand(0.28 + kx, px);
+    float pSh = max(gyBand(0.72 - y, px), gyBand(0.22 - kx, px));
+    float pLi = max(gyBand(y - 0.28, px), gyBand(0.22 + kx, px))*(1.0 - pSh);
+    dS = mix(dS, 0.96 - 0.40*pSh + 0.42*pLi, wfIn(panel, px)*mmLod(0.10, px));
+    dS *= (1.0 - 0.40*cut)*(1.0 - 0.40*smoothstep(0.735 - px, 0.735 + px, y));
+    shd = mix(shd, dS, wfIn(die, px));
+    float cHw = y < 0.88 ? 0.33 : 0.25;
+    float cS = (y < 0.88 ? mix(0.90, 1.42, smoothstep(0.838 - px, 0.838 + px, y)) : 1.00 + 0.46*gyBand(0.94 - y, px));
+    shd = mix(shd, cS*(1.0 + 0.26*gyBand(cHw - kx, px) - 0.30*gyBand(cHw + kx, px)), wfIn(corn, px));
+    /* the wings: the one to the key a lit mass, the other in shade; its
+       leading edge a lit band, the side against her back in her shadow;
+       each tier of feathers a ruled shadow under the tier above and a lit
+       lip of its own */
+    float wk = kq*sign(q.x);                       // 1 the wing to the key
+    float fr = fract((wr.x*0.6 + wr.y)/0.065);
+    float wS = mix(0.76, 1.14, step(0.0, wk));
+    wS *= 1.0 + mix(0.30, 0.46, step(0.0, wk))*gyBand(-wing, px)*smoothstep(-0.04, 0.02, wr.x);
+    wS *= 1.0 - 0.26*smoothstep(0.0, -0.07, wr.x);
+    wS *= 1.0 + (0.18*(1.0 - smoothstep(0.12, 0.26, fr)) - 0.20*smoothstep(0.68, 0.82, fr))*mmLod(0.065, px);
+    shd = mix(shd, wS, wfIn(wing, px));
+    /* the robe: a column in three planes -- the light, a half-tone, the
+       core shadow with a little light come back round its far edge -- and
+       each fold a dark line with a lit flank to the key and a dim one away
+       from it, fanning from the girdle as the cloth falls */
+    float rk = kq*ru;
+    float rS = 0.58 + 0.32*smoothstep(-0.52, -0.42, rk) + 0.30*smoothstep(-0.12, -0.02, rk) + 0.13*smoothstep(-0.82, -0.92, rk);
+    float fs = kq*(fract((ru*10.0 + 0.6*sin(y*3.0) + 3.1416)/6.2832) - 0.5)*6.2832*wR/10.0;   // metres from the fold, toward the key
+    float fLod = step(y, 1.58)*mmLod(wR*0.6, px);
+    rS *= 1.0 + fLod*(0.26*smoothstep(0.5*px, 1.2*px, fs)*(1.0 - smoothstep(2.6*px, 3.4*px, fs)) - 0.14*smoothstep(-3.4*px, -1.0*px, fs)*(1.0 - smoothstep(-1.0*px, 0.0, fs)) - 0.34*(1.0 - smoothstep(0.5*px, 1.2*px, abs(fs))));
+    /* the girdle's shadow on the skirt, the skirt's on the cornice */
+    rS *= (1.0 - 0.26*smoothstep(1.535, 1.565, y)*step(y, 1.58))*(1.0 - 0.30*smoothstep(1.00, 0.955, y));
+    shd = mix(shd, rS, wfIn(robe, px));
+    /* her arms and the wreath in the light, her head a ball, her hair in
+       its own shade */
+    shd = mix(shd, 1.16, wfIn(min(min(armR, armL), wreath), px));
+    shd = mix(shd, 0.80, wfIn(hair, px));
+    shd = mix(shd, 0.92*gyBall(vec2(kq*(q.x - 0.030)/0.084, (q.y - 2.075)/0.100)), wfIn(head, px));
+    /* moss climbed up the base */
+    vec3 ms = gyMoss(vec3(0.0, 1.0, 0.0), gyMound(q.x + 0.20*kq, y, 0.26, 0.11 + 0.08*mmHash11(seed*7.7 + 1.9), seed), 1.0, px);
+    float mk = ms.x*wfIn(base, px);
+    gWgShade = mix(shd, ms.y, mk);
+    gGyTint = mix(vec3(1.04, 1.03, 1.0), vec3(0.34, 0.60, 0.22), mk);
+  }
   gWfGloss = 0.20;
   gWfMoon = 2.2*(0.55*wfIn(min(min(fig, wing), corn), px)*smoothstep(0.8, 2.4, q.y) + 0.15);
   gWfCol = col; gWfInk = ink;
@@ -21176,6 +21233,46 @@ float wfCross(vec2 q, float px, float seed, float kq, bool paint){
   float boss = length(q - vec2(0.0, yC)) - 0.055;
   col = mix(col, sc*1.25, wfIn(boss, px));
   ink = max(ink, mmInkP(boss, px, 1.0)*0.6);
+  /* (round 61 repair 53: "the crosses now look flatter beside the improved
+     pieces". THE CROSS IN PLANES, on the lit colour, as repair 51's stones:
+     the shaft and the arms have a THICKNESS -- an arris lit down the key
+     side and across the top of each arm, in shade down the far side and
+     along each arm's underside; the arm's shadow ruled on the shaft under
+     it; the knotwork panel sunk; the ring a torus and the boss a ball;
+     each step a lit top over its riser, a dark line at the grass.) */
+  {
+    float kx = kq*q.x;
+    float sTop = q.y < 0.118 ? 0.120 : (q.y < 0.218 ? 0.220 : 0.320);
+    float sHw = q.y < 0.118 ? 0.46 : (q.y < 0.218 ? 0.36 : 0.26);
+    float shd = (1.10 + 0.70*gyBand(sTop - q.y, px))*(1.0 + 0.22*gyBand(sHw - kx, px) - 0.28*gyBand(sHw + kx, px))*(1.0 - 0.36*smoothstep(0.04, 0.0, q.y));
+    /* the ring, under the head */
+    vec2 rv = vec2(kx, q.y - yC);
+    float rR = length(rv);
+    float rt = clamp((rR - 0.235)/0.040, -1.0, 1.0);
+    float rlam = dot(rv/max(rR, 1e-4), vec2(0.60, 0.62))*(0.35 + 0.65*rt) + sqrt(1.0 - rt*rt)*0.50;
+    shd = mix(shd, 0.54 + 0.80*smoothstep(-0.25, 0.75, rlam), wfIn(ring, px));
+    /* the shaft, and the upper limb */
+    float hS = 1.02 + 0.44*gyBand(sw - kx, px) - 0.42*gyBand(sw + kx, px);
+    float pw = sw - 0.025;
+    float inP = step(0.45, q.y)*step(q.y, yC - 0.20)*wfIn(ax - pw, px);
+    hS = mix(hS, 0.90 - 0.36*gyBand(pw - kx, px) + 0.36*gyBand(pw + kx, px)*(1.0 - gyBand(pw - kx, px)), inP*mmLod(0.10, px));
+    hS = mix(hS, 1.22, inP*wfIn(knot, px)*mmLod(0.12, px));
+    hS *= 1.0 + 0.40*gyBand(yC + 0.42 - q.y, px);
+    /* the arms: a lit top, a shaded underside, an end to the key and one
+       away from it; and the arm's shadow on the shaft below it */
+    float onArm = step(abs(q.y - yC), 0.097);
+    float aS = 1.04 + 0.46*gyBand(yC + 0.095 - q.y, px) - 0.40*gyBand(q.y - yC + 0.095, px)*step(sw, ax);
+    aS *= 1.0 + 0.28*gyBand(0.40 - kx, px) - 0.32*gyBand(0.40 + kx, px);
+    hS = mix(hS, aS, onArm);
+    hS *= 1.0 - 0.30*smoothstep(yC - 0.165 - px, yC - 0.165 + px, q.y)*(1.0 - onArm)*step(q.y, yC);
+    shd = mix(shd, hS, wfIn(head, px));
+    shd = mix(shd, gyBall(rv/0.055), wfIn(boss, px));
+    /* its rock, and moss climbed up the steps */
+    vec3 ms = gyMoss(vec3(0.0, 1.0, 0.0), gyMound(q.x - 0.22*kq, q.y, 0.24, 0.10 + 0.10*mmHash11(seed*7.7 + 1.9), seed), 1.0, px);
+    float mk = ms.x*wfIn(steps, px);
+    gWgShade = mix(shd, ms.y, mk);
+    gGyTint = mix(gyRock(seed + 3.0), vec3(0.34, 0.60, 0.22), mk);
+  }
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.50*wfIn(min(head, ring), px)*smoothstep(1.0, 2.6, q.y) + 0.18);
   gWfCol = col; gWfInk = ink;
