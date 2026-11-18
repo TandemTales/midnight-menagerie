@@ -66,6 +66,8 @@ export const GradeShaderDef = {
        carried to it. All zero wherever a wing does not ask: mix(col, x, 0.0)
        is col, so every other room is as it was. Atmosphere._applyGrade. */
     uShadowHue:  { value: [0, 0, 0, 0] },
+    /* (round 61 repair 50) how far a dark with its own hue is spared it */
+    uShadowKeep: { value: 1.0 },
     uImpact:     { value: null },      // THREE.Vector4 (x, y, age 0..1, strength)
     /* Mirrors renderer.toneMappingExposure. Only used when MM_TONEMAP is on —
        i.e. when this pass has absorbed the OutputPass. */
@@ -113,6 +115,7 @@ export const GradeShaderDef = {
     uniform vec2  uTexel, uShake;
     uniform vec3  uFlashColor, uPulseColor, uWarmTint, uCoolTint, uHaloColor;
     uniform vec4  uImpact, uShadowHue;
+    uniform float uShadowKeep;
     uniform float uTime, uGrain, uVignette, uAberration, uFlash, uPulse, uDesat,
                   uDread, uToneAmt, uHalation, uDirt, uExposure, uLift, uAspect,
                   uSaturate, uContrast, uToneExposure,
@@ -276,7 +279,32 @@ export const GradeShaderDef = {
          touched at all. Not a lift, not a fog: the value barely moves. */
       if (uShadowHue.a > 0.0) {
         float hl = mmLum(col);
-        col = mix(col, uShadowHue.rgb * hl, (1.0 - smoothstep(0.0, 0.10, hl)) * uShadowHue.a);
+        /* (round 61 repair 50) ...AND IT SPARES WHAT IS NOT THE ROOM'S COLOUR.
+           Repair 48's judges, three rooms of four: the warm darks cost "the
+           muddier or smaller cold light pool" and "a red wash over near
+           objects (jugs, sacks, plates lose their local colour)". One hue for
+           every dark pixel will do that. So a dark that has a clear hue of
+           its OWN, far from the wing's, keeps it: the cosine between the
+           pixel's chroma and the hue's (each taken on the square root, which
+           is near enough the eye's spacing that the angles are the ones a
+           capture measures), gated by the pixel's own saturation. A wall
+           inside about 16 degrees of the hue takes it whole as before; past
+           about 33 (an olive jug in a red kitchen, a moonlit pool, delft) it
+           is left alone. A dark with almost no chroma, or almost no light,
+           has no hue to keep and takes the wing's fully: that is the "fallen
+           to black" this knob exists for. Still only a weight on the same
+           mix: black stays black, nothing above 0.10 moves. */
+        vec3  sq = sqrt(max(col, 0.0));
+        vec3  sh = sqrt(uShadowHue.rgb);
+        vec3  pc = sq - vec3((sq.r + sq.g + sq.b) / 3.0);
+        vec3  hc = sh - vec3((sh.r + sh.g + sh.b) / 3.0);
+        float mxq = max(sq.r, max(sq.g, sq.b));
+        float sat = (mxq - min(sq.r, min(sq.g, sq.b))) / max(mxq, 1e-4);
+        float kin  = dot(pc, hc) / max(length(pc) * length(hc), 1e-6);
+        float keep = smoothstep(0.10, 0.28, sat) * (1.0 - smoothstep(0.84, 0.96, kin))
+                   * smoothstep(0.0002, 0.0015, hl) * uShadowKeep;
+        col = mix(col, uShadowHue.rgb * hl,
+                  (1.0 - smoothstep(0.0, 0.10, hl)) * uShadowHue.a * (1.0 - keep));
       }
 
       /* ---- shadow contrast: a pivotless power curve in linear light --------- */
