@@ -6520,9 +6520,26 @@ float kDresser(float dxr, vec2 q, float px, float lum, float on, float wk, inout
       float gr = 0.85 + 0.25*mmNoise(vec2(q.x*30.0, q.y*2.0));
       /* (...and "slightly over-orange": against the tables' tops in front of
          it -- hue 18-22, saturation 0.60-0.67 -- its lit planes measured hue
-         10-12 at 0.87-0.90. The deal a step toward the tables' wood.) */
-      vec3 pine = vec3(0.43, 0.31, 0.18)*(lum*2.4 + 0.016)*gr*wk;
+         10-12 at 0.87-0.90. The deal toward the tables' wood: at (0.43, 0.31,
+         0.18) the room's red light still brought it back at hue 12-14, 0.83-
+         0.87, so it goes further in the paint than it should read.) */
+      vec3 pine = vec3(0.38, 0.34, 0.24)*(lum*2.4 + 0.016)*gr*wk;
       vec3 dcol = pine;
+      /* (round 61 repair 56, repair 54's judges: "the kitchen's upper dresser
+         needs the same lighting as its base". Measured there: the stiles at
+         30 of 255, the shelves' edges at 4-12 and the back at 10 over a
+         cupboard lit by repair 54 -- the scullery's whole dresser took its
+         gain (wk) and the kitchen's rack none. pineU is the rack's, the
+         cornice's and the worktop's wood: the kitchen's raised to its
+         cupboard's light, the scullery's as it was. And in both rooms the
+         rack as joinery: the stile turned to the range lit and the far one in
+         shade, each with its arris toward the range; every shelf's front a
+         lit top arris over its face; the cornice a bed mould in shade under a
+         cove and a lit fillet.) */
+      /* (the kitchen's rack stands in its high window's cold pool: at 1.9 of
+         the deal it came back a pale lilac-grey, the cornice 125 of 255 at
+         saturation 0.29 -- so a third up, and warmed against the moon) */
+      vec3 pineU = wk < 1.5 ? pine*vec3(1.46, 1.20, 0.86) : pine;
       /* the rack: boarded back in shadow, the stiles, the shelves */
       /* (repair 56: the back is PLANKING -- upright boards a hand wide, each
          its own value, a dark joint between with the arris of the board that
@@ -6534,18 +6551,20 @@ float kDresser(float dxr, vec2 q, float px, float lum, float on, float wk, inout
       float bj = (bi + 1.0)*0.115 - (dxr + 1.22);          // metres to the joint on the range's side
       float bd = mmInkP(mmRowX(dxr + 1.22, 0.115) - 0.0575, px, 0.9);
       float bLit = smoothstep(0.7*px, 1.1*px, bj)*(1.0 - smoothstep(2.1*px, 2.5*px, bj))*mmLod(0.115, px);
-      vec3 backC = pine*(0.62 + 0.40*mmHash11(bi*3.7 + uSeed))*(1.0 + 0.45*bLit);
+      vec3 backC = pineU*(0.62 + 0.40*mmHash11(bi*3.7 + uSeed))*(1.0 + 0.45*bLit);
       float stile = step(1.10, abs(dxr));
-      dcol = mix(dcol, mix(backC*(1.0 - 0.60*bd), pine*1.10, stile), inR);
-      float shelfF = 0.0, shelfS = mmBandA(q.y, 1.965, 2.045, px);
+      float stArr = (1.0 - smoothstep(1.2*px, 1.8*px, dxr < 0.0 ? -1.10 - dxr : 1.22 - dxr))*stile;
+      dcol = mix(dcol, mix(backC*(1.0 - 0.60*bd), pineU*(1.10 + 0.42*step(1.10, dxr) - 0.26*step(dxr, -1.10) + 0.55*stArr), stile), inR);
+      float shelfF = 0.0, shelfS = mmBandA(q.y, 1.965, 2.045, px), shelfA = 0.0;
       for (int s2 = 0; s2 < 3; s2++){
         float sy = 1.20 + float(s2)*0.34;
         shelfF = max(shelfF, mmBandA(q.y, sy - 0.035, sy, px));
+        shelfA = max(shelfA, mmBandA(q.y, sy - 0.013, sy, px));
         shelfS = max(shelfS, mmBandA(q.y, sy - 0.10, sy - 0.035, px));
         gInk = max(gInk, mmInkP(q.y - (sy - 0.035), px, 1.0)*0.75*inR);
       }
       shelfF *= inR*(1.0 - stile); shelfS *= inR*(1.0 - stile);
-      dcol = mix(dcol, pine*1.75, shelfF);
+      dcol = mix(dcol, pineU*(1.45 + 0.85*shelfA), shelfF);
       dcol *= 1.0 - 0.45*shelfS;
       /* the plates, leaning back on the shelves: 0.20 m apart, a platter at
          each end of a shelf, each with its rim, its border and its blue */
@@ -6581,11 +6600,13 @@ float kDresser(float dxr, vec2 q, float px, float lum, float on, float wk, inout
       gInk = max(gInk, mmInkP(cupD, px, 1.0)*0.6*step(0.001, cupOn));
       /* the cornice, flaring, its fillet lit */
       float inC = mmCover(-corn);
-      dcol = mix(dcol, pine*(1.05 + 0.55*mmBandA(q.y, 2.15, 2.19, px)), inC);
+      dcol = mix(dcol, pineU*(0.90 + 0.30*smoothstep(2.075 - px, 2.075 + px, q.y) + 0.60*mmBandA(q.y, 2.15, 2.19, px)
+                              + 0.30*step(1.22, dxr) - 0.22*step(dxr, -1.22)), inC);
+      gInk = max(gInk, mmInkP(q.y - 2.075, px, 1.0)*0.45*inC*mmLod(0.035, px));
       gInk = max(gInk, mmInkP(q.y - 2.04, px, 1.1)*0.8*inC);
       /* the worktop, scrubbed, its front edge lit */
       float inW = mmCover(-wtop)*(1.0 - inC);
-      dcol = mix(dcol, pine*1.65, inW);
+      dcol = mix(dcol, pineU*1.65, inW);
       /* the base: a row of three drawers, two panelled doors under them */
       float inB = mmCover(-base)*(1.0 - inW);
       float drw = step(0.66, q.y);
