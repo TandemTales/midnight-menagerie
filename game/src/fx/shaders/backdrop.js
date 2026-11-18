@@ -34402,6 +34402,23 @@ void main(){
     }
     oc *= (lum*3.8 + 0.060);
     albedo = mix(deal, oc, step(0.5, gTbOk));
+    /* (round 61 repair 54, repair 52's judges: "the same lit treatment for
+       the wall furniture still in silhouette (the kitchen's back tables".
+       Measured: lit, but in one value a member -- a leg 22 or 74 whole, the
+       apron 23 under a top at 79. On the lit colour (gWgShade), under the top
+       only: each leg in two faces, the one turned to the range lit and the
+       other a stop down, a crisp line between them; the pot board its top
+       face over its front; the drawers out of the top's shadow, which is
+       ruled under its edge; a dark line where the feet stand.) */
+    {
+      float axT = abs(tm.x) - (vSize.x*0.5 - 0.27);
+      float kT = (vWorld.x - tm.x*uYaw.x > 0.0 ? -1.0 : 1.0)*(tm.x < 0.0 ? -1.0 : 1.0)*(axT < 0.0 ? -1.0 : 1.0);
+      float sT = tm.y > 0.665 ? (tm.y > 0.752 ? 0.62 : 1.32)
+               : ((tm.y > 0.118 && tm.y < 0.182) ? (tm.y > 0.156 ? 1.40 : 0.82)
+               : mix(0.56, 1.36, smoothstep(-mpp.x, mpp.x, kT*(abs(axT) - 0.12) + 0.008)));
+      sT *= 0.42 + 0.58*smoothstep(0.0, max(0.030, 2.0*mpp.y), tm.y);
+      gWgShade = mix(1.0, sT, (1.0 - bench)*step(gTbOk, 0.5)*step(tm.y, 0.775));
+    }
   }
 #endif
 #if MM_SH28

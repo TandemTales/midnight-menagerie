@@ -91,7 +91,16 @@ function footOf(region, p) {
     return null;
   }
   if (region === 'kitchens') {
-    if (s === 29) return sd > 20 ? { w: w * 0.90, d: 0.46, k: 0.95 } : { w: w * 0.92, d: 0.95, k: 0.95 };
+    /* (round 61 repair 54, repair 52's judges: "the far thirds of the kitchens
+       ... floors still sink into one red-brown mass". A table stood on a pool
+       its own length and a metre deep, dense: the flags under it and the wall
+       behind its legs were one black. Now a thin shade under its pot board
+       and a small dense one where each pair of legs stands, tbSD's own
+       numbers -- hw - 0.10 and hw - 0.34 either side. The bench as it was.) */
+    if (s === 29) return sd > 20 ? { w: w * 0.90, d: 0.46, k: 0.95 }
+      : { dz: -0.06, w: w * 0.86, d: 0.40, k: 0.70,
+          extra: [{ dx: -(w * 0.5 - 0.27), dz: 0.02, w: 0.42, d: 0.16, k: 1.25 },
+                  { dx: w * 0.5 - 0.27, dz: 0.02, w: 0.42, d: 0.16, k: 1.25 }] };
     if (s === 8) return { w: w * 0.95, d: w * 0.62, k: 1.05 };
     /* (round 45 graft: LARIMAR's crate of apples (seed > 90), the crate and
        the fruit rolled out of it; LARIMAR's tipped basket (80-90), the basket
