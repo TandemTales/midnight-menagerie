@@ -841,3 +841,23 @@ The builder also noted, unverified: `.kit-medallion--mounted`'s plum glaze (repa
 Tests (on the branch with all four parts): help-frame 38, chrome 27/0, gamepad 24/0, steam-deck 6/6, map 38/0, scene-css 0, css-tokens 0, readability minFont unchanged.
 
 Key: `PAIRED-r61-repair46-key.json`. Evidence: `C:/UILOOP/s21/ev46/`.
+
+## Repair 54: the kitchens' dresser and back tables lit, the jug's highlight shaped; the passages' stretcher lit, its apron left as it was (2026-11-18)
+
+Repair 52's judges: the jug's highlight "a flat pale oval that looks stuck on" with its lit side away from the fire; "the wall furniture still in silhouette (the kitchen's back tables and dresser)"; the passages' "stretcher rails are hairlines". Repair 54 (`f12b43d1`, `5b26cf48`, `e4ad97a9`, `96de9879`, and my `51d82946`, merged) paints four objects in shaders/backdrop.js.
+
+- **The jug (`gkDraw` 82):** the lit side followed the key's screen side, which in the kitchen is away from the range; it now faces the room's axis (the kitchen's jug flips, the scullery's already faced that way). The oval is a comma-shaped streak on the shoulder; the glaze stops short of the foot in a scalloped row of runs. Both judges, in both kinds: "a curved streak following the belly", "lit from the hearth side", against "a flat oval dot" on "the wrong side".
+- **The dresser (`kDresser`, wall program): the real silhouette.** The scullery's whole dresser stood at luma 2-18 beside brick at 17. The cupboard as joinery (a lit frame, sunk door fields, drawers lit on the upper arris, the worktop's shadow ruled under it); the scullery's wood a gain of 2.4, its plates and cups half that. Scullery cornice 10 to 35, worktop 11 to 39. Both judges by 2: "a lit, fully drawn piece of furniture", where dev's was "a black void with floating plates".
+- **The back tables (shape 29): lit already, one value per member.** Two-faced legs, the pot board's top face over its front, a dark foot line; `footOf` gives a thin shade and a small pool at each leg pair. The subtlest of the four ("slightly better; subtle").
+- **The passages' stretcher (`wfServTable`):** a lit top face over a front face a stop down, its outline ink reduced. Named as the deciding object in three of four passages verdicts ("lit wooden rods", against "dark smears fused with their shadows"); one judge in the library preferred the dark rail "as a firm, solid bar" on that brighter floor.
+- **OUT: the apron as one flat value.** The builder found the "see-through" was the key-side fifth of the apron lit as an edge, and flattened it. Blind, each judge preferred the old lit corner and bead on one table and the flat board on the other: "a wash", "neither is right on both sides". A removal again. I restored repair 52's apron on the branch (`51d82946`).
+
+The paired check, four rooms against dev, as built: kitchens **4-0**, passages-passage **2-0**, passages-library **1-1**. The merged form (lit stretcher, old apron) was not captured: the next survey is its check.
+
+Link time: the kitchens' prop program 10.9 s to 11.8-11.9 (untouched programs drifted +0.4 on average over the same runs); a real rise of about 0.5 s is plausible. It is the wing with least to spare: the next thing added to its prop program should take something out.
+
+Marked down inside the winner: the scullery dresser's lower back "shows a grid that reads as brick or tile rather than planking" and its planes are "slightly over-orange" with "stair-stepped plates"; the kitchen's upper dresser is unlit above its lit base; the tables in front lose a little separation against the lit dresser. Next, from both: every rail and apron end with a lit top edge and "never darker than the floor behind"; contact shadows under the back tables' feet; the jug's treatment on the other floor vessels, crocks and sacks.
+
+Tests (on the branch before the apron line was restored): link-queue 104/0, kitchens 20/0, secret-passages 74/0, steam-deck 6/6, grounding PASS.
+
+Key: `PAIRED-r61-repair54-key.json`. Evidence: `C:/UILOOP/s21/ev54/`.

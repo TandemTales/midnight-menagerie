@@ -1,0 +1,14 @@
+{
+ "SURVEY-room-passages-passage": {
+  "new_is_A": false
+ },
+ "SURVEY-room-passages-library": {
+  "new_is_A": true
+ },
+ "SURVEY-room-kitchens-kitchen": {
+  "new_is_A": true
+ },
+ "SURVEY-room-kitchens-scullery": {
+  "new_is_A": true
+ }
+}
