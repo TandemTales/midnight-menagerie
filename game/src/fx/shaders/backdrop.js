@@ -21030,7 +21030,9 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
                                               gyMound(q.x + sd*L*(0.25 + 0.40*h2), q.y, 0.22, (0.05 + 0.09*h1)*kb, seed + 2.0)), 1.0, px);
     if (kerbed < 0.5) {
       float xr = (q.x + sd*L*(0.15 + 0.50*h2))/0.24;
-      ms = gyMoss(ms, max(0.78 - q.y - 0.026 - (0.05 + 0.10*h1)*max(1.0 - xr*xr, 0.0) - 0.018*abs(sin(q.x*31.0 + seed*4.0)), (abs(xr) - 1.0)*0.24), -1.0, px);
+      /* (on some tombs and not others, and hung in tags, not one tongue) */
+      if (mmHash11(seed*11.3 + 0.9) > 0.40)
+        ms = gyMoss(ms, max(0.78 - q.y - 0.020 - (0.05 + 0.10*h1)*max(1.0 - xr*xr, 0.0)*(0.45 + 0.55*abs(sin(q.x*23.0 + seed*4.0))), (abs(xr) - 1.0)*0.24), -1.0, px);
     } else {
       float e = max(0.012, 1.5*px);
       vec2 mp = hq - vec2(sd*0.20, 0.30 + 0.16*h1);
