@@ -1,0 +1,6 @@
+SURVEY-room-pumpkin-courtyard: B by 2 -- the near-left jack-o'-lanterns stand whole inside the frame on green leaf feet with cast shadows, where A's left pumpkin is sliced by the frame edge and its vines read as black smudges.
+SURVEY-room-crypt-catacomb: B by 1 -- the right-hand candelabrum stands whole on its tripod feet inside the frame, where A's is cut by the right edge into a fragment of candles; the rest of the room is identical.
+SURVEY-room-lampworks-lampworks: B by 2 -- the two workbenches are pulled in so each reads as a complete bench with both ends, cupboards and feet on the floor, where A's are cut off by the left and right frame edges.
+
+### PATTERN
+The better version brings its near and side objects wholly inside the frame. Needed next: (1) painted surface detail on the near props -- hay bales, crates and benches are still flat-textured boxes beside the samples' modelled, ink-lined objects; (2) the lower foreground floor is large, empty and soft in every room (big blurred slabs in the crypt and lampworks), and needs crisp drawn joints and something standing on it; (3) the darks at the side walls and upper corners (crypt arcades, lampworks windows and left wall) fall toward murk; firmer contact shadows under the pumpkin leaves and candelabrum feet.

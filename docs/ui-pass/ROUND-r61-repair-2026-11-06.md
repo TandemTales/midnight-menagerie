@@ -501,3 +501,18 @@ The paired check was against dev: **4-0** (study 2 and 2, "clearly"; ballroom 1 
 Tests: grounding PASS, steam-deck 6/6, link-queue 104/0, study-library 50/0, ballroom 46/0. **Run steam-deck and grounding under `python tools/gpu_slot.py -- ...` when anything else is capturing:** bare, steam-deck gave 10 false timeouts.
 
 Key: `PAIRED-r61-repair33-key.json`. Evidence: `C:/UILOOP/s21/ev33/`.
+
+## Repair 32: edge-cut props made whole; the pumpkins' leaves green, their shadows footprints (2026-11-17)
+
+Repair 29's judges asked for "edge-cut fragments ... brought fully in" and named "the pumpkins' black blob shadows" (`4672ed95`, merged `1826b2a0`).
+
+- **Pumpkin grounds.** The big lantern cut by the left edge stands whole (across -3.05 -> -2.25, hM 1.10 -> 1.00) with its `pool2`; the near-left bale and the right bale and lanterns came in; the sliver at the right edge is set down whole further off.
+- **The "black blobs" were not shadows.** They were the pumpkins' leaves and stems, lit by nothing. They now take the moon term the body already had, and read as green leaves. Every pumpkin and bale on the flags also gets a footprint pool through the FOOT profile (`footOf`, pumpkin now in `FOOT_WINGS`).
+- **Crypt.** The candle stand cut by the right edge moved a stride back and in (authored x -3.0, z 2.0 -> x -3.3, z 0.9), in the catacomb and the ossuary. The chapel's copy is untouched.
+- **Lampworks.** The near benches finish inside the frame: right bench scale 1.00 -> 0.88 and edge 0.70 -> 0.63, left bench across 2.7 -> 1.9, far right bench edge 0.80 -> 0.78.
+
+The paired check was against dev at repair 29: **6-0** (pumpkin 2 and 2, lampworks 2 and 2, crypt 1 and 1). Both judges: each piece now "reads as a complete thing standing on the floor rather than a fragment sliced by the edge". They ask next for painted, ink-lined surface detail on near props (bales, crates, benches: "flat-textured boxes"), something standing on the crypt's wide empty floor and the lampworks' centre aisle, and colour held in the side walls' darks.
+
+Tests: link-queue 104/0, pumpkin-grounds 70/0, crypt 41/0, lampworks 45/0, grounding PASS, steam-deck 6/6.
+
+Key: `PAIRED-r61-repair32-key.json`. Evidence: `C:/UILOOP/s21/R32ev/`.
