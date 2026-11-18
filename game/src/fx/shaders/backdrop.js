@@ -24034,7 +24034,19 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
            over the brown, its unglazed foot, its lip and handle, its cork;
            the glaze's hard glint the brightest thing on it */
         float ub = clamp(b.x/0.16, -1.0, 1.0);
-        float lb2 = 0.25 + 0.90*wfRound(ub)*(0.5 + 0.5*smoothstep(-0.9, 0.7, kq*ub)) + 0.16*smoothstep(0.55, 0.95, -kq*ub);
+        /* (round 61 repair 54, repair 52's judges: the jug's "lit side faces
+           away from the range fire", its highlight "a flat pale oval that looks
+           stuck on"; the old jug's "glaze-drip line at the base is its one nice
+           detail". The key's side put its light on the side AWAY from the fire:
+           the jug stands a stride off the room's axis, where the range burns
+           and the scullery's lamp hangs, so its lit side is the one turned to
+           that axis. The highlight a STREAK that follows the shoulder -- a hot
+           core high on it, a tail drawn fine down the swell -- and the glaze
+           stopped short of the foot in a row of runs, a dark line where it
+           pooled at each one's lip, the bare clay under it; the green a step
+           deeper toward the foot.) */
+        float kJ = (vWorld.x - m.x*uYaw.x > 0.0 ? -1.0 : 1.0)*mir;
+        float lb2 = 0.25 + 0.90*wfRound(ub)*(0.5 + 0.5*smoothstep(-0.9, 0.7, kJ*ub)) + 0.16*smoothstep(0.55, 0.95, -kJ*ub);
         /* (round 61 repair 52, repair 50's judges, who split on its colour
            and agreed on what it lacked: "a flat green-black cut-out", "their
            own local colour and a lit edge inside the warm dark". Measured:
@@ -24046,22 +24058,26 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
            line over a dark one, bowed as the eye sees them from above; the
            handle lit along its back; a dark line where it stands. In the
            paint and on the lit colour, gWgShade. The crock is as it was.) */
-        float tb = kq*ub;
+        float tb = kJ*ub;
         float fB = 0.40 + 1.16*smoothstep(-0.62, 0.30, tb)*(1.0 - 0.40*smoothstep(0.72, 1.0, tb)) + 0.75*smoothstep(-0.70, -0.94, tb);
         float rw = max(0.005, 1.2*px);
         float rg = mod(b.y + 0.014*wfRound(ub) - 0.075, 0.060) - 0.030;
         fB *= 1.0 + step(0.085, b.y)*step(b.y, 0.255)*(0.42*(1.0 - smoothstep(rw*0.5, rw*0.5 + px, abs(rg))) - 0.32*(1.0 - smoothstep(rw*0.5, rw*0.5 + px, abs(rg + rw))));
-        vec3 jgl = vec3(0.12, 0.22, 0.10)*(0.90 + 0.20*mv);
-        float footB = step(b.y, 0.040 + 0.010*sin(b.x*50.0));
-        vec3 cB = mix(jgl*fB, cream*0.80*lb2, footB)*(0.55 + 0.45*smoothstep(0.0, 0.08, b.y))*(0.50 + 0.50*smoothstep(0.0, max(0.008, 1.5*px), b.y));
+        vec3 jgl = vec3(0.12, 0.22, 0.10)*(0.90 + 0.20*mv)*(0.76 + 0.24*smoothstep(0.05, 0.20, b.y));
+        float dripY = 0.060 - 0.024*wfRound(2.0*fract(b.x/0.064 + 0.31) - 1.0);
+        float footB = step(b.y, dripY);
+        float dripL = step(dripY, b.y)*step(b.y, dripY + max(0.007, 1.5*px));
+        vec3 cB = mix(jgl*fB*(1.0 - 0.62*dripL), cream*0.80*lb2, footB)*(0.55 + 0.45*smoothstep(0.0, 0.08, b.y))*(0.50 + 0.50*smoothstep(0.0, max(0.008, 1.5*px), b.y));
         vec2 hv = (b - vec2(0.150, 0.215))/vec2(1.0, 1.25);
         gkLay(col, ink, hdl, jgl*(1.00 + 3.00*smoothstep(0.0, 0.7, (length(hv) - 0.055)/0.012)*smoothstep(-0.3, 0.6, hv.y/0.055)), px, 0.9);
         gkLay(col, ink, jugB, cB, px, 0.95);
         gkLay(col, ink, lipB, jgl*(1.30 + 1.40*smoothstep(-0.5, 0.8, tb)), px, 0.9);
         gkLay(col, ink, corkB, vec3(0.56, 0.42, 0.26)*(0.70 + 0.45*smoothstep(0.355, 0.392, b.y))*(0.9 + 0.2*kq*ub), px, 0.85);
-        gWgShade = mix(1.0, 0.45 + 0.75*fB, wfIn(jugB, px)*(1.0 - footB)*(1.0 - wfIn(min(crockA, lidA), px)));
-        float gB = wfIn(wfEll(b - vec2(0.060*kq, 0.236), vec2(0.026, 0.010)), px);
-        emit += vec3(0.80, 1.00, 0.76)*gB*wfIn(jugB, px)*0.24;
+        gWgShade = mix(1.0, mix((0.45 + 0.75*fB)*(1.0 - 0.55*dripL), 1.05 + 0.75*smoothstep(-0.5, 0.6, tb), footB), wfIn(jugB, px)*(1.0 - wfIn(min(crockA, lidA), px)));
+        float hT = clamp((b.y - 0.160)/0.115, 0.0, 1.0);
+        float hX = (b.x*kJ - 0.078 + 0.036*hT*hT)/max(0.0040 + 0.0100*hT, 0.8*px);
+        float gB = exp(-hX*hX)*hT*hT*smoothstep(1.0, 0.84, hT);
+        emit += vec3(0.80, 1.00, 0.76)*gB*wfIn(jugB, px)*0.62;
         moon += 0.45*wfIn(min(lidA, lipB), px) + 0.15*wfIn(min(crockA, jugB), px)*smoothstep(0.20, 0.40, cm.y);
       }
     } else if (seed < 80.0) {
