@@ -2533,26 +2533,3 @@
 .map-screen .map-atlas__medal { translate: 0 calc(-50% - var(--kit-edge) / 2 + 3.45px); }
 .map-screen .map-atlas__medal::after { inset: calc((var(--plate-h) * .0723 - 12.2px + var(--kit-edge)) / 2); }
 /* == end room for the knobs' rims == */
-
-/* == the tray's plates are enamel (repair 55) == */
-/* Repair 46's judges, both: "the map tray's text buttons (Undo/Clear, X room/
-   Unmark, You are here/Overview) and the pale Chalk/Eraser chips are still the
-   flattest things on screen and want the same enamel-and-rim treatment as the
-   rounds beside them". The three action plates and the Hand were the kit's
-   BLACK nameplate (cartouche-dark.webp): they are its plum enamel now
-   (cartouche.webp, the plate .kit-enamel wears: violet glass in the same
-   bowed gilt rim, lit along its upper edge and shaded toward its lower), with
-   a line of light under the top rule and a line of shade over the bottom one.
-   The tool in hand is the lit plate (cartouche-lit.webp), raised and glowing,
-   as the Hand already was. */
-.map-screen .map-tools .map-tools__case { border-image-source: url("../../assets/ui/kit/cartouche.webp"); }
-.map-screen .map-tools [data-tool="pan"]:not([aria-pressed="true"]) { --lab: url("../../assets/ui/kit/cartouche.webp"); }
-/* light under the upper rule, shade over the lower: the enamel is sunk in its rim */
-.map-screen .map-tools .map-tools__case::after,
-.map-screen .map-tools [data-tool="pan"]::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background:
-    linear-gradient(90deg, transparent, rgb(230 217 246 / .5) 22%, rgb(230 217 246 / .5) 78%, transparent) 50% 4px / calc(100% - 28px) 1px no-repeat,
-    linear-gradient(90deg, transparent, rgb(2 1 9 / .7) 22%, rgb(2 1 9 / .7) 78%, transparent) 50% calc(100% - 4px) / calc(100% - 28px) 2px no-repeat;
-}
-/* == end the tray's plates are enamel == */
