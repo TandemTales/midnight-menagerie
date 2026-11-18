@@ -945,9 +945,8 @@ export const REGIONS = {
                  speed: 0.6, scale: 0.95, wind: 0.4, density: 0.45 },
     /* (graft: CARNELIAN's vignette, 1.22 -> 1.12) */
     exposure: 2.6, vignette: 1.12, contrast: 1.67,
-    /* (round 61 repair 39: the darks hold OXBLOOD -- the far boards under
-       the shelves and the unlit right-hand wall fell to a hueless black) */
-    shadowHue: '#6a1420', shadowAmt: 0.7,
+    /* (round 61 repair 39 tried shadowHue '#6a1420' at 0.7 here: it split
+       1-1 blind -- the oxblood turned the rug's navy border maroon. Left out) */
     key:  { glow: 0, kind: 'warm', x: -3.8, y: 3.2, z: 2.2, color: '#e2b271', intensity: 1.63, radius: 7.31 },
     /* (graft: the moon's pool on the boards a stop down -- the judges saw
        the floor's grain dither in it; round 37 graft: and 2.90 -> 2.30,
@@ -1369,10 +1368,9 @@ export const REGIONS = {
                  tint: '#e6e0d2', wispTint: '#9fc8c0', emberTint: '#ffb64a',
                  speed: 0.5, scale: 1.0, wind: 0.3, density: 0.40 },
     exposure: 2.46, contrast: 1.69,
-    /* (round 61 repair 39: the darks hold INDIGO in the side aisles and the
-       vault's end. A plum, #4c1a3c, was tried: over this warm stone it
-       could not be told from the brown-black it replaced) */
-    shadowHue: '#2a2466', shadowAmt: 0.6,
+    /* (round 61 repair 39 tried shadowHue indigo '#2a2466' at 0.6 here: it
+       split 1-1 blind -- "a cool blue-grey cast" over the warm stone niches.
+       A plum, #4c1a3c, could not be told from the brown-black. Left out) */
     key:  { glow: 0, kind: 'warm', x: -3.0, y: 2.8, z: 2.0, color: '#e0a866', intensity: 1.20, radius: 6.88 },
     /* (round 35: the fill a stop down -- at 1.94 it laid a cyan haze on the
        near flags' corner, the "haze" every judge marks down) */
