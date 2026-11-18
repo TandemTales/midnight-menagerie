@@ -20849,7 +20849,7 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
   /* (the blades at their own light, dark at the roots) */
-  gWgShade = mix(shd, 0.60 + 0.40*smoothstep(0.0, 0.05, q.y), wfIn(tuft, px));
+  gWgShade = mix(shd, 0.55 + 0.95*smoothstep(0.0, 0.10, q.y), wfIn(tuft, px));   // (repair 53: the blades' tips in the moon)
   gGyTint = mix(tnt, vec3(1.0), wfIn(tuft, px));
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.55*wfIn(d, px)*smoothstep(H*0.4, H, p.y) + 0.20*wfIn(d, px));
@@ -20929,7 +20929,10 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
     vec3 sc = gyWeather(st*rnd, q, px, seed, 0.10);
     wfLay(col, ink, plinth, sc*0.80, px, 0.95);
     /* the plinth: a lit top, dark where it lies in the grass */
-    shd = (0.95 + 0.50*gyBand(0.10 - q.y, px))*(1.0 - 0.34*smoothstep(0.04, 0.0, q.y));
+    /* (round 61 repair 53: "the tombs' bases sink into a black band ... a lit
+       ground edge rather than a void" -- the plinth's face up out of the
+       foot's dark, 1.20 from 0.95, and its top edge a brighter line) */
+    shd = (1.20 + 0.62*gyBand(0.10 - q.y, px))*(1.0 - 0.34*smoothstep(0.04, 0.0, q.y));
     /* the chest: its pilasters, its two sunk panels and their wreaths */
     vec3 cc = sc*(0.85 + 0.20*smoothstep(0.10, 0.66, q.y));
     wfLay(col, ink, chest, cc, px, 0.95);
@@ -21045,7 +21048,7 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
   }
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
-  gWgShade = mix(shd, 0.60 + 0.40*smoothstep(0.0, 0.05, q.y), wfIn(tuft, px));
+  gWgShade = mix(shd, 0.55 + 0.95*smoothstep(0.0, 0.10, q.y), wfIn(tuft, px));   // (repair 53: the blades' tips in the moon)
   gGyTint = mix(tnt, vec3(1.0), wfIn(tuft, px));
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.45*wfIn(min(ledger, urn), px)*(1.0 - kerbed) + 0.35*kerbed*wfIn(kHead, px) + 0.15);
