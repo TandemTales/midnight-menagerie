@@ -1,0 +1,5 @@
+SURVEY-room-passages-passage: A by 2 -- the open book beside each near book pile lies flat and reads as a drawn, lit book with pages in A, where B shows it as an edge-on pale sliver that reads as a fragment sunk into a heavy black shadow pool.
+SURVEY-room-heart-heart: B by 1 -- the urn's plinth foot is crisp-edged with its shadow underneath in B, where A smears a soft dark blob over the foot's left edge; the bench's shadow is the counterweight (A's hard bar between the legs grounds it slightly better than B's soft floating patch), so the pair is very nearly identical.
+
+### PATTERN
+The better versions keep each near-floor object whole, legible and lit with a tight contact shadow. Needed next: (1) painted detail and modelled light on the near props (book piles are flat coloured slabs with no spines, tooling or page edges; their candles are unlit white stubs with no flame or glow); (2) contact shadows consistent across a room, crisp at the foot and soft further out, not a hard bar on one object and a blob on the next; (3) darks that hold colour in the middle distance.

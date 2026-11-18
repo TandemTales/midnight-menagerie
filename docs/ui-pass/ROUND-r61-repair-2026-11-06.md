@@ -531,3 +531,19 @@ The paired check was against dev: **12-0**, all "slightly" (map, rest, clubhouse
 Tests: help-frame PASS (38 checks), chrome 27/0, gamepad 24/0, steam-deck 6/6, scene-css 0 conflicts, css-tokens 0 undefined, readability no floor moved. `tools/on_port.py` cannot repoint readability (it takes its URL from the steam-deck module); a wrapper is in the evidence folder.
 
 Key: `PAIRED-r61-repair31-key.json`. Evidence: `C:/UILOOP/s21/R31ev/`.
+
+## Repair 34: repair 33's open book and feet carried to the passages and the heart (2026-11-18)
+
+(`9661cdd6` and `68029280`, merged `7cb0bc86`.)
+
+- **The passages' open book** (`wfBookPile`, shape 66 seed > 60) was still the edge-on sliver. It is drawn with repair 33's arithmetic at 1.1x; the two piles and the candle moved 0.07 left so the book lies clear, and repair 20's candle light has a floor of 0.40 on the pages. Measured: the book's region 41 -> 84.
+- **A pool under each pile** (`footNear`), where one black blob had spanned both: the floor between the right-hand piles 3 -> 34. The `backcase` kind (`passages:library`) gets both changes and was looked at.
+- **The heart's bench** (main room only, the `hand` piece): a shade under the seat and a small dark pool under each paw. The gallery and memory room keep the house's pool: their camera is yawed and a square pool ran out past the bench's foot.
+
+The paired check was against dev at repair 33: **3-1.** The passages 2 and 2, "clearly": the book "lies open and readable as a drawn book with its own contact shadow". The heart split 1-1 on two objects both judges read the same way: the bench's new shadow "seats both legs", but the urn's new footprint pool "spills left" of its plinth, where the house's pool left the foot crisp. **The urn's pool was dropped after judging** (`68029280`); the merged heart is the old urn and the new bench. That combination has not been captured: survey 21 is its check.
+
+Both judges ask next for painted detail on the book piles ("flat colour slabs with no spines, page edges"; their candle stubs "unlit white pegs" with no flame), side tables and candle clusters cut by the frame edges in the passages and heart, and side walls that hold colour.
+
+Tests (before the urn was dropped): grounding PASS, steam-deck 6/6, link-queue 104/0, secret-passages 74/0, heart 44/0.
+
+Key: `PAIRED-r61-repair34-key.json`. Evidence: `C:/UILOOP/s21/ev34/`.

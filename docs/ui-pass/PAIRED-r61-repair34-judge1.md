@@ -1,0 +1,5 @@
+SURVEY-room-heart-heart: A by 1 -- the stone bench on the left floor: A's cast shadow is a defined band running foot to foot that seats both legs, where B's is a soft centred blob that leaves the feet barely grounded (the urn plinth's base is a wash: B's edge is a little crisper, A's shadow spills left of it).
+SURVEY-room-passages-passage: A by 2 -- the open book beside each near-floor pile: in A it lies open and readable as a drawn book with its own contact shadow, in B it is an edge-on sliver that reads as a fragment, with one shapeless black blob pooled between the stacks instead of a shadow under each.
+
+### PATTERN
+The better versions give each object its own shaped contact shadow and keep every prop turned so it reads whole. Needed next: (1) painted detail and modelling on the near props -- the book stacks are flat colour slabs with no spines, page edges or candle flame, and the candle stubs are unlit white pegs; (2) the heart's left and right walls and upper corners fall to near-black; (3) the near-floor candle clusters and the passage's side tables are cut by the left and right frame edges.
