@@ -1373,3 +1373,35 @@
   clip-path: inset(calc(var(--u) * 10.5) 0 calc(var(--u) * 36) 0);
 }
 /* == end the channel behind the cog == */
+
+/* == air round the mounts on the tight rail (repair 46) == */
+/* Repair 43's judges at 1280: "the rimmed strip medallions crowd the numbers
+   between them (137, 2, 4 sit tight between rings)", the coin "sits hard
+   against the Courage bar's end cap and the star against +1"; they asked for
+   "a pixel or two of breathing room ... without shrinking the type". The rail
+   has none to give (a full strip keeps 3px spare, the shop's belt 1.5px, and
+   4px cost the Gear belt a socket), so every pixel here is paid for:
+   - the cog's box is .12 chip heights wider than the mount drawn in it; its
+     margins take that back (the box, glyph and hit area keep their size, and
+     its ring ends up as far from the end block as the wing's is at the other
+     end);
+   - the Courage gauge slides 1px further under its heart medallion, its
+     figures staying where they were;
+   - on a rail that is not pouched the Snacks' plate stands 2px closer to the
+     purse's end, the 5px a pouched rail already keeps there.
+   Spent, 1px each: between the gauge's end cap and the coin's ring, and either
+   side of every purse figure (ring to figure, figure to the next ring). No
+   type, glyph, face or socket changes size. */
+@media (max-width: 1400px) {
+  .mm-hud .mm-hud__group--meta > .mm-hud__settings { margin: 0 calc(var(--hud-chip-h) * -.078) 0 calc(var(--hud-chip-h) * -.042); }
+  .mm-hud .mm-hud__courage > .mm-icon:first-child { margin-right: calc(var(--hud-chip-h) * -.3 - 1px); }
+  .mm-hud .mm-hud__courage .mm-hud__barlabel { left: calc(50% + var(--bar-h) * .1 + 1px); }
+  .mm-hud:not([data-belt="pouch"]) .mm-hud__group--vitals > .mm-hud__snacks { margin-left: calc(var(--hud-rule-w) + 1px); }
+  .mm-hud[data-terse="1"] .mm-hud__courage + .mm-hud__gold { margin-left: 1px; }
+  .mm-hud[data-terse="1"] :is(.mm-hud__gold, .mm-hud__clue, .mm-hud__luck) > .mm-icon:first-child { margin-right: calc(.1em + 1px); }
+  .mm-hud[data-terse="1"] :is(.mm-hud__gold, .mm-hud__clue) { padding-right: calc(.15em + 1px); }
+  /* ...and the purse plate's curled end reaches 2px further past Luck, so its
+     scroll no longer runs under the figure ("+1"); a drawn end only, no layout */
+  .mm-hud { --purse-end: 12px; }
+}
+/* == end air round the mounts == */
