@@ -516,3 +516,18 @@ The paired check was against dev at repair 29: **6-0** (pumpkin 2 and 2, lampwor
 Tests: link-queue 104/0, pumpkin-grounds 70/0, crypt 41/0, lampworks 45/0, grounding PASS, steam-deck 6/6.
 
 Key: `PAIRED-r61-repair32-key.json`. Evidence: `C:/UILOOP/s21/R32ev/`.
+
+## Repair 31: the help medallions set in gilt filigree cartouches (2026-11-18)
+
+Survey 16's first open ask: "the help medallions drawn as filigree cartouches, so the bare medallions read as controls" (`2e41d93b`, merged `137f4e3d`). Only `game/src/ui/story.css` changed (+50 lines): four small inline SVG data URIs in the kit's gold, no image files, no JS.
+
+- Each 44 px medallion sits in a gilt setting on the frame's rule: a second outer rule, four studs, a fleur finial above the upper medallion and below the lower, and a leafed lozenge knot joining the pair. Combat's single medallion wears both finials. The enamel face gains a fine inner gold rule.
+- The plate has a second inner rule and hangs from a small gilt pin. On the clubhouse and atlas the plate covers its medallion as before, so the pin is left off there.
+- Home, size, hit area, order, aria-labels and repair 15's focus behaviour are unchanged. No collision on map, combat-boss, rest, clubhouse or atlas at either size; the tightest spot is combat at 1280, where the lower finial clears the Loose Bones plate by about 15 px.
+- Tried and dropped: an 18 px finial (mush at 1:1) and bright gold highlights (the resting medallion looked permanently focused).
+
+The paired check was against dev: **12-0**, all "slightly" (map, rest, clubhouse, atlas, and the two focused views, each at both sizes). Both judges: the medallions are now "drawn fittings", "how the samples seat their round enamel buttons". They ask next for the plate to grow from the mount (a bracket, a cartouche end or ribbon tail, not "one stud"), the rim's dark brown band lifted toward antique gold at 1280, the mount a touch clear of the left screen edge at 1280, and the same mount on the other loose round controls (the TITLE back button, the settings cog) and the map's toolbar and KEY strip.
+
+Tests: help-frame PASS (38 checks), chrome 27/0, gamepad 24/0, steam-deck 6/6, scene-css 0 conflicts, css-tokens 0 undefined, readability no floor moved. `tools/on_port.py` cannot repoint readability (it takes its URL from the steam-deck module); a wrapper is in the evidence folder.
+
+Key: `PAIRED-r61-repair31-key.json`. Evidence: `C:/UILOOP/s21/R31ev/`.

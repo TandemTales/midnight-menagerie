@@ -1,0 +1,20 @@
+{
+ "map": {
+  "new_is_A": true
+ },
+ "rest": {
+  "new_is_A": true
+ },
+ "clubhouse": {
+  "new_is_A": false
+ },
+ "atlas": {
+  "new_is_A": false
+ },
+ "map-focus": {
+  "new_is_A": true
+ },
+ "combat-boss-focus": {
+  "new_is_A": true
+ }
+}
