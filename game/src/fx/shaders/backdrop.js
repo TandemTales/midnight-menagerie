@@ -29824,18 +29824,18 @@ float wfGlobe(vec2 q, float px, float seed, float kq, bool paint){
   float gby = min(min(abs(q.y - 0.655), abs(q.y - 0.265)), abs(q.y - 0.070));
   float gBead = (1.0 - smoothstep(0.009 - px, 0.009, gby))*lodG;
   float gNeck = (1.0 - smoothstep(0.009 - px, 0.009, min(min(abs(q.y - 0.637), abs(q.y - 0.247)), abs(q.y - 0.052))))*lodG*(1.0 - gBead);
-  float gGnd = 1.0 - smoothstep(0.7*px, 1.5*px, q.y);
+  float gGnd = 1.0 - smoothstep(1.2*px, 2.4*px, q.y);
   float gSeat = 1.0 - smoothstep(0.0, 0.05, q.y);
   wfLay(col, ink, legs, mix(maho*0.62, maho*1.25, gLit)*(1.0 + 0.25*gBead), px, 0.9);
-  float gS = (0.62 + 0.56*gLit + 0.46*gHi*mmLod(0.030, px))*(1.0 + 0.40*gBead - 0.42*gNeck)*(1.0 + 1.0*gSeat)*(1.0 - 0.50*gGnd);
+  float gS = (0.62 + 0.56*gLit + 0.46*gHi*mmLod(0.030, px))*(1.0 + 0.40*gBead - 0.42*gNeck)*(1.0 + 1.0*gSeat)*(1.0 - 0.68*gGnd);
   /* the stretcher: its top face lit, its front a stop down; the boss turned */
   vec2 gbq = q - vec2(0.0, 0.18);
   float gTop = smoothstep(0.004 - px, 0.004 + px, gbq.y);
   float gBoss = wfIn(length(gbq) - 0.040, px);
   float gbl = dot(gbq, normalize(vec2(kq, 0.80)))/0.040;
   wfLay(col, ink, stretch, mix(mix(maho*0.66, maho*1.25, gTop), mix(maho*0.60, maho*1.30, smoothstep(-0.25, 0.15, gbl)), gBoss), px, 0.9);
-  ink = max(ink, mmInkP(gbq.y - 0.004, px, 1.0)*0.40*wfIn(stretch, px)*(1.0 - gBoss)*mmLod(0.03, px));
-  float gSS = mix(mix(0.70, 1.30, gTop)*(1.0 + 0.16*kq*q.x/0.27), mix(0.62, 1.35, smoothstep(-0.25, 0.15, gbl)) + 0.6*(1.0 - smoothstep(0.006, 0.012, length(gbq - 0.016*normalize(vec2(kq, 0.80))))), gBoss);
+  float gSS = mix(mix(1.25, 2.70, gTop)*(1.0 + 0.16*kq*q.x/0.27),   // (the bar stood at 3 of 255 under legs at 18)
+                  mix(0.62, 1.35, smoothstep(-0.25, 0.15, gbl)) + 0.6*(1.0 - smoothstep(0.006, 0.012, length(gbq - 0.016*normalize(vec2(kq, 0.80))))), gBoss);
   float gShd = mix(mix(1.0, gS, wfIn(legs, px)), gSS, wfIn(stretch, px));
   /* the sphere: shaded round, the lands seen on it, the graticule */
   vec2 n2 = c/R;
