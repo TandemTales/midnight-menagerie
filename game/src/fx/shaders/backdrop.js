@@ -20671,13 +20671,21 @@ vec3 gyRock(float seed){
   vec3 c = k < 0.34 ? vec3(1.0) : (k < 0.56 ? vec3(1.17, 1.00, 0.80) : (k < 0.74 ? vec3(0.86, 0.92, 1.03) : vec3(1.12, 1.10, 1.02)));
   return c*(0.96 + 0.20*mmHash11(seed*3.3 + 7.1));
 }
-/* A CUSHION OF MOSS: three rounds grown together, by seed; p from its
-   middle, r its size. Crisp, lobed, never a star and never a speckle. */
-float gyPatch(vec2 p, float r, float s){
-  float h1 = mmHash11(s*3.7 + 1.1), h2 = mmHash11(s*5.3 + 2.7);
-  float d = length(p*vec2(1.0, 0.8)) - r;
-  d = min(d, length(p - r*vec2(1.8*(h1 - 0.5), 0.55)) - r*0.62);
-  return min(d, length(p - r*vec2(2.2*(h2 - 0.5), -0.40)) - r*0.70);
+/* (round 61 repair 57, of repair 53's cushions, both judges: "flat
+   hard-edged dark-green discs and drapes that overhang the stone's
+   silhouette ... stickers or bushes"; wanted "broken edges, a light top and
+   dark underside, and varied size, like the leafy caps already on the arch
+   tops", "growth that stays inside the outline". The disc is gone. Moss now
+   GROWS IN FROM AN EDGE, as the arch tops' caps did: this is how deep it has
+   crept in at u metres along that edge -- a run hl either way, dp at its
+   deepest, in clumps each its own size and each notched into two or three,
+   with bare stone between one clump and the next. g: where in its clump,
+   -1 to 1 along u.) */
+float gyFringe(float u, float hl, float dp, float fq, float seed, out float g){
+  float a = u*fq + 1.5708;            // (a clump at the middle of the run, never a gap)
+  float t = u/hl;
+  g = 2.0*fract(a/3.14159) - 1.0;
+  return dp*max(1.0 - t*t, 0.0)*(0.50 + 0.50*mmHash11(floor(a/3.14159)*1.3 + seed))*sqrt(abs(sin(a)))*(0.70 + 0.30*abs(sin(a*3.3 + seed)));
 }
 /* A MOUND of it climbed out of the grass: x from its middle, hw its half
    width, h its height; a hand's depth of it along the rest of the foot */
@@ -20695,11 +20703,14 @@ vec3 gyMossC(float seed, float y){
    moss's own value -- flat, its upper lip catching the sky and its lower
    edge dark, so it has a thickness and sits ON the stone; .z the shadow it
    lays on the stone under it. */
-vec3 gyMoss(vec3 acc, float m, float g, float px){
+/* (repair 57: and TWO VALUES of it -- cr, its crown, where the growth is
+   turned to the sky, the lighter; the body under that deep. The edge
+   between them crisp.) */
+vec3 gyMoss(vec3 acc, float m, float g, float cr, float px){
   float w = max(0.014, 2.0*px);
   float on = wfIn(m, px);
   float eb = 1.0 - smoothstep(w - px, w, -m);
-  float v = (1.0 - 0.45*eb*max(-g, 0.0))*(1.0 + 0.40*eb*max(g, 0.0));
+  float v = (1.0 - 0.45*eb*max(-g, 0.0))*(1.0 + 0.40*eb*max(g, 0.0))*mix(0.80, 1.24, cr);
   return vec3(max(acc.x, on), mix(acc.y, v, on), max(acc.z, wfIn(m - w, px)*(1.0 - on)*max(-g, 0.0)));
 }
 
@@ -20873,20 +20884,29 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   {
     float h1 = mmHash11(seed*4.9 + 0.3), h2 = mmHash11(seed*7.7 + 1.9), h3 = mmHash11(seed*2.1 + 5.5);
     float sd = h3 < 0.5 ? -1.0 : 1.0;
-    vec3 ms = gyMoss(vec3(0.0, 1.0, 0.0), gyMound(p.x - W*(h1 - 0.5)*1.5, p.y, W*0.62, 0.04 + 0.11*h2, seed), 1.0, px);
+    float mm = gyMound(p.x - W*(h1 - 0.5)*1.5, p.y, W*0.62, 0.04 + 0.11*h2, seed);
+    vec3 ms = gyMoss(vec3(0.0, 1.0, 0.0), mm, 1.0, wfIn(-mm - 0.020 - 0.016*abs(sin(p.x*29.0 + seed*5.0)), px), px);
     if (isX < 0.5) {
-      vec2 mp = p - vec2(sd*W*0.88, ty*(0.42 + 0.36*h1));
-      float mr = 0.045 + 0.035*h3;
-      if (h2 > 0.30) ms = gyMoss(ms, gyPatch(mp, mr, seed), clamp(mp.y/mr, -1.0, 1.0), px);
-      /* (the cap: cushions of it side by side along the edge, deepest at
-         the middle of the run and gone at its ends and down the shoulder --
-         clumps, not a ribbon) */
-      float cr = (p.x + sd*W*0.35)/(W*(0.30 + 0.25*h2));
-      if (h1 > 0.35) ms = gyMoss(ms, -d - (0.008 + 0.050*abs(sin(p.x*36.0 + seed*4.0)) + 0.016*abs(sin(p.x*61.0 + seed)))*max(1.0 - cr*cr, 0.0)*smoothstep(ty + 0.11, ty + 0.20, p.y) + 0.004, -1.0, px);
+      /* (repair 57: ONE growth in from the outline, where the water sits --
+         down the weather side, and along the top of one shoulder. Which, how
+         long a run and how deep, by the stone: three in ten have none down
+         the side, most a small one, a few a large; a third none on the
+         shoulder. It is measured in from the stone's own edge, so it cannot
+         stand outside it.) */
+      float gS, gC;
+      float eS = h2 > 0.30 ? gyFringe(p.y - ty*(0.34 + 0.40*h1), 0.10 + 0.18*h3, 0.050 + 0.090*h3*h3, 11.0 + 10.0*h1, seed, gS)*step(0.0, sd*p.x) : 0.0;
+      float eC = h1 > 0.35 ? gyFringe(p.x + sd*W*0.35, W*(0.30 + 0.25*h2), 0.035 + 0.055*h3, 30.0 + 20.0*h2, seed + 3.0, gC)*smoothstep(ty + 0.11, ty + 0.20, p.y) : 0.0;
+      float eM = max(eS, eC);
+      /* a side's cushion is lit over its upper half and dark under; the
+         shoulder's is lit where it lies on the top of the stone and hangs
+         dark */
+      ms = gyMoss(ms, 0.004 - d - eM, eS > eC ? gS : -1.0, eS > eC ? smoothstep(0.10, 0.10 + 60.0*px, gS) : wfIn(-d - 0.42*eC, px), px);
+      /* (...and on the arris it takes the arris's light: it lies ON the form) */
+      ms.y *= 1.0 + arB*(0.46*max(arO, 0.0) - 0.26*max(-arO, 0.0));
     }
     float mk = ms.x*wfIn(d, px);
-    shd = mix(shd*(1.0 - 0.30*ms.z), ms.y, mk);
-    tnt = mix(tnt, gyMossC(seed, p.y), mk);
+    shd = mix(shd*(1.0 - 0.34*ms.z), ms.y, mk);
+    tnt = mix(tnt, gyMossC(seed, p.y)*mix(vec3(1.0), vec3(1.12, 1.05, 0.72), smoothstep(1.00, 1.10, ms.y)), mk);
   }
   /* the grass, over the stone's foot */
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
@@ -21076,20 +21096,25 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
     float h1 = mmHash11(seed*4.9 + 0.3), h2 = mmHash11(seed*7.7 + 1.9), h3 = mmHash11(seed*2.1 + 5.5);
     float sd = h3 < 0.5 ? -1.0 : 1.0;
     float kb = 1.0 - 0.60*kerbed;
-    vec3 ms = gyMoss(vec3(0.0, 1.0, 0.0), min(gyMound(q.x - sd*L*(0.30 + 0.50*h1), q.y, 0.34, (0.10 + 0.14*h2)*kb, seed),
-                                              gyMound(q.x + sd*L*(0.25 + 0.40*h2), q.y, 0.22, (0.05 + 0.09*h1)*kb, seed + 2.0)), 1.0, px);
+    float mm = min(gyMound(q.x - sd*L*(0.30 + 0.50*h1), q.y, 0.34, (0.10 + 0.14*h2)*kb, seed),
+                   gyMound(q.x + sd*L*(0.25 + 0.40*h2), q.y, 0.22, (0.05 + 0.09*h1)*kb, seed + 2.0));
+    vec3 ms = gyMoss(vec3(0.0, 1.0, 0.0), mm, 1.0, wfIn(-mm - 0.020 - 0.016*abs(sin(q.x*29.0 + seed*5.0)), px), px);
+    /* (repair 57: the hank that hung down the frieze "read as draped green
+       cloth". It LIES ON the ledger now, where the rain stands -- a run of
+       cushions along its top edge, no deeper than the slab, lit along the
+       top and dark where they hang; and a kerbed grave's headstone has its
+       growth in from its weather side, as the headstones have.) */
+    float gF;
     if (kerbed < 0.5) {
-      float xr = (q.x + sd*L*(0.15 + 0.50*h2))/0.24;
-      /* (on some tombs and not others, and hung in tags, not one tongue) */
-      if (mmHash11(seed*11.3 + 0.9) > 0.40)
-        ms = gyMoss(ms, max(0.78 - q.y - 0.020 - (0.05 + 0.10*h1)*max(1.0 - xr*xr, 0.0)*(0.45 + 0.55*abs(sin(q.x*23.0 + seed*4.0))), (abs(xr) - 1.0)*0.24), -1.0, px);
+      float eL = mmHash11(seed*11.3 + 0.9) > 0.40 ? gyFringe(q.x + sd*L*(0.15 + 0.50*h2), 0.16 + 0.22*h3, 0.040 + 0.050*h1, 26.0 + 20.0*h2, seed, gF) : 0.0;
+      ms = gyMoss(ms, max(0.776 - q.y - eL, q.y - 0.80), -1.0, wfIn(0.780 - q.y - 0.016 - 0.36*eL, px), px);
     } else {
-      vec2 mp = hq - vec2(sd*0.20, 0.30 + 0.16*h1);
-      ms = gyMoss(ms, gyPatch(mp, 0.065, seed), clamp(mp.y/0.065, -1.0, 1.0), px);
+      float eS = gyFringe(hq.y - 0.30 - 0.16*h1, 0.10 + 0.14*h3, 0.050 + 0.070*h2, 11.0 + 10.0*h1, seed, gF)*step(0.0, sd*hq.x);
+      ms = gyMoss(ms, max(0.004 - kHead - eS, kHead), gF, smoothstep(0.10, 0.10 + 60.0*px, gF), px);
     }
     float mk = ms.x*wfIn(d, px)*(1.0 - wfIn(urn, px));
-    shd = mix(shd*(1.0 - 0.30*ms.z), ms.y, mk);
-    tnt = mix(tnt, gyMossC(seed, q.y), mk);
+    shd = mix(shd*(1.0 - 0.34*ms.z), ms.y, mk);
+    tnt = mix(tnt, gyMossC(seed, q.y)*mix(vec3(1.0), vec3(1.12, 1.05, 0.72), smoothstep(1.00, 1.10, ms.y)), mk);
   }
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
