@@ -592,3 +592,19 @@ The paired check was against dev at survey 21: **8-0** (ballroom 2 and 2, foyer 
 Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, secret-passages 74/0, foyer 66/0, ballroom 46/0.
 
 Key: `PAIRED-r61-repair38-key.json`. Evidence: `C:/UILOOP/s21/ev38/`.
+
+## Repair 39: darks that hold a hue (heart, ballroom); the study and the crypt left out (2026-11-18)
+
+Survey 19, 20 and 21's judges asked for "darks that hold colour instead of falling to black along the room sides and far floor". Repair 39 (`df3b2999` + `17317273`, merged) found what sets those darks and added one knob.
+
+- **What crushes them:** not the ambient (a doubled, saturated ambient moved every region by 0.1 of 100), not the vignette (x0.62 at the mid-edge), not fog. It is the grade's contrast power curve (1.61-1.69), which takes barely-lit walls and their hue to black.
+- **The knob:** a uniform `uShadowHue` in `shaders/grade.js`, set per wing by `shadowHue`, `shadowAmt`, `shadowGain` in atmosphere.js. Before the contrast curve, a pixel under 0.10 linear luminance is mixed toward the wing's deep hue at its own luminance: multiplied, never added, so black stays black and nothing above 0.10 moves. It defaults to zero. No new variant (link-queue 104). It applies to every room kind of a wing that sets it, and to all darks on the WebGL canvas.
+- **The paired check**, four rooms against dev: heart (oxblood-plum `#5c1230`, 0.7) **2-0**; ballroom (violet `#4a1670`, 0.7, gain 0.85) **2-0**; all "slightly". The study (oxblood `#6a1420`) and the crypt (indigo `#2a2466`) each **split 1-1**: one judge liked the hue, the other found the study's "red wash over the darks turns the [rug's navy] border maroon" and the crypt's "cool blue-grey cast ... lifts and greys the dark" over warm stone. Both were taken out before the merge (a comment marks each).
+- **The lesson:** a shadow hue wins in the room's OWN colour family where no other local colour lives in the darks, and loses where it crosses a local colour (navy on red) or runs against the room's warmth.
+- Value moved under +3.3 of 100 everywhere; untouched wings (attic, kitchens) were pixel-identical or within 1/255.
+
+Both judges ask next for the far floor band under the far wall carried "by drawn detail and local light rather than by a tint" (it "still collapses to a featureless black strip", losing the feet of the heart's statues and the ballroom's column bases), and local candle light on the side walls at the frame edges.
+
+Tests (all four hues in): link-queue 104/0, study-library 50/0, heart 44/0, crypt 41/0, ballroom 46/0, steam-deck 6/6, grounding PASS, shader-literals 0. The merged state (two hues) was not re-run; the battery is its check.
+
+Key: `PAIRED-r61-repair39-key.json`. Evidence: `C:/UILOOP/s21/ev39/`.
