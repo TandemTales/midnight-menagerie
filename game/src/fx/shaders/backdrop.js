@@ -20615,6 +20615,50 @@ float gyBall(vec2 n){
   return 0.40 + 0.90*smoothstep(0.0, 0.40, lam) + 0.24*smoothstep(0.62, 0.95, r2)*smoothstep(0.0, -0.35, lam)
        + 0.50*(1.0 - smoothstep(0.14, 0.26, length(n - vec2(0.36, 0.34))));
 }
+/* (round 61 repair 53, of repair 51's stones: they "have lost most of their
+   moss and now all share one cool grey; they want the moss back as painted
+   patches sitting on top of the new carving, plus some variation stone to
+   stone". The moss and the rock in the paint are under the prop's ceiling
+   and the moon's blue with everything else; these go on the LIT colour, as
+   a tint beside gWgShade -- gGyTint.)
+   THE ROCK as the moon leaves it: granite, sandstone, slate, marble -- the
+   same deal as gyStone's -- and each stone a little up or down in value. */
+vec3 gyRock(float seed){
+  float k = mmHash11(seed*6.13 + 0.5);
+  vec3 c = k < 0.34 ? vec3(1.0) : (k < 0.56 ? vec3(1.15, 0.98, 0.79) : (k < 0.74 ? vec3(0.80, 0.86, 0.96) : vec3(1.10, 1.08, 1.00)));
+  return c*(0.90 + 0.20*mmHash11(seed*3.3 + 7.1));
+}
+/* A CUSHION OF MOSS: three rounds grown together, by seed; p from its
+   middle, r its size. Crisp, lobed, never a star and never a speckle. */
+float gyPatch(vec2 p, float r, float s){
+  float h1 = mmHash11(s*3.7 + 1.1), h2 = mmHash11(s*5.3 + 2.7);
+  float d = length(p*vec2(1.0, 0.8)) - r;
+  d = min(d, length(p - r*vec2(1.8*(h1 - 0.5), 0.55)) - r*0.62);
+  return min(d, length(p - r*vec2(2.2*(h2 - 0.5), -0.40)) - r*0.70);
+}
+/* A MOUND of it climbed out of the grass: x from its middle, hw its half
+   width, h its height; a hand's depth of it along the rest of the foot */
+float gyMound(float x, float y, float hw, float h, float seed){
+  float xr = x/hw;
+  return y - 0.04 - h*max(1.0 - xr*xr, 0.0) - 0.022*abs(sin(x*41.0 + seed*9.0)) - 0.014*abs(sin(x*17.0 + seed*3.0));
+}
+/* its green, deep, a little to the olive on some stones; and lifted where
+   it grows in the dark at a stone's foot, so a mound is moss and not a hole */
+vec3 gyMossC(float seed, float y){
+  return mix(vec3(0.30, 0.53, 0.20), vec3(0.42, 0.52, 0.20), mmHash11(seed*8.9 + 4.4))*(1.0 + 0.60*(1.0 - smoothstep(0.04, 0.30, y)));
+}
+/* ...LAID ON: m a patch's edge (metres, negative inside), g which way that
+   edge faces (1 up, -1 down). acc.x how much of the pixel is moss; .y the
+   moss's own value -- flat, its upper lip catching the sky and its lower
+   edge dark, so it has a thickness and sits ON the stone; .z the shadow it
+   lays on the stone under it. */
+vec3 gyMoss(vec3 acc, float m, float g, float px){
+  float w = max(0.014, 2.0*px);
+  float on = wfIn(m, px);
+  float eb = 1.0 - smoothstep(w - px, w, -m);
+  float v = (1.0 - 0.45*eb*max(-g, 0.0))*(1.0 + 0.40*eb*max(g, 0.0));
+  return vec3(max(acc.x, on), mix(acc.y, v, on), max(acc.z, wfIn(m - w, px)*(1.0 - on)*max(-g, 0.0)));
+}
 
 float wfHsForm(vec2 p, float k, float H, float W, float seed, out float face, out float tx, out float ty, out float kind){
   float d;
@@ -20777,11 +20821,35 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   }
   /* (where it stands in the ground: a dark line) */
   shd *= 1.0 - 0.30*smoothstep(0.07, 0.0, p.y);
+  /* (round 61 repair 53) ITS ROCK, AND THE MOSS PAINTED OVER THE CARVING: a
+     mound of it climbed out of the grass, a cushion on its weather side, a
+     cap along one shoulder -- which of them, and where, by the stone */
+  vec3 tnt = gyRock(seed);
+  {
+    float h1 = mmHash11(seed*4.9 + 0.3), h2 = mmHash11(seed*7.7 + 1.9), h3 = mmHash11(seed*2.1 + 5.5);
+    float sd = h3 < 0.5 ? -1.0 : 1.0;
+    float e = max(0.012, 1.5*px);
+    vec3 ms = gyMoss(vec3(0.0, 1.0, 0.0), gyMound(p.x - W*(h1 - 0.5)*1.5, p.y, W*0.62, 0.04 + 0.11*h2, seed), 1.0, px);
+    if (isX < 0.5) {
+      vec2 mp = p - vec2(sd*W*0.88, ty*(0.42 + 0.36*h1));
+      float mr = 0.045 + 0.035*h3;
+      float s0 = gyPatch(mp, mr, seed);
+      if (h2 > 0.30) ms = gyMoss(ms, s0, clamp((gyPatch(mp + vec2(0.0, e), mr, seed) - s0)/e, -1.0, 1.0), px);
+      /* (the cap: thickest at its middle and run out to nothing at its ends
+         and down the shoulder -- a clump, not a ribbon) */
+      float cr = (p.x + sd*W*0.35)/(W*(0.30 + 0.25*h2));
+      if (h1 > 0.35) ms = gyMoss(ms, -d - (0.010 + 0.046*abs(sin(p.x*15.0 + seed*4.0)))*max(1.0 - cr*cr, 0.0)*smoothstep(ty + 0.11, ty + 0.20, p.y) + 0.004, -1.0, px);
+    }
+    float mk = ms.x*wfIn(d, px);
+    shd = mix(shd*(1.0 - 0.30*ms.z), ms.y, mk);
+    tnt = mix(tnt, gyMossC(seed, p.y), mk);
+  }
   /* the grass, over the stone's foot */
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
   /* (the blades at their own light, dark at the roots) */
   gWgShade = mix(shd, 0.60 + 0.40*smoothstep(0.0, 0.05, q.y), wfIn(tuft, px));
+  gGyTint = mix(tnt, vec3(1.0), wfIn(tuft, px));
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.55*wfIn(d, px)*smoothstep(H*0.4, H, p.y) + 0.20*wfIn(d, px));
   gWfCol = col; gWfInk = ink;
@@ -20949,9 +21017,33 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
       shd = mix(shd, uS, wfIn(urn, px));
     }
   }
+  /* (round 61 repair 53) ITS ROCK, AND ITS MOSS: two mounds climbed up the
+     chest (low ones on a kerb), and a hank of it hung over the ledger's edge
+     and down the frieze; on a kerbed grave's headstone, a cushion */
+  vec3 tnt = gyRock(seed);
+  {
+    float h1 = mmHash11(seed*4.9 + 0.3), h2 = mmHash11(seed*7.7 + 1.9), h3 = mmHash11(seed*2.1 + 5.5);
+    float sd = h3 < 0.5 ? -1.0 : 1.0;
+    float kb = 1.0 - 0.60*kerbed;
+    vec3 ms = gyMoss(vec3(0.0, 1.0, 0.0), min(gyMound(q.x - sd*L*(0.30 + 0.50*h1), q.y, 0.34, (0.10 + 0.14*h2)*kb, seed),
+                                              gyMound(q.x + sd*L*(0.25 + 0.40*h2), q.y, 0.22, (0.05 + 0.09*h1)*kb, seed + 2.0)), 1.0, px);
+    if (kerbed < 0.5) {
+      float xr = (q.x + sd*L*(0.15 + 0.50*h2))/0.24;
+      ms = gyMoss(ms, max(0.78 - q.y - 0.026 - (0.05 + 0.10*h1)*max(1.0 - xr*xr, 0.0) - 0.018*abs(sin(q.x*31.0 + seed*4.0)), (abs(xr) - 1.0)*0.24), -1.0, px);
+    } else {
+      float e = max(0.012, 1.5*px);
+      vec2 mp = hq - vec2(sd*0.20, 0.30 + 0.16*h1);
+      float s0 = gyPatch(mp, 0.065, seed);
+      ms = gyMoss(ms, s0, clamp((gyPatch(mp + vec2(0.0, e), 0.065, seed) - s0)/e, -1.0, 1.0), px);
+    }
+    float mk = ms.x*wfIn(d, px)*(1.0 - wfIn(urn, px));
+    shd = mix(shd*(1.0 - 0.30*ms.z), ms.y, mk);
+    tnt = mix(tnt, gyMossC(seed, q.y), mk);
+  }
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
   gWgShade = mix(shd, 0.60 + 0.40*smoothstep(0.0, 0.05, q.y), wfIn(tuft, px));
+  gGyTint = mix(tnt, vec3(1.0), wfIn(tuft, px));
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.45*wfIn(min(ledger, urn), px)*(1.0 - kerbed) + 0.35*kerbed*wfIn(kHead, px) + 0.15);
   gWfCol = col; gWfInk = ink;
@@ -21926,6 +22018,12 @@ varying float vShape, vSeed, vTone, vFog;
    was compressed flat under the knee, "flat colour fills" both survey-9
    judges. 1 everywhere it is not written) */
 float gWgShade = 1.0;
+#if MM_WINGS == 5
+/* (round 61 repair 53: and a COLOUR for the lit one, the churchyard's own --
+   a stone's rock, the moss on it, the lantern's side of it. Laid after both
+   ceilings; 1 everywhere it is not written) */
+vec3 gGyTint = vec3(1.0);
+#endif
 
 /* Soft coverage field in local uv space; > 0 is inside the silhouette. */
 /* A STROKE ON A SEGMENT, vertical and then between two arbitrary points. The
@@ -35365,6 +35463,9 @@ void main(){
     float want = satK + span * over / (over + span);
     col = mix(vec3(Lc), col, want / max(sat, 1e-4));
   }
+#if MM_WINGS == 5
+  col *= gGyTint;   // (round 61 repair 53: see gGyTint)
+#endif
 #if MM_PEN > 0
   /* ROUND 41 GRAFT: THE PEN -- LABRADORITE's, lightly (J1, J3). Survey 7's
      family defect, both judges: the props have "soft edges and no line, so
