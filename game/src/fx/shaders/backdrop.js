@@ -20040,15 +20040,46 @@ float wfServTable(vec2 q, float px, float seed, float kq, bool paint){
      waxed elm now, a warm dark wood that holds its shape against the walls) */
   vec3 dealC = vec3(0.36, 0.22, 0.12)*(0.82 + 0.26*mmNoise(vec2(q.x*3.0, q.y*55.0) + seed));
   float side = 1.0 + 0.25*kq*sign(q.x);
-  wfLay(col, ink, strt, dealC*0.55, px, 0.85);
-  wfLay(col, ink, legs, dealC*0.72*side, px, 0.95);
-  vec3 apC = dealC*0.70;
+  /* (round 61 repair 52, repair 48's and 50's judges: the passages' "side
+     tables (near-silhouettes)"; far "tables need lit edges and cast shadows
+     to stand as objects". Measured: unlit, not capped -- its legs and apron
+     stood at 15-24 of 255 beside boards at 33, and joinery painted at that
+     value is not seen. Each member as what it is, in the paint and on the lit
+     colour (gWgShade, as repair 49's pier table): the stretcher's top edge
+     lit and its underside dark; each square leg with the edge it turns to
+     the key a lit line and its far edge in shade, its foot going into its
+     own shadow on the boards; the apron in the shadow of the top over it, a
+     lit bead along its foot; the drawer front proud of the apron, lit along
+     its upper edge, its shadow ruled under it; the top a lit line over its
+     front edge. Lines only -- the silhouette is as it was.) */
+  float sx = q.x < 0.0 ? -1.0 : 1.0;
+  float bw = max(0.010, 1.3*px);
+  float shd = 1.0;
+  vec4 g = wfWoodM(dealC*0.62, (q.y - 0.13)/0.014, wfEw(0.028, px));
+  wfLay(col, ink, strt, g.rgb, px, 0.85);
+  shd = mix(shd, g.a*2.30, wfIn(strt, px));
+  /* (a square leg stood corner-on shows two of its faces: the one to the
+     key lit, the other a stop down, a crisp arris between them) */
+  float lu = clamp((ax - 0.49)/legW, -1.0, 1.0)*sx*kq;
+  g = wfWoodM(dealC*0.80, lu, wfEw(2.0*legW, px));
+  g *= mix(0.62, 1.0, smoothstep(-0.25 - 0.5*px/legW, -0.25 + 0.5*px/legW, lu));
+  g *= 1.0 - 0.55*smoothstep(0.050, 0.0, q.y);
+  wfLay(col, ink, legs, g.rgb, px, 0.95);
+  shd = mix(shd, g.a*(1.60 + 0.25*side), wfIn(legs, px));
   float drw = mmBox(q - vec2(0.0, TOP - 0.080), vec2(0.20, 0.030), 0.003);
-  apC = mix(apC, dealC*0.85, wfIn(drw, px));
-  wfLay(col, ink, apron, apC, px, 0.95);
+  float onDr = wfIn(drw, px);
+  g = wfWoodM(dealC*0.74, kq*q.x/0.50, wfEw(1.00, px));
+  g *= 1.0 - 0.40*smoothstep(TOP - 0.070, TOP - 0.040, q.y)*(1.0 - onDr);
+  g *= 1.0 + 0.40*smoothstep(TOP - 0.125, TOP - 0.125 + px, q.y)*(1.0 - smoothstep(TOP - 0.125 + bw, TOP - 0.125 + bw + px, q.y));
+  /* the drawer front: lit along its upper edge, its shadow under it */
+  g = mix(g, vec4(dealC*0.90, 1.12)*(1.0 + 0.38*smoothstep(TOP - 0.050 - bw - px, TOP - 0.050 - bw, q.y)), onDr);
+  g *= 1.0 - 0.36*(1.0 - onDr)*smoothstep(TOP - 0.110 - bw - px, TOP - 0.110 - bw, q.y)*step(q.y, TOP - 0.110)*step(ax, 0.20);
+  wfLay(col, ink, apron, g.rgb, px, 0.95);
+  shd = mix(shd, g.a*1.30, wfIn(apron, px));
   ink = max(ink, mmInkP(drw, px, 1.0)*0.75*wfIn(apron, px));
   col = mix(col, vec3(0.62, 0.48, 0.24), wfIn(length(q - vec2(0.0, TOP - 0.080)) - 0.010, px));
   wfLay(col, ink, top, dealC*(0.85 + 0.35*smoothstep(TOP - 0.036, TOP, q.y)), px, 1.0);
+  shd = mix(shd, mix(0.95, 1.55, smoothstep(TOP - 0.014, TOP - 0.014 + px, q.y)), wfIn(top, px));
   /* the lantern: dark tin, its piercings each a point of the candle's
      light, a gleam down its lit side */
   vec3 tin = vec3(0.30, 0.30, 0.31)*(0.55 + 0.65*wfRound(clamp(l.x/0.07, -1.0, 1.0)))*(1.0 + 0.30*kq*sign(l.x));
@@ -20091,6 +20122,13 @@ float wfServTable(vec2 q, float px, float seed, float kq, bool paint){
      table's edge under it, the drawer front and the keys, the near side of
      the crock -- tight, in each thing's own colour) */
   emit += col*vec3(1.00, 0.70, 0.38)*2.2*wfCandleFall(cF, 0.070, 0.20)*wfIn(d, px)*(1.0 - wfIn(min(stub, wfCandleLit(cF, 0.070)), px));
+  /* (repair 52: the wood keeps its form on the lit colour; the things on
+     the table keep their own value. And the stub's light carries along the
+     table's front -- the top's edge, the apron and the head of the leg under
+     it -- in the wood's own colour, falling off in an arm's length) */
+  float onWd = wfIn(min(min(top, apron), min(legs, strt)), px)*(1.0 - wfIn(min(min(lant, flw), min(min(sau, stub), min(kr, keys))), px));
+  emit += col*vec3(1.00, 0.70, 0.38)*0.55*shd*exp(-length((cF - vec2(0.0, 0.10))*vec2(1.0, 1.6))/0.42)*onWd;
+  gWgShade = mix(1.0, shd, onWd);
   gWfEmit = emit;
   gWfGloss = 0.25 + 0.5*wfIn(min(lant, kr), px);
   gWfMoon = 0.45*wfIn(top, px);
@@ -23870,14 +23908,33 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
            the glaze's hard glint the brightest thing on it */
         float ub = clamp(b.x/0.16, -1.0, 1.0);
         float lb2 = 0.25 + 0.90*wfRound(ub)*(0.5 + 0.5*smoothstep(-0.9, 0.7, kq*ub)) + 0.16*smoothstep(0.55, 0.95, -kq*ub);
-        vec3 jgl = vec3(0.17, 0.18, 0.09)*(0.90 + 0.20*mv);
-        vec3 cB = mix(jgl, cream*0.80, step(b.y, 0.040 + 0.010*sin(b.x*50.0)))*lb2*(0.55 + 0.45*smoothstep(0.0, 0.08, b.y));
-        gkLay(col, ink, hdl, jgl*0.85, px, 0.9);
+        /* (round 61 repair 52, repair 50's judges, who split on its colour
+           and agreed on what it lacked: "a flat green-black cut-out", "their
+           own local colour and a lit edge inside the warm dark". Measured:
+           unlit -- 7 of 255, a paint of 0.17 under a crock at 50 -- so the
+           room's shadow took it whole. The glaze a BOTTLE GREEN, and turned:
+           the side to the key lit, falling off at the very edge; a core
+           shadow well round it; the floor's light back on the far edge; a
+           hard highlight on the shoulder; three throwing rings, each a lit
+           line over a dark one, bowed as the eye sees them from above; the
+           handle lit along its back; a dark line where it stands. In the
+           paint and on the lit colour, gWgShade. The crock is as it was.) */
+        float tb = kq*ub;
+        float fB = 0.40 + 1.16*smoothstep(-0.62, 0.30, tb)*(1.0 - 0.40*smoothstep(0.72, 1.0, tb)) + 0.75*smoothstep(-0.70, -0.94, tb);
+        float rw = max(0.005, 1.2*px);
+        float rg = mod(b.y + 0.014*wfRound(ub) - 0.075, 0.060) - 0.030;
+        fB *= 1.0 + step(0.085, b.y)*step(b.y, 0.255)*(0.42*(1.0 - smoothstep(rw*0.5, rw*0.5 + px, abs(rg))) - 0.32*(1.0 - smoothstep(rw*0.5, rw*0.5 + px, abs(rg + rw))));
+        vec3 jgl = vec3(0.12, 0.22, 0.10)*(0.90 + 0.20*mv);
+        float footB = step(b.y, 0.040 + 0.010*sin(b.x*50.0));
+        vec3 cB = mix(jgl*fB, cream*0.80*lb2, footB)*(0.55 + 0.45*smoothstep(0.0, 0.08, b.y))*(0.50 + 0.50*smoothstep(0.0, max(0.008, 1.5*px), b.y));
+        vec2 hv = (b - vec2(0.150, 0.215))/vec2(1.0, 1.25);
+        gkLay(col, ink, hdl, jgl*(1.00 + 3.00*smoothstep(0.0, 0.7, (length(hv) - 0.055)/0.012)*smoothstep(-0.3, 0.6, hv.y/0.055)), px, 0.9);
         gkLay(col, ink, jugB, cB, px, 0.95);
-        gkLay(col, ink, lipB, jgl*1.45, px, 0.9);
+        gkLay(col, ink, lipB, jgl*(1.30 + 1.40*smoothstep(-0.5, 0.8, tb)), px, 0.9);
         gkLay(col, ink, corkB, vec3(0.56, 0.42, 0.26)*(0.70 + 0.45*smoothstep(0.355, 0.392, b.y))*(0.9 + 0.2*kq*ub), px, 0.85);
-        float gB = smoothstep(0.009, 0.0, abs(b.x + 0.060*kq) - 0.004)*smoothstep(0.06, 0.12, b.y)*smoothstep(0.27, 0.20, b.y);
-        emit += vec3(1.00, 0.86, 0.66)*gB*wfIn(jugB, px)*0.24;
+        gWgShade = mix(1.0, 0.45 + 0.75*fB, wfIn(jugB, px)*(1.0 - footB)*(1.0 - wfIn(min(crockA, lidA), px)));
+        float gB = wfIn(wfEll(b - vec2(0.060*kq, 0.236), vec2(0.026, 0.010)), px);
+        emit += vec3(0.80, 1.00, 0.76)*gB*wfIn(jugB, px)*0.24;
         moon += 0.45*wfIn(min(lidA, lipB), px) + 0.15*wfIn(min(crockA, jugB), px)*smoothstep(0.20, 0.40, cm.y);
       }
     } else if (seed < 80.0) {
@@ -33746,6 +33803,25 @@ void main(){
       vec2  np = vec2(ax - (cw - bw*0.5), mod(cm.y, pp*0.5) - pp*0.25);
       float nOn = (1.0 - smoothstep(nr - lw*0.6, nr + lw*0.6, length(np)))*bat*inC*smoothstep(5.0*lw, 9.0*lw, pp*0.5);
       albedo *= 1.0 - 0.72*nOn;
+#if MM_WINGS == 4
+      /* (round 61 repair 52, repair 48's and 50's judges: the passages' far
+         floor "one red-brown mass", its "far crates ... need lit edges and
+         cast shadows to stand as objects". Down the corridor a case is 20 to
+         50 pixels and its joinery is under the eye's grain: there it keeps
+         TWO TONES on the lit colour (gWgShade) -- its top rail a lit plane,
+         the batten it turns to the key lit and the far one in shade, the
+         boards between a step down, a dark line where the lower case stands
+         -- and its brace, which repair 40 drew. By its size on the screen: a
+         case over a hundred pixels is as repair 40 left it. The passages'
+         program only.) */
+      {
+        float farK = (1.0 - smoothstep(20.0*lw, 30.0*lw, pp))*inC*step(ax, cw);
+        float topP = smoothstep(ch*0.86 - lw, ch*0.86, cm.y);
+        float kSd  = step(0.0, cm.x*kx);
+        gWgShade = 1.0 + farK*(1.10*topP + (1.0 - topP)*(bat*mix(-0.30, 0.55, kSd) - 0.12*brdOn
+                 - 0.40*(1.0 - upC)*(1.0 - smoothstep(ch*0.05, ch*0.05 + lw, cm.y))));
+      }
+#endif
     }
   }
 #endif

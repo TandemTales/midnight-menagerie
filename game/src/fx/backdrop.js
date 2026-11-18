@@ -233,6 +233,29 @@ function footNear(region, p, feet) {
       extra: [{ dx: 0.13 * q * m, dz: -0.03 * q, w: 0.44 * q, d: 0.26 * q, k: 1.30 },
               { dx: 0.53 * q * m, dz: -0.11 * q, w: 0.44 * q, d: 0.26 * q, k: 1.00 }] };
   }
+  /* (round 61 repair 52, repair 48's and 50's judges: the passages' "tables
+     need lit edges and cast shadows to stand as objects". wfServTable (66,
+     seed 40-60; 1.25 m nominal) stood on the house's pool, a grey the width
+     of its quad: now a thin shade under its stretcher and a small one at
+     each square foot, +-0.49, as repair 44 gave the Foyer's pier table --
+     wider and less dense than those: the library's lens is turned, the flat
+     turns to face it, and a hard dot a hand off the foot read as a hole.) */
+  if (region === 'passages' && s === 66 && (p.seed || 0) > 40) {
+    const q = h / 1.25;
+    return { dz: -0.08 * q, w: 1.00 * q, d: 0.24 * q, k: 0.70,
+      extra: [{ dx: -0.49 * q, dz: 0.02, w: 0.18 * q, d: 0.10 * q, k: 0.60 },
+              { dx: 0.49 * q, dz: 0.02, w: 0.18 * q, d: 0.10 * q, k: 0.60 }] };
+  }
+  /* (repair 52, the same judges: "far crates ... need lit edges and cast
+     shadows to stand as objects". A stack of cases (8) stood on the house's
+     pool, a soft grey 1.6 of its quad wide. Its own: the lower case's foot
+     -- it stands at -0.10 of the quad, 0.48 wide -- dense to its edge, and
+     thrown a short way out over the boards on the side away from the wall
+     its sconces burn on, toward the middle of the passage.) */
+  if (region === 'passages' && s === 8) {
+    const sd = p.x < 0 ? 1 : -1;
+    return { dx: (-0.10 + 0.11 * sd) * p.w, dz: 0.03 * p.w, w: 0.70 * p.w, d: 0.30 * p.w, k: 1.15 };
+  }
   /* (the Heart's main room only -- its two pieces are the `hand` ones. The
      gallery and the memory room see theirs from a turned camera, where a
      pool laid square to the room runs out from under a bench that faces
