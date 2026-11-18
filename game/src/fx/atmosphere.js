@@ -621,7 +621,10 @@ export const REGIONS = {
        far corners and the side walls past the dresser and the pan rail were
        a hueless black. Multiplied, never added; the blue panes, the delft
        and the cabbages sit above the 0.10 it reaches and keep their colour) */
-    shadowHue: '#5c1414', shadowAmt: 0.85, shadowGain: 1.1,
+    /* (repair 50: shadowKeep 0 here. Sparing the props' own colours split 1-1
+       blind in both kitchens: one judge wanted the jug's green glaze back, the
+       other the red-brown jug "modelled in the room's light". Left as repair 48.) */
+    shadowHue: '#5c1414', shadowAmt: 0.85, shadowGain: 1.1, shadowKeep: 0,
     key:  { glow: 0, kind: 'warm', x: -3.6, y: 2.8, z: 2.0, color: '#db8f51', intensity: 1.39, radius: 6.88 },
     /* (round 22 graft, all three judges: "the milky cyan moonlight pools on
        the flagstones at the lower left and right of both rooms wash the
