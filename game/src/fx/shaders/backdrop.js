@@ -22662,25 +22662,13 @@ float gR37Sh = 1.0;
    wide; beside it, on the wall that faces the key, a lit ridge; from the
    ridge the cloth turns away in one plane down to the next line. Returns
    the crest 0..1 the cosine gave, and the line.) */
-/* (round 61 repair 49, repair 47's judges: "fold lines slightly hard and
-   stair-stepped". The line had a core 1.4 px wide with one pixel's ramp
-   either side, and the ink on it was a threshold of that ramp -- a third of
-   a pixel. Now the line is a narrow core under a ramp a pixel and a half
-   wide, the step from one plane's foot to the next ridge is ramped under it
-   the same, and wt is the line's weight here, so its caller can let it
-   swell and fade down the fold. line comes back weighted, for the ink.) */
-float stFacet(float ph, float kq, float pxp, float wt, out float line){
+float stFacet(float ph, float kq, float pxp, out float line){
   float e = fract(ph);
   e = kq > 0.0 ? 1.0 - e : e;
-  float aw = 1.5*pxp;
-  float lw = clamp(0.35*pxp, 0.02, 0.22);
-  float rw = clamp(0.7*pxp, 0.03, 0.22);
-  line = (1.0 - smoothstep(lw, lw + aw, min(e, 1.0 - e)))*wt;
-  float up = smoothstep(-0.5*aw, 0.5*aw, e < 0.5 ? e : e - 1.0);
-  float pl = mix(0.66, 0.24, smoothstep(0.22, 1.0, e));
-  float base = e < 0.5 ? mix(0.24, pl, up) : mix(pl, 0.66, up);
-  float ridge = up*(e < 0.5 ? 1.0 - smoothstep(rw + 0.14, rw + 0.24, e) : 1.0);
-  return (base + 0.52*ridge)*(1.0 - line);
+  float lw = clamp(0.7*pxp, 0.03, 0.22);
+  line = 1.0 - smoothstep(lw, lw + pxp, min(e, 1.0 - e));
+  float ridge = smoothstep(lw, lw + pxp, e)*(1.0 - smoothstep(lw + 0.14, lw + 0.24, e));
+  return (mix(0.66, 0.24, smoothstep(0.22, 1.0, e)) + 0.52*ridge)*(1.0 - line);
 }
 #endif
 float stEll(vec2 p, vec2 r){ return (length(p/r) - 1.0)*min(r.x, r.y); }
@@ -22833,10 +22821,7 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
      fold is six pixels or more; smaller, the cosine's mean tone) */
   float fLine;
   float fPer = 0.77*max(hw, 0.05);
-  /* (repair 49: each line swells and fades down its fold, its own measure) */
-  float fLod = mmLod(fPer, px), crestC = crest;
-  float fWt = 0.72 + 0.28*sin(y*7.0 + 2.4*floor(fphase*0.5 + 1.0) + seed);
-  crest = mix(crest, stFacet(fphase*0.5 + 0.5, kq, px/fPer, fWt, fLine), fLod);
+  crest = mix(crest, stFacet(fphase*0.5 + 0.5, kq, px/fPer, fLine), mmLod(fPer, px));
   vec3 rc = mar*(0.36 + 0.62*rnd)*(0.40 + 0.86*crest)*(1.0 + kM*kq*clamp(qx/hw, -1.0, 1.0));
 #else
   vec3 rc = mar*(0.36 + 0.62*rnd)*(0.62 + 0.50*crest)*(1.0 + 0.30*kq*clamp(qx/hw, -1.0, 1.0));
@@ -22847,7 +22832,7 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
   stLay(col, ink, robe, rc, px, 0.95);
   ink *= 1.0 - stIn(torso + 0.002, px)*step(y, 0.95);
 #if MM_SH85
-  ink = max(ink, mix(smoothstep(0.20, 0.0, crestC), fLine, fLod)*smoothstep(0.92, 0.70, y)*stIn(robe, px)*0.50);   // (repair 47: 0.85 -- with the facet's own line, a black cord; repair 49: the ink IS the line, not a threshold of it)
+  ink = max(ink, smoothstep(0.20, 0.0, crest)*smoothstep(0.92, 0.70, y)*stIn(robe, px)*0.50);   // (repair 47: 0.85 -- with the facet's own line, a black cord)
 #else
   ink = max(ink, smoothstep(0.12, 0.0, crest)*smoothstep(0.92, 0.70, y)*stIn(robe, px)*0.55);
 #endif
@@ -22934,15 +22919,13 @@ float stDrawG(vec2 m, vec2 msz, float seed, float px0, bool paint){
     float vf = 0.5 + 0.5*cos(qx/max(vHW2, 0.05)*8.5 + 0.8*sin(y*7.0 + seed));
     float vLine;
     float vPer = 0.74*max(vHW2, 0.05);
-    float vPh = (qx/max(vHW2, 0.05)*8.5 + 0.8*sin(y*7.0 + seed))/6.2832 + 0.5;
-    float vLod = mmLod(vPer, px), vfC = vf;
-    vf = mix(vf, stFacet(vPh, kq, px/vPer, 0.72 + 0.28*sin(y*9.0 + 2.4*floor(vPh + 0.5) + seed), vLine), vLod);
+    vf = mix(vf, stFacet((qx/max(vHW2, 0.05)*8.5 + 0.8*sin(y*7.0 + seed))/6.2832 + 0.5, kq, px/vPer, vLine), mmLod(vPer, px));
     vfK = vf;
     float vr = sqrt(max(1.0 - pow(qx/max(vHW2, 0.05), 2.0), 0.0));
     vec3 vc = mar*(0.36 + 0.60*vr)*(0.55 + 0.62*vf)*(1.0 + kM*kq*clamp(qx/max(vHW2, 0.05), -1.0, 1.0));
     ink *= 1.0 - stIn(veil + px*1.5, px);
     stLay(col, ink, veil, vc, px, 0.95);
-    ink = max(ink, mix(smoothstep(0.16, 0.0, vfC), vLine, vLod)*stIn(veil, px)*smoothstep(1.50, 1.30, y)*0.55);
+    ink = max(ink, smoothstep(0.16, 0.0, vf)*stIn(veil, px)*smoothstep(1.50, 1.30, y)*0.55);
     float faceO = stEll(hc*vec2(1.0, 0.92) - vec2(0.004, -0.006), vec2(0.064, 0.090));
     col *= 1.0 - 0.55*stIn(faceO - 0.030, px)*(1.0 - stIn(faceO, px));
     stLay(col, ink, faceO, fc*1.22*(1.0 - 0.25*smoothstep(-0.02, 0.0, faceO + 0.012)), px, 0.80);
@@ -23626,7 +23609,7 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
       turn *= 1.0 + 0.16*smoothstep(-0.78, -1.0, tu);
       us = turn;
       float gLine;
-      float gF = stFacet(asin(clamp(q.x/0.215, -1.0, 1.0))*1.9099 + 0.5, kq, qpx/0.10, 1.0, gLine);
+      float gF = stFacet(asin(clamp(q.x/0.215, -1.0, 1.0))*1.9099 + 0.5, kq, qpx/0.10, gLine);
       us *= mix(1.0, 0.74 + 0.50*gF, wfIn(bowl, qpx)*step(q.y, 0.915)*mmLod(0.10, qpx));
       us *= 1.0 + 0.30*smoothstep(1.030, 1.030 + qpx, q.y)*step(q.y, 1.046) - 0.36*smoothstep(1.030, 1.030 - qpx, q.y)*step(1.014, q.y);
       us *= 1.0 - 0.40*smoothstep(1.215, 1.265, q.y)*step(q.y, 1.277);
