@@ -1353,23 +1353,3 @@
   /* the plate's end stands where the stud before the Snacks was: the gap holds one of them */
   .mm-hud__group--vitals > .mm-hud__luck + .mm-hud__snacks::after { content: none; }
 }
-
-/* == the channel runs on behind the cog (repair 46) == */
-/* Repair 43's judges: "the gear loses its outer ring and leaves a faint ghost
-   arc on its right". The arc is the rail's own painting: hw-rail.webp's channel
-   is a capsule, and its right-hand end curve stands a few px outside the cog's
-   ring, a second, fainter rim on one side only. Behind the cog the channel now
-   runs straight on to the end block: the same picture's straight length laid
-   over the curve and over nothing else (the mouldings above and below it, and
-   the block, are untouched). --u is one of the picture's 64 rows. */
-.mm-hud__group--meta::after {
-  --u: calc(var(--hud-h) / 64);
-  content: ""; position: absolute; z-index: -1; pointer-events: none;
-  right: calc(var(--u) * 45); width: calc(var(--u) * 29);
-  top: 0; height: calc(100% + var(--u) * 26);
-  border: 0 solid transparent;
-  border-image: url("../../assets/ui/kit/hw-rail.webp") 26 72 52 72 fill /
-    calc(var(--u) * 26) 0 calc(var(--u) * 52) 0 stretch;
-  clip-path: inset(calc(var(--u) * 10.5) 0 calc(var(--u) * 36) 0);
-}
-/* == end the channel behind the cog == */
