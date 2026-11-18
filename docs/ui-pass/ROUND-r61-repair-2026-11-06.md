@@ -784,3 +784,21 @@ Next, from both: far crates, dressers and tables in the kitchens and passages gi
 Tests: link-queue 104/0, shader-literals 0, grounding PASS, steam-deck 6/6, kitchens 20/0, secret-passages 74/0, heart 44/0, ballroom 46/0, lampworks 45/0 (before the kitchens' one-value change).
 
 Key: `PAIRED-r61-repair50-key.json`. Evidence: `C:/UILOOP/s21/ev50/`.
+
+## Repair 52: the passages' side tables and far crates lit as objects; the kitchens' jug in its own green (2026-11-18)
+
+Repair 50's judges: "far crates, dressers and tables need lit edges and cast shadows to stand as objects"; "dark props such as the jug given their own local colour and a lit edge inside the warm dark". Repair 52 (`07a4ca01`, `de2060a5`, `dbaa67c2`, merged whole) paints three objects in shaders/backdrop.js and moves their floor shadows in backdrop.js (`footNear`).
+
+- **Side tables (`wfServTable`): unlit, not capped.** Legs measured luma 19 and 16, the stretcher 4, beside boards at 33. Each leg in two faces with a crisp arris, the stretcher with a lit top edge, the apron in the top's shadow with a lit bead, a drawer front proud of it, a lit line on the top's front edge. Under them a thin shade and a small pool at each foot replace the quad-wide grey. Legs now 27 and 25. Both judges: "a lit apron, drawer and pull over readable floorboards", where dev's were "silhouettes on black pools" that "swallow" the paper under the table. Both tables are cut by the frame (about 40% visible); their placement is in atmosphere.js and was left.
+- **Far crates (shape 8, passages' program only): neither ceiling nor cap.** At 20-55 px repair 40's joinery is below what reads. A lit top rail, the key-side batten lit and the far one shaded, a dark line at the foot, and the lower case's footprint as a short cast shadow. Fades out above about 100 px per case, so the near view of a crate is repair 40's. In the survey vantage every crate is under 60 px, the two half-hidden `fore` ones included.
+- **The kitchens' jug (`gkDraw` shape 82): unlit.** Luma 7, rgb (30, 1, 0): a paint so dark the room's shadow hue took it whole. A bottle-green glaze with a lit side, a core shadow, a reflected far edge, a shoulder highlight, three bowed rings, a lit handle and lip, a dark line at the floor. Lit side now luma 40, hue 76. The grade is untouched (`shadowKeep: 0`); the crock is pixel-identical. Both judges, who split on this jug in repair 50, now pick it: "a ribbed green-glazed pot with a lit and a shadow side", against "a dark blot between basket and crock".
+
+The paired check, four rooms against dev: **8-0** (passages by 2 from both judges in both kinds, kitchens by 1).
+
+Link time (prop programs): kitchens 11.1 s to 11.1 s, passages 5.2 to 5.8; nothing else moved outside run-to-run noise.
+
+Marked down inside the winner, for a later repair: the jug's highlight is "a flat pale oval that looks stuck on" and its lit side faces away from the range fire; the right-hand table's apron still reads slightly see-through and the stretchers are hairlines; the far crates are "small, repeated, identical boxes". Next, from both: painted surface detail (grain, worn edges, glaze variation); cast shadows with a direction from the nearest candle; the same lit treatment for the kitchen's back tables and dresser, the far bookcase feet and the lamp posts.
+
+Tests: link-queue 104/0, secret-passages 74/0, kitchens 20/0, steam-deck 6/6, grounding PASS.
+
+Key: `PAIRED-r61-repair52-key.json`. Evidence: `C:/UILOOP/s21/ev52/`.
