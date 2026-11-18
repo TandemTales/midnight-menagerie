@@ -1650,10 +1650,10 @@ export const REGIONS = {
     exposure: 1.72, contrast: 1.28,
     /* (round 61 repair 48: the darks hold a deep OXBLOOD MAHOGANY, one cool
        step from the panelling's red-brown -- the ceiling and its beams and
-       the recesses between the pilasters were black. 0.6 and a gain under 1,
+       the recesses between the pilasters were black. 0.6 and a gain of 0.75,
        and not the browner '#4e1c10': the violet pool at the far door lives
        in these darks and a warmer or stronger hue turned it maroon) */
-    shadowHue: '#4e161c', shadowAmt: 0.6, shadowGain: 0.85,
+    shadowHue: '#4e161c', shadowAmt: 0.6, shadowGain: 0.75,
     /* (graft, all three judges: "the violet and amber floor pools are soft
        smears -- sharpen them"; and "pull the lit panel mid-tones from mauve
        toward deep brown-aubergine". The key and the fill were two great soft
