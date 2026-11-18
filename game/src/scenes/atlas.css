@@ -1874,6 +1874,9 @@
 @media (max-width: 1400px) {
   .at-tally { padding-inline: calc(var(--h) * .5); }
   .at-tally .kit-enamel__label { letter-spacing: .03em; }
+  /* repair 46: at 1280 the tally's tip touched the title cartouche's scroll;
+     it stands 5px further out, still 70px short of the corner candle */
+  .at-tally { margin-right: -5px; }
 }
 
 
