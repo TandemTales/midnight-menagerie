@@ -168,10 +168,9 @@ function footNear(region, p) {
      gallery and the memory room see theirs from a turned camera, where a
      pool laid square to the room runs out from under a bench that faces
      the lens: they keep the house's pool) */
-  if (region === 'heart' && s === 81 && p.hand) {
-    const q = h / 1.55;
-    return { dz: -0.04 * q, w: 0.76 * q, d: 0.46 * q, k: 1.25 };
-  }
+  /* (the urn keeps the house's pool: repair 34's footprint pool under its
+     plinth lost with both judges -- it "spills left" of the foot, where the
+     house's leaves the plinth's edge crisp) */
   if (region === 'heart' && s === 83 && p.hand) {
     const q = h / 0.95;
     return { dz: -0.12 * q, w: 1.50 * q, d: 0.52 * q, k: 0.85,
