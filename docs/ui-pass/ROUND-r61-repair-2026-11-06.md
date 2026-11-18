@@ -802,3 +802,23 @@ Marked down inside the winner, for a later repair: the jug's highlight is "a fla
 Tests: link-queue 104/0, secret-passages 74/0, kitchens 20/0, steam-deck 6/6, grounding PASS.
 
 Key: `PAIRED-r61-repair52-key.json`. Evidence: `C:/UILOOP/s21/ev52/`.
+
+## Repair 51: the graveyard's stones and the study's desk and wing chair modelled (2026-11-18)
+
+Survey 22's judges: "carry the same modelling to the objects left untouched". The graveyard had had none of it. Repair 51 (`f4eab351`, `4f349434`, `0c0f9363`, `5c3142eb`, merged whole) paints four objects in shaders/backdrop.js.
+
+- **The brief's premise was wrong:** the crypt does not share the graveyard's headstone painter (`wfHeadstone`/`wfTomb` live in the graveyard's own program). `crypt:catacomb` is pixel-identical. The real sharing is the wing chair (shape 56), also dealt by the Sleeping Quarters, whose program is over budget: the new chair paint is gated to `#if MM_SH53` (the study's program), so the sleeping chair draws as it did.
+- **Headstones (shape 69): the luminance ceiling.** Three stones of three rocks all measured 106-111 on their upper faces. The form now goes on the lit colour through `gWgShade`: a lit band toward the key, a shaded far edge, the slab's thickness, a sunk face, each inscription row as a ruled shadow over a lit lower lip, a dark line at the grass. Dropped: lichen rosettes ("mint and yellow stars").
+- **Table tombs and kerbs (shape 70): partly the ceiling.** The ledger as a lit slab over a shaded frieze, pilasters, sunk panels, the urn with a core shadow, lit tops on plinth and kerb. The kerb's moss kept to its foot.
+- **Desk (shape 53): underlit (luma 12-24), no form.** Pedestals as carcasses on a skirting, beaded drawer fronts, brass drop handles with a spark, the top's edge in three ruled bands.
+- **Wing chair (shape 56): underlit, a dot grid.** Deep buttoning with pleats ruled button to button, a rolled top, arm panels with a welt and brass nails, the cushion's lit top. Its gloss went 0.40-0.80 to 0.14: the lamps' specular had come through as "stair-stepped pale highlight bars ... that read as rendering artefacts" (a judge, of dev's chair).
+
+The paired check, two rooms against dev: **4-0** (study by 2 from both judges, graveyard by 1 from both). "Real deep-button tufting: pillowed diamonds with a highlight and a shadow each", against "a flat panel with a faint printed lattice"; the stones "carry crisp incised inscriptions and lit bevels" where dev's were "soft and moss-smeared".
+
+Link time (prop programs, noise about 1.8 s today): graveyard 7.3 s to 8.1, study 4.5 to 6.0, sleeping 13.0 to 13.1.
+
+Marked down inside the winner, for a later repair: the judges disagree on the urn finial on the near chest tomb (one: "half-lit, half-shadow so it is round"; the other: "a hard vertical light/dark band straight through the ball") and the ring bosses are harsher; the stones "have lost most of their moss and now all share one cool grey" and want it back as painted patches over the carving; tomb bases, the chair's legs and the desk's foot fall to near black. Next, from both: the same modelling on the globes' stands, the lanterns, the angel and the crosses; a warm lantern side against the cold moon side on the stonework.
+
+Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, graveyard 35/0, study-library 50/0, crypt 41/0 (on the branch, before the merge with repair 52's paint in the same file; the merge was clean).
+
+Key: `PAIRED-r61-repair51-key.json`. Evidence: `C:/UILOOP/s21/ev51/`.
