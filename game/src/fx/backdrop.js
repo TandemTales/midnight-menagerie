@@ -76,16 +76,6 @@ function footOf(region, p) {
     if (s === 34) return { w: 2.40 * q, d: 0.85, k: 1.0 };
     if (s === 18) return { w: 0.60, d: 0.44, k: 1.05 };
     if (s === 23) return { w: 0.44, d: 0.32, k: 1.0 };
-    /* (round 61 repair 35: the dipping rack stood in the lamp store's aisle
-       -- wgRackSD, 1.92 m nominal: the shade under its drip tray, and a
-       small dark pool under each sledge foot at +-0.70. The one set by hand
-       only; the wax room's own racks keep the house's pool.) */
-    if (s === 43 && p.hand) {
-      const k = h / 1.92;
-      return { w: 1.30 * k, d: 0.30 * k, k: 0.85,
-        extra: [{ dx: -0.70 * k, dz: 0.02, w: 0.30 * k, d: 0.15 * k, k: 1.35 },
-                { dx: 0.70 * k, dz: 0.02, w: 0.30 * k, d: 0.15 * k, k: 1.35 }] };
-    }
     return null;
   }
   /* (round 61 repair 35: the charnel stack stood on the catacomb's near

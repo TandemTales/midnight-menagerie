@@ -3223,14 +3223,11 @@ export const ROOM_KINDS = {
      its own wing's program (MM_ROOMS 6 and 7) and seen from its own place. */
   lampworks: {
     kinds: [
-      /* (round 61 repair 35, both judges: "the lampworks' centre aisle is
-         bare" -- a candle-dipping rack hung with its tapers (43, the wax
-         room's, which this wing's program already draws and this room showed
-         none of) stood in the aisle right of the walk to the furnace, clear
-         of the furnace mouth's glow; its feet in footOf's lampworks profile.
-         `hand`: a fight leaves it out) */
-      { subject: 'lampshop', layout: 'hang',
-        nearPlus: [{ shape: 43, ahead: 7.5, across: -0.75, tone: 0.97, keep: true, still: true, hand: true, seed: 5.0 }] },
+      /* (round 61 repair 35 stood a candle-dipping rack (43) in the aisle
+         here and LOST 0-2: "a see-through lattice laid over the room's focal
+         point" -- its rods tangled with the benches and the furnace mouth.
+         A piece for this aisle must be a solid mass clear of the kiln arch.) */
+      { subject: 'lampshop', layout: 'hang' },
       /* THE WAX ROOM -- the chandlery: the vat on its furnace, the dipping
          frames hung with tapers under their hoods; its floor stood with the
          wax stoves and the candle stands, not the gas standards; seen low,
