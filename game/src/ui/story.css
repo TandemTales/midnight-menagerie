@@ -73,6 +73,56 @@ body:has(.scene--clubhouse, .scene--atlas) .story-tools > .story-tool > .story-t
   fill: color-mix(in oklab, var(--kit-gold-hi) 72%, var(--kit-gold));
   stroke: #24170a; stroke-width: 1.2; stroke-linejoin: round; paint-order: stroke fill;
 }
+/* == cartouche settings (repair 31) == */
+/* Each medallion is set in a gilt cartouche that grows out of the frame's gold
+   rule: a second, outer rule round the rim with four setting studs, a scrolled
+   finial above the upper one and below the lower one, and a leafed knot where
+   the two settings meet. The enamel face, the glyph and the 44px button are
+   unchanged; the settings are drawn behind them and take no pointer. */
+.story-tools {
+  --st-ring: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 52'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='.8' y2='1'%3E%3Cstop offset='0' stop-color='%23e6c98a'/%3E%3Cstop offset='.35' stop-color='%23b08a4a'/%3E%3Cstop offset='.7' stop-color='%238a6630'/%3E%3Cstop offset='1' stop-color='%235a3e1c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='26' cy='26' r='23.6' fill='%231a0f06'/%3E%3Ccircle cx='26' cy='26' r='24.6' fill='none' stroke='%231a0f06' stroke-width='2.8'/%3E%3Ccircle cx='26' cy='26' r='24.6' fill='none' stroke='url(%23g)' stroke-width='1.2'/%3E%3Ccircle cx='8.6' cy='8.6' r='1.9' fill='url(%23g)' stroke='%231a0f06' stroke-width='.8'/%3E%3Ccircle cx='8.6' cy='43.4' r='1.9' fill='url(%23g)' stroke='%231a0f06' stroke-width='.8'/%3E%3Ccircle cx='43.4' cy='8.6' r='1.9' fill='url(%23g)' stroke='%231a0f06' stroke-width='.8'/%3E%3Ccircle cx='43.4' cy='43.4' r='1.9' fill='url(%23g)' stroke='%231a0f06' stroke-width='.8'/%3E%3C/svg%3E");
+  --st-finial: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 30'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23e6c98a'/%3E%3Cstop offset='.4' stop-color='%23c9a565'/%3E%3Cstop offset='.75' stop-color='%239a7436'/%3E%3Cstop offset='1' stop-color='%235a3e1c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M21.5 20.2 C16.5 18.6 11.5 20.6 8.6 25.6 C12.6 23.6 17.6 21.4 21.5 20.2Z' fill='url(%23g)' stroke='%231a0f06' stroke-width='.9' stroke-linejoin='round' paint-order='stroke'/%3E%3Cpath d='M30.5 20.2 C35.5 18.6 40.5 20.6 43.4 25.6 C39.4 23.6 34.4 21.4 30.5 20.2Z' fill='url(%23g)' stroke='%231a0f06' stroke-width='.9' stroke-linejoin='round' paint-order='stroke'/%3E%3Cpath d='M24.5 20.4 C19 20.4 12.5 17.5 12.5 12 C12.5 8 17 6.4 19.2 9 C20.8 11 19 13.6 16.8 12.6' fill='none' stroke='%231a0f06' stroke-width='3.4' stroke-linecap='round'/%3E%3Cpath d='M24.5 20.4 C19 20.4 12.5 17.5 12.5 12 C12.5 8 17 6.4 19.2 9 C20.8 11 19 13.6 16.8 12.6' fill='none' stroke='url(%23g)' stroke-width='1.7' stroke-linecap='round'/%3E%3Cpath d='M27.5 20.4 C33 20.4 39.5 17.5 39.5 12 C39.5 8 35 6.4 32.8 9 C31.2 11 33 13.6 35.2 12.6' fill='none' stroke='%231a0f06' stroke-width='3.4' stroke-linecap='round'/%3E%3Cpath d='M27.5 20.4 C33 20.4 39.5 17.5 39.5 12 C39.5 8 35 6.4 32.8 9 C31.2 11 33 13.6 35.2 12.6' fill='none' stroke='url(%23g)' stroke-width='1.7' stroke-linecap='round'/%3E%3Cpath d='M26 1.2 C29.4 5.6 29.6 11 26 16 C22.4 11 22.6 5.6 26 1.2Z' fill='url(%23g)' stroke='%231a0f06' stroke-width='.9' stroke-linejoin='round' paint-order='stroke'/%3E%3Ccircle cx='26' cy='18.6' r='2.2' fill='url(%23g)' stroke='%231a0f06' stroke-width='.9'/%3E%3C/svg%3E");
+  --st-knot: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 18'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23e6c98a'/%3E%3Cstop offset='.4' stop-color='%23c9a565'/%3E%3Cstop offset='.75' stop-color='%239a7436'/%3E%3Cstop offset='1' stop-color='%235a3e1c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M22.6 14 C19 11.7 15 11.9 12.2 14 C15 16.1 19 16.3 22.6 14Z' fill='url(%23g)' stroke='%231a0f06' stroke-width='.9' stroke-linejoin='round' paint-order='stroke'/%3E%3Cpath d='M29.4 14 C33 11.7 37 11.9 39.8 14 C37 16.1 33 16.3 29.4 14Z' fill='url(%23g)' stroke='%231a0f06' stroke-width='.9' stroke-linejoin='round' paint-order='stroke'/%3E%3Cpath d='M26 10 L29.4 14 L26 18 L22.6 14Z' fill='url(%23g)' stroke='%231a0f06' stroke-width='.9' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --st-pin: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='.8' y2='1'%3E%3Cstop offset='0' stop-color='%23e6c98a'/%3E%3Cstop offset='.35' stop-color='%23b08a4a'/%3E%3Cstop offset='.7' stop-color='%238a6630'/%3E%3Cstop offset='1' stop-color='%235a3e1c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='6' cy='6' r='4.2' fill='url(%23g)' stroke='%231a0f06' stroke-width='1.1'/%3E%3Ccircle cx='6' cy='6' r='1.5' fill='%231a0f06'/%3E%3C/svg%3E");
+}
+.story-tools > .story-tool::before,
+.story-tools > .story-tool::after {
+  content: ""; position: absolute; left: -4px; width: 52px; pointer-events: none;
+}
+.story-tools > .story-tool::before {
+  top: -24px; height: 86px;
+  background: var(--st-finial) 0 0 / 52px 30px no-repeat, var(--st-ring) 0 20px / 52px 52px no-repeat;
+}
+.story-tools > .story-tool:not(:first-child)::before {
+  background: var(--st-knot) 0 6px / 52px 18px no-repeat, var(--st-ring) 0 20px / 52px 52px no-repeat;
+}
+.story-tools > .story-tool:last-child::after {
+  top: 38px; height: 30px; scale: 1 -1;
+  background: var(--st-finial) 0 0 / 52px 30px no-repeat;
+}
+/* The enamel carries the samples' second, inner rule. */
+.story-tools > .story-tool > .story-tool__medal::after {
+  content: ""; position: absolute; inset: 5px; border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--kit-gold) 62%, transparent);
+  box-shadow: 0 0 0 1px rgb(8 4 14 / .55);
+}
+/* The plate is ruled twice like its cartouche and hangs from a gilt pin. */
+.story-tools .story-tool__label::before {
+  content: ""; position: absolute; inset: 5px 15px 6px;
+  border: solid color-mix(in srgb, var(--kit-gold) 70%, transparent); border-width: 1px 0;
+  pointer-events: none;
+}
+.story-tools .story-tool__label::after {
+  content: ""; position: absolute; left: -7px; top: calc(50% - 6px); width: 12px; height: 12px;
+  background: var(--st-pin) 50% 50% / 100% 100% no-repeat; pointer-events: none;
+}
+body:has(.scene--clubhouse, .scene--atlas) .story-tools .story-tool__label::before { inset: 5px 8px 6px; }
+body:has(.scene--clubhouse, .scene--atlas) .story-tools .story-tool__label::after { content: none; }
+.story-tools > .story-tool:focus-visible::before,
+.story-tools > .story-tool:focus-visible::after {
+  filter: brightness(1.45) drop-shadow(0 0 4px color-mix(in srgb, var(--kit-candle) 60%, transparent));
+}
+/* == end cartouche settings == */
 /* The boss's optional voice is a contextual shelf action, with upright lettering.
    Absolute attachment leaves the pile, End Turn and the hand bounds unchanged.
    It sits above the pile count, separate from the shared help rail. */
