@@ -20893,14 +20893,21 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
          the side, most a small one, a few a large; a third none on the
          shoulder. It is measured in from the stone's own edge, so it cannot
          stand outside it.) */
+      /* (a correction, looked at in the yard: the outline's distance is a
+         union of the slab and its head, and INSIDE the stone it falls to
+         nothing along the seam between them -- the side's growth crept in
+         from that seam too, a green bar across a round head at its
+         shoulders. The side's is measured from the slab's straight side
+         now, and stops under the head; the shoulder's keeps the outline.) */
       float gS, gC;
       float eS = h2 > 0.30 ? gyFringe(p.y - ty*(0.34 + 0.40*h1), 0.10 + 0.18*h3, 0.050 + 0.090*h3*h3, 11.0 + 10.0*h1, seed, gS)*step(0.0, sd*p.x) : 0.0;
       float eC = h1 > 0.35 ? gyFringe(p.x + sd*W*0.35, W*(0.30 + 0.25*h2), 0.035 + 0.055*h3, 30.0 + 20.0*h2, seed + 3.0, gC)*smoothstep(ty + 0.11, ty + 0.20, p.y) : 0.0;
-      float eM = max(eS, eC);
+      float mS = max(tx + 0.054 - sd*p.x - eS, p.y - ty);
+      float mC = 0.004 - d - eC;
       /* a side's cushion is lit over its upper half and dark under; the
          shoulder's is lit where it lies on the top of the stone and hangs
          dark */
-      ms = gyMoss(ms, 0.004 - d - eM, eS > eC ? gS : -1.0, eS > eC ? smoothstep(0.10, 0.10 + 60.0*px, gS) : wfIn(-d - 0.42*eC, px), px);
+      ms = gyMoss(ms, min(mS, mC), mS < mC ? gS : -1.0, mS < mC ? smoothstep(0.10, 0.10 + 60.0*px, gS) : wfIn(-d - 0.42*eC, px), px);
       /* (...and on the arris it takes the arris's light: it lies ON the form) */
       ms.y *= 1.0 + arB*(0.46*max(arO, 0.0) - 0.26*max(-arO, 0.0));
     }
@@ -21110,7 +21117,7 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
       ms = gyMoss(ms, max(0.776 - q.y - eL, q.y - 0.80), -1.0, wfIn(0.780 - q.y - 0.016 - 0.36*eL, px), px);
     } else {
       float eS = gyFringe(hq.y - 0.30 - 0.16*h1, 0.10 + 0.14*h3, 0.050 + 0.070*h2, 11.0 + 10.0*h1, seed, gF)*step(0.0, sd*hq.x);
-      ms = gyMoss(ms, max(0.004 - kHead - eS, kHead), gF, smoothstep(0.10, 0.10 + 60.0*px, gF), px);
+      ms = gyMoss(ms, max(max(0.244 - sd*hq.x - eS, kHead), max(hq.y - 0.53, 0.13 - hq.y)), gF, smoothstep(0.10, 0.10 + 60.0*px, gF), px);
     }
     float mk = ms.x*wfIn(d, px)*(1.0 - wfIn(urn, px));
     shd = mix(shd*(1.0 - 0.34*ms.z), ms.y, mk);
