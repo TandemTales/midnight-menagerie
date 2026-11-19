@@ -10101,10 +10101,13 @@ float stCases(vec2 q, float u, float y0, float y1, float CW, float pit, float px
    stood against the wall. part comes back 1 the boxes, 2 the bust, 3 the
    charts. */
 float stTopD(vec2 p, float sg, out float part){
-  float bA = mix(0.44, 1.90, sg), mA = mix(1.86, 0.62, sg);
+  /* (the left case's are set toward the chimney breast, charts, bust, boxes:
+     the chandelier hangs in front of its outer end, and its foot landed on
+     the charts and its arm on the one stood up -- both blind judges) */
+  float bA = mix(1.36, 1.90, sg), mA = mix(0.60, 0.62, sg), uA = mix(1.04, 1.20, sg);
   float box = min(mmBox(p - vec2(bA, 0.070), vec2(0.180, 0.070), 0.004),
                   mmBox(p - vec2(bA + 0.035, 0.190), vec2(0.125, 0.050), 0.004));
-  vec2 b = p - vec2(1.20, 0.0);
+  vec2 b = p - vec2(uA, 0.0);
   float bust = mmBox(b - vec2(0.0, 0.040), vec2(0.075, 0.040), 0.004);
   bust = min(bust, mmBox(b - vec2(0.0, 0.100), vec2(0.040, 0.030), 0.0));
   bust = min(bust, max(wfEll2(b - vec2(0.0, 0.125), vec2(0.150, 0.105)), 0.125 - b.y));
@@ -10336,7 +10339,7 @@ float studyWallH(vec2 q, float qpx, out float occ){
     float PRL = 3.60;
     float prail = mmBandA(q.y, PRL - 0.045, PRL + 0.045, px);
     col = mix(col, oak*(1.05 + 0.45*smoothstep(PRL - 0.045, PRL + 0.045, q.y)), prail);
-    col = mix(col, gilt*1.25, mmBandA(q.y, PRL - 0.045, PRL - 0.022, px));
+    col = mix(col, gilt*0.62, mmBandA(q.y, PRL - 0.045, PRL - 0.022, px));   // (a stop down: the chandeliers' arms read in front of it)
     h += prail*0.5;
     gInk = max(gInk, max(mmInkP(q.y - PRL + 0.045, px, 1.1), mmInkP(q.y - PRL - 0.045, px, 1.1))*0.85);
     if (far > 0.5) {
@@ -10371,12 +10374,12 @@ float studyWallH(vec2 q, float qpx, out float occ){
         vec3 oc = part < 1.5 ? vec3(0.15, 0.075, 0.040)*lw*1.5
                 : (part < 2.5 ? vec3(0.34, 0.31, 0.25)*lw*1.5 : vec3(0.46, 0.38, 0.24)*lw*1.5);
         /* each turned to the light over it: a shaded side, a lit top */
-        float su = part < 1.5 ? clamp((tp.x - mix(0.44, 1.90, sg))/0.18, -1.0, 1.0)
-                 : (part < 2.5 ? clamp((tp.x - 1.20)/0.15, -1.0, 1.0) : 0.0);
+        float su = part < 1.5 ? clamp((tp.x - mix(1.36, 1.90, sg))/0.18, -1.0, 1.0)
+                 : (part < 2.5 ? clamp((tp.x - mix(1.04, 1.20, sg))/0.15, -1.0, 1.0) : 0.0);
         oc *= 0.62 + 0.26*su*(2.0*sg - 1.0);
         oc = mix(oc, oc*3.4, edge);
         /* the boxes' brass: a lock plate on the lower one */
-        float lockP = mmBox(tp - vec2(mix(0.44, 1.90, sg), 0.085), vec2(0.016, 0.022), 0.003)*TS;
+        float lockP = mmBox(tp - vec2(mix(1.36, 1.90, sg), 0.085), vec2(0.016, 0.022), 0.003)*TS;
         oc = mix(oc, brassL*0.9, RCV(-lockP)*step(part, 1.5));
         col = mix(col, oc, onO);
         h = mix(h, 1.6, onO);
@@ -10503,8 +10506,12 @@ float studyWallH(vec2 q, float qpx, out float occ){
        corners too, outside its bookcases, as they do down the side walls --
        and between every second pair a brass SCONCE, its candle and the pool
        it lays on the paper and the frames beside it) */
-    float ue = far > 0.5 ? ax - 4.20 : u;
-    if (far < 0.5 || (ax > 4.20 && ax < 6.70)) {
+    /* (the right-hand pair stands 0.25 m further along: the chandelier
+       crossed the first print's corner and the vase on the small bookcase
+       touched the second's foot -- both blind judges) */
+    float eS = 4.20 + 0.25*step(0.0, cx);
+    float ue = far > 0.5 ? ax - eS : u;
+    if (far < 0.5 || (ax > eS && ax < eS + 2.50)) {
       float FP = 1.25;
       float fi = floor(ue/FP);
       float fxl = ue - (fi + 0.5)*FP;
@@ -10528,7 +10535,9 @@ float studyWallH(vec2 q, float qpx, out float occ){
       gInk = max(gInk, max(mmInkP(fo, px, 1.1), mmInkP(fiN, px, 1.0))*0.85);
       gBare = max(gBare, onP);
       occ = max(occ, RCV(-fo));
-      float sxl = mod(ue, 2.0*FP) - FP;
+      /* (on the side walls the sconces stand one print along: the frame's
+         edge cut the nearest to a sliver) */
+      float sxl = mod(ue + FP*(1.0 - far), 2.0*FP) - FP;
       rSconce(vec2(sxl, q.y - 2.95), px, brassL*0.55, waxS, col, h, emitW);
       rPool(vec2(sxl, (q.y - 3.00)*0.85), 0.90, 0.80, lampP);
     }
