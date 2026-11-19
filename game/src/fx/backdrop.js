@@ -772,7 +772,16 @@ export const ROOMS_PROGRAM = {
    deals that is not listed still compiles in (Backdrop._setPropProgram), as
    a program of its own, linked on demand and named by that test. */
 export const PROP_SHAPES = {
-  attic: [5, 8, 14, 18, 23, 35, 36, 37, 38, 44],
+  /* (trim 61, 2026-11-19: NOT 8, the crate stack, in the Attic -- the table
+     listed it and no room of the wing deals one: not one of the 2,171 rooms
+     tests/link-queue puts on the stage (the authored rooms, twelve generated
+     maps' names per wing through moodForRoom, each wing by its key and
+     unseeded). The Attic's prop link compiled the crates' drawing, relief and
+     paint for nothing. A room that did deal one would bring it in itself, as
+     below. The Kennels' 16.25 is dealt by none of theirs either, but without
+     it the D3D compiler laid their program out differently, 1 level in 2
+     pixels: it stays.) */
+  attic: [5, 14, 18, 23, 35, 36, 37, 38, 44],
   ballroom: [4, 6, 22, 65, 72, 78, 79],
   bathhouse: [2, 6, 8, 23, 32],
   crypt: [6, 15, 57, 58, 59],
@@ -912,7 +921,7 @@ export const ROOM_VARIANTS = [
   { mat: 'wall', defines: { MM_ROOMS: 18, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 47 }, wings: ['sleeping'] },
   { mat: 'wall', defines: { MM_ROOMS: 19, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 48 }, wings: ['study'] },
   { mat: 'wall', defines: { MM_ROOMS: 19, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 49 }, wings: ['study'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8667424, MM_SHM1: 16864, MM_SHM2: 0, MM_PEN: 1, MM_T66: 0, MM_SEEDS: 0 }, wings: ['attic'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8667168, MM_SHM1: 16864, MM_SHM2: 0, MM_PEN: 1, MM_T66: 0, MM_SEEDS: 0 }, wings: ['attic'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 4194384, MM_SHM1: 0, MM_SHM2: 790560, MM_PEN: 0, MM_T66: 0, MM_SEEDS: 0 }, wings: ['ballroom'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8388932, MM_SHM1: 4, MM_SHM2: 0, MM_PEN: 1, MM_T66: 0, MM_SEEDS: 0 }, wings: ['bathhouse'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 32832, MM_SHM1: 939524096, MM_SHM2: 0, MM_PEN: 0, MM_T66: 0, MM_SEEDS: 0 }, wings: ['crypt'] },
