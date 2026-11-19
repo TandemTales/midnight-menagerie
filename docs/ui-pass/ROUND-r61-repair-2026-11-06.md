@@ -1041,3 +1041,25 @@ Asked next by both judges: the prints' content is "a hatched blot" repeated; boo
 A harness lesson: `tools/room_batch.py` takes the GPU slot itself; wrapping it in `gpu_slot.py --` deadlocks the slot for 90 minutes.
 
 Keys: `PAIRED-r61-repair63-key.json`, `PAIRED-r61-repair63b-key.json`. Evidence: `D:/UILOOP/s21/ev63/`.
+
+
+## Trim 61: four more wings' prop programs cut, pixel-identical (2026-11-19)
+
+The method is trim 60's: remove what a wing compiles and never draws, prove it by four captures. Branch `ui/r61-trim61`; evidence, scripts and every timing log are in `D:/UILOOP/s21/ev61/`. **The census** (`tools/census2.py`, `census2.json`) is tests/link-queue's own population, 2,171 rooms: every (shape, seed band) each wing deals.
+
+**Committed** (paired, alternating, each program alone in a fresh browser; served programs equal the timed files):
+- `d859cc33`: the dollhouse's bare `else`. Sleeping Quarters 10.52 to 9.59 s, Study 5.52 to 4.77, Crypt 4.62 to 4.04.
+- `68f4c960`: `MM_SEEDS` (SEED_DRAWINGS / WING_SEEDS in `fx/backdrop.js`): bit 2 is the Sleeping Quarters' chair-and-nightgown 52, which no room deals. 9.72 to 8.93 s.
+- `36e1c6fc`: the orrery's bare `else` (wgField) and the zinc tub's tail (wgPaint). Bathhouse 11.05 to 10.14, Lampworks 10.44 to 9.62, Attic 7.78 to 7.47. The Kennels keep the orrery: see below.
+- `d7e32df9`: PROP_SHAPES' Attic entry loses 8 (the crate stack), which no Attic room deals. 7.62 to 6.98.
+
+**Whole table, untouched (6a8142ab) vs this branch, 2 rounds alternating in one quiet stretch:** attic 7.65 to 6.47, bathhouse 10.08 to 9.17, crypt 4.43 to 3.93, lampworks 9.73 to 9.24, sleeping 11.26 to 9.63, study 6.17 to 5.24. The 12 unchanged programs are the control, all within 0.2 s: ballroom 4.3, foyer 9.6-9.8, graveyard 7.7, greenhouse 11.0 and 11.6, heart 6.1, hedge 10.6, kennels 8.2-8.4, kitchens 9.5-9.7, nursery 7.3, passages 3.7, pumpkin 2.2. All are under 12 s in the fast state; the greenhouse's bench program (11.6) and its first program (11.0), the hedge (10.6) and kitchens (9.6) are the closest. In the slow state (about 1.5x) only the passages, pumpkin, ballroom, crypt, study, heart and attic stay under.
+
+**Out, because they change pixels** (1 level, a few pixels, systematic in both after captures; the D3D compiler lays out what remains differently):
+- The Nursery's rocking horse (46 below seed 40) in the Sleeping Quarters' program: 1.7 s. Two forms tried; both move 6-21 pixels of the dormitory's own bay horse in its 11 rooms. Patches: `ev61/trim2-F0-*`, `trim2-F1-*`.
+- The orrery in the Kennels' program: 0.5 s, 2-5 pixels in six rooms.
+- The Kennels' 16.25 kerb (dealt by no Kennels room): 0.1 s, 2 pixels.
+
+**Measured and not worth a commit:** the hedge statue's unreachable mourner branches (stDraw hands that lot to stDrawG first), 0.16 s; the Foyer's ten shape-conditional statements in `main` for shapes it never deals, 0.11 s (within noise); stripping every comment, 0.4-0.5 s, which is noise too. **Translated HLSL:** an uncalled function changes only ANGLE's local numbering; after renumbering (`tools/hnorm.py`) the Crypt's and the Study's programs with and without the bay-horse code are identical.
+
+**Where the rest goes (cut-one-piece, seconds saved, not additive; `ev61/log-rank-*.txt`):** bathhouse: wgPaint 5.5, shapeField 3.0, mmNoise 2.6, reliefH 1.7, the bath's outline 0.9. Hedge: shapeField 8.5, reliefH 6.6, mmNoise 5.2, the statues (stDraw) 4.8, topiary 2.9. Kitchens: shapeField 8.7, gkDraw 8.1, mmNoise 5.0, reliefH 2.3. Greenhouse (first): shapeField 8.9, mmNoise 3.2, the beds 2.8. Lampworks: wgPaint 6.5, shapeField 3.1, mmNoise 2.7. All of it is drawn. What is left to cut is not dead code: either a split (a program by room kind, which adds variants) or shared noise taps (which changes arithmetic and needs a blind pair).
