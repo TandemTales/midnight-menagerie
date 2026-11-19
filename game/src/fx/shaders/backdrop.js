@@ -10339,7 +10339,7 @@ float studyWallH(vec2 q, float qpx, out float occ){
     float PRL = 3.60;
     float prail = mmBandA(q.y, PRL - 0.045, PRL + 0.045, px);
     col = mix(col, oak*(1.05 + 0.45*smoothstep(PRL - 0.045, PRL + 0.045, q.y)), prail);
-    col = mix(col, gilt*0.62, mmBandA(q.y, PRL - 0.045, PRL - 0.022, px));   // (a stop down: the chandeliers' arms read in front of it)
+    col = mix(col, gilt*1.25, mmBandA(q.y, PRL - 0.045, PRL - 0.022, px));
     h += prail*0.5;
     gInk = max(gInk, max(mmInkP(q.y - PRL + 0.045, px, 1.1), mmInkP(q.y - PRL - 0.045, px, 1.1))*0.85);
     if (far > 0.5) {
@@ -10509,7 +10509,7 @@ float studyWallH(vec2 q, float qpx, out float occ){
     /* (the right-hand pair stands 0.25 m further along: the chandelier
        crossed the first print's corner and the vase on the small bookcase
        touched the second's foot -- both blind judges) */
-    float eS = 4.20 + 0.25*step(0.0, cx);
+    float eS = 4.20;   // (a 0.25 m shift of the right-hand pair lost its blind check 0-2: it crowded the corner)
     float ue = far > 0.5 ? ax - eS : u;
     if (far < 0.5 || (ax > eS && ax < eS + 2.50)) {
       float FP = 1.25;
