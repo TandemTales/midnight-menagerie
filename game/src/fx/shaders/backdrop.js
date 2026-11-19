@@ -217,6 +217,22 @@ precision highp float;
 #ifndef MM_ROOMS
 #define MM_ROOMS 0
 #endif
+/* ROUND 61 REPAIR 63: THE HEART'S OWN HALL. The Heart draws its hall with
+   the house's panelled wall (program 0, the hearth, subject 17), which no
+   other wing's room compiles at MM_R25W 0 -- the Foyer's variants of program
+   0 are MM_R25W 1 -- so what repair 63 draws over the hall's portraits is
+   guarded by this and is the Heart's hall and nothing else. Not its stair
+   (portraits hang over the flights, where this would be drawn), its memory
+   room (cases to the cornice) or its gallery (an upper storey of its own).
+   No new variant: the same program. */
+#if defined(MM_ARCH) && defined(MM_SUBJ)
+#if MM_ARCH == 0 && MM_R25W == 0 && MM_ROOMS == 0 && MM_SUBJ == 17
+#define MM_HEART63 1
+#endif
+#endif
+#ifndef MM_HEART63
+#define MM_HEART63 0
+#endif
 /* ROUND 28: THE ONE MANSION -- the house behind the Pumpkin Grounds (11)
    and the Graveyard (R25W 4), rebuilt once for both at UI/mainMenu.png's
    level. The title's house (program 0, R25W 0) compiles as it did. */
@@ -712,6 +728,9 @@ float gPtSd, gPtAmt;
 /* ...and where a picture USED to hang: the paper there never saw the light,
    so it is the colour the whole wall was once. 1 inside the patch. */
 float gPatch;
+#if MM_HEART63
+float gHt63 = 0.0;      // (round 61 repair 63: the Heart's upper wall -- how much of the pixel is a gilt edge that holds the light)
+#endif
 void ptAsk(vec2 p, vec2 hs, float sd, vec2 fk, float amt){
   if (amt > gPtAmt) { gPtP = p; gPtHs = hs; gPtSd = sd; gPtK = fk; gPtAmt = amt; }
 }
@@ -11793,6 +11812,46 @@ float wallH(vec2 q, out float occ){
        is a stack -- the frieze, a bed mould over it, the corona standing proud
        of both, and the cyma above that -- and each step is a line the lamps
        can find. Table dimensions: 0.15-0.30 m of projection over a frieze. */
+#if MM_HEART63
+    /* ROUND 61 REPAIR 63, survey 23, both judges: "the study's and heart's
+       upper corners still drop to pure black"; repair 50's: "the far corners,
+       ceilings ... given drawn, painted detail at the samples' level rather
+       than empty dark". Measured in the hall: 29% of the frame's top quarter
+       under luma 8, 46% of its right corner. The Heart is 9.5 m high and its
+       ceiling and cornice are over the frame: what the frame's top holds is
+       the four metres of wall between the portraits and the frieze, and
+       nothing was drawn on it but the paper. A hall of this height has an
+       UPPER REGISTER: a string course over the pictures with a gilt bead
+       along its foot, and over each bay a tall plaster panel, moulded as the
+       ones below are, a carved roundel in it -- a ring, a quatrefoil, a boss
+       -- with a gilt fillet inside the moulding, a gilt ring round the
+       roundel and the quatrefoil's own edge gilt. The plaster is the wall's and is lit as the wall is; the
+       gilt holds what light there is (gHt63, main()), so in the dark of the
+       corners each bay is a few lit lines and the dark between them stays. */
+    {
+      const float SC0 = 4.90, SC1 = 5.06;
+      float upR = own * clear;
+      float lw63 = max(0.020, 1.3*qpx);
+      h += smoothstep(SC0 - 0.01, SC0 + 0.01, q.y) * smoothstep(SC1 + 0.01, SC1 - 0.01, q.y) * 0.95 * upR;   // the string course
+      h += smoothstep(SC1, SC1 + 0.02, q.y) * smoothstep(SC1 + 0.11, SC1 + 0.08, q.y) * 0.40 * upR;          // its cap
+      vec2 q2 = vec2(mod(q.x + uSeed*0.7, 2.60) - 1.30, q.y - 6.78);
+      h += sPanel(q2, vec2(0.92, 1.40), 0.075, 0.11) * upR;
+      float rr = length(q2);
+      float ring = smoothstep(0.40, 0.42, rr) * smoothstep(0.54, 0.52, rr);
+      float qfD = min(length(vec2(abs(q2.x) - 0.150, q2.y)), length(vec2(q2.x, abs(q2.y) - 0.150))) - 0.150;
+      float lobe = 1.0 - smoothstep(-0.010, 0.010, qfD);
+      float boss = 1.0 - smoothstep(0.060, 0.080, rr);
+      h += (ring*0.70 + lobe*(1.0 - boss)*0.42 + boss*0.66 - (1.0 - smoothstep(0.37, 0.40, rr))*(1.0 - lobe)*0.16) * upR;
+      /* (the gilt is brightest where it faces the candles' side of each
+         bay and falls away round the frame, so no fillet is one even line) */
+      float bead = (1.0 - smoothstep(lw63*0.5, lw63, abs(q.y - SC0 - 0.035)))*0.58;
+      float slip = (1.0 - smoothstep(lw63*0.5, lw63, abs(mmBox(q2, vec2(0.79, 1.27), 0.012))))
+                 * (0.30 + 0.50*smoothstep(-1.27, 1.10, q2.y));
+      float rgl = (1.0 - smoothstep(lw63*0.5, lw63, abs(rr - 0.47))) * (0.28 + 0.50*smoothstep(-0.47, 0.40, q2.y));
+      float bgl = (1.0 - smoothstep(lw63*0.5, lw63, abs(qfD))) * (0.24 + 0.40*smoothstep(-0.30, 0.30, q2.y));
+      gHt63 = upR * max(max(bead, bgl), max(slip, rgl));
+    }
+#endif
     float ec = uCeil;
     h += smoothstep(ec-0.86, ec-0.78, q.y) * smoothstep(ec-0.20, ec-0.30, q.y) * 0.42;  // frieze
     h += smoothstep(ec-0.34, ec-0.27, q.y) * smoothstep(ec-0.06, ec-0.14, q.y) * 0.78;  // bed mould
@@ -13499,6 +13558,18 @@ void main(){
     col += alb * vec3(1.00, 0.80, 0.56) * clamp(gPtAmt, 0.0, 1.0) * prof
          * (0.12 + 2.20*(1.0 - smoothstep(0.30, 1.80, E)));
   }
+#if MM_HEART63
+  /* (round 61 repair 63: THE GILT HOLDS THE LIGHT, as a canvas does above --
+     the bead, the fillets and the rings of the Heart's upper register are
+     lifted to a floor of irradiance, so they are drawn in the corners no
+     lamp of the rig reaches and are no brighter than the wall where it is
+     lit. Gold leaf in the candles' colour; nothing else is lifted.) */
+  if (gHt63 > 0.002) {
+    float E63 = mmLum(col)/max(mmLum(alb), 1e-3);
+    col += vec3(0.42, 0.305, 0.115) * vec3(1.00, 0.80, 0.56) * gHt63
+         * (0.10 + 1.00*(1.0 - smoothstep(0.30, 1.80, E63)));
+  }
+#endif
 #if MM_ROOMS >= 17
   /* (round 24 graft: the wall's own candle pools -- see rPool) */
   col += alb * gRPoolC * gRPool;
