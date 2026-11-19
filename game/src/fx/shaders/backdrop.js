@@ -22256,6 +22256,13 @@ ${LIGHT_LIB}
 #ifndef MM_T66
 #define MM_T66 7
 #endif
+/* ...AND THE OTHER SHAPES THAT ARE SEVERAL DRAWINGS BY THEIR SEED (trim 61,
+   2026-11-19; Backdrop._setPropProgram, SEED_DRAWINGS and WING_SEEDS). Bit
+   2 the chair with the nightgown (52 set down with 80 or more, which no room
+   does); the Sleeping Quarters' prop link compiled it. Undefined means all. */
+#ifndef MM_SEEDS
+#define MM_SEEDS 3
+#endif
 /* ...AND, OF EVERYTHING THE PROGRAM CARRIES, ONLY THE SHAPES THIS ROOM
    DEALS (2026-10-15). A prop's shape is per instance, so a program drew
    every shape it carried and chose per pixel: the Foyer's props were 85k
@@ -31365,6 +31372,10 @@ float slDrawM(vec2 q, float px, float seed, float kq, bool paint){
     col *= 1.0 - 0.35*smoothstep(0.04, 0.0, q.y);
     gWfGloss = 0.25 + 0.5*wfIn(min(quilt, qFold), px);
     gWfMoon = 0.40*wfIn(min(lid, quilt), px);
+  /* (trim 61: the chair with the nightgown, a 52 set down with a seed of 80
+     or more -- no room sets one down, and the Sleeping Quarters' program
+     compiled it. MM_SEEDS bit 2, see PROP_FRAG.) */
+#if (MM_SEEDS & 2) != 0
   } else {
     /* ---- THE CHAIR, THE NIGHTGOWN, THE SLIPPERS AND THE POT ---- */
     vec2 c = q - vec2(-0.10, 0.0);
@@ -31428,6 +31439,7 @@ float slDrawM(vec2 q, float px, float seed, float kq, bool paint){
     col *= 1.0 - 0.35*smoothstep(0.03, 0.0, q.y);
     gWfGloss = 0.20 + 0.6*wfIn(min(pot, potR), px);
     gWfMoon = 0.45*wfIn(min(gown, collar), px);
+#endif
   }
   gWfCol = col; gWfInk = ink;
   return d;

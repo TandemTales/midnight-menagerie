@@ -849,6 +849,22 @@ export const PEN_WINGS = ['hedge', 'kennels', 'sleeping', 'passages', 'attic', '
    its wing's entry does not list still compiles in (_setPropProgram), as a
    program of its own that tests/link-queue names.) */
 export const TABLE66 = { foyer: 1, passages: 6 };
+/* (trim 61, 2026-11-19: THE OTHER SHAPES THAT ARE SEVERAL DRAWINGS BY THEIR
+   SEED, and which of them each wing deals in any of its rooms -- PROP_FRAG's
+   MM_SEEDS; ROOM_VARIANTS' prop rows carry it. A row is [shape, from, below,
+   bit]: a prop of that shape whose seed is in [from, below) is that drawing.
+     2  the Sleeping Quarters' 52 set down with a seed of 80 or more: the
+        chair with the nightgown, which no room sets down
+   (bit 1 is left for the rocking horse, 46, which is two drawings too: see
+   docs/ui-pass/ROUND-r61-repair-2026-11-06.md, trim 61.) Measured by a
+   census of every room tests/link-queue puts on the stage (2,171: the
+   authored rooms, twelve generated maps' names per wing through moodForRoom,
+   each wing by its key and unseeded): the Sleeping Quarters' 52s are dealt
+   (under 10), 45 and 65. A drawing a room deals that its wing's entry
+   does not list still compiles in (_setPropProgram), as a program of its own
+   that tests/link-queue names.) */
+export const SEED_DRAWINGS = [[52, 80, Infinity, 2]];
+export const WING_SEEDS = {};
 
 export const ROOM_VARIANTS = [
   { mat: 'wall', defines: { MM_ROOMS: 14, MM_R25W: 0, MM_ARCH: 4, MM_SUBJ: 40 }, wings: ['attic'] },
@@ -896,24 +912,24 @@ export const ROOM_VARIANTS = [
   { mat: 'wall', defines: { MM_ROOMS: 18, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 47 }, wings: ['sleeping'] },
   { mat: 'wall', defines: { MM_ROOMS: 19, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 48 }, wings: ['study'] },
   { mat: 'wall', defines: { MM_ROOMS: 19, MM_R25W: 0, MM_ARCH: 0, MM_SUBJ: 49 }, wings: ['study'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8667424, MM_SHM1: 16864, MM_SHM2: 0, MM_PEN: 1, MM_T66: 0 }, wings: ['attic'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 4194384, MM_SHM1: 0, MM_SHM2: 790560, MM_PEN: 0, MM_T66: 0 }, wings: ['ballroom'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8388932, MM_SHM1: 4, MM_SHM2: 0, MM_PEN: 1, MM_T66: 0 }, wings: ['bathhouse'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 32832, MM_SHM1: 939524096, MM_SHM2: 0, MM_PEN: 0, MM_T66: 0 }, wings: ['crypt'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4, MM_SHM0: 79691856, MM_SHM1: 0, MM_SHM2: 508, MM_PEN: 0, MM_T66: 1 }, wings: ['foyer'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5, MM_SHM0: 8388608, MM_SHM1: 0, MM_SHM2: 11776, MM_PEN: 0, MM_T66: 0 }, wings: ['graveyard'] },
-  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 1294336, MM_PEN: 0, MM_T66: 0 }, wings: ['greenhouse'] },
-  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 17940480, MM_PEN: 0, MM_T66: 0 }, wings: ['greenhouse'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 44040192, MM_PEN: 0, MM_T66: 0 }, wings: ['heart'] },
-  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 310378496, MM_SHM1: 3, MM_SHM2: 10485760, MM_PEN: 1, MM_T66: 0 }, wings: ['hedge'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12648448, MM_SHM1: 7680, MM_SHM2: 0, MM_PEN: 1, MM_T66: 0 }, wings: ['kennels'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 541065472, MM_SHM1: 0, MM_SHM2: 4194304, MM_PEN: 0, MM_T66: 0 }, wings: ['kitchens'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12845056, MM_SHM1: 8216, MM_SHM2: 0, MM_PEN: 0, MM_T66: 0 }, wings: ['lampworks'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 1015808, MM_SHM2: 134217730, MM_PEN: 0, MM_T66: 0 }, wings: ['nursery'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 8388864, MM_SHM1: 0, MM_SHM2: 64, MM_PEN: 1, MM_T66: 6 }, wings: ['passages'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 67108864, MM_PEN: 0, MM_T66: 0 }, wings: ['pumpkin'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74645504, MM_SHM2: 1, MM_PEN: 1, MM_T66: 0 }, wings: ['sleeping'] },
-  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 268435456, MM_PEN: 0, MM_T66: 0 }, wings: ['study'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8667424, MM_SHM1: 16864, MM_SHM2: 0, MM_PEN: 1, MM_T66: 0, MM_SEEDS: 0 }, wings: ['attic'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 4194384, MM_SHM1: 0, MM_SHM2: 790560, MM_PEN: 0, MM_T66: 0, MM_SEEDS: 0 }, wings: ['ballroom'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 8388932, MM_SHM1: 4, MM_SHM2: 0, MM_PEN: 1, MM_T66: 0, MM_SEEDS: 0 }, wings: ['bathhouse'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 32832, MM_SHM1: 939524096, MM_SHM2: 0, MM_PEN: 0, MM_T66: 0, MM_SEEDS: 0 }, wings: ['crypt'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4, MM_SHM0: 79691856, MM_SHM1: 0, MM_SHM2: 508, MM_PEN: 0, MM_T66: 1, MM_SEEDS: 0 }, wings: ['foyer'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5, MM_SHM0: 8388608, MM_SHM1: 0, MM_SHM2: 11776, MM_PEN: 0, MM_T66: 0, MM_SEEDS: 0 }, wings: ['graveyard'] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 1294336, MM_PEN: 0, MM_T66: 0, MM_SEEDS: 0 }, wings: ['greenhouse'] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 17940480, MM_PEN: 0, MM_T66: 0, MM_SEEDS: 0 }, wings: ['greenhouse'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 44040192, MM_PEN: 0, MM_T66: 0, MM_SEEDS: 0 }, wings: ['heart'] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 310378496, MM_SHM1: 3, MM_SHM2: 10485760, MM_PEN: 1, MM_T66: 0, MM_SEEDS: 0 }, wings: ['hedge'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12648448, MM_SHM1: 7680, MM_SHM2: 0, MM_PEN: 1, MM_T66: 0, MM_SEEDS: 0 }, wings: ['kennels'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 541065472, MM_SHM1: 0, MM_SHM2: 4194304, MM_PEN: 0, MM_T66: 0, MM_SEEDS: 0 }, wings: ['kitchens'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12845056, MM_SHM1: 8216, MM_SHM2: 0, MM_PEN: 0, MM_T66: 0, MM_SEEDS: 0 }, wings: ['lampworks'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 1015808, MM_SHM2: 134217730, MM_PEN: 0, MM_T66: 0, MM_SEEDS: 0 }, wings: ['nursery'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 4, MM_SHM0: 8388864, MM_SHM1: 0, MM_SHM2: 64, MM_PEN: 1, MM_T66: 6, MM_SEEDS: 0 }, wings: ['passages'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 142606336, MM_SHM1: 0, MM_SHM2: 67108864, MM_PEN: 0, MM_T66: 0, MM_SEEDS: 0 }, wings: ['pumpkin'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4210689, MM_SHM1: 74645504, MM_SHM2: 1, MM_PEN: 1, MM_T66: 0, MM_SEEDS: 0 }, wings: ['sleeping'] },
+  { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 3, MM_SHM0: 4194304, MM_SHM1: 125829120, MM_SHM2: 268435456, MM_PEN: 0, MM_T66: 0, MM_SEEDS: 0 }, wings: ['study'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 0, MM_PAT: 0, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 8 }, wings: ['attic'] },
   { mat: 'floor', defines: { MM_FLOORX: 0, MM_R25W: 2, MM_PAT: 1, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['ballroom'] },
   { mat: 'floor', defines: { MM_FLOORX: 1, MM_R25W: 0, MM_PAT: 10, MM_CEIL: 0, MM_RUGO: 0, MM_FLAGK: 0, MM_RUGK: 0 }, wings: ['ballroom'] },
@@ -1372,7 +1388,7 @@ export class Backdrop {
         uYaw: { value: new THREE.Vector2(1, 0) },
       },
       /* the grounds' carved stone, and the gallery's bust: _setPropProgram */
-      defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 0, MM_SHM0: 0, MM_SHM1: 0, MM_SHM2: 0, MM_PEN: 0, MM_T66: 0 },
+      defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 0, MM_SHM0: 0, MM_SHM1: 0, MM_SHM2: 0, MM_PEN: 0, MM_T66: 0, MM_SEEDS: 0 },
       vertexShader: PROP_VERT, fragmentShader: PROP_FRAG,
       transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false,
     });
@@ -3845,12 +3861,21 @@ export class Backdrop {
       if (Math.round(p.shape) === 66) t66 |= (p.seed || 0) > 60 ? 4 : ((p.seed || 0) > 40 ? 2 : 1);
     }
     if (shapes.has(66) && !t66) t66 = 7;
+    /* (trim 61: and which of the other seed-chosen drawings -- WING_SEEDS,
+       and any this room deals itself: every prop it draws is in `placed`
+       with its seed, and a seed within a thousandth of a boundary brings
+       both sides) */
+    let seeds = WING_SEEDS[wing] || 0;
+    for (const p of placed) {
+      const k = Math.round(p.shape), sd = p.seed || 0;
+      for (const [sh, lo, hi, bit] of SEED_DRAWINGS) if (k === sh && sd > lo - 1e-3 && sd < hi + 1e-3) seeds |= bit;
+    }
     const d = this.propMat.defines || {};
     if (d.MM_STONES === stones && d.MM_BUST === bust && d.MM_WINGS === wings
         && d.MM_SHM0 === m[0] && d.MM_SHM1 === m[1] && d.MM_SHM2 === m[2] && d.MM_PEN === pen
-        && d.MM_T66 === t66) return;
+        && d.MM_T66 === t66 && d.MM_SEEDS === seeds) return;
     this.propMat.defines = Object.assign({}, d, { MM_STONES: stones, MM_BUST: bust, MM_WINGS: wings,
-      MM_SHM0: m[0], MM_SHM1: m[1], MM_SHM2: m[2], MM_PEN: pen, MM_T66: t66 });
+      MM_SHM0: m[0], MM_SHM1: m[1], MM_SHM2: m[2], MM_PEN: pen, MM_T66: t66, MM_SEEDS: seeds });
     this.propMat.needsUpdate = true;
   }
 
