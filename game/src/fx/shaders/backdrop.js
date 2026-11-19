@@ -20201,8 +20201,15 @@ float wfServTable(vec2 q, float px, float seed, float kq, bool paint){
   return d;
 }
 float wfHallTable(vec2 q, float px, float seed, float kq, bool paint){
+  /* (trim 60: of the three things shape 66 is, only the ones this wing
+     deals -- MM_T66, see PROP_FRAG) */
+#if (MM_T66 & 4) != 0
   if (seed > 60.0) return wfBookPile(q, px, seed, kq, paint);    // (round 41: the library passage's books)
+#endif
+#if (MM_T66 & 2) != 0
   if (seed > 40.0) return wfServTable(q, px, seed, kq, paint);   // (round 41: the passages' own)
+#endif
+#if (MM_T66 & 1) != 0
   const float TOP = 0.80;
   float ax = abs(q.x);
   float top = mmBox(q - vec2(0.0, TOP - 0.022), vec2(0.64, 0.022), 0.008);
@@ -20308,6 +20315,9 @@ float wfHallTable(vec2 q, float px, float seed, float kq, bool paint){
   gWfMoon = 0.5*wfIn(top, px);
   gWfCol = col; gWfInk = ink;
   return d;
+#else
+  return 1e3;
+#endif
 }
 
 /* ── 67 THE UMBRELLA STAND ─────────────────────────────────────────────────
@@ -22223,6 +22233,19 @@ ${LIGHT_LIB}
    clipped yew (28) -- in the rooms that deal them (MM_WINGS). */
 #ifndef MM_WINGS
 #define MM_WINGS 1
+#endif
+/* ...AND, OF THE THREE THINGS SHAPE 66 IS, ONLY THE ONES THIS WING DEALS
+   (trim 60, 2026-11-19; Backdrop._setPropProgram, TABLE66). wfHallTable is
+   the Foyer's pier table at a dealt seed (under 40), the Passages' deal
+   serving table at seed 40-60 and their book piles above 60, chosen per
+   pixel by the seed -- so the Foyer's program carried two drawings only
+   the Passages set down, and the Passages' the pier table they never do.
+   Bit 1 the pier table, 2 the serving table, 4 the book piles. The Foyer's
+   prop link alone, on this machine (Intel UHD, ANGLE D3D11): 14.2 s with
+   all three, 9.9 s with its own; the Passages' 4.8 s and 3.9. Undefined
+   means all three. */
+#ifndef MM_T66
+#define MM_T66 7
 #endif
 /* ...AND, OF EVERYTHING THE PROGRAM CARRIES, ONLY THE SHAPES THIS ROOM
    DEALS (2026-10-15). A prop's shape is per instance, so a program drew
