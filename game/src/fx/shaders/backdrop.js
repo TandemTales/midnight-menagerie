@@ -6394,6 +6394,10 @@ float passWallH(vec2 q, float qpx, out float occ){
             + mmInkP(mod(cwr, 0.12) - 0.06, px, 0.8)*0.7)
             * step(cwr, 0.55) * step(0.0, cwq.y) * step(0.45, mmHash11(cwi*7.3 + uSeed)) * (1.0 - far);
   oak = mix(oak, vec3(0.55, 0.52, 0.50)*(lum*1.3 + 0.01), clamp(web, 0.0, 1.0)*0.55*smoothstep(0.55, 0.1, cwr));
+  /* (round 61 repair 63: the cornice's bead, a line of the oak's own light
+     along its foot where the sconces reach it -- the ceiling's beams land
+     on a drawn edge) */
+  oak = mix(oak, oak*2.3, mmBandA(q.y, CO0 + 0.018, CO0 + 0.046, px));
   /* ═══ ROUND 28: THE PASSAGE HAS A FAR END (both survey judges, the
      largest headroom in the house: "a lit slab of floor floating in black,
      a starfield behind it"). The rig's three lamps stand in its first ten
@@ -15262,6 +15266,11 @@ void main(){
   float vineR = 0.0;
 
   float pat = 0.0;
+#if MM_PAT == 16
+  /* (round 61 repair 63: the timber ceiling's members, kept for the light
+     they take below -- x its lit edges, y its soffits, z its boards) */
+  vec3 p63 = vec3(0.0);
+#endif
   /* (round 25: the flags' joints, for the moss in them; the ballroom's
      filtered checker) */
   float r25Joint = 0.0, r25Chk = 0.0;
@@ -16255,6 +16264,26 @@ void main(){
     float bmS = smoothstep(0.17, 0.42, bj)*(1.0 - smoothstep(0.42, 0.80, bj));   // the beam's shadow on the boards
     pat = 0.05 - mBd*0.04 - mJs*0.04 - bmS*0.04 + mJ*0.42 + mBm*0.62 + mAr*0.30;
     cellv = mmHash11(floor(w.x/0.48)*3.7 + floor((w.y + uSeed*0.37)/2.40)*11.1 + uSeed);
+#if MM_PAT == 16
+    /* (round 61 repair 63, survey 23, both judges: "the passages' shadow
+       pools and ceiling ... still drop to pure black"; repair 50's: "the far
+       corners, ceilings ... given drawn, painted detail ... rather than empty
+       dark". Measured: 96% of the ceiling under luma 8 -- its beams and
+       joists were drawn, and unlit. Each member takes its one edge of light:
+       the beam's two chamfered arrises ruled a pixel and a half wide, the
+       joist's arris on the corridor's side ruled down the passage to the
+       end door, a board's seam a hair of it; the soffits a stop over the
+       boards, and the boards the oak's own dark red-brown.) */
+    {
+      float aw = max(0.011, jw*0.75);
+      float arr = (1.0 - smoothstep(aw*0.5, aw, abs(bj - 0.158)))*(1.0 - smoothstep(0.16, 0.34, mp));
+      float sj = (fract(w.x/0.48 + 0.5) - 0.5)*0.48*sign(w.x + 1e-4);
+      float jEdge = (1.0 - smoothstep(aw*0.5, aw, abs(sj + 0.044)))*(1.0 - mBm)*(1.0 - smoothstep(0.07, 0.16, mp));
+      float soff = mBm*(0.62 + 0.38*smoothstep(0.17, 0.02, bj)) + mJ*0.55;
+      float brd = (1.0 - mBm)*(1.0 - mJ)*(1.0 - 0.55*mBd)*(1.0 - 0.45*bmS)*(1.0 - 0.35*mJs);
+      p63 = vec3(max(arr, jEdge*0.62), soff, brd*(0.75 + 0.50*cellv));
+    }
+#endif
 #endif
   } else if (uPattern > 16.5 && uPattern < 17.5) {   // 17 the crypt's rib vault (round 35)
     /* ROUND 35, both survey-5 judges: "the ceiling and the centre of the
@@ -18832,6 +18861,25 @@ void main(){
   ceilDim = mix(0.50, 0.84, smoothstep(1.0, 14.0, vDepth));   // (round 43 graft: 0.42 / 0.80 -> 0.50 / 0.84, the crown lifted)
 #endif
   col *= mix(1.0, ceilDim, uIsCeiling);
+#if MM_PAT == 16
+  /* (round 61 repair 63: the timber ceiling's light -- see its pattern. What
+     the passage's lanterns and candles reach of it, laid after the fall
+     toward the eye so the members overhead keep their edge; in the oak's
+     colour, the edges the candle's.) */
+  if (uIsCeiling > 0.5) {
+    float reach = 0.0;
+    for (int i = 0; i < 5; i++){
+      vec4 L = uLights[i];
+      if (L.w <= 0.001) continue;
+      reach += L.w*exp(-length(w - L.xy)/max(L.z*1.4, 1.0));
+    }
+    reach = 0.30 + 0.70*clamp(reach, 0.0, 1.0);
+    float nearK = mix(0.55, 1.0, smoothstep(1.5, 9.0, vDepth));
+    vec3 oak63 = vec3(0.30, 0.115, 0.070);
+    col += (vec3(1.00, 0.64, 0.34)*p63.x*0.115
+            + oak63*(p63.y*0.180 + p63.z*0.045)) * reach * nearK * uGain * 3.4;
+  }
+#endif
   /* THE NIGHT IS ON THE OTHER SIDE OF IT. Glass is not a surface: the panes
      take the sky's own cold and the bars take the room's. Without this the
      roof is a lattice painted on a ceiling rather than a lattice with
