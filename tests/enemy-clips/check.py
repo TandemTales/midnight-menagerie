@@ -191,11 +191,24 @@ async (id) => {
   if (!v) return { missing: true };
   await v.art;
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-  // wait on the GAME clock's progress, not the wall clock: a loaded headless page
-  // renders slowly and the clock caps its step
-  const until = async (fn, ms = 8000) => {
+  // wait on the CLIP's progress, not the wall clock: a loaded headless page
+  // renders slowly and the game clock caps its step, so a clip that takes two
+  // seconds in play can take twenty here. (2026-11-19: this waited 8 s of WALL
+  // time and failed five hand-backs on a slow machine that Josh then watched
+  // happen in the game.) `ms` is how long the sprite may show NO progress - the
+  // same clip on the same frame - before the wait gives up; a clip stuck on its
+  // last frame still fails, in `ms`. `cap` bounds the whole wait.
+  const until = async (fn, ms = 8000, cap = 90000) => {
     const t0 = performance.now();
-    while (!fn() && performance.now() - t0 < ms) await sleep(30);
+    const at = () => v.sprite ? v.sprite.name + ':' + v.sprite.frame().index : '';
+    let seen = at(), moved = t0;
+    while (!fn()) {
+      const now = performance.now();
+      const cur = at();
+      if (cur !== seen) { seen = cur; moved = now; }
+      if (now - moved >= ms || now - t0 >= cap) break;
+      await sleep(30);
+    }
     return fn();
   };
   const out = { clipUp: !!v._clipUp, has: Object.keys(v.sprite?.clips || {}) };
