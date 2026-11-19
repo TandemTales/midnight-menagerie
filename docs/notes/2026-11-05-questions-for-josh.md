@@ -105,3 +105,5 @@ Each one has a default I have already taken, so nothing is waiting on you unless
     visit to a wing, or should the over-budget wings be trimmed before anything is added to them?
     Default taken: every repair in a wing near the budget takes lines out as it adds them, and nothing is
     added to the foyer's, bathhouse's or sleeping quarters' prop programs.
+
+**Answered 2026-11-18:** question 11. Josh said "Push dev"; dev was pushed at `f9d8e916`. Later commits are not covered: ask again.
