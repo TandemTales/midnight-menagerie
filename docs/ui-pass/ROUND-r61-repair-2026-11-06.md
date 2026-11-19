@@ -468,7 +468,7 @@ The paired check was against the untouched build: **6-0**, all "slightly". Both 
 
 Tests: lampworks 45/0, crypt 41/0, pumpkin-grounds 70/0, link-queue 104/0, steam-deck 6/6, grounding PASS.
 
-Key: `PAIRED-r61-repair29-key.json`. Evidence: `C:/UILOOP/s21/R29ev/` (D: was not attached on 11-17, so this session's worktrees and evidence are on `C:/UILOOP/s21/`).
+Key: `PAIRED-r61-repair29-key.json`. Evidence: `D:/UILOOP/s21/R29ev/` (D: was not attached on 11-17, so this session's worktrees and evidence are on `D:/UILOOP/s21/`).
 
 ## Repair 30: a globe and books on the study's near floor, a velvet chair in the ballroom (2026-11-17)
 
@@ -486,7 +486,7 @@ The paired check was against the untouched build: **4-0** (study 2 and 2, "clear
 
 Tests: grounding PASS (24 rows), steam-deck 6/6, link-queue 104/0, study-library 50/0, ballroom 46/0.
 
-Key: `PAIRED-r61-repair30-key.json`. Evidence: `C:/UILOOP/s21/R30-evidence/`.
+Key: `PAIRED-r61-repair30-key.json`. Evidence: `D:/UILOOP/s21/R30-evidence/`.
 
 ## Repair 33: the study's open books drawn as books, and feet that stand (2026-11-17)
 
@@ -500,7 +500,7 @@ The paired check was against dev: **4-0** (study 2 and 2, "clearly"; ballroom 1 
 
 Tests: grounding PASS, steam-deck 6/6, link-queue 104/0, study-library 50/0, ballroom 46/0. **Run steam-deck and grounding under `python tools/gpu_slot.py -- ...` when anything else is capturing:** bare, steam-deck gave 10 false timeouts.
 
-Key: `PAIRED-r61-repair33-key.json`. Evidence: `C:/UILOOP/s21/ev33/`.
+Key: `PAIRED-r61-repair33-key.json`. Evidence: `D:/UILOOP/s21/ev33/`.
 
 ## Repair 32: edge-cut props made whole; the pumpkins' leaves green, their shadows footprints (2026-11-17)
 
@@ -515,7 +515,7 @@ The paired check was against dev at repair 29: **6-0** (pumpkin 2 and 2, lampwor
 
 Tests: link-queue 104/0, pumpkin-grounds 70/0, crypt 41/0, lampworks 45/0, grounding PASS, steam-deck 6/6.
 
-Key: `PAIRED-r61-repair32-key.json`. Evidence: `C:/UILOOP/s21/R32ev/`.
+Key: `PAIRED-r61-repair32-key.json`. Evidence: `D:/UILOOP/s21/R32ev/`.
 
 ## Repair 31: the help medallions set in gilt filigree cartouches (2026-11-18)
 
@@ -530,7 +530,7 @@ The paired check was against dev: **12-0**, all "slightly" (map, rest, clubhouse
 
 Tests: help-frame PASS (38 checks), chrome 27/0, gamepad 24/0, steam-deck 6/6, scene-css 0 conflicts, css-tokens 0 undefined, readability no floor moved. `tools/on_port.py` cannot repoint readability (it takes its URL from the steam-deck module); a wrapper is in the evidence folder.
 
-Key: `PAIRED-r61-repair31-key.json`. Evidence: `C:/UILOOP/s21/R31ev/`.
+Key: `PAIRED-r61-repair31-key.json`. Evidence: `D:/UILOOP/s21/R31ev/`.
 
 ## Repair 34: repair 33's open book and feet carried to the passages and the heart (2026-11-18)
 
@@ -546,7 +546,7 @@ Both judges ask next for painted detail on the book piles ("flat colour slabs wi
 
 Tests (before the urn was dropped): grounding PASS, steam-deck 6/6, link-queue 104/0, secret-passages 74/0, heart 44/0.
 
-Key: `PAIRED-r61-repair34-key.json`. Evidence: `C:/UILOOP/s21/ev34/`.
+Key: `PAIRED-r61-repair34-key.json`. Evidence: `D:/UILOOP/s21/ev34/`.
 
 ## Repair 35: a charnel stack on the crypt's near flags; the lampworks' rack LOST (2026-11-18)
 
@@ -561,7 +561,7 @@ Next, from both judges: the skull stack modelled (side planes, candle-lit skulls
 
 Tests (with both pieces in): link-queue 104/0, crypt 41/0, lampworks 45/0, grounding PASS, steam-deck 6/6. The merged state, crypt piece only, was not re-run; the battery is its check.
 
-Key: `PAIRED-r61-repair35-key.json`. Evidence: `C:/UILOOP/s21/ev35/`.
+Key: `PAIRED-r61-repair35-key.json`. Evidence: `D:/UILOOP/s21/ev35/`.
 
 ## Repair 37: the book piles painted as books, and the candle lit (2026-11-18)
 
@@ -577,7 +577,7 @@ The paired check was against dev at repair 34: **4-0, all four "clearly"** (the 
 
 Tests: link-queue 104/0, secret-passages 74/0, study-library 50/0, grounding PASS (24 views), steam-deck 6/6; 192 programs linked with live uniforms.
 
-Key: `PAIRED-r61-repair37-key.json`. Evidence: `C:/UILOOP/s21/ev37/`.
+Key: `PAIRED-r61-repair37-key.json`. Evidence: `D:/UILOOP/s21/ev37/`.
 
 ## Repair 38: every candle lit, and its light on what it stands on (2026-11-18)
 
@@ -591,7 +591,7 @@ The paired check was against dev at survey 21: **8-0** (ballroom 2 and 2, foyer 
 
 Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, secret-passages 74/0, foyer 66/0, ballroom 46/0.
 
-Key: `PAIRED-r61-repair38-key.json`. Evidence: `C:/UILOOP/s21/ev38/`.
+Key: `PAIRED-r61-repair38-key.json`. Evidence: `D:/UILOOP/s21/ev38/`.
 
 ## Repair 39: darks that hold a hue (heart, ballroom); the study and the crypt left out (2026-11-18)
 
@@ -607,7 +607,7 @@ Both judges ask next for the far floor band under the far wall carried "by drawn
 
 Tests (all four hues in): link-queue 104/0, study-library 50/0, heart 44/0, crypt 41/0, ballroom 46/0, steam-deck 6/6, grounding PASS, shader-literals 0. The merged state (two hues) was not re-run; the battery is its check.
 
-Key: `PAIRED-r61-repair39-key.json`. Evidence: `C:/UILOOP/s21/ev39/`.
+Key: `PAIRED-r61-repair39-key.json`. Evidence: `D:/UILOOP/s21/ev39/`.
 
 ## Repair 40: the ballroom chairs and the crates painted, not smooth models (2026-11-18)
 
@@ -623,7 +623,7 @@ The paired check, five rooms against dev: **10-0** (ballroom 2 and 2, lampworks 
 
 Tests: link-queue 104/0, ballroom 46/0, lampworks 45/0, secret-passages 74/0, pumpkin-grounds 70/0, grounding PASS, steam-deck 6/6. Built before repair 39 merged; the two touch different files.
 
-Key: `PAIRED-r61-repair40-key.json`. Evidence: `C:/UILOOP/s21/ev40/`.
+Key: `PAIRED-r61-repair40-key.json`. Evidence: `D:/UILOOP/s21/ev40/`.
 
 ## Repair 41: the lit candles throw a pool on the floor (2026-11-18)
 
@@ -638,7 +638,7 @@ The paired check, three rooms against dev: **6-0** (foyer 2 and 2, ballroom 1 an
 
 Tests: link-queue 104/0, secret-passages 74/0, ballroom 46/0, foyer 66/0, grounding PASS, steam-deck 6/6. Built before repair 40 merged (shaders/backdrop.js auto-merged); the battery is the merged state's check.
 
-Key: `PAIRED-r61-repair41-key.json`. Evidence: `C:/UILOOP/s21/ev41/`.
+Key: `PAIRED-r61-repair41-key.json`. Evidence: `D:/UILOOP/s21/ev41/`.
 
 ## Repair 36: the plate grown from its mount, the other round controls mounted (2026-11-18)
 
@@ -654,7 +654,7 @@ The paired check, seven screens at both sizes against dev: **14-0**, all "slight
 
 Tests: help-frame PASS (38), chrome 27/0, gamepad 24/0, steam-deck 6/6, scene-css 0, css-tokens 0, readability no floor moved. Not captured: the Discoveries plate's yoke, and `hud-late` with a full keepsake row.
 
-Key: `PAIRED-r61-repair36-key.json`. Evidence: `C:/UILOOP/s21/ev36/`.
+Key: `PAIRED-r61-repair36-key.json`. Evidence: `D:/UILOOP/s21/ev36/`.
 
 ## Repair 42: the pumpkins ribbed, the crypt's skull stack a heap of skulls (2026-11-18)
 
@@ -668,7 +668,7 @@ The paired check against dev: **4-0** (crypt 2 and 2, pumpkin 1 and 2). The old 
 
 Tests: link-queue 104/0, pumpkin-grounds 70/0, crypt 41/0, grounding PASS, steam-deck 6/6.
 
-Key: `PAIRED-r61-repair42-key.json`. Evidence: `C:/UILOOP/s21/ev42/`.
+Key: `PAIRED-r61-repair42-key.json`. Evidence: `D:/UILOOP/s21/ev42/`.
 
 ## Repair 44: the foyer's furniture on its own footprint shadows; the tightened pools lost (2026-11-18)
 
@@ -684,7 +684,7 @@ Next, from both judges: foot shadows "shaped by the object and the light directi
 
 Tests (merged form): link-queue 104/0, foyer 66/0, ballroom 46/0, secret-passages 74/0, grounding PASS.
 
-Key: `PAIRED-r61-repair44-key.json`. Evidence: `C:/UILOOP/s21/ev44/`.
+Key: `PAIRED-r61-repair44-key.json`. Evidence: `D:/UILOOP/s21/ev44/`.
 
 ## Repair 45: the hay bales as bound straw, lobed vine leaves, the crypt's far skull piles (2026-11-18)
 
@@ -698,7 +698,7 @@ The paired check against dev: **4-0** (pumpkin 2 and 2, crypt 1 and 1). Both jud
 
 Tests: link-queue 104/0, pumpkin-grounds 70/0, crypt 41/0, grounding PASS, steam-deck 6/6.
 
-Key: `PAIRED-r61-repair45-key.json`. Evidence: `C:/UILOOP/s21/ev45/`.
+Key: `PAIRED-r61-repair45-key.json`. Evidence: `D:/UILOOP/s21/ev45/`.
 
 ## Repair 43: one family of mounted buttons on the HUD rail, rims modelled, plum enamel (2026-11-18)
 
@@ -715,7 +715,7 @@ The paired check, eight screens at both sizes against dev: **16-0**; the six scr
 
 Tests: scene-css 0, css-tokens 0, chrome 27/0, gamepad 24/0, steam-deck 6/6, readability every floor unchanged. **help-frame failed for the builder three times, identically on the untouched build** ("Unable to capture screenshot" at the first hand capture): machine state under three builders; re-run on the merged build with the GPU quiet.
 
-Key: `PAIRED-r61-repair43-key.json`. Evidence: `C:/UILOOP/s21/ev43/`.
+Key: `PAIRED-r61-repair43-key.json`. Evidence: `D:/UILOOP/s21/ev43/`.
 
 ## Repair 47: the candle stands, the heart's statues and urn, the gallery's bust modelled (2026-11-18)
 
@@ -729,7 +729,7 @@ The paired check, four rooms against dev: **8-0** (heart 2 and 2, gallery 2 and 
 
 Tests: link-queue 104/0, foyer 66/0, ballroom 46/0, heart 44/0, grounding PASS, steam-deck 6/6.
 
-Key: `PAIRED-r61-repair47-key.json`. Evidence: `C:/UILOOP/s21/ev47/`.
+Key: `PAIRED-r61-repair47-key.json`. Evidence: `D:/UILOOP/s21/ev47/`.
 
 ## Repair 48: the kitchens' and the passages' darks hold the room's own colour; the lampworks left out (2026-11-18)
 
@@ -747,7 +747,7 @@ Controls: the attic pixel-identical. The nursery and the foyer could NOT be show
 
 Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, kitchens 20/0, secret-passages 74/0.
 
-Key: `PAIRED-r61-repair48-key.json`. Evidence: `C:/UILOOP/s21/ev48/`.
+Key: `PAIRED-r61-repair48-key.json`. Evidence: `D:/UILOOP/s21/ev48/`.
 
 ## Repair 49: the stand's stem unbroken, the bust draped, the foyer's cabinets and tables lit; the statues' softened folds out (2026-11-18)
 
@@ -764,7 +764,7 @@ Next, from both: the cabinets' glass deep again with one crisp highlight; the bu
 
 Tests (all four items in): link-queue 104/0, foyer 66/0, ballroom 46/0, heart 44/0, steam-deck 6/6, grounding PASS. The merged form (three items) was not re-run; the next battery is its check.
 
-Key: `PAIRED-r61-repair49-key.json`. Evidence: `C:/UILOOP/s21/ev49/`.
+Key: `PAIRED-r61-repair49-key.json`. Evidence: `D:/UILOOP/s21/ev49/`.
 
 ## Repair 50: the shadow hue spares the passages' cold pools; a hue for the lampworks; the kitchens left as they were (2026-11-18)
 
@@ -783,7 +783,7 @@ Next, from both: far crates, dressers and tables in the kitchens and passages gi
 
 Tests: link-queue 104/0, shader-literals 0, grounding PASS, steam-deck 6/6, kitchens 20/0, secret-passages 74/0, heart 44/0, ballroom 46/0, lampworks 45/0 (before the kitchens' one-value change).
 
-Key: `PAIRED-r61-repair50-key.json`. Evidence: `C:/UILOOP/s21/ev50/`.
+Key: `PAIRED-r61-repair50-key.json`. Evidence: `D:/UILOOP/s21/ev50/`.
 
 ## Repair 52: the passages' side tables and far crates lit as objects; the kitchens' jug in its own green (2026-11-18)
 
@@ -801,7 +801,7 @@ Marked down inside the winner, for a later repair: the jug's highlight is "a fla
 
 Tests: link-queue 104/0, secret-passages 74/0, kitchens 20/0, steam-deck 6/6, grounding PASS.
 
-Key: `PAIRED-r61-repair52-key.json`. Evidence: `C:/UILOOP/s21/ev52/`.
+Key: `PAIRED-r61-repair52-key.json`. Evidence: `D:/UILOOP/s21/ev52/`.
 
 ## Repair 51: the graveyard's stones and the study's desk and wing chair modelled (2026-11-18)
 
@@ -821,7 +821,7 @@ Marked down inside the winner, for a later repair: the judges disagree on the ur
 
 Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, graveyard 35/0, study-library 50/0, crypt 41/0 (on the branch, before the merge with repair 52's paint in the same file; the merge was clean).
 
-Key: `PAIRED-r61-repair51-key.json`. Evidence: `C:/UILOOP/s21/ev51/`.
+Key: `PAIRED-r61-repair51-key.json`. Evidence: `D:/UILOOP/s21/ev51/`.
 
 ## Repair 46: mounts on the map's round controls and header plates clear of the signs are in; the rail's air and the cog's arc split and are out (2026-11-18)
 
@@ -840,7 +840,7 @@ The builder also noted, unverified: `.kit-medallion--mounted`'s plum glaze (repa
 
 Tests (on the branch with all four parts): help-frame 38, chrome 27/0, gamepad 24/0, steam-deck 6/6, map 38/0, scene-css 0, css-tokens 0, readability minFont unchanged.
 
-Key: `PAIRED-r61-repair46-key.json`. Evidence: `C:/UILOOP/s21/ev46/`.
+Key: `PAIRED-r61-repair46-key.json`. Evidence: `D:/UILOOP/s21/ev46/`.
 
 ## Repair 54: the kitchens' dresser and back tables lit, the jug's highlight shaped; the passages' stretcher lit, its apron left as it was (2026-11-18)
 
@@ -860,7 +860,7 @@ Marked down inside the winner: the scullery dresser's lower back "shows a grid t
 
 Tests (on the branch before the apron line was restored): link-queue 104/0, kitchens 20/0, secret-passages 74/0, steam-deck 6/6, grounding PASS.
 
-Key: `PAIRED-r61-repair54-key.json`. Evidence: `C:/UILOOP/s21/ev54/`.
+Key: `PAIRED-r61-repair54-key.json`. Evidence: `D:/UILOOP/s21/ev54/`.
 
 ## Repair 53: the graveyard's round forms, moss, rock colours, lanterns, angel and crosses (2026-11-18)
 
@@ -880,7 +880,7 @@ Marked down inside the winner, by BOTH judges, and the next repair's first item:
 
 Tests: link-queue 104/0, graveyard 35/0, steam-deck 6/6, grounding PASS.
 
-Key: `PAIRED-r61-repair53-key.json`. Evidence: `C:/UILOOP/s21/ev53/`.
+Key: `PAIRED-r61-repair53-key.json`. Evidence: `D:/UILOOP/s21/ev53/`.
 
 ## Repair 56: the kitchens' dresser a boarded piece of furniture; the study's chair, desk and globes on their feet (2026-11-18)
 
@@ -899,7 +899,7 @@ Marked down inside the winner: the scullery dresser's wood "a little pale and sl
 
 Tests: link-queue 104/0, kitchens 20/0, study-library 50/0, steam-deck 6/6, grounding PASS.
 
-Key: `PAIRED-r61-repair56-key.json`. Evidence: `C:/UILOOP/s21/ev56/`.
+Key: `PAIRED-r61-repair56-key.json`. Evidence: `D:/UILOOP/s21/ev56/`.
 
 ## Repair 55: room for the map knobs' rims is in, and the cog's seat on the wide rail only; the tray's plum plates and the Chalk and Eraser plates are out (2026-11-18)
 
@@ -916,7 +916,7 @@ Next, from both: the cog's ring "truly concentric and closed at 1280" (it needs 
 
 Tests (on the branch with all four parts): help-frame 38, chrome 27/0, gamepad 24/0, steam-deck 6/6, map 38/0, scene-css 0, css-tokens 0, readability minFont unchanged.
 
-Key: `PAIRED-r61-repair55-key.json`. Evidence: `C:/UILOOP/s21/ev55/`.
+Key: `PAIRED-r61-repair55-key.json`. Evidence: `D:/UILOOP/s21/ev55/`.
 
 ## Repair 57: the graveyard's moss grown in from the stones' edges, the candle's warm side capped, grass at the nearest stones' feet (2026-11-18)
 
@@ -934,7 +934,7 @@ Link time, NOT settled: on a quiet machine the graveyard's prop program read 9.0
 
 Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, graveyard 35/0.
 
-Key: `PAIRED-r61-repair57-key.json`. Evidence: `C:/UILOOP/s21/ev57/`.
+Key: `PAIRED-r61-repair57-key.json`. Evidence: `D:/UILOOP/s21/ev57/`.
 
 ## Repair 58: the graveyard's foot grass in clumps, the lids' and shoulders' moss given mass; its link time settled (2026-11-18, after survey 23)
 
@@ -952,7 +952,7 @@ Marked down inside the winner, by both: the tufts along long kerbs "repeat at on
 
 Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, graveyard 35/0.
 
-Key: `PAIRED-r61-repair58-key.json`. Evidence: `C:/UILOOP/s21/ev58/`.
+Key: `PAIRED-r61-repair58-key.json`. Evidence: `D:/UILOOP/s21/ev58/`.
 
 ## Repair 59: the heart's bench and urn pedestal lit and modelled; the varied crates and the softened chair-foot shadows are out (2026-11-18, after survey 23)
 
@@ -968,4 +968,4 @@ Marked down inside the winner: the lit stone is "a little grey against" the room
 
 Link time: heart 7.0 s to 7.7 (a noisy run). Tests (on the branch with all three items): link-queue 104/0, heart 44/0, secret-passages 74/0, study-library 50/0, grounding PASS, steam-deck 6/6.
 
-Key: `PAIRED-r61-repair59-key.json`. Evidence: `C:/UILOOP/s21/ev59/`.
+Key: `PAIRED-r61-repair59-key.json`. Evidence: `D:/UILOOP/s21/ev59/`.

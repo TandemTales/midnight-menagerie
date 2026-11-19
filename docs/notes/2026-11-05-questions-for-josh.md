@@ -81,9 +81,9 @@ Each one has a default I have already taken, so nothing is waiting on you unless
     are on it. Nothing was pushed because nobody asked. Default: leave it until you say push.
 
 12. **The D: drive was not attached on 11-17 and 11-18.** Survey 16-20's images and every older round's
-    worktree are on it. This session worked in `C:/UILOOP/s21/` (about 5 GB) and paired survey 21 against
+    worktree are on it. This session worked in `D:/UILOOP/s21/` (about 5 GB) and paired survey 21 against
     a fresh capture of survey 20's build in place of survey 20's own images. When D: is back, should
-    `C:/UILOOP/s21/` move to `D:/UILOOP/s21/`? Default: leave it on C: until you say; nothing on D: was
+    `D:/UILOOP/s21/` move to `D:/UILOOP/s21/`? Default: leave it on C: until you say; nothing on D: was
     touched or pruned.
 
 13. **`tests/enemy-clips/check.py` is red (3 to 5 of 981) and was green on 11-15.** It fails the same
@@ -109,7 +109,7 @@ Each one has a default I have already taken, so nothing is waiting on you unless
 **Answered 2026-11-18:** question 11. Josh said "Push dev"; dev was pushed at `f9d8e916`. Later commits are not covered: ask again.
 
 **Answered 2026-11-19 (Josh):**
-- 12: move `C:/UILOOP/s21/` to D: when D: is attached again. (Still detached on 11-19; not moved yet.)
+- 12: move `D:/UILOOP/s21/` to D: when D: is attached again. (Still detached on 11-19; not moved yet.)
 - 13: Josh did not know what enemy-clips is and guessed it was on D:. It is not: `tests/enemy-clips/check.py` reads only the repo and the dev server. Its 976 static and geometry checks pass; the 5 failures are all live "beats" in the browser (door-greeter, dust-bunny, butler: "attack hands back to idle", "no cast, so a buff plays nothing - hurt"). So the machine-change question stands unanswered and the red is OPEN: either a timing flake on a slow machine or a real fault in how those three enemies return to idle. Nobody has looked at it in the game.
 - 14: the cog is fine as it is. Closed.
 - 15: trim the over-budget wings FIRST. No more paint in a wing whose prop program is over 12 s (foyer 19.0, greenhouse 14.9 and 12.5, bathhouse 13.1, sleeping 12.7, hedge 12.4, kitchens 12.1) until it is under.
