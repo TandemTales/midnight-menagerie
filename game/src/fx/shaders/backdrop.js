@@ -22496,6 +22496,13 @@ ${LIGHT_LIB}
 #ifndef MM_T66
 #define MM_T66 7
 #endif
+/* ...AND THE OTHER SHAPES THAT ARE SEVERAL DRAWINGS BY THEIR SEED (trim 61,
+   2026-11-19; Backdrop._setPropProgram, SEED_DRAWINGS and WING_SEEDS). Bit
+   2 the chair with the nightgown (52 set down with 80 or more, which no room
+   does); the Sleeping Quarters' prop link compiled it. Undefined means all. */
+#ifndef MM_SEEDS
+#define MM_SEEDS 3
+#endif
 /* ...AND, OF EVERYTHING THE PROGRAM CARRIES, ONLY THE SHAPES THIS ROOM
    DEALS (2026-10-15). A prop's shape is per instance, so a program drew
    every shape it carried and chose per pixel: the Foyer's props were 85k
@@ -27230,7 +27237,14 @@ float wgField(vec2 m, vec2 msz, float shape, float seed){
 #if MM_SH43
   else if (shape < 41.5) d = wgRackSD(q, seed);
 #endif
+  /* (trim 61: the orrery is what is left -- the Attic's (44), and the
+     Bathhouse's and the Lampworks' programs compiled its outline for a
+     pixel no shape of theirs reaches; wgPaint's is behind the same shapes.
+     The Kennels' keeps it (MM_SH42): without it the D3D compiler laid out
+     the Kennels' program differently, 1 level in 2-5 pixels of six rooms.) */
+#if MM_SH42 || MM_SH44 || MM_SH45 || MM_SH46 || MM_SH47 || MM_SH48 || MM_SH49 || MM_SH50 || MM_SH51 || MM_SH52 || MM_SH53 || MM_SH54 || MM_SH55 || MM_SH56 || MM_SH57 || MM_SH58 || MM_SH59 || MM_SH60 || MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84
   else { float pt; d = wgOrrery(q, seed, pt); }
+#endif
   return d*sc;
 }
 
@@ -28930,6 +28944,10 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
   }
 #endif
 
+  /* (trim 61: the tub is what is left, the Kennels' (42); the Attic's, the
+     Bathhouse's and the Lampworks' programs compiled it and no shape of
+     theirs reaches it) */
+#if MM_SH42
   /* ---- THE ZINC TUB ---- */
   vec3 zinc = vec3(0.62, 0.64, 0.66);
   float xs = abs(q.x) - 0.08*clamp((q.y - 0.50)/0.36, 0.0, 1.0);
@@ -28964,6 +28982,7 @@ vec3 wgPaint(vec2 m, vec2 msz, float shape, float seed, float px, float lum,
   ink = max(ink, mmInkP(min(rim, min(suds, min(brush, wood))), qpx, 1.0)*0.8);
   ink = max(ink, mmInkP(body, qpx, 1.0)*step(q.y, 0.84)*0.7);
   moon = step(rim, 0.0)*0.6;
+#endif
   return col;
 }
 
@@ -31617,6 +31636,10 @@ float slDrawM(vec2 q, float px, float seed, float kq, bool paint){
     col *= 1.0 - 0.35*smoothstep(0.04, 0.0, q.y);
     gWfGloss = 0.25 + 0.5*wfIn(min(quilt, qFold), px);
     gWfMoon = 0.40*wfIn(min(lid, quilt), px);
+  /* (trim 61: the chair with the nightgown, a 52 set down with a seed of 80
+     or more -- no room sets one down, and the Sleeping Quarters' program
+     compiled it. MM_SEEDS bit 2, see PROP_FRAG.) */
+#if (MM_SEEDS & 2) != 0
   } else {
     /* ---- THE CHAIR, THE NIGHTGOWN, THE SLIPPERS AND THE POT ---- */
     vec2 c = q - vec2(-0.10, 0.0);
@@ -31680,6 +31703,7 @@ float slDrawM(vec2 q, float px, float seed, float kq, bool paint){
     col *= 1.0 - 0.35*smoothstep(0.03, 0.0, q.y);
     gWfGloss = 0.20 + 0.6*wfIn(min(pot, potR), px);
     gWfMoon = 0.45*wfIn(min(gown, collar), px);
+#endif
   }
   gWfCol = col; gWfInk = ink;
   return d;
@@ -31760,7 +31784,13 @@ float wfDraw(vec2 m, vec2 msz, float s, float seed, float px, bool paint){
 #if MM_SH60
   else if (s < 60.5) d = wfWardrobe(q, qpx, seed, kq, paint);
 #endif
+  /* (trim 61: the dollhouse is what is left -- a shape past the wardrobe's
+     that is not the blocks' or the books', and only the Nursery deals one
+     (61). The Sleeping Quarters', the Study's and the Crypt's programs
+     compiled it for a pixel no shape of theirs reaches.) */
+#if MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84 || MM_SH85 || MM_SH86 || MM_SH89
   else               d = wfDollhouse(q, qpx, seed, kq, paint);
+#endif
   return d*sc;
 }
 #endif
