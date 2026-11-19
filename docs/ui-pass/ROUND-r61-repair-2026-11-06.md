@@ -1007,3 +1007,15 @@ Rewrites that kept the arithmetic (hoisting, unrolling, removing early returns, 
 - Sharing noise taps would cut into the 3 s of noise but changes arithmetic, so it needs a blind pair, not an identity proof.
 
 Tests: link-queue 104/0, foyer 66/0, room-mood 340/0, foyer-presentation 6 PASS, grounding PASS, steam-deck 6/6, shader-literals 0.
+
+## Repair 62: NOT MERGED. Three second attempts, none won (2026-11-19)
+
+Repair 62 (branch `ui/r61-repair62`: `5be62efa`, `61c8b469`, `b7d2b352`, left unmerged) retried what repair 59's judges marked down. The paired check, seven rooms against dev: **5-9**. No item carried both judges anywhere.
+
+- **The study chair's foot pools, small and soft: LOST 0-4.** Both judges, in both rooms, preferred dev's small dark pools: "a small, dark, tight ellipse right at the foot ... the foot visibly touches the boards", against "a wide, faint smudge that almost vanishes at 1x" where "the legs end on unmarked floor and the chair floats". With repair 59's 2-2 that is six votes of eight for the pools as they are. **Closed: leave the chair's foot pools alone.** The judge who called them "hard black ovals" was naming a flaw in a winner.
+- **The passages' crates in three upright sizes: SPLIT 1-1 in both rooms.** One judge: "smaller square boxes that sit back on their bases ... the pile recedes properly". The other: "full-size boxes stacked on one another" read as crates, the shrunk ones as "odd small boxes", "a tiny dark box ... that does not clearly rest on anything", and a floor paper now shows above one "like a hovering lid". Two attempts, two splits: size variety at this distance is a matter of taste, not a defect. What both judges still name in BOTH builds: upper crates "hover with a 2-3 px gap", none "casts a shadow onto its base", and dev's right-wall library crate "looks sheared". A next attempt should close the gap and add the cast shadow, and leave the sizes.
+- **The heart's stone warmed to the candle: SPLIT 1-1 in all three rooms.** One judge: "warm stone that takes the room's amber", against "cold olive-grey". The other: dev's "cooler, more neutral stone ... reads as stone standing on a wooden floor", the warm one "sits closer to the floor's own brown and is a touch flatter", "stone not wood-coloured", and it lost the pedestal's "clean white lit edge". The red fringe on the memory room's pedestal was traced, not fixed in dev: it is the grade's chromatic aberration (`uAberration` in grade.js) on a line of light that runs on the pedestal's outline (237 against boards at 4); moving that line a pixel or two inside the outline removes it. That one finding is worth taking alone.
+
+Lesson: all three were "marked down inside a winner", and the winner as it stood was preferred or tied each time. A flaw named in a winner is worth a repair only when BOTH of its judges name it.
+
+Key: `PAIRED-r61-repair62-key.json`. Evidence: `D:/UILOOP/s21/ev62/`.
