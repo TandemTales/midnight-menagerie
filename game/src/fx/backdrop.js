@@ -903,7 +903,7 @@ export const ROOM_VARIANTS = [
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 1, MM_WINGS: 4, MM_SHM0: 79691856, MM_SHM1: 0, MM_SHM2: 508, MM_PEN: 0, MM_T66: 1 }, wings: ['foyer'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 5, MM_SHM0: 8388608, MM_SHM1: 0, MM_SHM2: 11776, MM_PEN: 0, MM_T66: 0 }, wings: ['graveyard'] },
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 1294336, MM_PEN: 0, MM_T66: 0 }, wings: ['greenhouse'] },
-  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 18071552, MM_PEN: 0, MM_T66: 0 }, wings: ['greenhouse'] },
+  { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 6, MM_SHM0: 41943104, MM_SHM1: 0, MM_SHM2: 17940480, MM_PEN: 0, MM_T66: 0 }, wings: ['greenhouse'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 12583025, MM_SHM1: 2, MM_SHM2: 44040192, MM_PEN: 0, MM_T66: 0 }, wings: ['heart'] },
   { mat: 'prop', defines: { MM_STONES: 1, MM_BUST: 0, MM_WINGS: 1, MM_SHM0: 310378496, MM_SHM1: 3, MM_SHM2: 10485760, MM_PEN: 1, MM_T66: 0 }, wings: ['hedge'] },
   { mat: 'prop', defines: { MM_STONES: 0, MM_BUST: 0, MM_WINGS: 2, MM_SHM0: 12648448, MM_SHM1: 7680, MM_SHM2: 0, MM_PEN: 1, MM_T66: 0 }, wings: ['kennels'] },
@@ -3799,6 +3799,12 @@ export class Backdrop {
        instead of one per layout; a shape the table does not know still
        comes in with the room that deals it.) */
     const shapes = new Set(PROP_SHAPES[wing] || []);
+    /* (trim 60, 2026-11-19: the Greenhouse's rooms that set a potting bench
+       down (84) are its second program, and none of them deals the brick
+       staging (77) -- that is the terrace the wing shows unseeded. So their
+       program does not carry it: 1.8 s of that program's 12 s link. A room
+       that did set both down would bring the staging in itself, below.) */
+    if (wing === 'greenhouse' && placed.some((p) => Math.round(p.shape) === 84)) shapes.delete(77);
     for (const p of placed) shapes.add(p.shape);
     let stones = 0, bust = 0, wings = 0, w25 = 0;
     for (const s of shapes) {

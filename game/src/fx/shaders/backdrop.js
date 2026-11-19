@@ -22200,7 +22200,11 @@ float wfDraw(vec2 m, vec2 msz, float s, float seed, float px, bool paint){
   else if (s > 79.5) d = wfBirdcage(q, qpx, seed, kq, paint);   // 80 (graft)
 #endif
   /* 77, the staging, is architecture sized to the room: in its own metres */
+  /* (trim 60: compiled where a shape reaches it -- it was a bare else, so
+     a Greenhouse program that deals no staging carried it all the same) */
+#if MM_SH77 || MM_SH78 || MM_SH79 || MM_SH85 || MM_SH86 || MM_SH87 || MM_SH88 || MM_SH89
   else return wfStaging(m, msz, px, (uKeyDir.x >= 0.0 ? 1.0 : -1.0), paint);
+#endif
 #endif
   return d*sc;
 }
