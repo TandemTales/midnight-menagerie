@@ -1019,3 +1019,25 @@ Repair 62 (branch `ui/r61-repair62`: `5be62efa`, `61c8b469`, `b7d2b352`, left un
 Lesson: all three were "marked down inside a winner", and the winner as it stood was preferred or tied each time. A flaw named in a winner is worth a repair only when BOTH of its judges name it.
 
 Key: `PAIRED-r61-repair62-key.json`. Evidence: `D:/UILOOP/s21/ev62/`.
+
+## Repair 63: the tops of three wings drawn. MERGED `e00f4834`, 11-1-2 (2026-11-19)
+
+The ask both of survey 23's judges made ("make the darks hold colour": the study's and heart's upper corners and the passages' ceiling fall to pure black) answered by DRAWING what is up there, not by lifting a dark. Branch `ui/r61-repair63`. Paired blind over seven rooms against dev: **11 for, 1 against, 2 no difference**.
+
+What the builder found first: in `study:library`, `study:fireplace` and `heart:heart` the ceiling and cornice are ABOVE the frame (the frame's top is about 4.5 m of 5.2 m on the library's end wall, 8.9 of 9.5 in the heart). Only the passages have a ceiling in frame. So the work went on the upper walls.
+
+- **Passages (passage, crawl): 2-0 by 2 in both.** The timber ceiling drawn in round 28 was unlit; now a lit arris on each beam, the joists' edges ruled toward the end door, a bead on the cornice foot. Under luma 8 in the ceiling region 80.7% to 45.6% (crawl 88.6% to 54.7%). Both judges' reservation, for a next pass: the joists are "a flat, desaturated grey-tan", "thin pale grey rails that stop short of the walls rather than timber": warm them, give them weight.
+- **Heart hall: 2-0 by 2.** A string course with a gilt bead and a moulded plaster panel with a quatrefoil roundel over each bay: "exactly the samples' ornament language". Dropped by the builder in the stair, gallery and memory rooms (it landed on portraits, doors and shelves). Weakest part, kept: the side walls' foreshortened panels and cornice stair-step ("a row of teeth").
+- **Fire study: 2-0 by 2.** A picture rail, engravings with sconces between, a moulded top on both bookcases carrying boxes, a bust and charts. Under luma 8 in the corners 77.0% / 68.9% to about 52% / 45%.
+- **Library: 2-0 by 1, in part.** The six newels with ball finials on the end wall's gallery rail: kept. The candle posts on the two SIDE walls: **cut** (`b86700c4`): both judges named them "hot near-white vertical streaks", "glare, not posts". The side walls are pixel-identical to before, so the library's corners are NOT improved (41.5% / 57.8% under luma 8) and the survey's complaint about that room stands.
+- **The pedestal's red fringe** (the line of light moved 1.5 px inside the outline): preferred by both in the hall, by one (the other a hair) in the gallery, split in the memory room, where the fringe is gone but one judge preferred the old "straight, hard" edge and called the new one soft and bowed. Kept.
+
+**Follow-up on the fire study** (`35cae668`, paired against the first build: 2-0 for it, and both judges ruled the same way object by object). Kept: the left case's things reordered clear of the chandelier, and the left side wall's sconce moved one print along so the frame no longer cuts it. Put back (`fe0fde40`): the right-hand prints' 0.25 m shift (it "crowds the corner" and set the sconce's drop on the vase) and the dimmed gilt bead (the brighter one preferred). Standing, named by both: the same one-print shift leaves a 3 px sliver of a sconce in the right corner (x about 1238); the two side walls share one drawing, so fixing it needs a side signal the wall painter does not have.
+
+Link time: study walls 1.0 s and 1.8 s, heart 2.1 s, passages unchanged; props within noise. link-queue 104 / 0, room-mood 340 / 0, heart, secret-passages, study-library, steam-deck, grounding all green on the builder's tree; link-queue re-run green on the final tree.
+
+Asked next by both judges: the prints' content is "a hatched blot" repeated; bookcase-top objects are flat silhouettes; the near floor and far side walls remain the least drawn parts.
+
+A harness lesson: `tools/room_batch.py` takes the GPU slot itself; wrapping it in `gpu_slot.py --` deadlocks the slot for 90 minutes.
+
+Keys: `PAIRED-r61-repair63-key.json`, `PAIRED-r61-repair63b-key.json`. Evidence: `D:/UILOOP/s21/ev63/`.

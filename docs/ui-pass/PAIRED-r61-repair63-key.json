@@ -1,0 +1,23 @@
+{
+ "SURVEY-room-study-library": {
+  "new_is_A": false
+ },
+ "SURVEY-room-study-fireplace": {
+  "new_is_A": false
+ },
+ "SURVEY-room-heart-heart": {
+  "new_is_A": true
+ },
+ "SURVEY-room-heart-gallery": {
+  "new_is_A": true
+ },
+ "SURVEY-room-heart-memory": {
+  "new_is_A": false
+ },
+ "SURVEY-room-passages-passage": {
+  "new_is_A": false
+ },
+ "SURVEY-room-passages-crawl": {
+  "new_is_A": false
+ }
+}
