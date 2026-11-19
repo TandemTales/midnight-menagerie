@@ -16268,7 +16268,7 @@ void main(){
     /* (round 61 repair 63, survey 23, both judges: "the passages' shadow
        pools and ceiling ... still drop to pure black"; repair 50's: "the far
        corners, ceilings ... given drawn, painted detail ... rather than empty
-       dark". Measured: 96% of the ceiling under luma 8 -- its beams and
+       dark". Measured: 81% of the ceiling under luma 8 -- its beams and
        joists were drawn, and unlit. Each member takes its one edge of light:
        the beam's two chamfered arrises ruled a pixel and a half wide, the
        joist's arris on the corridor's side ruled down the passage to the
