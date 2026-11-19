@@ -299,9 +299,22 @@ function footNear(region, p, feet) {
      kneehole between them.) */
   if (region === 'study' && s === 56) {
     const q = h / 1.20;
+    /* (round 61 repair 59, repair 56's judges, who preferred it 4-0: "the
+       patch at each foot is a hard black oval, slightly stamped"; in the
+       fireplace room "a hard black puck that sticks out to the right";
+       "soften the contact shadows under the chair feet into the seat shadow
+       rather than separate black pucks". Each foot's pool was 0.16 of the
+       chair wide at 1.35, black to its edge. Now a wide soft one, half the
+       density, a hand in from the leg so it runs into the seat's shade and
+       stops short of the arm's line, and a small dark one right at the
+       castor. And `turn`: laid along the lens's right vector, as the flat
+       itself is turned -- square to the room, in the fireplace room they
+       lay a hand to the right of the feet they belong to.) */
     return { dz: -0.12 * q, w: 0.80 * q, d: 0.40 * q, k: 0.65,
-      extra: [{ dx: -0.34 * q, dz: 0.02, w: 0.16 * q, d: 0.10 * q, k: 1.35 },
-              { dx: 0.34 * q, dz: 0.02, w: 0.16 * q, d: 0.10 * q, k: 1.35 }] };
+      extra: [{ dx: -0.31 * q, dz: -0.01, w: 0.30 * q, d: 0.16 * q, k: 0.50, turn: true },
+              { dx: 0.31 * q, dz: -0.01, w: 0.30 * q, d: 0.16 * q, k: 0.50, turn: true },
+              { dx: -0.34 * q, dz: 0.012, w: 0.10 * q, d: 0.055 * q, k: 0.70, turn: true },
+              { dx: 0.34 * q, dz: 0.012, w: 0.10 * q, d: 0.055 * q, k: 0.70, turn: true }] };
   }
   if (region === 'study' && s === 53) {
     const q = h / 1.30;
@@ -2882,6 +2895,8 @@ export class Backdrop {
         castOf[j] = null;                       // (no throw of its own: _castShadows)
         this._shdCast.array[j * 2] = 0; this._shdCast.array[j * 2 + 1] = 0;
         so2[j * 3 + 0] = p.x + e.dx; so2[j * 3 + 1] = p.y + 0.016; so2[j * 3 + 2] = p.z + (e.dz || 0);
+        /* (round 61 repair 59: a foot of a flat the lens has turned -- uYaw) */
+        if (e.turn && this.lens) { so2[j * 3 + 0] = p.x + e.dx * this.lens.rx; so2[j * 3 + 2] += e.dx * this.lens.rz; }
         ss2[j * 2 + 0] = e.w / 0.8; ss2[j * 2 + 1] = e.d / 0.8;
         st2[j] = 10 + e.k;
         if (p.hand) (extraHand || (extraHand = [])).push({ p, j });
