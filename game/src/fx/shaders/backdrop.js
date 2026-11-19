@@ -20777,10 +20777,7 @@ float gyFringe(float u, float hl, float dp, float fq, float seed, out float g){
    width, h its height; a hand's depth of it along the rest of the foot */
 float gyMound(float x, float y, float hw, float h, float seed){
   float xr = x/hw;
-  /* (repair 58: the hand's depth of it along the foot was one even row of
-     scallops from end to end, "a repeating pattern". It comes and goes along
-     the foot now, its humps unevenly spaced; the mound keeps its own.) */
-  return y - h*max(1.0 - xr*xr, 0.0) - (0.04 + 0.022*abs(sin(x*41.0 + seed*9.0 + 1.4*sin(x*11.0 + seed))) + 0.014*abs(sin(x*17.0 + seed*3.0)))*max(smoothstep(0.10, 0.60, sin(x*7.0 + seed*4.0)), 1.0 - smoothstep(1.0, 1.5, abs(xr)));
+  return y - 0.04 - h*max(1.0 - xr*xr, 0.0) - 0.022*abs(sin(x*41.0 + seed*9.0)) - 0.014*abs(sin(x*17.0 + seed*3.0));
 }
 /* its green, deep, a little to the olive on some stones; and lifted where
    it grows in the dark at a stone's foot, so a mound is moss and not a hole */
@@ -20990,7 +20987,11 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
          now, and stops under the head; the shoulder's keeps the outline.) */
       float gS, gC;
       float eS = h2 > 0.30 ? gyFringe(p.y - ty*(0.34 + 0.40*h1), 0.10 + 0.18*h3, 0.050 + 0.090*h3*h3, 11.0 + 10.0*h1, seed, gS)*step(0.0, sd*p.x) : 0.0;
-      float eC = h1 > 0.35 ? gyFringe(p.x + sd*W*0.35, W*(0.30 + 0.25*h2), 0.035 + 0.055*h3, 30.0 + 20.0*h2, seed + 3.0, gC)*smoothstep(ty + 0.11, ty + 0.20, p.y) : 0.0;
+      /* (repair 58: on the NEAREST stones the shoulder's is a cushion too --
+         deeper by a third and its clumps half as long again; the rows
+         behind keep the small leafy caps they had) */
+      float nr = 1.0 - smoothstep(0.009, 0.014, px);
+      float eC = h1 > 0.35 ? gyFringe(p.x + sd*W*0.35, W*(0.30 + 0.25*h2), (0.035 + 0.055*h3)*(1.0 + 0.35*nr), (30.0 + 20.0*h2)*(1.0 - 0.30*nr), seed + 3.0, gC)*smoothstep(ty + 0.11, ty + 0.20, p.y) : 0.0;
       float mS = max(tx + 0.054 - sd*p.x - eS, p.y - ty);
       float mC = 0.004 - d - eC;
       /* a side's cushion is lit over its upper half and dark under; the
@@ -21203,10 +21204,23 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
        cushions along its top edge, no deeper than the slab, lit along the
        top and dark where they hang; and a kerbed grave's headstone has its
        growth in from its weather side, as the headstones have.) */
+    /* (repair 58, both judges of repair 57: the lid's moss "a row of tiny
+       dashes", "a dotted line", "nearly gone"; wanted "a readable, irregular
+       cushion ... draped over the lip with a lit top edge", "a dark underside
+       and a ragged outline that follows the stone's moulding". The same
+       growth at three times the size: ONE run on most tombs, two
+       or three big clumps of it, each notched, the deepest of them over the
+       slab's lip and a little down the chest; a slow wave along the lid
+       parts a long run into two cushions with bare stone between. Lit on the slab's
+       top plane, in the slab's shade down its frieze, darker where it hangs
+       under the lip. Its clumps of unequal length: the same wave on the run.) */
     float gF;
     if (kerbed < 0.5) {
-      float eL = mmHash11(seed*11.3 + 0.9) > 0.40 ? gyFringe(q.x + sd*L*(0.15 + 0.50*h2), 0.16 + 0.22*h3, 0.040 + 0.050*h1, 26.0 + 20.0*h2, seed, gF) : 0.0;
-      ms = gyMoss(ms, max(0.776 - q.y - eL, q.y - 0.80), -1.0, wfIn(0.780 - q.y - 0.016 - 0.36*eL, px), px);
+      float hC = mmHash11(seed*11.3 + 0.9);
+      float wv = sin(q.x*8.0 + seed*2.0);
+      float eL = hC > 0.15 ? gyFringe(q.x + sd*L*(0.15 + 0.50*h2) + 0.05*wv, 0.22 + 0.26*h3, 0.100 + 0.070*h1, 13.0 + 7.0*h2, seed, gF)*smoothstep(-0.45, 0.15, wv) : 0.0;
+      ms = gyMoss(ms, max(0.776 - q.y - eL, q.y - 0.80), -1.0, wfIn(0.764 - q.y - 0.36*eL, px), px);
+      ms.y *= 0.72 + 0.16*step(0.66, q.y) + 0.22*smoothstep(0.705 - px, 0.705 + px, q.y);
     } else {
       float eS = gyFringe(hq.y - 0.30 - 0.16*h1, 0.10 + 0.14*h3, 0.050 + 0.070*h2, 11.0 + 10.0*h1, seed, gF)*step(0.0, sd*hq.x);
       ms = gyMoss(ms, max(max(0.244 - sd*hq.x - eS, kHead), max(hq.y - 0.53, 0.13 - hq.y)), gF, smoothstep(0.10, 0.10 + 60.0*px, gF), px);
