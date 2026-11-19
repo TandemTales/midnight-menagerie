@@ -97,3 +97,11 @@ Each one has a default I have already taken, so nothing is waiting on you unless
     fits inside the HUD rail and matches its neighbours. Its glyph, button box and hit area are unchanged
     and no text shrank. Both judges preferred it. If "never shrink" covers a control's face too, say so
     and it goes back (`git revert fc7f43e5` restores repair 36's larger ring).
+
+15. **Shader link time is now the limit on more room paint.** `tools/linkprof.py` budgets 12 s per prop
+    program. On 11-18 the foyer read 19 s, the bathhouse 13-14, sleeping 13, the kitchens 11.8 and the
+    graveyard 9-12 (unsettled: the machine slowed mid-session). The foyer, bathhouse and sleeping were
+    over before this session's work. Is 12 s on this machine still the right budget for the Deck's first
+    visit to a wing, or should the over-budget wings be trimmed before anything is added to them?
+    Default taken: every repair in a wing near the budget takes lines out as it adds them, and nothing is
+    added to the foyer's, bathhouse's or sleeping quarters' prop programs.
