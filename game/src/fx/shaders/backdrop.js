@@ -10072,6 +10072,28 @@ float stCases(vec2 q, float u, float y0, float y1, float CW, float pit, float px
   gInk = max(gInk, mmInkP(abs(abs(cxl) - CW*0.5) - 0.02, px, 1.0)*0.4*step(y0 + 0.2, q.y)*step(q.y, y1 - 0.22));
   return 1.0;
 }
+/* (round 61 repair 63) WHAT STANDS ON THE STUDY'S BOOKCASES, as distances:
+   p from the inner end of a case's top, sg which case. A pair of deed boxes,
+   one on the other; a bust on its socle; two rolled charts lying and a third
+   stood against the wall. part comes back 1 the boxes, 2 the bust, 3 the
+   charts. */
+float stTopD(vec2 p, float sg, out float part){
+  float bA = mix(0.44, 1.90, sg), mA = mix(1.86, 0.62, sg);
+  float box = min(mmBox(p - vec2(bA, 0.070), vec2(0.180, 0.070), 0.004),
+                  mmBox(p - vec2(bA + 0.035, 0.190), vec2(0.125, 0.050), 0.004));
+  vec2 b = p - vec2(1.20, 0.0);
+  float bust = mmBox(b - vec2(0.0, 0.040), vec2(0.075, 0.040), 0.004);
+  bust = min(bust, mmBox(b - vec2(0.0, 0.100), vec2(0.040, 0.030), 0.0));
+  bust = min(bust, max(wfEll2(b - vec2(0.0, 0.125), vec2(0.150, 0.105)), 0.125 - b.y));
+  bust = min(bust, mmBox(b - vec2(0.0, 0.250), vec2(0.030, 0.035), 0.0));
+  bust = min(bust, wfEll2(b - vec2(0.0, 0.335), vec2(0.066, 0.084)));
+  vec2 m = p - vec2(mA, 0.0);
+  float maps = mmBox(m - vec2(0.0, 0.034), vec2(0.270, 0.022), 0.012);
+  maps = min(maps, mmBox(m - vec2(0.040, 0.100), vec2(0.210, 0.020), 0.012));
+  maps = min(maps, sSegD(m, vec2(-0.330, 0.020), vec2(-0.250, 0.440)) - 0.026);
+  part = box < min(bust, maps) ? 1.0 : (bust < maps ? 2.0 : 3.0);
+  return min(box, min(bust, maps));
+}
 float studyWallH(vec2 q, float qpx, out float occ){
   occ = 0.0;
   float far = step(0.5, uFar);
@@ -10089,6 +10111,7 @@ float studyWallH(vec2 q, float qpx, out float occ){
   rPoolInit();
   vec3 brassL = vec3(0.92, 0.70, 0.32)*lw*2.0;
   vec3 lampP = vec3(1.00, 0.76, 0.48);
+  vec3 waxS = vec3(0.86, 0.82, 0.70)*lw*1.8;      // (round 61 repair 63: the candles in the dark corners)
   vec3 oak = vec3(0.32, 0.18, 0.10)*lw*(0.85 + 0.25*mmNoise(vec2(q.x*26.0, q.y*1.6) + uSeed));
   vec3 gilt = vec3(0.80, 0.60, 0.28)*lw*1.7;
   vec3 col = oak*0.6;
@@ -10205,6 +10228,40 @@ float studyWallH(vec2 q, float qpx, out float occ){
     h = mix(h, 1.7, onB);
     gInk = max(gInk, bal*mmInkP(abs(bxl) - br, px, 1.0)*0.9*step(GF + 0.06, q.y)*step(q.y, GF + BH - 0.07)*mmLod(bp, px));
     gInk = max(gInk, bal*max(mmInkP(q.y - GF - BH + 0.07, px, 1.1), mmInkP(q.y - GF - 0.07, px, 1.1))*0.9);
+    /* (round 61 repair 63, survey 23, both judges: "the study's ... upper
+       corners still drop to pure black"; repair 50's: "drawn, painted detail
+       ... rather than empty dark". Measured: 42% and 58% of the frame's two
+       upper corners under luma 8 -- the side walls' gallery, where no lamp
+       of the rig reaches. The ceiling and the cornice are over the frame
+       here, so what is drawn is what the corners hold: the gallery rail's
+       NEWELS, a square post with its cap and a turned brass ball every
+       second bay of the end wall, and in every bay down the two side walls
+       a post with a pillar candle burning in a brass cup on it -- its pool on the rail, the balusters and the books
+       behind it, the dark between the candles left dark.) */
+    {
+      float NP = far > 0.5 ? 2.30 : 1.15;
+      float nxl = mod(u, NP) - NP*0.5;
+      float NT = GF + BH + 0.10;
+      float post = max(abs(nxl) - 0.050, max(GF - q.y, q.y - NT));
+      float ncap = mmBox(vec2(nxl, q.y - NT - 0.018), vec2(0.070, 0.018), 0.004);
+      float nball = length(vec2(nxl, q.y - NT - 0.085)) - 0.050;
+      float onN = RCV(-min(post, ncap));
+      float nu = clamp(nxl/0.050, -1.0, 1.0);
+      col = mix(col, oak*1.55*(0.70 + 0.50*smoothstep(-1.0, 0.6, nu))*(1.0 + 0.5*RCV(-ncap)), onN);
+      h = mix(h, 1.85, onN);
+      gInk = max(gInk, max(mmInkP(post, px, 1.1), mmInkP(ncap, px, 1.1))*0.9);
+      gInk = max(gInk, mmInkP(q.y - GF - 0.20, px, 1.0)*0.5*RCV(-post));
+      /* the ball where there is no candle (the end wall has its lamps) */
+      float onBl = RCV(-nball)*far;
+      col = mix(col, brassL*(0.55 + 0.75*smoothstep(0.03, -0.03, length(vec2(nxl + 0.014, q.y - NT - 0.100)) - 0.020)), onBl);
+      gloss = max(gloss, onBl);
+      gInk = max(gInk, mmInkP(nball, px, 1.0)*0.8*far);
+      occ = max(occ, max(onN, onBl));
+      if (far < 0.5) {
+        rSconce(vec2(nxl, q.y - NT - 0.080)/1.7, px/1.7, brassL*0.55, waxS, col, h, emitW);
+        rPool(vec2(nxl, (q.y - NT - 0.10)*0.80), 0.78, 2.10, lampP);
+      }
+    }
     /* THE LIBRARY LADDER on its brass rail, against the lower cases */
     float RY = G0 - 0.25;
     float rail = mmBandA(q.y, RY - 0.025, RY + 0.025, px);
@@ -10250,6 +10307,18 @@ float studyWallH(vec2 q, float qpx, out float occ){
     col = mix(col, oak*(0.8 + 0.4*smoothstep(uCeil - 0.32, uCeil, q.y)), corn);
     h += corn*0.4;
     gInk = max(gInk, mmInkP(q.y - uCeil + 0.32, px, 1.2)*0.85);
+    /* (round 61 repair 63: the same finding in the study with its fire --
+       77% and 69% of its two upper corners under luma 8, the green paper
+       over the panelling with no lamp on it and nothing but two engravings
+       drawn on it. The ceiling and the cornice are over the frame, so the
+       paper's own architecture: a PICTURE RAIL round the room over the
+       frames, oak with a gilt bead along its foot.) */
+    float PRL = 3.60;
+    float prail = mmBandA(q.y, PRL - 0.045, PRL + 0.045, px);
+    col = mix(col, oak*(1.05 + 0.45*smoothstep(PRL - 0.045, PRL + 0.045, q.y)), prail);
+    col = mix(col, gilt*1.25, mmBandA(q.y, PRL - 0.045, PRL - 0.022, px));
+    h += prail*0.5;
+    gInk = max(gInk, max(mmInkP(q.y - PRL + 0.045, px, 1.1), mmInkP(q.y - PRL - 0.045, px, 1.1))*0.85);
     if (far > 0.5) {
       /* the bookcases either side of the chimney breast */
       float inBC = step(1.55, ax)*step(ax, 1.55 + 2.4);
@@ -10260,6 +10329,42 @@ float studyWallH(vec2 q, float qpx, out float occ){
         occ = 1.0;
       }
       gInk = max(gInk, mmInkP(abs(ax - 1.55 - 1.2) - 1.2, px, 1.3)*step(q.y, 2.75));
+      /* (round 61 repair 63: the TOPS of the two cases, which stood against
+         black paper -- a moulded top, and what a study keeps up there: deed
+         boxes, a bust, rolled charts. Dark shapes, each with the one edge
+         the chandelier over it finds, and that chandelier's light lying on
+         the paper behind them.) */
+      if (inBC > 0.5 && q.y > 2.70 && q.y < 3.46) {
+        float sg = step(0.0, cx);
+        const float TS = 1.25;                       // their scale, about the middle of the case's top
+        vec2 tp = vec2((ax - 2.75)/TS + 1.20, (q.y - 2.79)/TS);
+        float topM = mmBox(vec2(ax - 2.75, q.y - 2.765), vec2(1.24, 0.025), 0.006);
+        float onTM = RCV(-topM);
+        col = mix(col, oak*(1.15 + 0.55*smoothstep(2.755, 2.790, q.y)), onTM);
+        h = mix(h, 1.5, onTM);
+        gInk = max(gInk, mmInkP(topM, px, 1.1)*0.85);
+        float part, partU;
+        float od = stTopD(tp, sg, part)*TS;
+        float odU = stTopD(tp + vec2(0.0, 0.018), sg, partU)*TS;
+        float onO = RCV(-od);
+        float edge = onO*(1.0 - RCV(-odU));
+        vec3 oc = part < 1.5 ? vec3(0.15, 0.075, 0.040)*lw*1.5
+                : (part < 2.5 ? vec3(0.34, 0.31, 0.25)*lw*1.5 : vec3(0.46, 0.38, 0.24)*lw*1.5);
+        /* each turned to the light over it: a shaded side, a lit top */
+        float su = part < 1.5 ? clamp((tp.x - mix(0.44, 1.90, sg))/0.18, -1.0, 1.0)
+                 : (part < 2.5 ? clamp((tp.x - 1.20)/0.15, -1.0, 1.0) : 0.0);
+        oc *= 0.62 + 0.26*su*(2.0*sg - 1.0);
+        oc = mix(oc, oc*3.4, edge);
+        /* the boxes' brass: a lock plate on the lower one */
+        float lockP = mmBox(tp - vec2(mix(0.44, 1.90, sg), 0.085), vec2(0.016, 0.022), 0.003)*TS;
+        oc = mix(oc, brassL*0.9, RCV(-lockP)*step(part, 1.5));
+        col = mix(col, oc, onO);
+        h = mix(h, 1.6, onO);
+        gInk = max(gInk, mmInkP(od, px, 1.1)*0.9);
+        gInk = max(gInk, onO*mmInkP((tp.y - 0.140)*TS, px, 1.0)*0.6*step(part, 1.5));
+        occ = max(occ, max(onO, onTM));
+      }
+      rPool(vec2(ax - 2.95, (q.y - 3.30)*0.85), 1.05, 0.80, lampP);
       /* the chimney breast and its carved oak chimneypiece */
       float MW = 1.30, MH = 1.42;
       float jambs = step(ax, MW)*step(q.y, MH)*step(0.58, ax);
@@ -10373,13 +10478,20 @@ float studyWallH(vec2 q, float qpx, out float occ){
       vec3 c2 = col; float h2 = h;
       stCases(q, u, 0.0, 2.15, 1.25, 0.39, px, lw, oak, uSeed + 2.0, c2, h2);
       col = c2; h = h2;
+    }
+    /* (round 61 repair 63: the engravings hang in the end wall's two dark
+       corners too, outside its bookcases, as they do down the side walls --
+       and between every second pair a brass SCONCE, its candle and the pool
+       it lays on the paper and the frames beside it) */
+    float ue = far > 0.5 ? ax - 4.20 : u;
+    if (far < 0.5 || (ax > 4.20 && ax < 6.70)) {
       float FP = 1.25;
-      float fi = floor(u/FP);
-      float fxl = u - (fi + 0.5)*FP;
+      float fi = floor(ue/FP);
+      float fxl = ue - (fi + 0.5)*FP;
       vec2 fp = vec2(fxl, q.y - 3.05);
       float fo = mmBox(fp, vec2(0.36, 0.46), 0.005), fiN = mmBox(fp, vec2(0.30, 0.40), 0.003);
       float onP = RCV(-fiN), onFr = RCV(-fo)*(1.0 - onP);
-      float fk = mmHash11(fi*3.3 + uSeed);
+      float fk = mmHash11(fi*3.3 + uSeed + far*(2.0 + step(0.0, cx)));
       vec3 eng = vec3(0.66, 0.60, 0.46)*lw*1.5;
       /* an engraving: a ship, a building, a botanical plate */
       vec2 ip = fp/vec2(0.24, 0.32);
@@ -10396,6 +10508,9 @@ float studyWallH(vec2 q, float qpx, out float occ){
       gInk = max(gInk, max(mmInkP(fo, px, 1.1), mmInkP(fiN, px, 1.0))*0.85);
       gBare = max(gBare, onP);
       occ = max(occ, RCV(-fo));
+      float sxl = mod(ue, 2.0*FP) - FP;
+      rSconce(vec2(sxl, q.y - 2.95), px, brassL*0.55, waxS, col, h, emitW);
+      rPool(vec2(sxl, (q.y - 3.00)*0.85), 0.90, 0.80, lampP);
     }
   }
   gCol = col;
