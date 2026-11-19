@@ -217,6 +217,22 @@ precision highp float;
 #ifndef MM_ROOMS
 #define MM_ROOMS 0
 #endif
+/* ROUND 61 REPAIR 63: THE HEART'S OWN HALL. The Heart draws its hall with
+   the house's panelled wall (program 0, the hearth, subject 17), which no
+   other wing's room compiles at MM_R25W 0 -- the Foyer's variants of program
+   0 are MM_R25W 1 -- so what repair 63 draws over the hall's portraits is
+   guarded by this and is the Heart's hall and nothing else. Not its stair
+   (portraits hang over the flights, where this would be drawn), its memory
+   room (cases to the cornice) or its gallery (an upper storey of its own).
+   No new variant: the same program. */
+#if defined(MM_ARCH) && defined(MM_SUBJ)
+#if MM_ARCH == 0 && MM_R25W == 0 && MM_ROOMS == 0 && MM_SUBJ == 17
+#define MM_HEART63 1
+#endif
+#endif
+#ifndef MM_HEART63
+#define MM_HEART63 0
+#endif
 /* ROUND 28: THE ONE MANSION -- the house behind the Pumpkin Grounds (11)
    and the Graveyard (R25W 4), rebuilt once for both at UI/mainMenu.png's
    level. The title's house (program 0, R25W 0) compiles as it did. */
@@ -712,6 +728,9 @@ float gPtSd, gPtAmt;
 /* ...and where a picture USED to hang: the paper there never saw the light,
    so it is the colour the whole wall was once. 1 inside the patch. */
 float gPatch;
+#if MM_HEART63
+float gHt63 = 0.0;      // (round 61 repair 63: the Heart's upper wall -- how much of the pixel is a gilt edge that holds the light)
+#endif
 void ptAsk(vec2 p, vec2 hs, float sd, vec2 fk, float amt){
   if (amt > gPtAmt) { gPtP = p; gPtHs = hs; gPtSd = sd; gPtK = fk; gPtAmt = amt; }
 }
@@ -6375,6 +6394,10 @@ float passWallH(vec2 q, float qpx, out float occ){
             + mmInkP(mod(cwr, 0.12) - 0.06, px, 0.8)*0.7)
             * step(cwr, 0.55) * step(0.0, cwq.y) * step(0.45, mmHash11(cwi*7.3 + uSeed)) * (1.0 - far);
   oak = mix(oak, vec3(0.55, 0.52, 0.50)*(lum*1.3 + 0.01), clamp(web, 0.0, 1.0)*0.55*smoothstep(0.55, 0.1, cwr));
+  /* (round 61 repair 63: the cornice's bead, a line of the oak's own light
+     along its foot where the sconces reach it -- the ceiling's beams land
+     on a drawn edge) */
+  oak = mix(oak, oak*2.3, mmBandA(q.y, CO0 + 0.018, CO0 + 0.046, px));
   /* ═══ ROUND 28: THE PASSAGE HAS A FAR END (both survey judges, the
      largest headroom in the house: "a lit slab of floor floating in black,
      a starfield behind it"). The rig's three lamps stand in its first ten
@@ -10072,6 +10095,31 @@ float stCases(vec2 q, float u, float y0, float y1, float CW, float pit, float px
   gInk = max(gInk, mmInkP(abs(abs(cxl) - CW*0.5) - 0.02, px, 1.0)*0.4*step(y0 + 0.2, q.y)*step(q.y, y1 - 0.22));
   return 1.0;
 }
+/* (round 61 repair 63) WHAT STANDS ON THE STUDY'S BOOKCASES, as distances:
+   p from the inner end of a case's top, sg which case. A pair of deed boxes,
+   one on the other; a bust on its socle; two rolled charts lying and a third
+   stood against the wall. part comes back 1 the boxes, 2 the bust, 3 the
+   charts. */
+float stTopD(vec2 p, float sg, out float part){
+  /* (the left case's are set toward the chimney breast, charts, bust, boxes:
+     the chandelier hangs in front of its outer end, and its foot landed on
+     the charts and its arm on the one stood up -- both blind judges) */
+  float bA = mix(1.36, 1.90, sg), mA = mix(0.60, 0.62, sg), uA = mix(1.04, 1.20, sg);
+  float box = min(mmBox(p - vec2(bA, 0.070), vec2(0.180, 0.070), 0.004),
+                  mmBox(p - vec2(bA + 0.035, 0.190), vec2(0.125, 0.050), 0.004));
+  vec2 b = p - vec2(uA, 0.0);
+  float bust = mmBox(b - vec2(0.0, 0.040), vec2(0.075, 0.040), 0.004);
+  bust = min(bust, mmBox(b - vec2(0.0, 0.100), vec2(0.040, 0.030), 0.0));
+  bust = min(bust, max(wfEll2(b - vec2(0.0, 0.125), vec2(0.150, 0.105)), 0.125 - b.y));
+  bust = min(bust, mmBox(b - vec2(0.0, 0.250), vec2(0.030, 0.035), 0.0));
+  bust = min(bust, wfEll2(b - vec2(0.0, 0.335), vec2(0.066, 0.084)));
+  vec2 m = p - vec2(mA, 0.0);
+  float maps = mmBox(m - vec2(0.0, 0.034), vec2(0.270, 0.022), 0.012);
+  maps = min(maps, mmBox(m - vec2(0.040, 0.100), vec2(0.210, 0.020), 0.012));
+  maps = min(maps, sSegD(m, vec2(-0.330, 0.020), vec2(-0.250, 0.440)) - 0.026);
+  part = box < min(bust, maps) ? 1.0 : (bust < maps ? 2.0 : 3.0);
+  return min(box, min(bust, maps));
+}
 float studyWallH(vec2 q, float qpx, out float occ){
   occ = 0.0;
   float far = step(0.5, uFar);
@@ -10089,6 +10137,7 @@ float studyWallH(vec2 q, float qpx, out float occ){
   rPoolInit();
   vec3 brassL = vec3(0.92, 0.70, 0.32)*lw*2.0;
   vec3 lampP = vec3(1.00, 0.76, 0.48);
+  vec3 waxS = vec3(0.86, 0.82, 0.70)*lw*1.8;      // (round 61 repair 63: the candles in the dark corners)
   vec3 oak = vec3(0.32, 0.18, 0.10)*lw*(0.85 + 0.25*mmNoise(vec2(q.x*26.0, q.y*1.6) + uSeed));
   vec3 gilt = vec3(0.80, 0.60, 0.28)*lw*1.7;
   vec3 col = oak*0.6;
@@ -10205,6 +10254,37 @@ float studyWallH(vec2 q, float qpx, out float occ){
     h = mix(h, 1.7, onB);
     gInk = max(gInk, bal*mmInkP(abs(bxl) - br, px, 1.0)*0.9*step(GF + 0.06, q.y)*step(q.y, GF + BH - 0.07)*mmLod(bp, px));
     gInk = max(gInk, bal*max(mmInkP(q.y - GF - BH + 0.07, px, 1.1), mmInkP(q.y - GF - 0.07, px, 1.1))*0.9);
+    /* (round 61 repair 63, survey 23, both judges: "the study's ... upper
+       corners still drop to pure black"; repair 50's: "drawn, painted detail
+       ... rather than empty dark". Measured: 42% and 58% of the frame's two
+       upper corners under luma 8 -- the side walls' gallery, where no lamp
+       of the rig reaches. The ceiling and the cornice are over the frame
+       here, so what is drawn is what the gallery holds: the rail's NEWELS,
+       a square post with its cap and a turned brass ball every second bay
+       of the end wall. The side walls are as they were: the posts and
+       pillar candles first drawn down them were foreshortened to a pixel
+       or two and cut by the frame's top -- both blind judges read them as
+       "glare lines", "smeared pale vertical streaks" -- and are cut.) */
+    if (far > 0.5) {
+      float NP = 2.30;
+      float nxl = mod(u, NP) - NP*0.5;
+      float NT = GF + BH + 0.10;
+      float post = max(abs(nxl) - 0.050, max(GF - q.y, q.y - NT));
+      float ncap = mmBox(vec2(nxl, q.y - NT - 0.018), vec2(0.070, 0.018), 0.004);
+      float nball = length(vec2(nxl, q.y - NT - 0.085)) - 0.050;
+      float onN = RCV(-min(post, ncap));
+      float nu = clamp(nxl/0.050, -1.0, 1.0);
+      col = mix(col, oak*1.55*(0.70 + 0.50*smoothstep(-1.0, 0.6, nu))*(1.0 + 0.5*RCV(-ncap)), onN);
+      h = mix(h, 1.85, onN);
+      gInk = max(gInk, max(mmInkP(post, px, 1.1), mmInkP(ncap, px, 1.1))*0.9);
+      gInk = max(gInk, mmInkP(q.y - GF - 0.20, px, 1.0)*0.5*RCV(-post));
+      /* the ball where there is no candle (the end wall has its lamps) */
+      float onBl = RCV(-nball)*far;
+      col = mix(col, brassL*(0.55 + 0.75*smoothstep(0.03, -0.03, length(vec2(nxl + 0.014, q.y - NT - 0.100)) - 0.020)), onBl);
+      gloss = max(gloss, onBl);
+      gInk = max(gInk, mmInkP(nball, px, 1.0)*0.8*far);
+      occ = max(occ, max(onN, onBl));
+    }
     /* THE LIBRARY LADDER on its brass rail, against the lower cases */
     float RY = G0 - 0.25;
     float rail = mmBandA(q.y, RY - 0.025, RY + 0.025, px);
@@ -10250,6 +10330,18 @@ float studyWallH(vec2 q, float qpx, out float occ){
     col = mix(col, oak*(0.8 + 0.4*smoothstep(uCeil - 0.32, uCeil, q.y)), corn);
     h += corn*0.4;
     gInk = max(gInk, mmInkP(q.y - uCeil + 0.32, px, 1.2)*0.85);
+    /* (round 61 repair 63: the same finding in the study with its fire --
+       77% and 69% of its two upper corners under luma 8, the green paper
+       over the panelling with no lamp on it and nothing but two engravings
+       drawn on it. The ceiling and the cornice are over the frame, so the
+       paper's own architecture: a PICTURE RAIL round the room over the
+       frames, oak with a gilt bead along its foot.) */
+    float PRL = 3.60;
+    float prail = mmBandA(q.y, PRL - 0.045, PRL + 0.045, px);
+    col = mix(col, oak*(1.05 + 0.45*smoothstep(PRL - 0.045, PRL + 0.045, q.y)), prail);
+    col = mix(col, gilt*1.25, mmBandA(q.y, PRL - 0.045, PRL - 0.022, px));
+    h += prail*0.5;
+    gInk = max(gInk, max(mmInkP(q.y - PRL + 0.045, px, 1.1), mmInkP(q.y - PRL - 0.045, px, 1.1))*0.85);
     if (far > 0.5) {
       /* the bookcases either side of the chimney breast */
       float inBC = step(1.55, ax)*step(ax, 1.55 + 2.4);
@@ -10260,6 +10352,42 @@ float studyWallH(vec2 q, float qpx, out float occ){
         occ = 1.0;
       }
       gInk = max(gInk, mmInkP(abs(ax - 1.55 - 1.2) - 1.2, px, 1.3)*step(q.y, 2.75));
+      /* (round 61 repair 63: the TOPS of the two cases, which stood against
+         black paper -- a moulded top, and what a study keeps up there: deed
+         boxes, a bust, rolled charts. Dark shapes, each with the one edge
+         the chandelier over it finds, and that chandelier's light lying on
+         the paper behind them.) */
+      if (inBC > 0.5 && q.y > 2.70 && q.y < 3.46) {
+        float sg = step(0.0, cx);
+        const float TS = 1.25;                       // their scale, about the middle of the case's top
+        vec2 tp = vec2((ax - 2.75)/TS + 1.20, (q.y - 2.79)/TS);
+        float topM = mmBox(vec2(ax - 2.75, q.y - 2.765), vec2(1.24, 0.025), 0.006);
+        float onTM = RCV(-topM);
+        col = mix(col, oak*(1.15 + 0.55*smoothstep(2.755, 2.790, q.y)), onTM);
+        h = mix(h, 1.5, onTM);
+        gInk = max(gInk, mmInkP(topM, px, 1.1)*0.85);
+        float part, partU;
+        float od = stTopD(tp, sg, part)*TS;
+        float odU = stTopD(tp + vec2(0.0, 0.018), sg, partU)*TS;
+        float onO = RCV(-od);
+        float edge = onO*(1.0 - RCV(-odU));
+        vec3 oc = part < 1.5 ? vec3(0.15, 0.075, 0.040)*lw*1.5
+                : (part < 2.5 ? vec3(0.34, 0.31, 0.25)*lw*1.5 : vec3(0.46, 0.38, 0.24)*lw*1.5);
+        /* each turned to the light over it: a shaded side, a lit top */
+        float su = part < 1.5 ? clamp((tp.x - mix(1.36, 1.90, sg))/0.18, -1.0, 1.0)
+                 : (part < 2.5 ? clamp((tp.x - mix(1.04, 1.20, sg))/0.15, -1.0, 1.0) : 0.0);
+        oc *= 0.62 + 0.26*su*(2.0*sg - 1.0);
+        oc = mix(oc, oc*3.4, edge);
+        /* the boxes' brass: a lock plate on the lower one */
+        float lockP = mmBox(tp - vec2(mix(1.36, 1.90, sg), 0.085), vec2(0.016, 0.022), 0.003)*TS;
+        oc = mix(oc, brassL*0.9, RCV(-lockP)*step(part, 1.5));
+        col = mix(col, oc, onO);
+        h = mix(h, 1.6, onO);
+        gInk = max(gInk, mmInkP(od, px, 1.1)*0.9);
+        gInk = max(gInk, onO*mmInkP((tp.y - 0.140)*TS, px, 1.0)*0.6*step(part, 1.5));
+        occ = max(occ, max(onO, onTM));
+      }
+      rPool(vec2(ax - 2.95, (q.y - 3.30)*0.85), 1.05, 0.80, lampP);
       /* the chimney breast and its carved oak chimneypiece */
       float MW = 1.30, MH = 1.42;
       float jambs = step(ax, MW)*step(q.y, MH)*step(0.58, ax);
@@ -10373,13 +10501,24 @@ float studyWallH(vec2 q, float qpx, out float occ){
       vec3 c2 = col; float h2 = h;
       stCases(q, u, 0.0, 2.15, 1.25, 0.39, px, lw, oak, uSeed + 2.0, c2, h2);
       col = c2; h = h2;
+    }
+    /* (round 61 repair 63: the engravings hang in the end wall's two dark
+       corners too, outside its bookcases, as they do down the side walls --
+       and between every second pair a brass SCONCE, its candle and the pool
+       it lays on the paper and the frames beside it) */
+    /* (the right-hand pair stands 0.25 m further along: the chandelier
+       crossed the first print's corner and the vase on the small bookcase
+       touched the second's foot -- both blind judges) */
+    float eS = 4.20;   // (a 0.25 m shift of the right-hand pair lost its blind check 0-2: it crowded the corner)
+    float ue = far > 0.5 ? ax - eS : u;
+    if (far < 0.5 || (ax > eS && ax < eS + 2.50)) {
       float FP = 1.25;
-      float fi = floor(u/FP);
-      float fxl = u - (fi + 0.5)*FP;
+      float fi = floor(ue/FP);
+      float fxl = ue - (fi + 0.5)*FP;
       vec2 fp = vec2(fxl, q.y - 3.05);
       float fo = mmBox(fp, vec2(0.36, 0.46), 0.005), fiN = mmBox(fp, vec2(0.30, 0.40), 0.003);
       float onP = RCV(-fiN), onFr = RCV(-fo)*(1.0 - onP);
-      float fk = mmHash11(fi*3.3 + uSeed);
+      float fk = mmHash11(fi*3.3 + uSeed + far*(2.0 + step(0.0, cx)));
       vec3 eng = vec3(0.66, 0.60, 0.46)*lw*1.5;
       /* an engraving: a ship, a building, a botanical plate */
       vec2 ip = fp/vec2(0.24, 0.32);
@@ -10396,6 +10535,11 @@ float studyWallH(vec2 q, float qpx, out float occ){
       gInk = max(gInk, max(mmInkP(fo, px, 1.1), mmInkP(fiN, px, 1.0))*0.85);
       gBare = max(gBare, onP);
       occ = max(occ, RCV(-fo));
+      /* (on the side walls the sconces stand one print along: the frame's
+         edge cut the nearest to a sliver) */
+      float sxl = mod(ue + FP*(1.0 - far), 2.0*FP) - FP;
+      rSconce(vec2(sxl, q.y - 2.95), px, brassL*0.55, waxS, col, h, emitW);
+      rPool(vec2(sxl, (q.y - 3.00)*0.85), 0.90, 0.80, lampP);
     }
   }
   gCol = col;
@@ -11678,6 +11822,46 @@ float wallH(vec2 q, out float occ){
        is a stack -- the frieze, a bed mould over it, the corona standing proud
        of both, and the cyma above that -- and each step is a line the lamps
        can find. Table dimensions: 0.15-0.30 m of projection over a frieze. */
+#if MM_HEART63
+    /* ROUND 61 REPAIR 63, survey 23, both judges: "the study's and heart's
+       upper corners still drop to pure black"; repair 50's: "the far corners,
+       ceilings ... given drawn, painted detail at the samples' level rather
+       than empty dark". Measured in the hall: 29% of the frame's top quarter
+       under luma 8, 46% of its right corner. The Heart is 9.5 m high and its
+       ceiling and cornice are over the frame: what the frame's top holds is
+       the four metres of wall between the portraits and the frieze, and
+       nothing was drawn on it but the paper. A hall of this height has an
+       UPPER REGISTER: a string course over the pictures with a gilt bead
+       along its foot, and over each bay a tall plaster panel, moulded as the
+       ones below are, a carved roundel in it -- a ring, a quatrefoil, a boss
+       -- with a gilt fillet inside the moulding, a gilt ring round the
+       roundel and the quatrefoil's own edge gilt. The plaster is the wall's and is lit as the wall is; the
+       gilt holds what light there is (gHt63, main()), so in the dark of the
+       corners each bay is a few lit lines and the dark between them stays. */
+    {
+      const float SC0 = 4.90, SC1 = 5.06;
+      float upR = own * clear;
+      float lw63 = max(0.020, 1.3*qpx);
+      h += smoothstep(SC0 - 0.01, SC0 + 0.01, q.y) * smoothstep(SC1 + 0.01, SC1 - 0.01, q.y) * 0.95 * upR;   // the string course
+      h += smoothstep(SC1, SC1 + 0.02, q.y) * smoothstep(SC1 + 0.11, SC1 + 0.08, q.y) * 0.40 * upR;          // its cap
+      vec2 q2 = vec2(mod(q.x + uSeed*0.7, 2.60) - 1.30, q.y - 6.78);
+      h += sPanel(q2, vec2(0.92, 1.40), 0.075, 0.11) * upR;
+      float rr = length(q2);
+      float ring = smoothstep(0.40, 0.42, rr) * smoothstep(0.54, 0.52, rr);
+      float qfD = min(length(vec2(abs(q2.x) - 0.150, q2.y)), length(vec2(q2.x, abs(q2.y) - 0.150))) - 0.150;
+      float lobe = 1.0 - smoothstep(-0.010, 0.010, qfD);
+      float boss = 1.0 - smoothstep(0.060, 0.080, rr);
+      h += (ring*0.70 + lobe*(1.0 - boss)*0.42 + boss*0.66 - (1.0 - smoothstep(0.37, 0.40, rr))*(1.0 - lobe)*0.16) * upR;
+      /* (the gilt is brightest where it faces the candles' side of each
+         bay and falls away round the frame, so no fillet is one even line) */
+      float bead = (1.0 - smoothstep(lw63*0.5, lw63, abs(q.y - SC0 - 0.035)))*0.58;
+      float slip = (1.0 - smoothstep(lw63*0.5, lw63, abs(mmBox(q2, vec2(0.79, 1.27), 0.012))))
+                 * (0.30 + 0.50*smoothstep(-1.27, 1.10, q2.y));
+      float rgl = (1.0 - smoothstep(lw63*0.5, lw63, abs(rr - 0.47))) * (0.28 + 0.50*smoothstep(-0.47, 0.40, q2.y));
+      float bgl = (1.0 - smoothstep(lw63*0.5, lw63, abs(qfD))) * (0.24 + 0.40*smoothstep(-0.30, 0.30, q2.y));
+      gHt63 = upR * max(max(bead, bgl), max(slip, rgl));
+    }
+#endif
     float ec = uCeil;
     h += smoothstep(ec-0.86, ec-0.78, q.y) * smoothstep(ec-0.20, ec-0.30, q.y) * 0.42;  // frieze
     h += smoothstep(ec-0.34, ec-0.27, q.y) * smoothstep(ec-0.06, ec-0.14, q.y) * 0.78;  // bed mould
@@ -13384,6 +13568,18 @@ void main(){
     col += alb * vec3(1.00, 0.80, 0.56) * clamp(gPtAmt, 0.0, 1.0) * prof
          * (0.12 + 2.20*(1.0 - smoothstep(0.30, 1.80, E)));
   }
+#if MM_HEART63
+  /* (round 61 repair 63: THE GILT HOLDS THE LIGHT, as a canvas does above --
+     the bead, the fillets and the rings of the Heart's upper register are
+     lifted to a floor of irradiance, so they are drawn in the corners no
+     lamp of the rig reaches and are no brighter than the wall where it is
+     lit. Gold leaf in the candles' colour; nothing else is lifted.) */
+  if (gHt63 > 0.002) {
+    float E63 = mmLum(col)/max(mmLum(alb), 1e-3);
+    col += vec3(0.42, 0.305, 0.115) * vec3(1.00, 0.80, 0.56) * gHt63
+         * (0.10 + 1.00*(1.0 - smoothstep(0.30, 1.80, E63)));
+  }
+#endif
 #if MM_ROOMS >= 17
   /* (round 24 graft: the wall's own candle pools -- see rPool) */
   col += alb * gRPoolC * gRPool;
@@ -15076,6 +15272,11 @@ void main(){
   float vineR = 0.0;
 
   float pat = 0.0;
+#if MM_PAT == 16
+  /* (round 61 repair 63: the timber ceiling's members, kept for the light
+     they take below -- x its lit edges, y its soffits, z its boards) */
+  vec3 p63 = vec3(0.0);
+#endif
   /* (round 25: the flags' joints, for the moss in them; the ballroom's
      filtered checker) */
   float r25Joint = 0.0, r25Chk = 0.0;
@@ -16069,6 +16270,26 @@ void main(){
     float bmS = smoothstep(0.17, 0.42, bj)*(1.0 - smoothstep(0.42, 0.80, bj));   // the beam's shadow on the boards
     pat = 0.05 - mBd*0.04 - mJs*0.04 - bmS*0.04 + mJ*0.42 + mBm*0.62 + mAr*0.30;
     cellv = mmHash11(floor(w.x/0.48)*3.7 + floor((w.y + uSeed*0.37)/2.40)*11.1 + uSeed);
+#if MM_PAT == 16
+    /* (round 61 repair 63, survey 23, both judges: "the passages' shadow
+       pools and ceiling ... still drop to pure black"; repair 50's: "the far
+       corners, ceilings ... given drawn, painted detail ... rather than empty
+       dark". Measured: 81% of the ceiling under luma 8 -- its beams and
+       joists were drawn, and unlit. Each member takes its one edge of light:
+       the beam's two chamfered arrises ruled a pixel and a half wide, the
+       joist's arris on the corridor's side ruled down the passage to the
+       end door, a board's seam a hair of it; the soffits a stop over the
+       boards, and the boards the oak's own dark red-brown.) */
+    {
+      float aw = max(0.011, jw*0.75);
+      float arr = (1.0 - smoothstep(aw*0.5, aw, abs(bj - 0.158)))*(1.0 - smoothstep(0.16, 0.34, mp));
+      float sj = (fract(w.x/0.48 + 0.5) - 0.5)*0.48*sign(w.x + 1e-4);
+      float jEdge = (1.0 - smoothstep(aw*0.5, aw, abs(sj + 0.044)))*(1.0 - mBm)*(1.0 - smoothstep(0.07, 0.16, mp));
+      float soff = mBm*(0.62 + 0.38*smoothstep(0.17, 0.02, bj)) + mJ*0.55;
+      float brd = (1.0 - mBm)*(1.0 - mJ)*(1.0 - 0.55*mBd)*(1.0 - 0.45*bmS)*(1.0 - 0.35*mJs);
+      p63 = vec3(max(arr, jEdge*0.62), soff, brd*(0.75 + 0.50*cellv));
+    }
+#endif
 #endif
   } else if (uPattern > 16.5 && uPattern < 17.5) {   // 17 the crypt's rib vault (round 35)
     /* ROUND 35, both survey-5 judges: "the ceiling and the centre of the
@@ -18646,6 +18867,25 @@ void main(){
   ceilDim = mix(0.50, 0.84, smoothstep(1.0, 14.0, vDepth));   // (round 43 graft: 0.42 / 0.80 -> 0.50 / 0.84, the crown lifted)
 #endif
   col *= mix(1.0, ceilDim, uIsCeiling);
+#if MM_PAT == 16
+  /* (round 61 repair 63: the timber ceiling's light -- see its pattern. What
+     the passage's lanterns and candles reach of it, laid after the fall
+     toward the eye so the members overhead keep their edge; in the oak's
+     colour, the edges the candle's.) */
+  if (uIsCeiling > 0.5) {
+    float reach = 0.0;
+    for (int i = 0; i < 5; i++){
+      vec4 L = uLights[i];
+      if (L.w <= 0.001) continue;
+      reach += L.w*exp(-length(w - L.xy)/max(L.z*1.4, 1.0));
+    }
+    reach = 0.30 + 0.70*clamp(reach, 0.0, 1.0);
+    float nearK = mix(0.55, 1.0, smoothstep(1.5, 9.0, vDepth));
+    vec3 oak63 = vec3(0.30, 0.115, 0.070);
+    col += (vec3(1.00, 0.64, 0.34)*p63.x*0.115
+            + oak63*(p63.y*0.180 + p63.z*0.045)) * reach * nearK * uGain * 3.4;
+  }
+#endif
   /* THE NIGHT IS ON THE OTHER SIDE OF IT. Glass is not a surface: the panes
      take the sky's own cold and the bars take the room's. Without this the
      roof is a lattice painted on a ceiling rather than a lattice with
@@ -24232,10 +24472,22 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
       pl *= 1.0 - 0.60*smoothstep(0.010 + 1.5*qpx, 0.010, q.y);
       float dx = kq*q.x/0.245;
       float onDie = step(0.123, q.y)*step(q.y, 0.536);
-      pl *= 1.0 + onDie*0.34*smoothstep(1.0 - 3.2*qpx/0.245, 1.0 - 2.2*qpx/0.245, dx);
+      /* (round 61 repair 63, repair 59's judges: "a faint red fringe down the
+         panel's left edge" of the memory room's pedestal. Repair 62 traced
+         it: the grade pass parts the colours toward the frame's edge, and
+         this line of light ran on the pedestal's very outline -- 237 of 255
+         against boards at 4 -- so its red stood two pixels out on the dark.
+         The line is ruled a pixel and a half further inside the die, the
+         outline's own pixels are held down as a contour, so what the lens
+         parts lands on stone, and the line takes up the light the outline
+         carried (the rim the hold takes off it), on every member's lit end.
+         Nothing else of the pedestal is changed.) */
+      pl *= 1.0 + onDie*0.34*smoothstep(1.0 - 4.8*qpx/0.245, 1.0 - 3.8*qpx/0.245, dx);
       float hwP = q.y > 0.570 ? 0.300 : (q.y > 0.536 ? 0.270 : (q.y > 0.123 ? 0.245 : (q.y > 0.089 ? 0.274 : 0.310)));
       float ret = max(smoothstep(0.050 - qpx, 0.050, hwP + kq*q.x), step(0.632, q.y));
       pl *= mix(0.52, 1.0, ret);
+      pl *= 1.0 - 0.72*(1.0 - smoothstep(1.2*qpx, 2.4*qpx, hwP - abs(q.x)))*step(q.y, 0.632);
+      pl *= 1.0 + 0.50*(1.0 - smoothstep(3.8*qpx, 4.8*qpx, hwP - kq*q.x))*step(q.y, 0.632);
       pl *= 1.0 + 0.22*onDie*ret*(1.0 - smoothstep(0.050 + 1.2*qpx, 0.050 + 2.2*qpx, hwP + kq*q.x));
       float eW = max(0.018, 1.6*qpx);
       float pIn = wfIn(panel, qpx);
