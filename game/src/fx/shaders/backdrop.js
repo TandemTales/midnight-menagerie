@@ -31508,7 +31508,13 @@ float wfDraw(vec2 m, vec2 msz, float s, float seed, float px, bool paint){
 #if MM_SH60
   else if (s < 60.5) d = wfWardrobe(q, qpx, seed, kq, paint);
 #endif
+  /* (trim 61: the dollhouse is what is left -- a shape past the wardrobe's
+     that is not the blocks' or the books', and only the Nursery deals one
+     (61). The Sleeping Quarters', the Study's and the Crypt's programs
+     compiled it for a pixel no shape of theirs reaches.) */
+#if MM_SH61 || MM_SH62 || MM_SH63 || MM_SH64 || MM_SH65 || MM_SH66 || MM_SH67 || MM_SH68 || MM_SH69 || MM_SH70 || MM_SH71 || MM_SH72 || MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78 || MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84 || MM_SH85 || MM_SH86 || MM_SH89
   else               d = wfDollhouse(q, qpx, seed, kq, paint);
+#endif
   return d*sc;
 }
 #endif
