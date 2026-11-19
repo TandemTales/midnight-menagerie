@@ -969,3 +969,41 @@ Marked down inside the winner: the lit stone is "a little grey against" the room
 Link time: heart 7.0 s to 7.7 (a noisy run). Tests (on the branch with all three items): link-queue 104/0, heart 44/0, secret-passages 74/0, study-library 50/0, grounding PASS, steam-deck 6/6.
 
 Key: `PAIRED-r61-repair59-key.json`. Evidence: `D:/UILOOP/s21/ev59/`.
+
+## Trim 60: the foyer's prop program cut by a third, pixel-identical (2026-11-19)
+
+Josh, 11-19: "wings should be trimmed first": no more paint in a wing whose prop program links over 12 s. Trim 60 (`940f3c5e`, `afc2f20d`, `b3ae4298`, merged) is the first, and its cost table is the method for the rest. Evidence and every timing log: `D:/UILOOP/s21/ev60/`.
+
+**What was cut: drawings a wing compiles and never draws.**
+- `940f3c5e`: shape 66 is three drawings chosen per pixel by seed (the foyer's pier table, the passages' serving table, the passages' book piles), and every wing that dealt 66 compiled all three. A new define `MM_T66` compiles only the ones a wing deals. Foyer 14.21 s to 9.86 (mean of 4, alternating); passages 4.82 to 3.87.
+- `afc2f20d`: the ballroom's fan was a bare `else` at the end of the wing chain, so the foyer and passages compiled it. Now behind its shapes' defines. Foyer 10.33 to 9.91.
+- `b3ae4298`: the greenhouse's bench program compiled brick staging (shape 77) that no room with a potting bench deals. 11.59 to 10.06.
+
+**The machine links at two speeds.** The same untouched foyer program, alone in a fresh browser, read 14.4 s in 7 runs and 22.3 s in 7 others on the same quiet afternoon. After the trims: 9.2-9.9 s fast, 13.5 slow. As a ratio (0.60-0.66) on 11-18's 19.0 s that is about 11.5-12.5 s: ON the budget line, not safely under. Always time before and after ALTERNATELY and compare like with like; a single table proves nothing (lampworks, untouched, read 9.4 and 13.9 the same day).
+
+**Identity.** Capture noise on a clean tree is not zero (4 of 63 rooms differ by 1 level in 1-241 pixels between two captures), so each room was captured twice before and twice after and a pixel counts only if both afters differ from both befores: 0 such pixels in 63 rooms (foyer, passages, ballroom) for the first two commits; for the greenhouse 21 rooms byte-identical first-to-first, and one later capture of the unseeded room (the batch's first frame, its program unchanged) off by up to 5 levels, not run down. Thirteen of the 18 prop programs are byte-identical after preprocessing. Still 104 variants.
+
+**Where the foyer's link time goes** (seconds saved by cutting that one piece; not additive, and a piece costs more the bigger the rest is):
+
+| Piece | Saving |
+|---|---|
+| all drawn painters | 12.5 (2.1 s is left) |
+| shape 66's three drawings | 5.9 |
+| `reliefH` (the bust alone 2.1-2.7) | 3.8 |
+| `mmNoise` (37 evaluations) | 3.0 |
+| `mmFbm3` (9 sites) | 2.3 |
+| `mmInkP` (47 sites) | 2.1 |
+| vitrine, torchere, clock, armchair | 1.6-2.0 each |
+| legacy outlines in `shapeField` | 1.7 |
+| the lights loop | 1.6 |
+
+Rewrites that kept the arithmetic (hoisting, unrolling, removing early returns, forcing branches) saved nothing measurable: **the lever is what gets compiled, not how it is written.** An uncalled function costs nothing (ANGLE drops it).
+
+**Leads for the other wings, measured on variants and not built:**
+- The dollhouse (shape 61) is a bare `else` at the end of the nursery-wing chain, so sleeping, study and crypt compile it: sleeping 10.18 to 9.08, study 5.68 to 4.54, crypt 4.46 to 3.92. The same fix as the fan.
+- More seed-chosen drawings sharing one shape, the shape-66 class (`wgYard`/`wgFeed`/`wgTh`/`wgTw`, `ahRug`/`ahHat`): not measured.
+- The greenhouse's other program compiles staging only for its unseeded terrace: about 1.8 s for four authored rooms, at the cost of one variant.
+- The foyer by room kind (the bust only in gallery rooms, the pier glass only in stair rooms): about 2 s for the bust's relief alone, but it adds variants.
+- Sharing noise taps would cut into the 3 s of noise but changes arithmetic, so it needs a blind pair, not an identity proof.
+
+Tests: link-queue 104/0, foyer 66/0, room-mood 340/0, foyer-presentation 6 PASS, grounding PASS, steam-deck 6/6, shader-literals 0.
