@@ -24466,10 +24466,22 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
       pl *= 1.0 - 0.60*smoothstep(0.010 + 1.5*qpx, 0.010, q.y);
       float dx = kq*q.x/0.245;
       float onDie = step(0.123, q.y)*step(q.y, 0.536);
-      pl *= 1.0 + onDie*0.34*smoothstep(1.0 - 3.2*qpx/0.245, 1.0 - 2.2*qpx/0.245, dx);
+      /* (round 61 repair 63, repair 59's judges: "a faint red fringe down the
+         panel's left edge" of the memory room's pedestal. Repair 62 traced
+         it: the grade pass parts the colours toward the frame's edge, and
+         this line of light ran on the pedestal's very outline -- 237 of 255
+         against boards at 4 -- so its red stood two pixels out on the dark.
+         The line is ruled a pixel and a half further inside the die, the
+         outline's own pixels are held down as a contour, so what the lens
+         parts lands on stone, and the line takes up the light the outline
+         carried (the rim the hold takes off it), on every member's lit end.
+         Nothing else of the pedestal is changed.) */
+      pl *= 1.0 + onDie*0.34*smoothstep(1.0 - 4.8*qpx/0.245, 1.0 - 3.8*qpx/0.245, dx);
       float hwP = q.y > 0.570 ? 0.300 : (q.y > 0.536 ? 0.270 : (q.y > 0.123 ? 0.245 : (q.y > 0.089 ? 0.274 : 0.310)));
       float ret = max(smoothstep(0.050 - qpx, 0.050, hwP + kq*q.x), step(0.632, q.y));
       pl *= mix(0.52, 1.0, ret);
+      pl *= 1.0 - 0.72*(1.0 - smoothstep(1.2*qpx, 2.4*qpx, hwP - abs(q.x)))*step(q.y, 0.632);
+      pl *= 1.0 + 0.50*(1.0 - smoothstep(3.8*qpx, 4.8*qpx, hwP - kq*q.x))*step(q.y, 0.632);
       pl *= 1.0 + 0.22*onDie*ret*(1.0 - smoothstep(0.050 + 1.2*qpx, 0.050 + 2.2*qpx, hwP + kq*q.x));
       float eW = max(0.018, 1.6*qpx);
       float pIn = wfIn(panel, qpx);
