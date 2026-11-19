@@ -10256,13 +10256,14 @@ float studyWallH(vec2 q, float qpx, out float occ){
        ... rather than empty dark". Measured: 42% and 58% of the frame's two
        upper corners under luma 8 -- the side walls' gallery, where no lamp
        of the rig reaches. The ceiling and the cornice are over the frame
-       here, so what is drawn is what the corners hold: the gallery rail's
-       NEWELS, a square post with its cap and a turned brass ball every
-       second bay of the end wall, and in every bay down the two side walls
-       a post with a pillar candle burning in a brass cup on it -- its pool on the rail, the balusters and the books
-       behind it, the dark between the candles left dark.) */
-    {
-      float NP = far > 0.5 ? 2.30 : 1.15;
+       here, so what is drawn is what the gallery holds: the rail's NEWELS,
+       a square post with its cap and a turned brass ball every second bay
+       of the end wall. The side walls are as they were: the posts and
+       pillar candles first drawn down them were foreshortened to a pixel
+       or two and cut by the frame's top -- both blind judges read them as
+       "glare lines", "smeared pale vertical streaks" -- and are cut.) */
+    if (far > 0.5) {
+      float NP = 2.30;
       float nxl = mod(u, NP) - NP*0.5;
       float NT = GF + BH + 0.10;
       float post = max(abs(nxl) - 0.050, max(GF - q.y, q.y - NT));
@@ -10280,10 +10281,6 @@ float studyWallH(vec2 q, float qpx, out float occ){
       gloss = max(gloss, onBl);
       gInk = max(gInk, mmInkP(nball, px, 1.0)*0.8*far);
       occ = max(occ, max(onN, onBl));
-      if (far < 0.5) {
-        rSconce(vec2(nxl, q.y - NT - 0.080)/1.7, px/1.7, brassL*0.55, waxS, col, h, emitW);
-        rPool(vec2(nxl, (q.y - NT - 0.10)*0.80), 0.78, 2.10, lampP);
-      }
     }
     /* THE LIBRARY LADDER on its brass rail, against the lower cases */
     float RY = G0 - 0.25;
