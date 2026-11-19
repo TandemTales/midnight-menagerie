@@ -20662,25 +20662,49 @@ vec3 gyWeather(vec3 c, vec2 q, float px, float seed, float foot){
    past its outline (gySward is the paint's only: a thing added to the
    outline is paid for at every call that measures it). But for the short
    shadow the stone lays on the grass on the side away from the key.) */
-float gySward(vec2 q, float seed, float px){
-  return max(q.y + 0.012 - (1.0 - smoothstep(0.009, 0.014, px))*(0.062 + 0.045*(1.0 - abs(sin(q.x*83.0 + seed*7.0)))), -q.y);
+/* (round 61 repair 58, both judges of repair 57, of the winner: the fringe
+   "an even comb of spikes and scallops in a green more saturated than the
+   ground it grows from", "a green band at 1x", "stops square at the stone's
+   width"; wanted: "vary in height, clump, lean and darken to the ground's
+   own colour at its roots ... some ground showing", "spilling past its
+   corners". The sward was one sine, every point alike and all of it lit at
+   twice the ground's value. Its points are of different heights and
+   unevenly spaced now, high in one stretch and low in the next, and it runs
+   down to the turf's line at the stone's corners, where the tufts take
+   over; and the grass is at the ground's value and colour at its roots --
+   gyTuftLit, and the tint beside it -- and lighter and greener only toward
+   its tips.) */
+float gySward(vec2 q, float hw, float seed, float px){
+  float pt = 1.0 - abs(sin(q.x*61.0 + seed*7.0 + 1.3*sin(q.x*17.0 + seed)));
+  float h = 0.050 + (0.020 + 0.060*(0.5 + 0.5*sin(q.x*9.0 + seed*5.0)))*pt*(0.35 + 0.65*abs(sin(q.x*23.0 + seed*3.0)))*(1.0 - smoothstep(0.72, 1.0, abs(q.x)/hw));
+  return max(q.y + 0.012 - (1.0 - smoothstep(0.009, 0.014, px))*h, -q.y);
 }
 float gyTuftLit(vec2 q, float hw, float kq, float px){
   float pf = 1.0 - smoothstep(0.0, max(0.045, 2.2*px), q.y);          // (the seat, as PROP_FRAG lays it)
-  float tip = smoothstep(0.0, 0.10, q.y);
-  return mix(0.55 + 0.95*tip, min((2.0 + 0.8*tip)*(1.0 + 3.4*pf*pf), 5.0)*(1.0 - 0.55*smoothstep(0.70*hw, 0.80*hw, -kq*q.x)), 1.0 - smoothstep(0.009, 0.014, px));
+  float tip = smoothstep(0.0, 0.12, q.y);
+  return mix(0.55 + 0.95*tip, min((2.60 + 0.80*tip)*(1.0 + 3.4*pf*pf), 12.0)*(1.0 - 0.55*smoothstep(0.70*hw, 0.80*hw, -kq*q.x)), 1.0 - smoothstep(0.009, 0.014, px));
 }
+/* (repair 58: TUFTS, not a comb. The ground about the foot is in cells a
+   hand and a bit wide; each has one tuft somewhere in it -- three to five
+   blades fanned from a root, the middle ones the tallest, the whole of it
+   leaning its own way -- or, one cell in five, a single long blade; and
+   bare ground between one tuft and the next. Rankest at the stone's two
+   corners still (round 44), and dying away past them, never cut square.) */
 float gyTufts(vec2 q, float hw, float seed){
-  float x = q.x/0.030;
+  float x = q.x/0.085 + seed*7.0;
   float i = floor(x);
-  float f = fract(x) - 0.5;
-  /* (round 44: the long grass grown up round the stone, both survey-8
-     judges -- "long grass at the edges and round the stones": a hand to a
-     hand and a half, from 4-11 cm, rankest at the stone's two corners) */
-  float hgt = 0.06 + 0.11*mmHash11(i*1.7 + seed*3.1) + 0.05*smoothstep(0.4, 1.0, abs(q.x)/max(hw, 0.05));
-  float lean = (mmHash11(i*2.9 + seed) - 0.5)*0.6;
-  float bl = abs(f - lean*q.y/0.10) - 0.22*(1.0 - q.y/max(hgt, 1e-3));
-  float d = max(bl*0.030, max(q.y - hgt, -q.y));
+  float h1 = mmHash11(i*1.7 + seed*3.1), h2 = mmHash11(i*2.9 + seed);
+  float h3 = fract(h1*7.3 + h2*3.1);
+  float ax = abs(q.x)/max(hw, 0.05);
+  float hgt = (0.06 + 0.11*h3 + 0.05*smoothstep(0.4, 1.0, ax))*(1.0 - smoothstep(0.86, 1.0, ax));
+  float w = h1 < 0.20 ? 0.07 : 0.26 + 0.18*h2;
+  float b = (fract(x) - 0.5 - (h2 - 0.5)*0.12 - (h3 - 0.5)*0.80*q.y/0.15)/0.30;
+  float bi = floor(b + 0.5);
+  float ub = bi*0.30/w;
+  float hb = hgt*max(1.0 - 0.6*ub*ub, 0.0)*(0.45 + 0.55*abs(sin(bi*2.3 + i*1.9)));
+  float t = q.y/max(hb, 1e-3);
+  float bl = abs(b - bi - 0.48*ub*t) - 0.22*(1.0 - t);
+  float d = max(bl*0.0255, max(q.y - hb, -q.y));
   return max(d, abs(q.x) - hw);
 }
 /* (round 61 repair 51, survey 22: the rooms' props "still read as rendered
@@ -20753,7 +20777,10 @@ float gyFringe(float u, float hl, float dp, float fq, float seed, out float g){
    width, h its height; a hand's depth of it along the rest of the foot */
 float gyMound(float x, float y, float hw, float h, float seed){
   float xr = x/hw;
-  return y - 0.04 - h*max(1.0 - xr*xr, 0.0) - 0.022*abs(sin(x*41.0 + seed*9.0)) - 0.014*abs(sin(x*17.0 + seed*3.0));
+  /* (repair 58: the hand's depth of it along the foot was one even row of
+     scallops from end to end, "a repeating pattern". It comes and goes along
+     the foot now, its humps unevenly spaced; the mound keeps its own.) */
+  return y - h*max(1.0 - xr*xr, 0.0) - (0.04 + 0.022*abs(sin(x*41.0 + seed*9.0 + 1.4*sin(x*11.0 + seed))) + 0.014*abs(sin(x*17.0 + seed*3.0)))*max(smoothstep(0.10, 0.60, sin(x*7.0 + seed*4.0)), 1.0 - smoothstep(1.0, 1.5, abs(xr)));
 }
 /* its green, deep, a little to the olive on some stones; and lifted where
    it grows in the dark at a stone's foot, so a mound is moss and not a hole */
@@ -20980,11 +21007,12 @@ float wfHeadstone(vec2 q, float px, float seed, float kq, bool paint){
   /* the grass, over the stone's foot */
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
-  float gr = max(wfIn(tuft, px), wfIn(gySward(q, seed, px), px)*wfIn(min(d, dRet), px));   // (repair 57: the sward, on the stone's foot)
+  float gr = max(wfIn(tuft, px), wfIn(gySward(q, W*1.05, seed, px), px)*wfIn(min(d, dRet), px));   // (repair 57: the sward, on the stone's foot)
   col = mix(col, gC, gr);
   /* (the blades at their own light, dark at the roots) */
   gWgShade = mix(shd, gyTuftLit(q, W*1.30, kq, px), gr);   // (repair 53: the blades' tips in the moon; repair 57: gyTuftLit)
-  gGyTint = mix(tnt, vec3(1.0), gr);
+  gGyGrass = gr;
+  gGyTint = mix(tnt, mix(vec3(1.15, 0.78, 0.62), vec3(1.40, 1.11, 0.85), smoothstep(0.0, 0.12, q.y)), gr);   // (repair 58: the ground's own olive at the roots)
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.55*wfIn(d, px)*smoothstep(H*0.4, H, p.y) + 0.20*wfIn(d, px));
   gWfCol = col; gWfInk = ink;
@@ -21189,10 +21217,11 @@ float wfTomb(vec2 q, float px, float seed, float kq, bool paint){
   }
   vec3 gC = vec3(0.10, 0.17, 0.07)*(0.70 + 0.60*smoothstep(0.0, 0.10, q.y));
   wfLay(col, ink, tuft, gC, px, 0.25);
-  float gr = max(wfIn(tuft, px), wfIn(gySward(q, seed, px), px)*wfIn(d, px));   // (repair 57: the sward, on the tomb's foot)
+  float gr = max(wfIn(tuft, px), wfIn(gySward(q, L, seed, px), px)*wfIn(d, px));   // (repair 57: the sward, on the tomb's foot)
   col = mix(col, gC, gr);
   gWgShade = mix(shd, gyTuftLit(q, L, kq, px), gr);   // (repair 53: the blades' tips in the moon; repair 57: gyTuftLit)
-  gGyTint = mix(tnt, vec3(1.0), gr);
+  gGyGrass = gr;
+  gGyTint = mix(tnt, mix(vec3(1.15, 0.78, 0.62), vec3(1.40, 1.11, 0.85), smoothstep(0.0, 0.12, q.y)), gr);   // (repair 58: the ground's own olive at the roots)
   gWfGloss = 0.10;
   gWfMoon = 2.2*(0.45*wfIn(min(ledger, urn), px)*(1.0 - kerbed) + 0.35*kerbed*wfIn(kHead, px) + 0.15);
   gWfCol = col; gWfInk = ink;
@@ -22239,6 +22268,7 @@ float gWgShade = 1.0;
    a stone's rock, the moss on it, the lantern's side of it. Laid after both
    ceilings; 1 everywhere it is not written) */
 vec3 gGyTint = vec3(1.0);
+float gGyGrass = 0.0;   // (round 61 repair 58: how much of the pixel is the grass at a stone's foot)
 #endif
 
 /* Soft coverage field in local uv space; > 0 is inside the silhouette. */
@@ -35851,6 +35881,16 @@ void main(){
     col = mix(vec3(Lc), col, want / max(sat, 1e-4));
   }
 #if MM_WINGS == 5
+  /* (round 61 repair 58: "a green band at 1x ... brought down to the
+     surrounding grass value". The grass at a foot is lit as the stone is,
+     and under a lantern or square to the moon it stood at twice the ground
+     it grows from. It has the ground's ceiling: over that it gains a third
+     of what the light adds. Before its tint, which is the ground's olive
+     and the ground's value at its roots and a lighter green at its tips.) */
+  {
+    float gL = mmLum(col);
+    col *= mix(1.0, min(1.0, (0.22 + 0.35*max(gL - 0.22, 0.0))/max(gL, 1e-4)), gGyGrass);
+  }
   col *= gGyTint;   // (round 61 repair 53: see gGyTint)
   {
     float gw = 0.85*gyLan*(1.0 - isFit);
