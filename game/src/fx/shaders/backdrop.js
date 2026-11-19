@@ -24104,6 +24104,14 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
     }
     float urn = min(min(min(socle, stem), min(bowl, flare)), min(lip, hnd));
     float ped = min(min(base, die), cap);
+#if MM_SH85
+    /* (round 61 repair 59, the Heart's only: the pedestal MOULDED -- a bed
+       mould under the cap and a base mould over the plinth block, each a
+       step proud of the die; see the lit colour below) */
+    float capB = mmBox(q - vec2(0.0, 0.553), vec2(0.270, 0.017), 0.004);
+    float baseB = mmBox(q - vec2(0.0, 0.106), vec2(0.274, 0.017), 0.004);
+    ped = min(ped, min(capB, baseB));
+#endif
     d = min(min(ped, urn), min(plant, ivy));
     if (!paint) return d*sc;
     vec3 stone = vec3(0.62, 0.60, 0.55)*(0.88 + 0.18*mv);
@@ -24118,6 +24126,10 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
     dc = mix(dc, dc*0.78, wfIn(panel, qpx));
     wfLay(col, ink, die, dc, qpx, 0.95);
     ink = max(ink, mmInkP(panel, qpx, 1.0)*0.7*wfIn(die, qpx));
+#if MM_SH85
+    wfLay(col, ink, capB, pf*0.84, qpx, 0.9);
+    wfLay(col, ink, baseB, pf*0.88, qpx, 0.9);
+#endif
     wfLay(col, ink, cap, stone*(0.72 + 0.40*smoothstep(0.575, 0.625, q.y)), qpx, 0.95);
     moon += 0.7*wfIn(cap, qpx)*smoothstep(0.59, 0.63, q.y);
     wfLay(col, ink, socle, stone*0.80, qpx, 0.9);
@@ -24166,15 +24178,33 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
       us *= 1.0 - 0.40*smoothstep(1.215, 1.265, q.y)*step(q.y, 1.277);
       us *= 1.0 + step(1.277, q.y)*(0.36*smoothstep(1.302, 1.302 + qpx, q.y) - 0.14);
       us *= 1.0 + 0.30*smoothstep(0.672, 0.672 + qpx, q.y)*step(q.y, 0.692);
-      float pl = q.y > 0.570 ? 1.0 : 1.90;
+      /* (round 61 repair 59, survey 23: the "heart urn plinth" among the
+         "near-floor props that are still dark silhouettes or flat shapes";
+         one build "lets the plinth go black". Measured: the die 37 of 255
+         and the plinth block 10, beside boards at 44 and under a cap at 104
+         -- unlit, and the block under the house's dark seat. In PLANES AND
+         STEPS: the die's face to the room lit and the far end of every
+         member a shaded RETURN, ruled; the bed mould in the cap's shade and
+         its own shadow ruled on the die; the base mould's top lit; the
+         plinth block's top a lit line, its face out of the dark seat, and
+         one dark line where it stands.) */
+      float pl = q.y > 0.570 ? 1.0 : 2.80;
       pl *= 1.0 + 0.14*smoothstep(0.604, 0.604 + qpx, q.y)*step(q.y, 0.632);
       pl *= 1.0 - 0.30*smoothstep(0.598, 0.598 - qpx, q.y)*step(0.570, q.y);
-      pl *= 1.0 - 0.42*smoothstep(0.525, 0.560, q.y)*step(q.y, 0.570);
-      pl *= 1.0 + 0.42*smoothstep(0.062, 0.062 + qpx, q.y)*step(q.y, 0.092);
+      pl *= 1.0 - 0.34*smoothstep(0.536 - qpx, 0.536, q.y)*step(q.y, 0.570);
+      pl *= 1.0 - 0.38*smoothstep(0.512 - qpx, 0.512, q.y)*step(q.y, 0.536);
+      pl *= 1.0 + 0.36*smoothstep(0.108 - qpx, 0.108, q.y)*step(q.y, 0.123);
+      pl *= 1.0 + 0.50*smoothstep(0.074 - qpx, 0.074, q.y)*step(q.y, 0.089);
+      pl *= 1.0 + 1.20*(1.0 - smoothstep(0.0, 0.05, q.y));
+      pl *= 1.0 + 0.80*step(q.y, 0.089);
       pl *= 1.0 - 0.60*smoothstep(0.010 + 1.5*qpx, 0.010, q.y);
       float dx = kq*q.x/0.245;
-      float onDie = step(0.092, q.y)*step(q.y, 0.570);
-      pl *= 1.0 + onDie*(0.34*smoothstep(1.0 - 3.2*qpx/0.245, 1.0 - 2.2*qpx/0.245, dx) - 0.26*smoothstep(-0.55, -0.95, dx));
+      float onDie = step(0.123, q.y)*step(q.y, 0.536);
+      pl *= 1.0 + onDie*0.34*smoothstep(1.0 - 3.2*qpx/0.245, 1.0 - 2.2*qpx/0.245, dx);
+      float hwP = q.y > 0.570 ? 0.300 : (q.y > 0.536 ? 0.270 : (q.y > 0.123 ? 0.245 : (q.y > 0.089 ? 0.274 : 0.310)));
+      float ret = max(smoothstep(0.050 - qpx, 0.050, hwP + kq*q.x), step(0.632, q.y));
+      pl *= mix(0.52, 1.0, ret);
+      pl *= 1.0 + 0.22*onDie*ret*(1.0 - smoothstep(0.050 + 1.2*qpx, 0.050 + 2.2*qpx, hwP + kq*q.x));
       float eW = max(0.018, 1.6*qpx);
       float pIn = wfIn(panel, qpx);
       float pSh = max(smoothstep(eW, eW - qpx, 0.495 - q.y), smoothstep(eW, eW - qpx, 0.165 - kq*q.x));
@@ -24819,6 +24849,42 @@ float gkDraw(vec2 m, vec2 msz, float shape, float seed, float px, bool paint){
     moon += 0.8*wfIn(seat, qpx)*topF;
     /* and its shadow down the frieze and the inner faces of the legs */
     col *= 1.0 - 0.30*smoothstep(0.41, 0.34, q.y)*step(abs(q.x), 0.82)*wfIn(min(apron, sub), qpx);
+    {
+      /* (round 61 repair 59, survey 23: "the heart bench ... still [a]
+         flat-shaded box". Measured: unlit -- its consoles 24-28 of 255 and
+         its frieze 26, standing on boards at 64 under a top at 106, and the
+         paws under the house's dark seat. IN PLANES, on the lit colour
+         (gWgShade): each console a face to the key and a shaded return,
+         ruled between, its edge to the key a line of light, the seat's
+         shadow ruled across its head, its paw's top lit and one dark line
+         where it stands; the frieze a lit rail between them under the
+         seat's shadow, its panel sunk -- shade under its upper edge, light
+         on its lower -- and the gadroons along its foot lit on their
+         crowns; the seat's front edge lit under the top, the egg row in its
+         shade, the end to the key lit and the far end a return.) */
+      float tk = kq*cu;                                       // across a console, +1 its side to the key
+      float onS = wfIn(seat, qpx);
+      float onA = wfIn(apron, qpx)*(1.0 - onS);
+      float cF = smoothstep(-0.25 - qpx/0.07, -0.25 + qpx/0.07, tk);
+      float cS = mix(1.00, 2.00, cF);
+      cS *= 1.0 + 0.40*(1.0 - smoothstep(2.6*qpx, 3.6*qpx, -sub))*step(0.30, tk)*step(0.06, q.y);
+      cS *= 1.0 - 0.38*smoothstep(0.362 - qpx, 0.362 + qpx, q.y);
+      cS *= 1.0 + 1.10*(1.0 - smoothstep(0.0, 0.05, q.y));
+      cS *= 1.0 + 0.40*wfIn(pawD, qpx)*smoothstep(0.034 - qpx, 0.034 + qpx, q.y);
+      cS *= 1.0 - 0.70*(1.0 - smoothstep(1.2*qpx, 2.4*qpx, q.y));
+      float aS = 1.75*(1.0 + 0.10*kq*clamp(q.x/0.5, -1.0, 1.0));
+      aS *= 1.0 - 0.36*smoothstep(0.392 - qpx, 0.392 + qpx, q.y);
+      float eW = max(0.007, 1.3*qpx);
+      float pIn = wfIn(pan, qpx);
+      aS *= 1.0 - 0.36*pIn*smoothstep(eW, eW - qpx, 0.396 - q.y);
+      aS *= 1.0 + 0.40*pIn*smoothstep(eW, eW - qpx, q.y - 0.340);
+      aS *= 1.0 + 0.45*gad*(sin(gadU*3.1416) - 0.45);
+      float nosU = smoothstep(0.460 - qpx, 0.460 + qpx, q.y);
+      float sS = mix(mix(1.20, 1.50, nosU), 1.0, topF);
+      sS *= 1.0 - 0.38*smoothstep(0.441 + qpx, 0.441 - qpx, q.y)*smoothstep(0.430 - qpx, 0.430 + qpx, q.y);
+      sS *= 1.0 + (1.0 - topF)*(0.30*smoothstep(0.785 - qpx, 0.785, kq*q.x) - 0.40*smoothstep(-0.775 + qpx, -0.775, kq*q.x));
+      gWgShade = mix(mix(cS, aS, onA), sS, onS);
+    }
 #else
     /* ---- 83 THE STONE SEAT ---- */
     float seat = mmBox(q - vec2(0.0, 0.455), vec2(0.82, 0.040), 0.018);
