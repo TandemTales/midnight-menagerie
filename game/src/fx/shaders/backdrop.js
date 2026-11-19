@@ -22162,7 +22162,12 @@ float wfDraw(vec2 m, vec2 msz, float s, float seed, float px, bool paint){
 #if MM_SH73 || MM_SH74 || MM_SH75 || MM_SH76 || MM_SH77 || MM_SH78
   else if (s < 78.5) d = wfPiano(q, qpx, seed, kq, paint);
 #endif
+  /* (trim 60: the fan is what is left -- a shape past the piano's, and only
+     the Ballroom deals one (79). The Foyer's and the Passages' programs
+     compiled it for a pixel no shape of theirs reaches.) */
+#if MM_SH79 || MM_SH80 || MM_SH81 || MM_SH82 || MM_SH83 || MM_SH84 || MM_SH85 || MM_SH86 || MM_SH87 || MM_SH88 || MM_SH89
   else               d = wfFan(q, qpx, seed, kq, paint);
+#endif
 #endif
 #if MM_WINGS == 5
   if (false) {}
