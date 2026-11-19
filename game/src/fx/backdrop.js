@@ -263,7 +263,10 @@ function footNear(region, p, feet) {
      its sconces burn on, toward the middle of the passage.) */
   if (region === 'passages' && s === 8) {
     const sd = p.x < 0 ? 1 : -1;
-    return { dx: (-0.10 + 0.11 * sd) * p.w, dz: 0.03 * p.w, w: 0.70 * p.w, d: 0.30 * p.w, k: 1.15 };
+    /* (round 61 repair 59: the lower case comes in two widths by its seed,
+       its right end where it was -- the shader's pcLow -- and its foot with it) */
+    const l8 = mmHash11((p.seed || 0) * 4.7 + 2.2) < 0.5 ? 1.0 : 0.86;
+    return { dx: (0.14 - 0.24 * l8 + 0.11 * sd) * p.w, dz: 0.03 * p.w, w: 0.70 * l8 * p.w, d: 0.30 * p.w, k: 1.15 };
   }
   /* (the Heart's main room only -- its two pieces are the `hand` ones. The
      gallery and the memory room see theirs from a turned camera, where a

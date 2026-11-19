@@ -31621,6 +31621,36 @@ float ftDraw(vec2 m, vec2 msz, float seed, float px, bool paint){
   return d;
 }
 #endif
+#if MM_SH8
+#if MM_WINGS == 4
+/* ROUND 61 REPAIR 59: NO TWO STACKS OF CASES THE SAME (repair 52's judges on
+   the passages: "small, repeated, identical boxes; they need varied sizes or
+   angles"; "less repetition in the identical tilted crates"). Every stack was
+   one drawing: a case, and the same smaller case on it, the same way round.
+   By its seed, in the Passages' program only (shape 8 stands in the Kitchens
+   and elsewhere as it was), and never outside the outline it had: the upper
+   case in three sizes; a small one set down askew, resting on its low corner,
+   and slid along the one under it; the lower case in two widths; each brace
+   nailed its own way; and the upper case nailed shut, or its lid gone, or one
+   lid board prised up at an end. pcVar: x the upper case's size, y its turn
+   (radians), z where it stands (of the quad's width), w its lid. pcUp takes a
+   point (metres; x from the quad's centre line, y from the lower case's top)
+   into that case's own frame, where it is the size it always was. */
+vec4 pcVar(float seed){
+  float h1 = mmHash11(seed*5.3 + 0.7), h2 = mmHash11(seed*2.9 + 4.1);
+  float su = h1 < 0.40 ? 1.0 : (h1 < 0.75 ? 0.86 : 0.74);
+  float an = su > 0.95 ? 0.0 : (fract(h1*7.0) < 0.5 ? -1.0 : 1.0)*(0.030 + 0.028*h2);
+  float ox = su > 0.80 ? 0.16 : 0.135 + 0.05*fract(h2*5.0);
+  return vec4(su, an, ox, h2);
+}
+float pcLow(float seed){ return mmHash11(seed*4.7 + 2.2) < 0.5 ? 1.0 : 0.86; }
+vec2 pcUp(vec2 c, vec4 v, vec2 msz){
+  c.x -= v.z*msz.x;
+  c.y -= abs(v.y)*0.19*v.x*msz.x;
+  return vec2(c.x + c.y*v.y, c.y - c.x*v.y)*(1.0 - 0.5*v.y*v.y)/v.x;
+}
+#endif
+#endif
 float shapeField(vec2 uv, vec2 msz, float shape, float seed){
   vec2 p = uv - vec2(0.5, 0.0);          // origin at bottom centre
   vec2 g = uv - vec2(0.5, 1.0);          // origin at top centre (hanging props)
@@ -31946,8 +31976,22 @@ float shapeField(vec2 uv, vec2 msz, float shape, float seed){
 #endif
 #if MM_SH8
   } else if (shape < 8.5) {               // 8 — crate stack
+#if MM_WINGS == 4
+    {
+      /* (round 61 repair 59: by its seed -- see pcVar) */
+      vec4 cv = pcVar(seed);
+      float l8 = pcLow(seed);
+      d = mmBox(p - vec2(0.14 - 0.24*l8, 0.22), vec2(0.24*l8, 0.22), 0.02);
+      vec2 c = pcUp(vec2(p.x*msz.x, (p.y - 0.43)*msz.y), cv, msz);
+      float du = mmBox(c - vec2(0.0, 0.19*msz.y), vec2(0.19*msz.x, 0.19*msz.y), 0.02*msz.y);
+      /* (the lid board prised up at one end: nothing above it) */
+      if (cv.w > 0.72) du = max(du, c.y - (0.95 + 0.05*c.x/(0.19*msz.x))*0.38*msz.y);
+      d = min(d, du*cv.x/msz.y);
+    }
+#else
     d = mmBox(p - vec2(-0.10,0.22), vec2(0.24,0.22), 0.02);
     d = min(d, mmBox(p - vec2(0.16,0.62), vec2(0.19,0.19), 0.02));
+#endif
 #endif
 #if MM_SH9
   } else if (shape < 9.5) {               // 9 — shrub / hedge
@@ -33197,6 +33241,11 @@ float reliefH(vec2 uv, vec2 msz, vec2 mpp, float shape, float seed, out float ti
                     m.y - mix(0.000, 0.430, up)*msz.y);
     float ch  = mix(0.440, 0.380, up)*msz.y;
     float cwm = mix(0.240, 0.190, up)*msz.x;
+#if MM_WINGS == 4
+    /* (round 61 repair 59: each case in its own frame -- pcVar) */
+    if (up > 0.5) cm = pcUp(vec2(m.x, m.y - 0.430*msz.y), pcVar(seed), msz);
+    else { float l8 = pcLow(seed); cm.x = m.x - (0.14 - 0.24*l8)*msz.x; cwm *= l8; }
+#endif
     float pp  = ch/3.0;                                       // three boards
     float res = pRes(pp, mpp.y);
     h -= 0.022 * pR(mod(cm.y, pp) - pp*0.5, 0.018) * res;
@@ -34591,15 +34640,27 @@ void main(){
                        sp.y - mix(0.000, 0.430, upC)*vSize.y);
       float ch  = mix(0.440, 0.380, upC)*vSize.y;
       float cw  = mix(0.240, 0.190, upC)*vSize.x;
+#if MM_WINGS == 4
+      /* (round 61 repair 59: each case in its own frame -- pcVar) */
+      vec4 pcV = pcVar(vSeed);
+      if (upC > 0.5) cm = pcUp(vec2(sp.x - vSize.x*0.5, sp.y - 0.430*vSize.y), pcV, vSize);
+      else { float l8 = pcLow(vSeed); cm.x = sp.x - vSize.x*0.5 - (0.14 - 0.24*l8)*vSize.x; cw *= l8; }
+#endif
       float ax  = abs(cm.x);
       float bw  = max(cw*0.16, 0.035);
       float lw  = max(mpp.x, mpp.y)*1.1;
+#if MM_WINGS == 4
+      lw /= mix(1.0, pcV.x, upC);
+#endif
       float pp  = ch/3.0;                                   // three boards, as the relief's
       float bi  = floor(cm.y/pp);
       float by  = cm.y - bi*pp;
       float inC = step(0.0, cm.y)*step(cm.y, ch);
       float kx  = uKeyDir.x >= 0.0 ? 1.0 : -1.0;
       float sg  = sign(0.5 - upC + 0.01);
+#if MM_WINGS == 4
+      sg *= mmHash11(vSeed*6.1 + 3.3 + upC*1.7) < 0.5 ? -1.0 : 1.0;   // (repair 59: each brace nailed its own way)
+#endif
       float brd = mmHash11(bi*3.7 + upC*5.1 + vSeed);
       /* (round 28 graft: a step up -- judge 1 on fight-passages: "make the far
          crates ... read with more value contrast") */
@@ -34667,8 +34728,30 @@ void main(){
         float farK = (1.0 - smoothstep(20.0*lw, 30.0*lw, pp))*inC*step(ax, cw);
         float topP = smoothstep(ch*0.86 - lw, ch*0.86, cm.y);
         float kSd  = step(0.0, cm.x*kx);
+        /* (round 61 repair 59: the upper case's LID, by its seed. Nailed
+           shut, it is as it was. Gone: the case's mouth -- the shade of its
+           near side across the bottom of it, the far side's boards lit over
+           that, its two ends standing and the far rim a line of light. One
+           board prised up at an end: the board a lit plane rising across the
+           case, its underside dark, and the dark of the case in the wedge
+           under it. A far case keeps repair 52's lit top whatever its lid:
+           the mouth and the wedge are for a case near enough to see into.) */
+        float lift = step(0.72, pcV.w);
+        float lidK = upC*step(0.40, pcV.w)*inC*mix(1.0 - farK, 1.0, lift);
+        float yl   = cm.y - lift*(1.0 - farK)*0.05*ch*(cm.x/cw + 1.0);
+        float y0   = mix(0.87, 0.80, lift)*ch;
+        float lu   = (yl - y0)/(0.10*ch);                       // up the lifted board, 0..1
+        float lidB = lidK*lift*step(ax, cw)*smoothstep(-lw, 0.0, yl - y0);
+        float open = lidK*step(ax, cw - 0.30*bw*(1.0 - lift))*smoothstep(-lw, 0.0, cm.y - y0)*(1.0 - lidB);
+        vec3  dl   = vec3(0.68, 0.47, 0.26)*(lum*2.5 + 0.042);
+        float rimF = (1.0 - smoothstep(1.0*lw, 2.0*lw, ch - cm.y))*(1.0 - lift);
+        albedo = mix(albedo, dl*mix(mix(0.10, 0.36, smoothstep(0.925*ch - 0.5*lw, 0.925*ch + 0.5*lw, cm.y)*(1.0 - lift)), 0.85, rimF), open);
+        albedo = mix(albedo, dl*(0.50 + 0.50*smoothstep(0.18, 0.18 + 2.0*lw/(0.10*ch), lu))*(0.92 + 0.14*brd), lidB);
+        albedo *= 1.0 + 0.40*lidK*step(ax, cw)*(1.0 - smoothstep(0.0, 1.5*lw, y0 - cm.y))*step(cm.y, y0);
+        topP = mix(topP, lidB*step(0.18, lu), lidK);
         gWgShade = 1.0 + farK*(1.10*topP + (1.0 - topP)*(bat*mix(-0.30, 0.55, kSd) - 0.12*brdOn
                  - 0.40*(1.0 - upC)*(1.0 - smoothstep(ch*0.05, ch*0.05 + lw, cm.y))));
+        gWgShade *= 1.0 - 0.50*open*(1.0 - rimF);
       }
 #endif
     }
