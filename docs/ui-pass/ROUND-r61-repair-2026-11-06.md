@@ -953,3 +953,19 @@ Marked down inside the winner, by both: the tufts along long kerbs "repeat at on
 Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, graveyard 35/0.
 
 Key: `PAIRED-r61-repair58-key.json`. Evidence: `C:/UILOOP/s21/ev58/`.
+
+## Repair 59: the heart's bench and urn pedestal lit and modelled; the varied crates and the softened chair-foot shadows are out (2026-11-18, after survey 23)
+
+Survey 23's judges: "the heart bench", the "heart urn plinth ... dark silhouettes or flat shapes"; repair 52's: the passages' crates "small, repeated, identical boxes"; repair 56's: the study chair's foot pools "hard black ovals". Repair 59 built three items; one is merged (`9f6590b4`), two were reverted on the branch (`cfdce193`, `4662a6b1`).
+
+- **IN (6-0, by 2 in three of six verdicts): the heart's bench and pedestal** (inside `MM_SH85`, so only the Heart's program; the gallery and memory rooms share it). Both were simply unlit: bench console 28 beside a floor at 64, plinth block 10 beside 44. Each console a lit face and a ruled return with the seat's shadow across its head, the frieze lit as a rail, its gadroons lit; the pedestal with a bed mould and a base mould, a lit die, the plinth block out of the black (10 to 50) on a dark ground line. "Carved scrolls with a lit face rather than dark silhouettes"; "moulded and lit to its base", where dev's was "a plain box falling to black".
+- **OUT: the passages' crates varied by seed** (three sizes of upper case, 2-3 degrees askew, lid states). passages-library lost 0-2 and passages-passage split 1-1. The size variety was liked by one judge ("an actual heap"); the turn was done as a shear and read as "parallelograms rather than a turned box", crates "hang" and "touch at a corner only", and one showed "a stray red/white/blue pixel artefact". Variety is still wanted, but a crate must stay a square box that visibly rests on the one below.
+- **OUT, split 1-1 in both study rooms: the chair's foot pools softened.** One judge: the soft pool "belongs to the chair's cast shadow" where dev's is "a disc stuck on the boards". The other: dev's small dark pools "seat the feet" where the soft version's "feet barely touch". What both describe is a small dark contact that is soft-edged: "tighter than the cast shadow but never a hard-edged black shape".
+
+The paired check, seven rooms against the surveyed build, as built: heart **6-0**, passages 1-3, study 2-2. Only the heart's item is merged, and only the Heart's program changed.
+
+Marked down inside the winner: the lit stone is "a little grey against" the room's warm light and "evenly lit" (it wants the candle's colour and a darker shaded side); "a faint red fringe down the panel's left edge" of the memory room's pedestal; the bench's paws still dark. Next, from both: the same modelling on the urn bowl, statue plinths and column bases; a contact shadow under the pedestal's plinth.
+
+Link time: heart 7.0 s to 7.7 (a noisy run). Tests (on the branch with all three items): link-queue 104/0, heart 44/0, secret-passages 74/0, study-library 50/0, grounding PASS, steam-deck 6/6.
+
+Key: `PAIRED-r61-repair59-key.json`. Evidence: `C:/UILOOP/s21/ev59/`.
