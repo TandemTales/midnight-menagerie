@@ -107,3 +107,9 @@ Each one has a default I have already taken, so nothing is waiting on you unless
     added to the foyer's, bathhouse's or sleeping quarters' prop programs.
 
 **Answered 2026-11-18:** question 11. Josh said "Push dev"; dev was pushed at `f9d8e916`. Later commits are not covered: ask again.
+
+**Answered 2026-11-19 (Josh):**
+- 12: move `C:/UILOOP/s21/` to D: when D: is attached again. (Still detached on 11-19; not moved yet.)
+- 13: Josh did not know what enemy-clips is and guessed it was on D:. It is not: `tests/enemy-clips/check.py` reads only the repo and the dev server. Its 976 static and geometry checks pass; the 5 failures are all live "beats" in the browser (door-greeter, dust-bunny, butler: "attack hands back to idle", "no cast, so a buff plays nothing - hurt"). So the machine-change question stands unanswered and the red is OPEN: either a timing flake on a slow machine or a real fault in how those three enemies return to idle. Nobody has looked at it in the game.
+- 14: the cog is fine as it is. Closed.
+- 15: trim the over-budget wings FIRST. No more paint in a wing whose prop program is over 12 s (foyer 19.0, greenhouse 14.9 and 12.5, bathhouse 13.1, sleeping 12.7, hedge 12.4, kitchens 12.1) until it is under.
