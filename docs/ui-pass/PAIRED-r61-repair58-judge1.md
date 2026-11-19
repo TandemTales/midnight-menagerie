@@ -1,0 +1,20 @@
+SURVEY-room-graveyard-gate: B by 1 -- the grass under the right-hand kerb is clumped and darker instead of an even bright comb.
+SURVEY-room-graveyard-plots: B by 2 -- the long right-hand kerb's grass sits in the ground as dark tufts and the central tomb lid carries moss that hangs over its edge.
+SURVEY-room-graveyard-yard: B by 1 -- the three near headstones' grass stays low at the foot instead of climbing the inscriptions as bright thin blades.
+
+## Per-item notes
+
+**graveyard-gate**
+- (a) Grass at the feet: B better. A is an even, bright comb of equal blades along the right kerb, the same height and green end to end, with a pale pixel edge at its left end; it reads as a trim strip stuck on. B breaks it into darker uneven clumps with a few tall blades, and the strip sits lower, so the kerb and the round-top stone beside the path stand in the ground. B's cost: on the darkest stones (bottom-left arch, bottom-right slab) the grass nearly disappears.
+- (b) Moss: B better, slightly. A's tomb lid on the right has no moss on the lid edge; B hangs a small drip of it over the lid, and the left tomb lids get small tufts. Headstone shoulder moss is a little fuller in B. At 1x both are small.
+
+**graveyard-plots**
+- (a) Grass at the feet: B better. The long kerb at right: A is a bright picket of thin spikes over a pale band, with stray blades reaching up over the stone face and the inscriptions; B is rounded dark tufts with a few lighter blades, lower and quieter, and a thin warm earth line under the stone that gives it a base. B's weaknesses: the tufts repeat at one size along the kerb (a scalloped lace edge, like a row of small bushes), the pale yellow cone blades at the centre stone and the grey slab read as teeth, and the warm underline is a little too orange and straight under the centre tomb.
+- (b) Moss: B clearly better. On the central tomb lid A has nothing visible and B has moss hanging over the lid edge in drips, readable at 1x. On the nearest arch shoulders B's patches are larger with a ragged dripping lower edge and a dark underside, so they have thickness; A's are thin bright slivers.
+
+**graveyard-yard**
+- (a) Grass at the feet: B better, slightly. A's thin bright blades climb the faces of the three near stones and stick out past the stone sides as stray lines; B keeps low clumps inside the stone's width. On the kerb at centre-left A is a ragged bright fringe and B a row of round tufts, darker and tidier but too regular. Under the big tomb at bottom-left B's grass is so dark it is almost lost; A's even sawtooth is visible there but mechanical.
+- (b) Moss: B better, slightly. The tomb lid at left has a clear green patch on the lid in B against faint dashes in A; the shoulder moss is larger with a drip in B. The lid patch on the left tomb is a bit flat and saturated, a green bar more than a growth.
+
+### PATTERN
+In all three pairs the better version turns the foot grass from an even, bright comb of equal spikes into darker clumps that stay low and inside the stone's width, adds a thin warm ground line under the stone, and gives the moss mass: patches with a ragged dripping edge on shoulders and overhanging tomb lids. The worse version's grass is brighter than the ground around it, runs up over the carved faces and reads as a trim strip. The differences are small at 1x; only the plots pair is clear without zooming. What the better versions most need next: (1) break the rhythm of the tufts on long kerbs, which repeat at one size like a scalloped edge, by varying clump width, height and gaps and leaving bare stretches; (2) lift the grass on the darkest near stones and under the big bottom-left tomb in the yard, where it now sinks into black, and cool or dim the pale yellow cone blades and the orange underline so they sit with the ground; (3) give the moss form on the lids, with a lit top and shadowed underside following the lid edge instead of a flat saturated green bar, and carry the grass a little out onto the ground beyond the stone's foot so the stone grows out of turf, not out of a strip its own width.

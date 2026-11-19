@@ -935,3 +935,21 @@ Link time, NOT settled: on a quiet machine the graveyard's prop program read 9.0
 Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, graveyard 35/0.
 
 Key: `PAIRED-r61-repair57-key.json`. Evidence: `C:/UILOOP/s21/ev57/`.
+
+## Repair 58: the graveyard's foot grass in clumps, the lids' and shoulders' moss given mass; its link time settled (2026-11-18, after survey 23)
+
+Repair 57's judges: the fringe "an even comb", "a green band at 1x"; the lids' moss "a dotted line". Repair 58 (`ddb12906`, `a3128407`, merged whole; take both or neither) is inside `#if MM_WINGS == 5`.
+
+- **Link time, settled on a quiet machine** (three fresh-browser runs each, alternating): the graveyard's prop program 9.33 s before repair 57, 9.80 s after it, about 10.0 s after this repair (+0.2, positive in every rotation). The whole table at `f5de617b`: seven prop programs over 12 s (foyer 19.0, greenhouse 14.9 and 12.5, bathhouse 13.1, sleeping 12.7, hedge 12.4, kitchens 12.1); lampworks 11.8, attic 10.9, graveyard 10.1.
+- **The fringe:** the ground about the stones measures 33-52; the strip under the plots' round-top plinth was 81, pure green, peaks near 200, so the band was a lighting matter. `gyTufts` is one tuft per 8.5 cm cell (3-5 fanned blades, its own lean, one cell in five a single long blade, bare ground between); `gySward` points of uneven height; a ceiling on the grass's lit value (`gGyGrass`) and a tint from the ground's olive at the roots to a lighter green at the tips. Lowering the whole fringe's light was tried and dropped: the shaded stones' feet went black again.
+- **The cushion:** the ledger's `gyFringe` at about three times the size (clumps 16-24 cm long, deep enough to go over the lip), presence from 2 tombs in 7 to most, lit on the top plane and darker under the lip; the near headstones' shoulder caps a third deeper.
+
+The paired check, three graveyard rooms against the surveyed build: **6-0**, each by 1 except the plots by 2 from one judge. Its rooms were survey 23's graveyard, so the pair is its survey check; no other room's program changed (`foyer:parlor` pixel-identical).
+
+The moss won with both judges in all three rooms ("dripping caps ... the most readable painted detail in the room"). The grass won on the kerbs and in the plots, and was "a wash" in the gate and "split, slightly [dev] at 1x" in the yard for one judge: the old comb's "blades are brighter and read more plainly as grass, where the hummocks read as moss or clipped hedge".
+
+Marked down inside the winner, by both: the tufts along long kerbs "repeat at one size like a scalloped edge"; the grass "nearly disappears" on the darkest near stones and under the yard's big left tomb; the lid patch is "a bit flat and saturated, a green bar". Next: real blades of uneven height breaking out of the hummocks, lit where the lamp or moon hits them; gaps of bare earth along the kerbs; the lids' moss with a lit top and a ragged edge. The graveyard has about two seconds of link budget left.
+
+Tests: link-queue 104/0, grounding PASS, steam-deck 6/6, graveyard 35/0.
+
+Key: `PAIRED-r61-repair58-key.json`. Evidence: `C:/UILOOP/s21/ev58/`.
